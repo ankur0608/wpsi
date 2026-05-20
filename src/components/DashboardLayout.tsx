@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
@@ -12,12 +12,28 @@ interface DashboardLayoutProps {
 function ProtectedShell({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const { user, loading } = useUser();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
     }
   }, [loading, router, user]);
+
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+
+    document.body.style.overflow = '';
+  }, [isMobileSidebarOpen]);
 
   if (loading) {
     return (
@@ -39,9 +55,12 @@ function ProtectedShell({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden w-full bg-dark-bg">
-      <Sidebar />
+      <Sidebar
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+      />
       <main id="nav-main-wrapper" className="flex-1 flex flex-col h-full overflow-hidden">
-        <Topbar />
+        <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative">
           <div className="max-w-6xl mx-auto">
             {children}
