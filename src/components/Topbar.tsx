@@ -67,8 +67,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
   };
 
   const popoverClass =
-    "absolute right-0 top-full mt-3 rounded-2xl border border-white/10 bg-slate-900/98 p-5 shadow-[0_28px_80px_rgba(2,6,23,0.55)] backdrop-blur-xl";
-
+    "absolute z-50 right-0 top-full mt-3 rounded-2xl border border-white/10 bg-slate-950 p-5 shadow-[0_28px_80px_rgba(2,6,23,0.7)]";
   return (
     <header
       id="main-topbar"

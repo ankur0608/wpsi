@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+    scroll-padding-top: 5rem;
+}
+
 @theme inline {
   --color-dark-bg: #0F172A;
   --color-dark-bg-alt: #0D1120;
