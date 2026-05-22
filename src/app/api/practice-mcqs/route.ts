@@ -1,0 +1,50 @@
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+// GET /api/practice-mcqs
+// Query: subject, topic, difficulty, page, limit
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const subject    = searchParams.get('subject')    ?? undefined;
+    const topic      = searchParams.get('topic')      ?? undefined;
+    const difficulty = searchParams.get('difficulty') ?? undefined;
+    const page       = Math.max(1, Number(searchParams.get('page')  ?? '1'));
+    const limit      = Math.min(500, Math.max(1, Number(searchParams.get('limit') ?? '200')));
+    const skip       = (page - 1) * limit;
+
+    const where = {
+      ...(subject && subject !== 'all'    ? { subject }    : {}),
+      ...(topic   && topic   !== 'all'    ? { topic: { contains: topic, mode: 'insensitive' as const } } : {}),
+      ...(difficulty ? { difficulty }     : {}),
+    };
+
+    const [total, mcqs] = await Promise.all([
+      prisma.practiceMcq.count({ where }),
+      prisma.practiceMcq.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          subject: true,
+          topic: true,
+          difficulty: true,
+          question: true,
+          optionA: true,
+          optionB: true,
+          optionC: true,
+          optionD: true,
+          correctAnswer: true,
+          explanation: true,
+        },
+      }),
+    ]);
+
+    return Response.json({ success: true, data: mcqs, meta: { total, page, limit } });
+  } catch (err) {
+    console.error('[GET /api/practice-mcqs]', err);
+    return Response.json({ success: false, message: 'Failed to fetch MCQs' }, { status: 500 });
+  }
+}
