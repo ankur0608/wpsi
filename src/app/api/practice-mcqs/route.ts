@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     const where: any = {};
     if (subject && subject !== 'all') {
-      where.topic = { syllabus: { subject: { name: subject } } };
+      where.topic = { subject: { name: subject } };
     }
     if (topic && topic !== 'all') {
       where.topic = { ...where.topic, name: { contains: topic, mode: 'insensitive' as const } };
@@ -44,12 +44,8 @@ export async function GET(req: NextRequest) {
           topic: {
             select: {
               name: true,
-              syllabus: {
-                select: {
-                  subject: {
-                    select: { name: true }
-                  }
-                }
+              subject: {
+                select: { name: true }
               }
             }
           }
@@ -59,7 +55,7 @@ export async function GET(req: NextRequest) {
 
     const mcqs = rawMcqs.map((m) => ({
       id: m.id,
-      subject: m.topic?.syllabus?.subject?.name || 'Unknown',
+      subject: m.topic?.subject?.name || 'Unknown',
       topic: m.topic?.name || 'Unknown',
       difficulty: m.difficulty,
       question: m.question,

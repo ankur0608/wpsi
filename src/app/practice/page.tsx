@@ -235,6 +235,7 @@ export default function PracticePage() {
   const [session,       setSession]       = useState<SessionState | null>(null);
   const [timeLeft,      setTimeLeft]      = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>('');
+  const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success'; onConfirm?: () => void; onCancel?: () => void } | null>(null);
 
   // ── Derived lists from live bank ───────────────────────────────────────────
   const availableSubjects: string[] = React.useMemo(() => {
@@ -365,13 +366,37 @@ export default function PracticePage() {
     setView('result');
   };
 
+  const showSuccessAndSubmit = () => {
+    setModalConfig({
+      isOpen: true,
+      type: 'success',
+      title: 'Success!',
+      message: 'You have successfully completed the MCQ session.',
+      onConfirm: () => {
+        setModalConfig(null);
+        submitSession();
+      }
+    });
+  };
+
   const confirmSubmit = () => {
     if (!session) return;
     const unanswered = session.questions.filter((q) => session.responses[q.id] === undefined).length;
     if (unanswered > 0) {
-      if (!window.confirm(`You still have ${unanswered} unanswered question(s). Blank questions carry -0.25 marks. Submit anyway?`)) return;
+      setModalConfig({
+        isOpen: true,
+        type: 'confirm',
+        title: 'Unanswered Questions',
+        message: `You still have ${unanswered} unanswered question(s). Blank questions carry -0.25 marks. Submit anyway?`,
+        onConfirm: () => {
+          setModalConfig(null);
+          showSuccessAndSubmit();
+        },
+        onCancel: () => setModalConfig(null)
+      });
+    } else {
+      showSuccessAndSubmit();
     }
-    submitSession();
   };
 
   const restartSession = () => { setSession(null); setStatusMessage(''); setTimeLeft(0); setView('setup'); };
@@ -1221,6 +1246,39 @@ export default function PracticePage() {
               )}
             </div>
           </section>
+        </div>
+      )}
+      {/* ─── MODAL ────────────────────────────────────────────────────────── */}
+      {modalConfig?.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-dark-bg border border-white/10 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : 'bg-warning'}`}></div>
+            <div className="flex items-center gap-4 mb-5">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-warning/10 text-warning'}`}>
+                <i className={`fa-solid ${modalConfig.type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'}`}></i>
+              </div>
+              <h3 className="text-xl font-heading font-black text-white">{modalConfig.title}</h3>
+            </div>
+            <p className="text-slate-300 text-sm mb-8 leading-relaxed">
+              {modalConfig.message}
+            </p>
+            <div className="flex justify-end gap-3">
+              {modalConfig.type === 'confirm' && (
+                <button 
+                  onClick={modalConfig.onCancel}
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+              <button 
+                onClick={modalConfig.onConfirm}
+                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
+              >
+                {modalConfig.type === 'success' ? 'View Results' : 'Submit Anyway'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

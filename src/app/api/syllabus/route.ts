@@ -7,11 +7,7 @@ export async function GET() {
       include: {
         subjects: {
           include: {
-            syllabi: {
-              include: {
-                topics: true,
-              },
-            },
+            topics: true,
           },
         },
       },
@@ -24,7 +20,7 @@ export async function GET() {
         id: subject.id,
         name: subject.name,
         icon: subject.icon,
-        topics: subject.syllabi.flatMap(syllabus => syllabus.topics)
+        topics: subject.topics
       }))
     }));
 
@@ -71,25 +67,4 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { name, subjectId } = body;
 
-    if (!subjectId) {
-      return NextResponse.json({ error: 'subjectId is required' }, { status: 400 });
-    }
-
-    const syllabus = await prisma.syllabus.create({
-      data: { name, subjectId },
-    });
-
-    return NextResponse.json({ data: syllabus }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating syllabus:', error);
-    return NextResponse.json(
-      { error: 'Failed to create syllabus' },
-      { status: 500 }
-    );
-  }
-}
