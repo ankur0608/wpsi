@@ -3,15 +3,30 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const syllabuses = await prisma.syllabus.findMany({
+    const exams = await prisma.exam.findMany({
       include: {
         subjects: {
           include: {
-            topics: true,
+            syllabi: {
+              include: {
+                topics: true,
+              },
+            },
           },
         },
       },
     });
+
+    const syllabuses = exams.map(exam => ({
+      id: exam.id,
+      name: exam.name,
+      subjects: exam.subjects.map(subject => ({
+        id: subject.id,
+        name: subject.name,
+        icon: subject.icon,
+        topics: subject.syllabi.flatMap(syllabus => syllabus.topics)
+      }))
+    }));
 
     if (syllabuses.length === 0) {
       // Return default WPSI syllabus structure
@@ -59,10 +74,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name } = body;
+    const { name, subjectId } = body;
+
+    if (!subjectId) {
+      return NextResponse.json({ error: 'subjectId is required' }, { status: 400 });
+    }
 
     const syllabus = await prisma.syllabus.create({
-      data: { name },
+      data: { name, subjectId },
     });
 
     return NextResponse.json({ data: syllabus }, { status: 201 });

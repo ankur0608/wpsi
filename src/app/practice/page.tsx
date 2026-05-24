@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-export type Difficulty   = 'Easy' | 'Medium' | 'Hard';
+export type Difficulty   = 'Low' | 'Medium' | 'High';
 export type PracticeMode = 'quick' | 'full' | 'mock';
 export type AnswerKey    = 'A' | 'B' | 'C' | 'D' | 'E';
 
@@ -37,12 +37,6 @@ interface ApiMcqRow {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-export const PRACTICE_SUBJECTS = [
-  'Electronics Components, Devices and Circuits',
-  'Digital Electronics & VLSI',
-  'Reasoning & Data Interpretation',
-  'Quantitative Aptitude',
-] as const;
 
 type ViewState    = 'setup' | 'instructions' | 'exam' | 'result' | 'review';
 type ReviewFilter = 'all' | 'correct' | 'wrong' | 'na' | 'unanswered' | 'bookmarked';
@@ -63,7 +57,7 @@ interface SessionState {
   violations: number;
 }
 
-const DEFAULT_DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
+const DEFAULT_DIFFICULTIES: Difficulty[] = ['Low', 'Medium', 'High'];
 
 const MODE_META: Record<PracticeMode, {
   label: string;
@@ -243,6 +237,11 @@ export default function PracticePage() {
   const [statusMessage, setStatusMessage] = useState<string>('');
 
   // ── Derived lists from live bank ───────────────────────────────────────────
+  const availableSubjects: string[] = React.useMemo(() => {
+    const set = new Set(mcqBank.map((q) => q.subject).filter(Boolean));
+    return Array.from(set).sort();
+  }, [mcqBank]);
+
   const topicsForSubject: string[] = React.useMemo(() => {
     if (!selectedSubject || selectedSubject === 'All Subjects') return [];
     const norm = normalizeText(selectedSubject);
@@ -648,7 +647,7 @@ export default function PracticePage() {
                   className="w-full rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60"
                 >
                   <option>All Subjects</option>
-                  {PRACTICE_SUBJECTS.map((s) => <option key={s}>{s}</option>)}
+                  {availableSubjects.map((s) => <option key={s}>{s}</option>)}
                 </select>
               </div>
 

@@ -24,16 +24,16 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
 
   const titles: Record<string, string> = {
     "/dashboard": "Dashboard",
-    "/subjects": "Subjects & Topics",
-    "/topics": "Subject Chapters",
-    "/test": "Mock Tests",
-    "/pricing": "Pricing & Plans",
-    "/profile": "My Profile",
-    "/settings": "Settings",
-    "/rewards": "Rewards Store",
-    "/streaks": "Streaks",
-    "/practice": "MCQ Practice",
-    "/admin": "Admin Panel",
+    "/subjects":  "Subjects & Topics",
+    "/topics":    "Subject Chapters",
+    "/test":      "Mock Tests",
+    "/pricing":   "Pricing & Plans",
+    "/profile":   "My Profile",
+    "/settings":  "Settings",
+    "/rewards":   "Rewards Store",
+    "/streaks":   "Streaks",
+    "/practice":  "MCQ Practice",
+    "/admin":     "Admin Panel",
   };
 
   useEffect(() => {
@@ -42,16 +42,11 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
         setOpenPopover(null);
       }
     };
-
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  useEffect(() => {
-    setOpenPopover(null);
-  }, [pathname]);
+  useEffect(() => { setOpenPopover(null); }, [pathname]);
 
   const displayTitle = titles[pathname] || title;
 
@@ -66,19 +61,34 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
     setOpenPopover((current) => (current === key ? null : key));
   };
 
-  const popoverClass =
-    "absolute z-50 right-0 top-full mt-3 rounded-2xl border border-white/10 bg-slate-950 p-5 shadow-[0_28px_80px_rgba(2,6,23,0.7)]";
+  const popoverBase =
+    "absolute z-50 right-0 top-full mt-3 rounded-2xl p-5 shadow-[0_28px_80px_rgba(0,0,0,0.7)]";
+  const popoverStyle = {
+    background: "rgba(9,21,34,0.98)",
+    border: "1px solid rgba(212,146,42,0.16)",
+    backdropFilter: "blur(24px)",
+  };
+
   return (
     <header
       id="main-topbar"
-      className="border-b border-white/10 bg-slate-950/88 px-4 sm:px-6 backdrop-blur-xl"
-      style={{ minHeight: "64px" }}
+      style={{
+        position: "relative",
+        zIndex: 50,
+        minHeight: "64px",
+        background: "rgba(13,27,42,0.96)",
+        borderBottom: "1px solid rgba(212,146,42,0.10)",
+        backdropFilter: "blur(20px)",
+      }}
+      className="px-4 sm:px-6"
     >
       <div className="flex min-h-16 items-center justify-between gap-3">
+        {/* Left: hamburger + title */}
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:bg-white/[0.08] hover:text-white md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06] md:hidden"
+            style={{ borderColor: "rgba(212,146,42,0.16)", color: "rgba(255,255,255,0.6)" }}
             onClick={onMenuClick}
             aria-label="Open navigation"
           >
@@ -88,163 +98,237 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
           {showBackButton && pathname === "/topics" && (
             <Link
               href="/subjects"
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
+              style={{ borderColor: "rgba(212,146,42,0.16)", color: "rgba(255,255,255,0.6)" }}
             >
               <i className="fa-solid fa-arrow-left"></i>
             </Link>
           )}
 
           <div className="min-w-0">
-            <h1 className="truncate text-base font-heading font-bold text-white sm:text-lg">{displayTitle}</h1>
-            <div className="hidden text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500 sm:block">
+            <h1
+              className="truncate text-base font-heading font-bold sm:text-lg"
+              style={{ color: "#F2ECD9" }}
+            >
+              {displayTitle}
+            </h1>
+            <div
+              className="hidden text-[9px] font-medium uppercase tracking-[0.28em] sm:block"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
               WPSI Exam: June 21, 2026
             </div>
           </div>
         </div>
 
+        {/* Right: badges + profile */}
         <div className="flex items-center gap-2 sm:gap-3" ref={popoverRef}>
+          {/* Streak */}
           <div className="hidden items-center gap-2 sm:flex">
             <button
               type="button"
-              className="relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-all"
-              style={{ background: "rgba(245,158,11,0.12)", borderColor: "rgba(245,158,11,0.24)" }}
+              className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all hover:scale-105"
+              style={{
+                background: "rgba(212,146,42,0.10)",
+                border: "1px solid rgba(212,146,42,0.22)",
+              }}
               onClick={() => togglePopover("streak")}
             >
-              <i className="fa-solid fa-fire text-sm text-warning"></i>
-              <span className="text-sm font-bold text-white">{loading ? "--" : user?.streak ?? "--"}</span>
+              <i className="fa-solid fa-fire text-sm" style={{ color: "#D4922A" }}></i>
+              <span className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+                {loading ? "--" : user?.streak ?? "--"}
+              </span>
             </button>
+
             {openPopover === "streak" && (
-              <div className={`${popoverClass} w-72`}>
+              <div className={`${popoverBase} w-72`} style={popoverStyle}>
                 <div className="mb-3 flex items-center gap-3">
                   <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-warning"
-                    style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.2)" }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg"
+                    style={{
+                      background: "rgba(212,146,42,0.12)",
+                      border: "1px solid rgba(212,146,42,0.22)",
+                      color: "#D4922A",
+                    }}
                   >
                     <i className="fa-solid fa-fire"></i>
                   </div>
                   <div>
-                    <div className="font-bold text-white">{loading ? "Loading streak" : `${user?.streak ?? 0} Day Streak`}</div>
-                    <div className="text-xs text-slate-400">Stay consistent to keep your momentum growing.</div>
+                    <div className="font-bold" style={{ color: "#F2ECD9" }}>
+                      {loading ? "Loading streak" : `${user?.streak ?? 0} Day Streak`}
+                    </div>
+                    <div className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      Stay consistent to keep your momentum growing.
+                    </div>
                   </div>
                 </div>
                 <div
-                  className="mb-3 rounded-2xl p-3"
-                  style={{ background: "rgba(8,12,24,0.72)", border: "1px solid rgba(255,255,255,0.05)" }}
+                  className="mb-3 rounded-xl p-3"
+                  style={{ background: "rgba(212,146,42,0.06)", border: "1px solid rgba(212,146,42,0.12)" }}
                 >
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400">Next milestone reward</span>
-                    <span className="font-bold text-warning">+30 bonus coins</span>
+                    <span style={{ color: "rgba(255,255,255,0.5)" }}>Next milestone reward</span>
+                    <span className="font-bold" style={{ color: "#D4922A" }}>+30 bonus coins</span>
                   </div>
                 </div>
-                <Link href="/streaks" className="text-xs font-bold text-brand-400 transition-colors hover:text-brand-300">
-                  Manage streaks
+                <Link
+                  href="/streaks"
+                  className="text-xs font-bold transition-colors hover:underline"
+                  style={{ color: "#D4922A" }}
+                >
+                  Manage streaks →
                 </Link>
               </div>
             )}
 
+            {/* Coins */}
             <button
               type="button"
-              className="relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-all"
-              style={{ background: "rgba(99,102,241,0.12)", borderColor: "rgba(99,102,241,0.24)" }}
+              className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all hover:scale-105"
+              style={{
+                background: "rgba(74,158,219,0.10)",
+                border: "1px solid rgba(74,158,219,0.22)",
+              }}
               onClick={() => togglePopover("coins")}
             >
-              <i className="fa-solid fa-coins text-sm text-brand-400"></i>
-              <span className="text-sm font-bold text-white">{loading ? "--" : user?.coins?.toLocaleString() ?? "--"}</span>
+              <i className="fa-solid fa-coins text-sm" style={{ color: "#4A9EDB" }}></i>
+              <span className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+                {loading ? "--" : user?.coins?.toLocaleString() ?? "--"}
+              </span>
             </button>
+
             {openPopover === "coins" && (
-              <div className={`${popoverClass} w-60`}>
+              <div className={`${popoverBase} w-60`} style={popoverStyle}>
                 <div className="mb-3 flex items-center gap-3">
                   <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-brand-400"
-                    style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg"
+                    style={{
+                      background: "rgba(74,158,219,0.12)",
+                      border: "1px solid rgba(74,158,219,0.22)",
+                      color: "#4A9EDB",
+                    }}
                   >
                     <i className="fa-solid fa-coins"></i>
                   </div>
                   <div>
-                    <div className="font-bold text-white">{loading ? "Loading coins" : `${user?.coins?.toLocaleString() ?? 0} Coins`}</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-400">Bronze Tier</div>
+                    <div className="font-bold" style={{ color: "#F2ECD9" }}>
+                      {loading ? "Loading coins" : `${user?.coins?.toLocaleString() ?? 0} Coins`}
+                    </div>
+                    <div
+                      className="text-[10px] font-black uppercase tracking-[0.24em]"
+                      style={{ color: "#D4922A" }}
+                    >
+                      Bronze Tier
+                    </div>
                   </div>
                 </div>
-                <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-                  <div className="h-full bg-gradient-to-r from-brand-600 to-brand-400" style={{ width: "81.6%" }}></div>
+                <div
+                  className="mb-1 h-1.5 w-full overflow-hidden rounded-full"
+                  style={{ background: "rgba(255,255,255,0.06)" }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: "81.6%", background: "linear-gradient(90deg, #D4922A, #F0B85A)" }}
+                  ></div>
                 </div>
-                <div className="mb-3 text-center text-[10px] leading-tight text-slate-400">
-                  550 more to <span className="font-bold text-white">Silver Tier</span>
+                <div className="mb-3 text-center text-[10px] leading-tight" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  550 more to{" "}
+                  <span className="font-bold" style={{ color: "#F2ECD9" }}>
+                    Silver Tier
+                  </span>
                 </div>
-                <Link href="/rewards" className="text-xs font-bold text-brand-400 transition-colors hover:text-brand-300">
-                  Open rewards store
+                <Link
+                  href="/rewards"
+                  className="text-xs font-bold transition-colors hover:underline"
+                  style={{ color: "#D4922A" }}
+                >
+                  Open rewards store →
                 </Link>
               </div>
             )}
           </div>
 
-          <div className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-slate-300 sm:flex">
-            <span className="font-semibold text-white">{loading ? "--" : user?.coins?.toLocaleString() ?? "--"}</span>
-            <span className="mx-2 text-slate-600">|</span>
-            <span>{loading ? "--" : `${user?.streak ?? "--"} day streak`}</span>
-          </div>
-
+          {/* Notification bell */}
           <button
             type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
+            style={{ borderColor: "rgba(212,146,42,0.14)", color: "rgba(255,255,255,0.55)" }}
           >
             <i className="fa-solid fa-bell text-base"></i>
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(99,102,241,0.9)]"></span>
+            <span
+              className="absolute right-2 top-2 h-2 w-2 rounded-full"
+              style={{ background: "#D4922A", boxShadow: "0 0 8px rgba(212,146,42,0.8)" }}
+            ></span>
           </button>
 
+          {/* Profile dropdown */}
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-1.5 transition-colors hover:bg-white/[0.08]"
+              className="flex items-center gap-2 rounded-xl border px-2 py-1.5 transition-colors hover:bg-white/[0.06]"
+              style={{ borderColor: "rgba(212,146,42,0.16)" }}
               onClick={() => togglePopover("profile")}
             >
               <img
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1e293b&color=818cf8&bold=true&size=80`}
-                className="h-8 w-8 rounded-xl border border-white/10"
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=162436&color=D4922A&bold=true&size=80`}
+                className="h-8 w-8 rounded-lg border"
+                style={{ borderColor: "rgba(212,146,42,0.2)" }}
                 alt="User avatar"
               />
               <div className="hidden text-left sm:block">
-                <div className="max-w-28 truncate text-sm font-semibold text-white">
+                <div className="max-w-28 truncate text-sm font-semibold" style={{ color: "#F2ECD9" }}>
                   {loading ? "Loading..." : displayName}
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                <div className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.4)" }}>
                   {loading ? "Syncing" : displayLevel !== undefined ? `Level ${displayLevel}` : "Profile"}
                 </div>
               </div>
-              <i className="fa-solid fa-chevron-down hidden text-[10px] text-slate-400 sm:block"></i>
+              <i
+                className="fa-solid fa-chevron-down hidden text-[10px] sm:block"
+                style={{ color: "rgba(255,255,255,0.35)" }}
+              ></i>
             </button>
 
             {openPopover === "profile" && (
-              <div className={`${popoverClass} w-56 p-2`}>
-                <div className="mb-1 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3">
-                  <p className="text-sm font-bold text-white">{loading ? "Loading profile..." : displayName}</p>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-400">
-                    {loading ? "Syncing profile" : displayLevel !== undefined ? `Level ${displayLevel}` : "Profile unavailable"}
+              <div className={`${popoverBase} w-56 p-2`} style={popoverStyle}>
+                <div
+                  className="mb-1 rounded-xl px-3 py-3"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,146,42,0.10)" }}
+                >
+                  <p className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+                    {loading ? "Loading profile..." : displayName}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#D4922A" }}>
+                    {loading
+                      ? "Syncing profile"
+                      : displayLevel !== undefined
+                      ? `Level ${displayLevel}`
+                      : "Profile unavailable"}
                   </p>
                 </div>
 
-                <Link href="/profile" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white">
-                  <i className="fa-solid fa-user w-4 text-xs"></i>
-                  My Profile
-                </Link>
-                <Link href="/pricing" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white">
-                  <i className="fa-solid fa-crown w-4 text-xs text-warning"></i>
-                  Upgrade Store
-                </Link>
-                <Link href="/rewards" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white">
-                  <i className="fa-solid fa-coins w-4 text-xs text-brand-400"></i>
-                  Rewards Store
-                </Link>
-                <Link href="/settings" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white">
-                  <i className="fa-solid fa-gear w-4 text-xs"></i>
-                  Settings
-                </Link>
+                {[
+                  { href: "/profile",  icon: "fa-user",               label: "My Profile",     iconColor: "rgba(255,255,255,0.5)" },
+                  { href: "/pricing",  icon: "fa-crown",               label: "Upgrade Store",  iconColor: "#D4922A" },
+                  { href: "/rewards",  icon: "fa-coins",               label: "Rewards Store",  iconColor: "#4A9EDB" },
+                  { href: "/settings", icon: "fa-gear",                label: "Settings",       iconColor: "rgba(255,255,255,0.5)" },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-white/[0.05]"
+                    style={{ color: "rgba(242,236,217,0.8)" }}
+                  >
+                    <i className={`fa-solid ${item.icon} w-4 text-xs`} style={{ color: item.iconColor }}></i>
+                    {item.label}
+                  </Link>
+                ))}
 
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-danger transition-colors hover:bg-red-500/10"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-red-500/10"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)", color: "#E55353" }}
                 >
                   <i className="fa-solid fa-right-from-bracket w-4 text-xs"></i>
                   Logout
@@ -255,14 +339,28 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-white/5 pb-3 pt-2 sm:hidden">
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-slate-200">
-          <i className="fa-solid fa-fire text-warning"></i>
-          <span>{loading ? "--" : `${user?.streak ?? 0} day streak`}</span>
+      {/* Mobile stats bar */}
+      <div
+        className="flex items-center gap-2 pb-3 pt-2 sm:hidden"
+        style={{ borderTop: "1px solid rgba(212,146,42,0.06)" }}
+      >
+        <div
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs"
+          style={{ background: "rgba(212,146,42,0.08)", border: "1px solid rgba(212,146,42,0.16)" }}
+        >
+          <i className="fa-solid fa-fire" style={{ color: "#D4922A" }}></i>
+          <span style={{ color: "rgba(242,236,217,0.85)" }}>
+            {loading ? "--" : `${user?.streak ?? 0} day streak`}
+          </span>
         </div>
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs text-slate-200">
-          <i className="fa-solid fa-coins text-brand-400"></i>
-          <span>{loading ? "--" : `${user?.coins?.toLocaleString() ?? 0} coins`}</span>
+        <div
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs"
+          style={{ background: "rgba(74,158,219,0.08)", border: "1px solid rgba(74,158,219,0.16)" }}
+        >
+          <i className="fa-solid fa-coins" style={{ color: "#4A9EDB" }}></i>
+          <span style={{ color: "rgba(242,236,217,0.85)" }}>
+            {loading ? "--" : `${user?.coins?.toLocaleString() ?? 0} coins`}
+          </span>
         </div>
       </div>
     </header>

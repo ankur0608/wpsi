@@ -18,10 +18,10 @@ model User {
     streak    Int      @default(0)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    
+
     // Relations
-    answers   MCQAnswer[]
-    progress  UserProgress[]
+    answers  MCQAnswer[]
+    progress UserProgress[]
 }
 
 model Plan {
@@ -35,51 +35,73 @@ model Plan {
     updatedAt   DateTime @updatedAt
 }
 
-model Syllabus {
-    id        String   @id @default(cuid())
-    name      String   @unique
-    subjects  Subject[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// ─── Exam Hierarchy ───────────────────────────────────────────────────────────
+
+model Exam {
+    id          String    @id @default(cuid())
+    name        String    @unique
+    description String?
+    subjects    Subject[]
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 }
 
 model Subject {
-    id          String   @id @default(cuid())
-    name        String
-    icon        String?
-    syllabusId  String
-    syllabus    Syllabus @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
-    topics      Topic[]
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    
-    @@unique([name, syllabusId])
+    id        String    @id @default(cuid())
+    name      String
+    icon      String?
+    examId    String
+    exam      Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+    syllabi   Syllabus[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    @@unique([name, examId])
 }
 
-model Topic {
+model Syllabus {
     id        String   @id @default(cuid())
     name      String
     subjectId String
     subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-    mcqs      MCQ[]
+    topics    Topic[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    
+
     @@unique([name, subjectId])
 }
 
+model Topic {
+    id         String   @id @default(cuid())
+    name       String
+    subtopics  String
+    weight     String
+    syllabusId String
+    syllabus   Syllabus @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+    mcqs       MCQ[]
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@unique([name, syllabusId])
+}
+
 model MCQ {
-    id            String   @id @default(cuid())
+    id            String      @id @default(cuid())
+    no            Int?
     question      String
-    options       String[]
+    optionA       String
+    optionB       String
+    optionC       String
+    optionD       String
     correctAnswer String
     explanation   String?
-    difficulty    String   @default("Medium")
+    difficulty    String      @default("Medium")
+    isPyq         Boolean     @default(false)
     topicId       String
-    topic         Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+    topic         Topic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
     answers       MCQAnswer[]
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
 }
 
 model MCQAnswer {
@@ -92,20 +114,27 @@ model MCQAnswer {
     isCorrect Boolean
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    
+
     @@unique([userId, mcqId])
 }
 
 model UserProgress {
-    id          String   @id @default(cuid())
-    userId      String
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    subjectId   String
-    correctCount Int    @default(0)
-    totalAttempts Int   @default(0)
-    accuracy    Float   @default(0)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id            String   @id @default(cuid())
+    userId        String
+    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    subjectId     String
+    correctCount  Int      @default(0)
+    totalAttempts Int      @default(0)
+    accuracy      Float    @default(0)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+model Admin {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    password  String // bcrypt hash
+    createdAt DateTime @default(now())
 }
 
 model PracticeMcq {
@@ -122,6 +151,14 @@ model PracticeMcq {
     explanation   String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
+}
 
-    @@map("PracticeMcq")
+model CSVUpload {
+    id        Int      @id @default(autoincrement())
+    filename  String
+    questions Int
+    failed    Int      @default(0)
+    status    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

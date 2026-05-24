@@ -22,7 +22,10 @@ export async function GET(
       select: {
         id: true,
         question: true,
-        options: true,
+        optionA: true,
+        optionB: true,
+        optionC: true,
+        optionD: true,
         difficulty: true,
         topicId: true,
         // Don't send answer/explanation yet
@@ -35,22 +38,22 @@ export async function GET(
         {
           id: 'mcq_1',
           question: 'Which of the following is the best conductor of electricity?',
-          options: ['Aluminium', 'Copper', 'Silver', 'Gold'],
-          difficulty: 'Easy',
+          optionA: 'Aluminium', optionB: 'Copper', optionC: 'Silver', optionD: 'Gold',
+          difficulty: 'Low',
           topicId,
         },
         {
           id: 'mcq_2',
           question: 'The resistivity of a conductor is expressed in which unit?',
-          options: ['Ohm', 'Ohm-meter', 'Ohm/meter', 'Siemens'],
+          optionA: 'Ohm', optionB: 'Ohm-meter', optionC: 'Ohm/meter', optionD: 'Siemens',
           difficulty: 'Medium',
           topicId,
         },
         {
           id: 'mcq_3',
           question: 'Which property of a conductor allows it to carry electric current?',
-          options: ['High resistivity', 'Free electrons', 'Covalent bonding', 'Low conductivity'],
-          difficulty: 'Easy',
+          optionA: 'High resistivity', optionB: 'Free electrons', optionC: 'Covalent bonding', optionD: 'Low conductivity',
+          difficulty: 'Low',
           topicId,
         },
       ];
@@ -74,12 +77,15 @@ export async function POST(
   try {
     const { topicId } = await params;
     const body = await request.json();
-    const { question, options, correctAnswer, explanation, difficulty } = body;
+    const { question, optionA, optionB, optionC, optionD, correctAnswer, explanation, difficulty } = body;
 
     const mcq = await prisma.mCQ.create({
       data: {
         question,
-        options,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
         correctAnswer,
         explanation,
         difficulty: difficulty || 'Medium',

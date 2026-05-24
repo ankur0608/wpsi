@@ -1,9 +1,21 @@
-
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface Plan {
+  id?: string;
+  name: string;
+  price: number;
+  discountPrice?: number | null;
+  description?: string | null;
+  features: string[];
+  isPopular: boolean;
+}
+
 export default function Pricing() {
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     // Basic Intersection Observer for Scroll Animations
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
@@ -18,6 +30,21 @@ export default function Pricing() {
       }, { threshold: 0.1 });
       animatedElements.forEach(el => observer.observe(el));
     }
+
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch('/api/plans');
+        const json = await res.json();
+        if (json.data) {
+          setPlans(json.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch plans', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPlans();
   }, []);
 
   return (
@@ -82,75 +109,83 @@ export default function Pricing() {
             <p className="text-slate-400 max-w-2xl mx-auto text-base">Everything you need. One price. Zero regrets. Lock in your preparation today.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            {/*  Part A  */}
-            <div className="glass-card rounded-[2.5rem] p-8 flex flex-col group transition-all duration-500 hover:border-brand-500/30">
-                <div className="mb-8">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] block mb-4">Foundation Pack</span>
-                    <h3 className="text-2xl font-heading font-black text-white mb-2">Part A — Aptitude</h3>
-                    <div className="flex items-baseline gap-3 mb-4">
-                        <span className="text-5xl font-black text-white tracking-tighter">₹99</span>
-                        <span className="text-lg text-slate-600 line-through font-bold">₹299</span>
-                    </div>
-                    <p className="text-sm font-medium text-brand-300/80 leading-relaxed italic">"Master the 80 marks everyone underestimates"</p>
-                </div>
-                
-                <ul className="space-y-4 mb-10 flex-1">
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-brand-500"></i> 4 Subjects (80 Marks)</li>
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-brand-500"></i> 600+ Practice MCQs</li>
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-brand-500"></i> Difficulty & Timed Modes</li>
-                </ul>
-
-                <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-brand-500 hover:border-brand-500 cta-glow">Select Pack</button>
+        {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-500"></div>
             </div>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                {plans.map((plan, index) => {
+                    const isPopular = plan.isPopular;
+                    const hoverColor = index % 2 !== 0 ? 'cyan' : 'brand';
+                    
+                    if (isPopular) {
+                        return (
+                            <div key={plan.id || index} className="relative rounded-[3rem] p-10 flex flex-col border-2 border-brand-500 shadow-[0_30px_60px_-15px_rgba(99,102,241,0.3)] transform lg:scale-110 lg:-translate-y-4 z-20" style={{"background":"linear-gradient(165deg, #141D2E, #080C18)"}}>
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-[10px] font-black px-10 py-2.5 rounded-b-[1.5rem] uppercase tracking-[0.3em] shadow-[0_10px_20px_rgba(99,102,241,0.4)]">Most Popular</div>
+                                
+                                <div className="mb-8 mt-4">
+                                    <span className="text-[10px] font-black text-brand-400 uppercase tracking-[0.25em] block mb-4">Full Preparation Suite</span>
+                                    <h3 className="text-3xl font-heading font-black text-white mb-2">{plan.name}</h3>
+                                    <div className="flex items-baseline gap-4 mb-2">
+                                        <span className="text-7xl font-black text-white tracking-tighter">₹{plan.price}</span>
+                                        {plan.discountPrice && (
+                                            <span className="text-xl text-slate-600 line-through font-bold">₹{plan.discountPrice}</span>
+                                        )}
+                                    </div>
+                                    {plan.description && (
+                                        <p className="text-sm font-medium text-slate-300 mb-4">{plan.description}</p>
+                                    )}
+                                    {plan.discountPrice && (
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent text-[11px] font-black uppercase tracking-widest">
+                                            <i className="fa-solid fa-sparkles"></i> Save ₹{plan.discountPrice - plan.price} Today
+                                        </div>
+                                    )}
+                                </div>
 
-            {/*  Complete Combo (Hero)  */}
-            <div className="relative rounded-[3rem] p-10 flex flex-col border-2 border-brand-500 shadow-[0_30px_60px_-15px_rgba(99,102,241,0.3)] transform lg:scale-110 lg:-translate-y-4 z-20" style={{"background":"linear-gradient(165deg, #141D2E, #080C18)"}}>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-[10px] font-black px-10 py-2.5 rounded-b-[1.5rem] uppercase tracking-[0.3em] shadow-[0_10px_20px_rgba(99,102,241,0.4)]">Most Popular</div>
-                
-                <div className="mb-8 mt-4">
-                    <span className="text-[10px] font-black text-brand-400 uppercase tracking-[0.25em] block mb-4">Full Preparation Suite</span>
-                    <h3 className="text-3xl font-heading font-black text-white mb-2">Complete WPSI Pack</h3>
-                    <div className="flex items-baseline gap-4 mb-2">
-                        <span className="text-7xl font-black text-white tracking-tighter">₹249</span>
-                        <span className="text-xl text-slate-600 line-through font-bold">₹597</span>
-                    </div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent text-[11px] font-black uppercase tracking-widest">
-                        <i className="fa-solid fa-sparkles"></i> Save ₹49 Today
-                    </div>
-                </div>
+                                <ul className="space-y-5 mb-12 flex-1">
+                                    {plan.features.map((feature, i) => (
+                                        <li key={i} className="flex items-center gap-4 text-slate-100 font-medium">
+                                            <i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> {feature}
+                                        </li>
+                                    ))}
+                                </ul>
 
-                <ul className="space-y-5 mb-12 flex-1">
-                    <li className="flex items-center gap-4 text-slate-100 font-medium"><i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> Full A + B (200 Marks)</li>
-                    <li className="flex items-center gap-4 text-slate-100 font-medium"><i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> 1500+ Subject-wise MCQs</li>
-                    <li className="flex items-center gap-4 text-slate-100 font-medium"><i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> Strong vs Weak Area Reports</li>
-                    <li className="flex items-center gap-4 text-slate-100 font-medium"><i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> AI Performance Analytics</li>
-                </ul>
+                                <button className="w-full py-5 rounded-[1.5rem] bg-brand-500 text-white font-black text-sm uppercase tracking-[0.25em] transition-all hover:bg-brand-600 hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)]">Enroll in Everything</button>
+                            </div>
+                        );
+                    }
 
-                <button className="w-full py-5 rounded-[1.5rem] bg-brand-500 text-white font-black text-sm uppercase tracking-[0.25em] transition-all hover:bg-brand-600 hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)]">Enroll in Everything</button>
+                    return (
+                        <div key={plan.id || index} className={`glass-card rounded-[2.5rem] p-8 flex flex-col group transition-all duration-500 hover:border-${hoverColor}-500/30`}>
+                            <div className="mb-8">
+                                <span className={`text-[10px] font-black text-${hoverColor}-500 uppercase tracking-[0.25em] block mb-4`}>Specialized Pack</span>
+                                <h3 className="text-2xl font-heading font-black text-white mb-2">{plan.name}</h3>
+                                <div className="flex items-baseline gap-3 mb-4">
+                                    <span className="text-5xl font-black text-white tracking-tighter">₹{plan.price}</span>
+                                    {plan.discountPrice && (
+                                        <span className="text-lg text-slate-600 line-through font-bold">₹{plan.discountPrice}</span>
+                                    )}
+                                </div>
+                                {plan.description && (
+                                    <p className={`text-sm font-medium text-${hoverColor}-300/80 leading-relaxed italic`}>"{plan.description}"</p>
+                                )}
+                            </div>
+                            
+                            <ul className="space-y-4 mb-10 flex-1">
+                                {plan.features.map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                                        <i className={`fa-solid fa-check-circle text-${hoverColor}-500`}></i> {feature}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <button className={`w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-${hoverColor}-500 hover:border-${hoverColor}-500 cta-glow`}>Select Pack</button>
+                        </div>
+                    );
+                })}
             </div>
-
-            {/*  Part B  */}
-            <div className="glass-card rounded-[2.5rem] p-8 flex flex-col group transition-all duration-500 hover:border-cyan-500/30">
-                <div className="mb-8">
-                    <span className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.25em] block mb-4">Technical Edge</span>
-                    <h3 className="text-2xl font-heading font-black text-white mb-2">Part B — Technical</h3>
-                    <div className="flex items-baseline gap-3 mb-4">
-                        <span className="text-5xl font-black text-white tracking-tighter">₹199</span>
-                        <span className="text-lg text-slate-600 line-through font-bold">₹499</span>
-                    </div>
-                    <p className="text-sm font-medium text-cyan-400/80 leading-relaxed italic">"120 marks. The real battleground."</p>
-                </div>
-                
-                <ul className="space-y-4 mb-10 flex-1">
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-cyan-500"></i> 11 Technical Subjects</li>
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-cyan-500"></i> 900+ Practice MCQs</li>
-                    <li className="flex items-center gap-3 text-sm text-slate-300"><i className="fa-solid fa-check-circle text-cyan-500"></i> Subject Mastery Tracking</li>
-                </ul>
-
-                <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-cyan-500 hover:border-cyan-500 cta-glow">Select Pack</button>
-            </div>
-        </div>
+        )}
     </section>
 
     {/*  Mock Simulation Section  */}

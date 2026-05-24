@@ -23,7 +23,7 @@ export default function RootLayout({
         />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body className="bg-dark-bg text-slate-50 min-h-screen selection:bg-brand-500 selection:text-white relative">
+      <body className="min-h-screen relative" style={{ background: "#0D1B2A", color: "#F2ECD9" }}>
         <DashboardLayout>
           {children}
         </DashboardLayout>

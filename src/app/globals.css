@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 html {
@@ -5,172 +6,228 @@ html {
 }
 
 @theme inline {
-  --color-dark-bg: #0F172A;
-  --color-dark-bg-alt: #0D1120;
-  --color-dark-surface: #111827;
-  --color-dark-card: #1E293B;
-  --color-dark-card-hover: #334155;
+  /* ─── Brand Palette ─────────────────────────────────── */
+  --color-primary-bg:       #0D1B2A;
+  --color-primary-accent:   #D4922A;
+  --color-primary-text:     #F2ECD9;
+  --color-surface:          #162436;
+  --color-secondary-text:   rgba(255, 255, 255, 0.5);
+  --color-accent-hover:     #B97A20;
 
-  --color-brand-300: #A5B4FC;
-  --color-brand-400: #818CF8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338CA;
-  
-  --color-accent: #10B981;
-  --color-warning: #F59E0B;
-  --color-secondary: #7C3AED;
-  --color-danger: #EF4444;
-  --color-cyan: #06B6D4;
-  --color-rose: #F43F5E;
+  /* ─── Legacy aliases kept for backward compat ─────── */
+  --color-dark-bg:          #0D1B2A;
+  --color-dark-bg-alt:      #091522;
+  --color-dark-surface:     #162436;
+  --color-dark-card:        #162436;
+  --color-dark-card-hover:  #1E3248;
 
-  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --color-brand-300:        #E8B86D;
+  --color-brand-400:        #D4922A;
+  --color-brand-500:        #C27E1F;
+  --color-brand-600:        #A96B13;
+  --color-brand-700:        #8F5A0E;
+
+  --color-accent:           #3DD68C;
+  --color-warning:          #D4922A;
+  --color-secondary:        #4A9EDB;
+  --color-danger:           #E55353;
+  --color-cyan:             #38BDF8;
+  --color-rose:             #F87171;
+
+  --font-sans:    "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-heading: "Poppins", "Inter", "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --font-mono:    "JetBrains Mono", Consolas, "Courier New", monospace;
+}
 
-  /* We might need some extra Tailwind values depending on HTML classes used */
+/* ─────────────────────────────────────────────────────────
+   BASE
+   ───────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
-    background-color: var(--color-dark-bg);
-    color: #F8FAFC;
+    background-color: var(--color-primary-bg);
+    color: var(--color-primary-text);
     font-family: var(--font-sans);
     overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+    color: var(--color-primary-text);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: var(--color-dark-bg); 
-}
+/* ─────────────────────────────────────────────────────────
+   CUSTOM SCROLLBAR
+   ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-primary-bg); }
 ::-webkit-scrollbar-thumb {
-    background: var(--color-dark-card-hover); 
+    background: rgba(212, 146, 42, 0.25);
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #475569; 
+    background: rgba(212, 146, 42, 0.5);
 }
 
-/* Glassmorphism */
+/* ─────────────────────────────────────────────────────────
+   GLASSMORPHISM
+   ───────────────────────────────────────────────────────── */
 .glass {
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.88) 100%);
+    background: linear-gradient(180deg, rgba(13,27,42,0.96) 0%, rgba(13,27,42,0.90) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 20px 60px rgba(2, 6, 23, 0.28);
+    border: 1px solid rgba(212, 146, 42, 0.12);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 .glass-card {
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.84) 0%, rgba(15, 23, 42, 0.94) 100%);
+    background: linear-gradient(145deg, rgba(22,36,54,0.92) 0%, rgba(13,27,42,0.96) 100%);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 18px 50px rgba(2, 6, 23, 0.25);
+    border: 1px solid rgba(212, 146, 42, 0.10);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* Text Gradients */
+/* ─────────────────────────────────────────────────────────
+   TEXT GRADIENTS
+   ───────────────────────────────────────────────────────── */
 .text-gradient {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(to right, #4F46E5, #7C3AED);
+    background-image: linear-gradient(to right, #D4922A, #F0B85A);
 }
 .text-gradient-green {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(to right, #10B981, #34D399);
+    background-image: linear-gradient(to right, #3DD68C, #6EE7B7);
 }
 .text-gradient-gold {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(to right, #F59E0B, #FBBF24);
+    background-image: linear-gradient(to right, #D4922A, #F0B85A);
+}
+.text-gradient-blue {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, #4A9EDB, #7BC8F8);
 }
 
-/* Animations & Transitions */
+/* ─────────────────────────────────────────────────────────
+   TRANSITIONS
+   ───────────────────────────────────────────────────────── */
 .transition-all-300 {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─────────────────────────────────────────────────────────
+   CARD HOVER LIFT
+   ───────────────────────────────────────────────────────── */
 .hover-card-up {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hover-card-up:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);
-    border-color: rgba(79, 70, 229, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(212, 146, 42, 0.18);
+    border-color: rgba(212, 146, 42, 0.35) !important;
 }
 
+/* ─────────────────────────────────────────────────────────
+   PRIMARY BUTTON
+   ───────────────────────────────────────────────────────── */
 .btn-primary {
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, #D4922A 0%, #F0B85A 100%);
+    color: #0D1B2A;
+    font-weight: 700;
     transition: all 0.3s ease;
 }
 .btn-primary:hover {
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 0 24px rgba(212, 146, 42, 0.5);
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #B97A20 0%, #D4922A 100%);
+}
+
+/* Secondary / outline button */
+.btn-secondary {
+    background: transparent;
+    border: 2px solid #D4922A;
+    color: #D4922A;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+    background: rgba(212, 146, 42, 0.12);
+    box-shadow: 0 0 16px rgba(212, 146, 42, 0.25);
     transform: translateY(-2px);
 }
 
-.bg-glow-blue {
+/* ─────────────────────────────────────────────────────────
+   GLOWS
+   ───────────────────────────────────────────────────────── */
+.bg-glow-gold {
     position: absolute;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, rgba(15,23,42,0) 70%);
+    background: radial-gradient(circle, rgba(212,146,42,0.12) 0%, rgba(13,27,42,0) 70%);
     border-radius: 50%;
     z-index: -1;
     pointer-events: none;
 }
-
-.bg-glow-purple {
+.bg-glow-blue {
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(15,23,42,0) 70%);
+    background: radial-gradient(circle, rgba(74,158,219,0.10) 0%, rgba(13,27,42,0) 70%);
     border-radius: 50%;
     z-index: -1;
     pointer-events: none;
 }
 
-/* Animations */
+/* ─────────────────────────────────────────────────────────
+   SCROLL ANIMATIONS
+   ───────────────────────────────────────────────────────── */
 @keyframes slideUpFade {
-    0% { opacity: 0; transform: translateY(30px); }
+    0%   { opacity: 0; transform: translateY(30px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
 .animate-on-scroll {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
 }
 .animate-on-scroll.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Pulse effects for progress */
+/* ─────────────────────────────────────────────────────────
+   PULSE / RING
+   ───────────────────────────────────────────────────────── */
 @keyframes pulse-ring {
-    0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0%   { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(212,146,42,0.7); }
+    70%  { transform: scale(1);   box-shadow: 0 0 0 10px rgba(212,146,42,0);  }
+    100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(212,146,42,0);    }
 }
-.pulse-ring {
-    animation: pulse-ring 2s infinite;
-}
+.pulse-ring { animation: pulse-ring 2s infinite; }
 
-/* Checkbox customization */
+/* ─────────────────────────────────────────────────────────
+   FORM ELEMENTS
+   ───────────────────────────────────────────────────────── */
 .custom-radio {
-    accent-color: #4F46E5;
+    accent-color: #D4922A;
     width: 1.25rem;
     height: 1.25rem;
 }
 
-/* Circular Progress */
+/* ─────────────────────────────────────────────────────────
+   CIRCULAR SVG PROGRESS
+   ───────────────────────────────────────────────────────── */
 .circular-chart {
     display: block;
     margin: 0 auto;
@@ -179,12 +236,147 @@ h1, h2, h3, h4, h5, h6 {
 }
 .circle-bg {
     fill: none;
-    stroke: #1E293B;
+    stroke: #1E3248;
     stroke-width: 3.8;
 }
 .circle {
     fill: none;
     stroke-width: 2.8;
     stroke-linecap: round;
-    transition: stroke-dasharray 1s ease-out;
+    transition: stroke-dasharray 1.2s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SIDEBAR ACTIVE ITEM
+   ───────────────────────────────────────────────────────── */
+.nav-active {
+    background: linear-gradient(90deg, rgba(212,146,42,0.18) 0%, rgba(212,146,42,0.06) 100%);
+    border-color: rgba(212, 146, 42, 0.4) !important;
+    color: #F2ECD9 !important;
+    box-shadow: 0 4px 20px rgba(212, 146, 42, 0.12);
+}
+.nav-active .nav-icon {
+    background: rgba(212, 146, 42, 0.18) !important;
+    color: #D4922A !important;
+}
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(212, 146, 42, 0.2) !important;
+    color: #F2ECD9 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PROGRESS BAR
+   ───────────────────────────────────────────────────────── */
+.progress-bar-track {
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #D4922A, #F0B85A);
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─────────────────────────────────────────────────────────
+   STAT CARD ICON WRAPPER
+   ───────────────────────────────────────────────────────── */
+.stat-icon-wrap {
+    background: rgba(212, 146, 42, 0.12);
+    border: 1px solid rgba(212, 146, 42, 0.22);
+    color: #D4922A;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BADGE / TAG
+   ───────────────────────────────────────────────────────── */
+.badge-accent {
+    background: rgba(212, 146, 42, 0.15);
+    border: 1px solid rgba(212, 146, 42, 0.30);
+    color: #D4922A;
+}
+.badge-blue {
+    background: rgba(74, 158, 219, 0.12);
+    border: 1px solid rgba(74, 158, 219, 0.25);
+    color: #4A9EDB;
+}
+.badge-green {
+    background: rgba(61, 214, 140, 0.12);
+    border: 1px solid rgba(61, 214, 140, 0.25);
+    color: #3DD68C;
+}
+.badge-danger {
+    background: rgba(229, 83, 83, 0.12);
+    border: 1px solid rgba(229, 83, 83, 0.25);
+    color: #E55353;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SHIMMER LOADING
+   ───────────────────────────────────────────────────────── */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.04) 25%,
+        rgba(212,146,42,0.08)  50%,
+        rgba(255,255,255,0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+    border-radius: 8px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   HERO SECTION GRADIENT
+   ───────────────────────────────────────────────────────── */
+.hero-gradient {
+    background: linear-gradient(135deg,
+        rgba(22,36,54,0.98) 0%,
+        rgba(13,27,42,0.98) 60%,
+        rgba(17,32,48,0.98) 100%
+    );
+}
+
+/* ─────────────────────────────────────────────────────────
+   TOPBAR / NAVBAR
+   ───────────────────────────────────────────────────────── */
+#main-topbar {
+    background: rgba(13, 27, 42, 0.94);
+    border-bottom-color: rgba(212, 146, 42, 0.12);
+    backdrop-filter: blur(20px);
+}
+
+/* ─────────────────────────────────────────────────────────
+   SIDEBAR
+   ───────────────────────────────────────────────────────── */
+#sidebar {
+    background: rgba(9, 21, 34, 0.98);
+    border-right-color: rgba(212, 146, 42, 0.12);
+}
+
+/* ─────────────────────────────────────────────────────────
+   EXAM / SUBJECT CARD
+   ───────────────────────────────────────────────────────── */
+.exam-card {
+    background: var(--color-surface);
+    border: 1px solid rgba(212, 146, 42, 0.10);
+    transition: all 0.3s ease;
+}
+.exam-card:hover {
+    border-color: rgba(212, 146, 42, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(212, 146, 42, 0.14);
+}
+
+/* ─────────────────────────────────────────────────────────
+   SELECTION COLOR
+   ───────────────────────────────────────────────────────── */
+::selection {
+    background: rgba(212, 146, 42, 0.35);
+    color: #F2ECD9;
 }
