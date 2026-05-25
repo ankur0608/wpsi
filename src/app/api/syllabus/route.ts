@@ -20,6 +20,7 @@ export async function GET() {
         id: subject.id,
         name: subject.name,
         icon: subject.icon,
+        part: subject.part,
         topics: subject.topics
       }))
     }));

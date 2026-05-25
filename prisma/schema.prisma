@@ -25,14 +25,15 @@ model User {
 }
 
 model Plan {
-    id          String   @id @default(cuid())
-    name        String   @unique
-    price       Int
-    description String?
-    features    String[]
-    isPopular   Boolean  @default(false)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id            String   @id @default(cuid())
+    name          String   @unique
+    price         Int
+    discountPrice Int?
+    description   String?
+    features      String[]
+    isPopular     Boolean  @default(false)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 }
 
 // ─── Exam Hierarchy ───────────────────────────────────────────────────────────
@@ -50,6 +51,7 @@ model Subject {
     id        String    @id @default(cuid())
     name      String
     icon      String?
+    part      String    @default("A")
     examId    String
     exam      Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
     topics    Topic[]

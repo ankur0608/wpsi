@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
             select: {
               name: true,
               subject: {
-                select: { name: true }
+                select: { name: true, part: true }
               }
             }
           }
@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
     const mcqs = rawMcqs.map((m) => ({
       id: m.id,
       subject: m.topic?.subject?.name || 'Unknown',
+      part: m.topic?.subject?.part || 'A',
       topic: m.topic?.name || 'Unknown',
       difficulty: m.difficulty,
       question: m.question,

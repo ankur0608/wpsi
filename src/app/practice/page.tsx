@@ -13,6 +13,7 @@ export type AnswerKey    = 'A' | 'B' | 'C' | 'D' | 'E';
 export interface PracticeMcq {
   id: string;
   subject: string;
+  part: string;
   topic: string;
   difficulty: Difficulty;
   question: string;
@@ -25,6 +26,7 @@ export interface PracticeMcq {
 interface ApiMcqRow {
   id: string;
   subject: string;
+  part?: string;
   topic: string;
   difficulty: string;
   question: string;
@@ -70,21 +72,21 @@ const MODE_META: Record<PracticeMode, {
   quick: {
     label: 'Quick Practice',
     accent: 'from-brand-500 to-brand-400',
-    description: 'Fast revision round with a small mixed set of MCQs.',
+    description: 'Fast revision round with 20 random MCQs.',
     icon: 'fa-bolt',
     timerMinutes: null,
-    questionCount: 8,
+    questionCount: 20,
   },
   full: {
     label: 'Full Practice',
     accent: 'from-accent to-emerald-400',
-    description: 'Longer concept practice with detailed feedback after every answer.',
+    description: 'All MCQs in sequence for the selected topic.',
     icon: 'fa-layer-group',
     timerMinutes: null,
-    questionCount: 12,
+    questionCount: 0,
   },
   mock: {
-    label: 'Mock Test',
+    label: 'Timed Test',
     accent: 'from-danger to-red-500',
     description: 'Timed exam flow with negative marking and full review after submission.',
     icon: 'fa-stopwatch',
@@ -142,6 +144,7 @@ function toMcq(row: ApiMcqRow): PracticeMcq {
   return {
     id: row.id,
     subject: row.subject,
+    part: row.part || 'A',
     topic: row.topic,
     difficulty: (row.difficulty as Difficulty) || 'Medium',
     question: row.question,
@@ -177,7 +180,9 @@ function buildSessionQuestions(
     matches = [...mcqBank];
   }
 
-  const count = Math.min(MODE_META[mode].questionCount, matches.length);
+  const count = mode === 'full'
+    ? matches.length
+    : Math.min(MODE_META[mode].questionCount, matches.length);
   return shuffleQuestions(matches).slice(0, count);
 }
 
@@ -236,11 +241,24 @@ export default function PracticePage() {
   const [timeLeft,      setTimeLeft]      = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success'; onConfirm?: () => void; onCancel?: () => void } | null>(null);
+  const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
 
   // ── Derived lists from live bank ───────────────────────────────────────────
-  const availableSubjects: string[] = React.useMemo(() => {
-    const set = new Set(mcqBank.map((q) => q.subject).filter(Boolean));
-    return Array.from(set).sort();
+  const availableSubjectsWithParts = React.useMemo(() => {
+    const map = new Map<string, string>();
+    mcqBank.forEach((q) => {
+      if (q.subject && !map.has(q.subject)) {
+        map.set(q.subject, q.part || 'A');
+      }
+    });
+    const partA: string[] = [];
+    const partB: string[] = [];
+    map.forEach((part, subject) => {
+      if (part === 'A') partA.push(subject);
+      else if (part === 'B') partB.push(subject);
+      else partA.push(subject);
+    });
+    return { partA: partA.sort(), partB: partB.sort() };
   }, [mcqBank]);
 
   const topicsForSubject: string[] = React.useMemo(() => {
@@ -288,6 +306,7 @@ export default function PracticePage() {
     const subjectFromUrl = searchParams.get('subject');
     const topicFromUrl   = searchParams.get('topic');
     const diffsFromUrl   = formatDifficulties(searchParams.get('diff'));
+    const autoFromUrl    = searchParams.get('auto') === 'true';
     const nextSubject = subjectFromUrl && subjectFromUrl !== 'all' ? subjectFromUrl : 'All Subjects';
     const nextTopic   = topicFromUrl   && topicFromUrl   !== 'all' ? topicFromUrl   : '';
 
@@ -295,7 +314,15 @@ export default function PracticePage() {
     setSelectedSubject((c) => (c === nextSubject ? c : nextSubject));
     setSelectedTopic((c) => (c === nextTopic ? c : nextTopic));
     setSelectedDifficulties((c) => (arraysEqual(c, diffsFromUrl) ? c : diffsFromUrl));
+    setAutoStartRequested((c) => c || autoFromUrl);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!bankLoading && !bankError && autoStartRequested && !session) {
+      startSession(true);
+      setAutoStartRequested(false);
+    }
+  }, [bankLoading, bankError, autoStartRequested, session]);
 
   // ── Mock timer ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -333,7 +360,7 @@ export default function PracticePage() {
   }, [session?.mode, session?.submitted, view]);
 
   // ─── Actions ───────────────────────────────────────────────────────────────
-  const startSession = () => {
+  const startSession = (skipInstructions = false) => {
     const questions = buildSessionQuestions(
       mcqBank, selectedMode, selectedSubject, selectedTopic, selectedDifficulties,
     );
@@ -355,7 +382,7 @@ export default function PracticePage() {
     setSession(nextSession);
     setTimeLeft((MODE_META[selectedMode].timerMinutes ?? 0) * 60);
     setStatusMessage('');
-    setView('instructions');
+    setView(skipInstructions ? 'exam' : 'instructions');
   };
 
   const beginExam = () => { if (!session) return; setStatusMessage(''); setView('exam'); };
@@ -672,7 +699,16 @@ export default function PracticePage() {
                   className="w-full rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60"
                 >
                   <option>All Subjects</option>
-                  {availableSubjects.map((s) => <option key={s}>{s}</option>)}
+                  {availableSubjectsWithParts.partA.length > 0 && (
+                    <optgroup label="Part A">
+                      {availableSubjectsWithParts.partA.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </optgroup>
+                  )}
+                  {availableSubjectsWithParts.partB.length > 0 && (
+                    <optgroup label="Part B">
+                      {availableSubjectsWithParts.partB.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </optgroup>
+                  )}
                 </select>
               </div>
 
@@ -737,7 +773,7 @@ export default function PracticePage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={startSession}
+                onClick={() => startSession()}
                 className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition-transform hover:scale-[1.02]"
               >
                 Continue to Instructions
@@ -891,7 +927,7 @@ export default function PracticePage() {
                 <span className="text-sm font-bold text-white">
                   Question {session.currentIndex + 1} / {session.questions.length}
                 </span>
-                {[currentQuestion.subject, currentQuestion.topic, currentQuestion.difficulty].map((tag) => (
+                {[currentQuestion.part ? `Part ${currentQuestion.part}` : '', currentQuestion.subject, currentQuestion.topic, currentQuestion.difficulty].filter(Boolean).map((tag) => (
                   <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
                     {tag}
                   </span>

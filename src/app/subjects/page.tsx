@@ -25,6 +25,19 @@ export default function Subjects() {
 
   const selectedExam = data.find(e => e.id === selectedExamId);
 
+  const groupedSubjects = React.useMemo(() => {
+    const groups = new Map<string, any[]>();
+    (selectedExam?.subjects ?? []).forEach((subject: any) => {
+      const groupKey = subject.part === 'A'
+        ? 'Part A: General & Aptitude'
+        : subject.part === 'B'
+          ? 'Part B: Technical Subjects'
+          : 'Subjects';
+      groups.set(groupKey, [...(groups.get(groupKey) ?? []), subject]);
+    });
+    return Array.from(groups.entries());
+  }, [selectedExam]);
+
   return (
     <>
       <main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-dark-bg">
@@ -110,38 +123,79 @@ export default function Subjects() {
                     <div><h3 className="text-lg font-heading font-bold text-white">{selectedExam?.name}</h3><p className="text-xs text-slate-500">{selectedExam?.subjects?.length || 0} Subjects</p></div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {selectedExam?.subjects?.map((subject: any, idx: number) => {
-                     const colors = [
-                       { bg: 'rgba(129,140,248,0.15)', text: '#818cf8', border: 'rgba(129,140,248,0.3)' },
-                       { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
-                       { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
-                       { bg: 'rgba(139,92,246,0.15)', text: '#8b5cf6', border: 'rgba(139,92,246,0.3)' },
-                       { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
-                     ];
-                     const c = colors[idx % colors.length];
-                     
-                     return (
-                      <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
-                         style={{background:"linear-gradient(145deg,rgba(20,29,46,0.9),rgba(11,15,26,0.95))", border:`1px solid ${c.bg}`}}>
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border: `1px solid ${c.border}`, color: c.text}}>
-                          <i className={`fa-solid ${subject.icon || 'fa-book'}`}></i>
-                        </div>
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-bold text-white text-sm leading-tight group-hover:transition-colors transition-colors">{subject.name}</h4>
-                        </div>
-                        <p className="text-[11px] text-slate-500 mb-3">{subject.topics?.length || 0} Chapters</p>
-                        <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{"background":"rgba(255,255,255,0.05)"}}>
-                          <div className="h-1.5 rounded-full transition-all duration-1000" style={{width: '0%'}}></div>
-                        </div>
-                        <div className="flex justify-between items-center text-[11px]">
-                          <span className="text-slate-500">Not Started</span>
-                          <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
-                        </div>
-                      </Link>
-                     );
-                  })}
-                </div>
+                {groupedSubjects.length > 1 ? (
+                  groupedSubjects.map(([groupName, subjects], groupIndex) => (
+                    <div key={groupName} className={groupIndex > 0 ? 'mt-10' : ''}>
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="w-1.5 h-8 rounded-full bg-brand-400" />
+                        <h3 className="text-xl font-heading font-bold text-white">{groupName}</h3>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {subjects.map((subject: any, idx: number) => {
+                          const colors = [
+                            { bg: 'rgba(129,140,248,0.15)', text: '#818cf8', border: 'rgba(129,140,248,0.3)' },
+                            { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
+                            { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
+                            { bg: 'rgba(139,92,246,0.15)', text: '#8b5cf6', border: 'rgba(139,92,246,0.3)' },
+                            { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
+                          ];
+                          const c = colors[idx % colors.length];
+                          return (
+                            <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
+                              style={{background:'linear-gradient(145deg,rgba(20,29,46,0.9),rgba(11,15,26,0.95))', border:`1px solid ${c.bg}`}}>
+                              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border: `1px solid ${c.border}`, color: c.text}}>
+                                <i className={`fa-solid ${subject.icon || 'fa-book'}`}></i>
+                              </div>
+                              <div className="flex items-center justify-between mb-1">
+                                <h4 className="font-bold text-white text-sm leading-tight group-hover:transition-colors transition-colors">{subject.name}</h4>
+                              </div>
+                              <p className="text-[11px] text-slate-500 mb-3">{subject.topics?.length || 0} Chapters</p>
+                              <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:'rgba(255,255,255,0.05)'}}>
+                                <div className="h-1.5 rounded-full transition-all duration-1000" style={{width: '0%'}}></div>
+                              </div>
+                              <div className="flex justify-between items-center text-[11px]">
+                                <span className="text-slate-500">Not Started</span>
+                                <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {selectedExam?.subjects?.map((subject: any, idx: number) => {
+                      const colors = [
+                        { bg: 'rgba(129,140,248,0.15)', text: '#818cf8', border: 'rgba(129,140,248,0.3)' },
+                        { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
+                        { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
+                        { bg: 'rgba(139,92,246,0.15)', text: '#8b5cf6', border: 'rgba(139,92,246,0.3)' },
+                        { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
+                      ];
+                      const c = colors[idx % colors.length];
+                      return (
+                        <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
+                          style={{background:'linear-gradient(145deg,rgba(20,29,46,0.9),rgba(11,15,26,0.95))', border:`1px solid ${c.bg}`}}>
+                          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border: `1px solid ${c.border}`, color: c.text}}>
+                            <i className={`fa-solid ${subject.icon || 'fa-book'}`}></i>
+                          </div>
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-bold text-white text-sm leading-tight group-hover:transition-colors transition-colors">{subject.name}</h4>
+                          </div>
+                          <p className="text-[11px] text-slate-500 mb-3">{subject.topics?.length || 0} Chapters</p>
+                          <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:'rgba(255,255,255,0.05)'}}>
+                            <div className="h-1.5 rounded-full transition-all duration-1000" style={{width: '0%'}}></div>
+                          </div>
+                          <div className="flex justify-between items-center text-[11px]">
+                            <span className="text-slate-500">Not Started</span>
+                            <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>
