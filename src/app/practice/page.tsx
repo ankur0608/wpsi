@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-export type Difficulty   = 'Low' | 'Medium' | 'High';
+export type Difficulty   = 'Easy' | 'Medium' | 'Hard';
 export type PracticeMode = 'quick' | 'full' | 'mock';
 export type AnswerKey    = 'A' | 'B' | 'C' | 'D' | 'E';
 
@@ -59,7 +59,7 @@ interface SessionState {
   violations: number;
 }
 
-const DEFAULT_DIFFICULTIES: Difficulty[] = ['Low', 'Medium', 'High'];
+const DEFAULT_DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
 
 const MODE_META: Record<PracticeMode, {
   label: string;
@@ -106,7 +106,8 @@ function arraysEqual(left: string[], right: string[]) {
 }
 
 function toggleId(ids: string[], id: string) {
-  return ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id];
+  const safeIds = Array.isArray(ids) ? ids : [];
+  return safeIds.includes(id) ? safeIds.filter((item) => item !== id) : [...safeIds, id];
 }
 
 function shuffleQuestions(items: PracticeMcq[]) {
@@ -207,7 +208,10 @@ function calculateResult(session: SessionState | null) {
   });
 
   const attempted     = correct + wrong;
-  const negativeMarks = (wrong + unanswered) * 0.25;
+  // During live exam, don't penalize unanswered questions so the score starts at 0.
+  // Only apply the penalty for unanswered questions when the exam is submitted.
+  const unansweredPenalty = session.submitted ? unanswered * 0.25 : 0;
+  const negativeMarks = (wrong * 0.25) + unansweredPenalty;
   const finalScore    = correct - negativeMarks;
   const accuracy      = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
   const topicStats    = Object.values(topicAcc).map((e) => ({
@@ -227,7 +231,9 @@ export default function PracticePage() {
   const [bankLoading, setBankLoading] = useState(true);
   const [bankError,   setBankError]   = useState<string | null>(null);
   const [totalInDb,   setTotalInDb]   = useState(0);
+  const [globalBookmarks, setGlobalBookmarks] = useState<string[]>([]);
   const fetchedRef = useRef(false);
+  const bookmarksFetchedRef = useRef(false);
 
   // ── Setup state ────────────────────────────────────────────────────────────
   const [selectedMode,        setSelectedMode]        = useState<PracticeMode>('quick');
@@ -242,6 +248,7 @@ export default function PracticePage() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success'; onConfirm?: () => void; onCancel?: () => void } | null>(null);
   const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
+  const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
 
   // ── Derived lists from live bank ───────────────────────────────────────────
   const availableSubjectsWithParts = React.useMemo(() => {
@@ -298,7 +305,24 @@ export default function PracticePage() {
     }
   }, []);
 
-  useEffect(() => { fetchBank(); }, [fetchBank]);
+  const fetchBookmarks = useCallback(async () => {
+    if (bookmarksFetchedRef.current) return;
+    bookmarksFetchedRef.current = true;
+    try {
+      const res = await fetch('/api/bookmarks');
+      if (res.ok) {
+        const json = await res.json();
+        setGlobalBookmarks(json.data.map((b: any) => b.mcqId));
+      }
+    } catch (err) {
+      console.error('Failed to fetch bookmarks', err);
+    }
+  }, []);
+
+  useEffect(() => { 
+    fetchBank(); 
+    fetchBookmarks();
+  }, [fetchBank, fetchBookmarks]);
 
   // ── Sync URL params → setup state ─────────────────────────────────────────
   useEffect(() => {
@@ -374,7 +398,7 @@ export default function PracticePage() {
       responses: {},
       visited: [questions[0]?.id].filter(Boolean),
       markedForReview: [],
-      bookmarked: [],
+      bookmarked: [...globalBookmarks],
       submitted: false,
       reviewFilter: 'all',
       violations: 0,
@@ -479,9 +503,49 @@ export default function PracticePage() {
     updateSession((cur) => ({ ...cur, markedForReview: toggleId(cur.markedForReview, currentQuestion.id) }));
   };
 
-  const toggleBookmark = () => {
-    if (!session || !currentQuestion) return;
-    updateSession((cur) => ({ ...cur, bookmarked: toggleId(cur.bookmarked, currentQuestion.id) }));
+  const toggleBookmark = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!session || !currentQuestion) {
+      console.log("Toggle bookmark failed: no session or currentQuestion");
+      return;
+    }
+    const qId = currentQuestion.id;
+    console.log("Toggling bookmark for MCQ:", qId);
+    
+    // Optimistic update
+    console.log("1. Performing optimistic update for bookmark UI");
+    updateSession((cur) => ({ ...cur, bookmarked: toggleId(cur.bookmarked, qId) }));
+    setGlobalBookmarks((cur) => toggleId(cur, qId));
+
+    try {
+      console.log("2. Sending POST request to /api/bookmarks...");
+      const res = await fetch('/api/bookmarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mcqId: qId }),
+      });
+      console.log("3. API Response status:", res.status, res.ok);
+      
+      if (!res.ok) {
+        // Revert on failure
+        console.error("4. API request failed, reverting UI state");
+        updateSession((cur) => ({ ...cur, bookmarked: toggleId(cur.bookmarked, qId) }));
+        setGlobalBookmarks((cur) => toggleId(cur, qId));
+        console.error('Failed to toggle bookmark with response:', res.statusText);
+      } else {
+        const data = await res.json();
+        console.log("4. Bookmark successfully saved to DB. API data:", data);
+      }
+    } catch (err) {
+      // Revert on failure
+      console.error("4. Network error occurred, reverting UI state");
+      updateSession((cur) => ({ ...cur, bookmarked: toggleId(cur.bookmarked, qId) }));
+      setGlobalBookmarks((cur) => toggleId(cur, qId));
+      console.error('Error toggling bookmark:', err);
+    }
   };
 
   const setReviewFilter = (filter: ReviewFilter) => {
@@ -578,12 +642,11 @@ export default function PracticePage() {
     );
   }
 
-  // ─── Main render ───────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 pb-10">
 
       {/* Hero banner */}
-      <section
+      {/* <section
         className="rounded-[2rem] border p-6 md:p-8 relative overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, rgba(99,102,241,0.16), rgba(20,29,46,0.96))',
@@ -623,7 +686,7 @@ export default function PracticePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Status message */}
       {statusMessage && (
@@ -635,7 +698,6 @@ export default function PracticePage() {
         </div>
       )}
 
-      {/* ─── SETUP ─────────────────────────────────────────────────────────── */}
       {view === 'setup' && (
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
@@ -835,7 +897,6 @@ export default function PracticePage() {
         </div>
       )}
 
-      {/* ─── INSTRUCTIONS ──────────────────────────────────────────────────── */}
       {view === 'instructions' && session && (
         <div className="mx-auto max-w-4xl space-y-6">
           <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
@@ -927,8 +988,8 @@ export default function PracticePage() {
                 <span className="text-sm font-bold text-white">
                   Question {session.currentIndex + 1} / {session.questions.length}
                 </span>
-                {[currentQuestion.part ? `Part ${currentQuestion.part}` : '', currentQuestion.subject, currentQuestion.topic, currentQuestion.difficulty].filter(Boolean).map((tag) => (
-                  <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
+                {[currentQuestion.part ? `Part ${currentQuestion.part}` : '', currentQuestion.subject, currentQuestion.topic, currentQuestion.difficulty].filter(Boolean).map((tag, idx) => (
+                  <span key={`${tag}-${idx}`} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
                     {tag}
                   </span>
                 ))}
@@ -947,7 +1008,7 @@ export default function PracticePage() {
                   )}
                   <button
                     type="button"
-                    onClick={toggleBookmark}
+                    onClick={(e) => toggleBookmark(e)}
                     className={`rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
                       session.bookmarked.includes(currentQuestion.id)
                         ? 'border-warning/30 bg-warning/10 text-warning'
@@ -1029,38 +1090,111 @@ export default function PracticePage() {
                 )}
 
                 {/* Controls */}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <button type="button" onClick={() => navigateQuestion(-1)} disabled={session.currentIndex === 0}
-                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-300 disabled:opacity-40">
-                    Prev
-                  </button>
-                  <button type="button" onClick={toggleReviewMark}
-                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-300">
-                    Mark for Review
-                  </button>
-                  <button type="button" onClick={clearResponse}
-                    className="rounded-xl border border-danger/20 bg-danger/10 px-4 py-2.5 text-sm font-bold text-danger">
-                    Clear
-                  </button>
-                  <div className="flex-1" />
-                  {session.currentIndex === session.questions.length - 1 ? (
-                    <button type="button" onClick={confirmSubmit}
-                      className="rounded-xl bg-gradient-to-r from-danger to-red-500 px-5 py-2.5 text-sm font-black uppercase tracking-[0.16em] text-white">
-                      Submit
+                <div className="mt-6 flex flex-wrap gap-3 pb-24 md:pb-0">
+                  <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-2 border-t border-white/10 bg-[#11141d]/95 p-3 backdrop-blur-md md:relative md:border-0 md:bg-transparent md:p-0 md:justify-start md:gap-3">
+                    <button type="button" onClick={() => navigateQuestion(-1)} disabled={session.currentIndex === 0}
+                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-white/5 bg-white/[0.02] p-2 text-[10px] font-bold text-slate-400 transition-colors hover:text-white disabled:opacity-40 md:min-w-0 md:flex-row md:border-white/10 md:bg-white/5 md:px-4 md:py-2.5 md:text-sm">
+                      <i className="fa-solid fa-arrow-left text-sm md:hidden"></i>
+                      <span className="md:hidden">Prev</span>
+                      <span className="hidden md:inline">Prev</span>
                     </button>
-                  ) : (
-                    <button type="button" onClick={() => navigateQuestion(1)}
-                      className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-black uppercase tracking-[0.16em] text-white">
-                      Next
+                    
+                    <button type="button" onClick={toggleReviewMark}
+                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-white/5 bg-white/[0.02] p-2 text-[10px] font-bold text-slate-400 transition-colors hover:text-white md:min-w-0 md:flex-row md:border-white/10 md:bg-white/5 md:px-4 md:py-2.5 md:text-sm">
+                      <i className="fa-solid fa-flag text-sm md:hidden"></i>
+                      <span className="md:hidden">Review</span>
+                      <span className="hidden md:inline">Mark for Review</span>
                     </button>
-                  )}
+                    
+                    <button type="button" onClick={clearResponse}
+                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-danger/10 bg-danger/5 p-2 text-[10px] font-bold text-danger transition-colors hover:bg-danger/10 md:min-w-0 md:flex-row md:border-danger/20 md:bg-danger/10 md:px-4 md:py-2.5 md:text-sm">
+                      <i className="fa-solid fa-xmark text-sm md:hidden"></i>
+                      <span className="md:hidden">Clear</span>
+                      <span className="hidden md:inline">Clear</span>
+                    </button>
+
+                    {/* Mobile Only Save Button */}
+                    <button type="button" onClick={(e) => toggleBookmark(e)}
+                      className={`flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border p-2 text-[10px] font-bold transition-colors md:hidden ${
+                        session.bookmarked.includes(currentQuestion.id)
+                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                          : 'border-white/5 bg-white/[0.02] text-slate-400'
+                      }`}>
+                      <i className="fa-solid fa-floppy-disk text-sm" />
+                      <span>Save</span>
+                    </button>
+
+                    <div className="hidden md:block flex-1" />
+
+                    {session.currentIndex === session.questions.length - 1 ? (
+                      <button type="button" onClick={confirmSubmit}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-danger to-red-500 py-3 text-sm font-black uppercase tracking-[0.16em] text-white md:flex-none md:px-5 md:py-2.5">
+                        Submit
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => navigateQuestion(1)}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 py-3 text-sm font-black uppercase tracking-[0.16em] text-white md:flex-none md:px-5 md:py-2.5">
+                        <span className="md:hidden">Next <i className="fa-solid fa-arrow-right ml-1"></i></span>
+                        <span className="hidden md:inline">Next</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Floating Action Button for Question Palette (Mobile Only) */}
+                  <div className="fixed bottom-[5.5rem] right-4 z-40 md:hidden">
+                    <button 
+                      type="button" 
+                      onClick={() => setIsMobilePaletteOpen(true)}
+                      className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-[0_8px_30px_rgba(99,102,241,0.4)] transition-transform hover:scale-105 active:scale-95">
+                      <i className="fa-solid fa-table-cells text-xl"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Mobile Palette Modal */}
+            {isMobilePaletteOpen && (
+              <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm md:hidden">
+                <div className="w-full max-h-[80vh] overflow-y-auto rounded-t-[2rem] border-t border-white/10 bg-[#11141d] p-6 shadow-2xl">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Question Palette</div>
+                    <button
+                      type="button"
+                      onClick={() => setIsMobilePaletteOpen(false)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"
+                    >
+                      <i className="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-5 gap-3">
+                    {session.questions.map((q, idx) => {
+                      const ps     = renderPaletteState(q);
+                      const active = idx === session.currentIndex;
+                      return (
+                        <button
+                          key={q.id}
+                          type="button"
+                          onClick={() => {
+                            jumpToQuestion(idx);
+                            setIsMobilePaletteOpen(false);
+                          }}
+                          className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
+                          style={{ ...paletteStyleMap[ps], boxShadow: active ? '0 0 0 2px rgba(99,102,241,0.5)' : 'none' }}
+                        >
+                          {idx + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Sidebar: palette + live score */}
-          <aside className="space-y-6">
+          <aside className="hidden xl:block space-y-6">
             <div className="glass-card rounded-[1.75rem] border border-white/5 p-5">
               <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Question Palette</div>
               <div className="mt-4 grid grid-cols-5 gap-2">

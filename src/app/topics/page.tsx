@@ -15,7 +15,7 @@ function TopicsContent() {
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
   const [selectedTopicName, setSelectedTopicName] = useState('');
   const [selectedMode, setSelectedMode] = useState<'quick' | 'full' | 'mock'>('quick');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
+  const [selectedDifficulties, setSelectedDifficulties] = useState<('Easy' | 'Medium' | 'Hard')[]>(['Easy', 'Medium', 'Hard']);
 
   useEffect(() => {
     if (!subjectId) {
@@ -104,7 +104,7 @@ function TopicsContent() {
                     <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Try before buy</div>
                     <div className="text-sm font-bold text-white">First 5 MCQs <span className="text-accent ml-1 font-black">FREE</span></div>
                 </div>
-                <button onClick={() => { setSelectedTopicName(topics[0]?.name || ''); setSelectedMode('quick'); setSelectedDifficulty('Medium'); setIsTopicModalOpen(true); }} className="text-[10px] font-black uppercase tracking-widest text-accent hover:underline">Start Now</button>
+                <button onClick={() => { setSelectedTopicName(topics[0]?.name || ''); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }} className="text-[10px] font-black uppercase tracking-widest text-accent hover:underline">Start Now</button>
             </div>
             <div className="rounded-2xl p-5 flex items-center justify-between gap-4 bg-dark-card/60 border border-white/10 relative overflow-hidden group hover:border-brand-500/40 transition-all">
                 <div className="absolute inset-0 bg-brand-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -166,7 +166,7 @@ function TopicsContent() {
                         {isFree ? (
                           <button
                             type="button"
-                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulty('Medium'); setIsTopicModalOpen(true); }}
+                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
                             className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-accent text-dark-bg font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95"
                           >
                             Start Chapter
@@ -174,7 +174,7 @@ function TopicsContent() {
                         ) : (
                           <button
                             type="button"
-                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulty('Medium'); setIsTopicModalOpen(true); }}
+                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
                             className="flex-1 sm:flex-none py-2.5 px-5 rounded-xl bg-white/5 border border-white/10 text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
                           >
                             Try 5 Free MCQs
@@ -188,83 +188,105 @@ function TopicsContent() {
             </div>
 
             {isTopicModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-                <div className="w-full max-w-2xl rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl">
-                  <div className="flex items-start justify-between gap-4 mb-6">
-                    <div>
-                      <h3 className="text-2xl font-heading font-black text-white">Start practice for</h3>
-                      <p className="mt-1 text-slate-400">{selectedTopicName} · {subjectName}</p>
-                    </div>
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                <div className="w-full max-w-3xl rounded-[1.5rem] border border-white/10 bg-[#11141d] shadow-2xl overflow-hidden flex flex-col">
+                  {/* Header */}
+                  <div className="relative p-6 md:p-8 border-b border-white/5">
                     <button
                       type="button"
                       onClick={() => setIsTopicModalOpen(false)}
-                      className="text-slate-400 hover:text-white"
+                      className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                       aria-label="Close practice modal"
                     >
-                      <i className="fa-solid fa-xmark text-xl"></i>
+                      <i className="fa-solid fa-xmark"></i>
                     </button>
+                    
+                    <div className="border-l-[3px] border-brand-500 pl-4">
+                      <div className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-1">TOPIC-WISE PRACTICE</div>
+                      <h3 className="text-2xl font-heading font-black text-white">{selectedTopicName}</h3>
+                      <p className="mt-1 text-sm text-slate-400">Customize your session parameters.</p>
+                    </div>
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-3 mb-6">
-                    {[
-                      { id: 'quick', title: 'Quick Practice', desc: '20 random MCQs', icon: 'fa-bolt' },
-                      { id: 'full', title: 'Full Practice', desc: 'All MCQs in sequence', icon: 'fa-layer-group' },
-                      { id: 'mock', title: 'Timed Test', desc: '20 questions · 15 min', icon: 'fa-stopwatch' },
-                    ].map((item) => {
-                      const active = selectedMode === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setSelectedMode(item.id as 'quick' | 'full' | 'mock')}
-                          className={`rounded-3xl border p-5 text-left transition-all duration-200 ${active ? 'border-brand-400 bg-brand-500/10 shadow-[0_10px_30px_rgba(99,102,241,0.16)]' : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'}`}
-                        >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${active ? 'bg-brand-500/15 text-brand-300' : 'bg-white/5 text-slate-300'}`}>
+                  {/* Body */}
+                  <div className="p-6 md:p-8">
+                    {/* Practice Mode */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <i className="fa-solid fa-gamepad text-slate-400"></i>
+                      <h4 className="text-sm font-bold text-white">Practice Mode</h4>
+                    </div>
+                    
+                    <div className="grid gap-4 md:grid-cols-3 mb-8">
+                      {[
+                        { id: 'quick', title: 'Quick Practice', desc: '20 random MCQs', icon: 'fa-bolt', color: 'text-brand-400' },
+                        { id: 'full', title: 'Full Practice', desc: 'All MCQs in sequence', icon: 'fa-list-check', color: 'text-emerald-400' },
+                        { id: 'mock', title: 'Timed Test', desc: '20 Questions • 15 Min', icon: 'fa-stopwatch', color: 'text-amber-400' },
+                      ].map((item) => {
+                        const active = selectedMode === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setSelectedMode(item.id as 'quick' | 'full' | 'mock')}
+                            className={`relative rounded-2xl border p-5 text-left transition-all duration-200 ${active ? 'border-brand-500 bg-brand-500/5' : 'border-white/5 bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]'}`}
+                          >
+                            {active && (
+                              <div className="absolute top-4 right-4 text-brand-500 text-sm">
+                                <i className="fa-solid fa-circle-check"></i>
+                              </div>
+                            )}
+                            <div className={`text-xl mb-3 ${item.color}`}>
                               <i className={`fa-solid ${item.icon}`}></i>
                             </div>
-                            <div>
-                              <p className="text-sm font-semibold text-white">{item.title}</p>
-                              <p className="text-xs text-slate-400">{item.desc}</p>
-                            </div>
-                          </div>
-                          <div className="text-xs uppercase tracking-[0.24em] font-black text-slate-500">{item.id === 'quick' ? '20 MCQs' : item.id === 'full' ? 'All available' : '20 MCQs'}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                            <div className="text-sm font-bold text-white mb-1">{item.title}</div>
+                            <div className="text-[11px] text-slate-500">{item.desc}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                  <div className="mb-6">
-                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500 mb-3">Difficulty Level</div>
-                    <div className="flex flex-wrap gap-3">
-                      {(['Easy', 'Medium', 'Hard'] as const).map((difficulty) => (
-                        <button
-                          key={difficulty}
-                          type="button"
-                          onClick={() => setSelectedDifficulty(difficulty)}
-                          className={`rounded-full px-5 py-3 text-sm font-semibold transition ${selectedDifficulty === difficulty ? 'bg-brand-500 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
-                        >
-                          {difficulty}
-                        </button>
-                      ))}
+                    {/* Difficulty Level */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <i className="fa-solid fa-layer-group text-slate-400"></i>
+                      <h4 className="text-sm font-bold text-white">Difficulty Level</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      {(['Easy', 'Medium', 'Hard'] as const).map((difficulty) => {
+                        const active = selectedDifficulties.includes(difficulty);
+                        let activeBorder = 'border-brand-500';
+                        if (difficulty === 'Easy') activeBorder = 'border-emerald-500';
+                        if (difficulty === 'Medium') activeBorder = 'border-amber-500';
+                        if (difficulty === 'Hard') activeBorder = 'border-rose-500';
+                        
+                        return (
+                          <button
+                            key={difficulty}
+                            type="button"
+                            onClick={() => {
+                              if (active && selectedDifficulties.length === 1) return;
+                              setSelectedDifficulties(prev => prev.includes(difficulty) ? prev.filter(d => d !== difficulty) : [...prev, difficulty]);
+                            }}
+                            className={`rounded-2xl py-3.5 text-sm font-bold transition-all border ${active ? `${activeBorder} bg-white/5 text-white` : 'border-white/5 bg-white/[0.02] text-slate-400 hover:border-white/10 hover:bg-white/[0.04]'}`}
+                          >
+                            {difficulty}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm text-slate-400">Refine your session before you begin.</p>
-                      <p className="text-xs text-slate-500 mt-1">Mode: {selectedMode === 'quick' ? 'Quick Practice' : selectedMode === 'full' ? 'Full Practice' : 'Timed Test'}</p>
-                      <p className="text-xs text-slate-500">Difficulty: {selectedDifficulty}</p>
-                    </div>
+                  {/* Footer */}
+                  <div className="p-6 md:p-8 border-t border-white/5 bg-white/[0.02] flex justify-end">
                     <button
                       type="button"
                       onClick={() => {
                         setIsTopicModalOpen(false);
                         const mode = selectedMode;
-                        const diff = selectedDifficulty.toLowerCase();
+                        const diff = selectedDifficulties.map(d => d.toLowerCase()).join(',');
                         router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=${encodeURIComponent(selectedTopicName)}&mode=${mode}&diff=${diff}&auto=true`);
                       }}
-                      className="inline-flex items-center justify-center rounded-3xl bg-brand-500 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-brand-400"
+                      className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-400 hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/20"
                     >
                       Start Session
                       <i className="fa-solid fa-arrow-right ml-2"></i>
