@@ -20,8 +20,9 @@ model User {
     updatedAt DateTime @updatedAt
 
     // Relations
-    answers  MCQAnswer[]
-    progress UserProgress[]
+    answers   MCQAnswer[]
+    progress  UserProgress[]
+    bookmarks Bookmark[]
 }
 
 model Plan {
@@ -90,6 +91,7 @@ model MCQ {
     topicId       String
     topic         Topic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
     answers       MCQAnswer[]
+    bookmarks     Bookmark[]
     createdAt     DateTime    @default(now())
     updatedAt     DateTime    @updatedAt
 }
@@ -151,4 +153,16 @@ model CSVUpload {
     status    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Bookmark {
+    id        String   @id @default(cuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    mcqId     String
+    mcq       MCQ      @relation(fields: [mcqId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, mcqId])
 }

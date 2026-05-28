@@ -27,6 +27,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     { href: "/subjects",   icon: "fa-book",             label: "Exams"             },
     { href: "/practice",   icon: "fa-pen-to-square",    label: "MCQ Practice"      },
     { href: "/test",       icon: "fa-clipboard-check",  label: "Mock Tests"        },
+    { href: "/bookmarks",  icon: "fa-bookmark",         label: "Bookmarks"         },
     { href: "/pricing",    icon: "fa-tags",             label: "Pricing & Plans"   },
   ];
 
