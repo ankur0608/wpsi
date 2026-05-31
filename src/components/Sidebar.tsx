@@ -24,10 +24,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   const links: NavLink[] = [
     { href: "/dashboard",  icon: "fa-house",           label: "Dashboard"         },
-    { href: "/subjects",   icon: "fa-book",             label: "Exams"             },
+    { href: "/subjects",   icon: "fa-book",             label: "Syllabus & Topics" },
     { href: "/practice",   icon: "fa-pen-to-square",    label: "MCQ Practice"      },
     { href: "/test",       icon: "fa-clipboard-check",  label: "Mock Tests"        },
-    { href: "/bookmarks",  icon: "fa-bookmark",         label: "Bookmarks"         },
+    { href: "/results",    icon: "fa-chart-pie",        label: "Results"           },
+    { href: "/bookmarks",  icon: "fa-bookmark",         label: "Saved MCQs"        },
     { href: "/pricing",    icon: "fa-tags",             label: "Pricing & Plans"   },
   ];
 

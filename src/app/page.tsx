@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AuthModal, { AuthMode } from '../components/AuthModal';
+import LandingFooter from '../components/LandingFooter';
 
 interface LandingUser {
   name?: string | null;
@@ -499,78 +500,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-dark-bg border-t border-white/5 pt-16 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center">
-                  <i className="fa-solid fa-graduation-cap text-white text-sm"></i>
-                </div>
-                <span className="font-heading font-bold text-xl">Exam<span className="text-brand-500">Pro</span></span>
-              </div>
-              <p className="text-slate-400 text-sm mb-6">Empowering aspirants to achieve their government job dreams with AI-driven, gamified learning.</p>
-              <div className="flex space-x-4">
-                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-twitter"></i></a>
-                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-youtube"></i></a>
-                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-instagram"></i></a>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Exams</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Wireless PSI</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Gujarat Police PSI</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">GPSC Class 1/2</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Talati</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">SSC CGL</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Daily Current Affairs</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Previous Year Papers</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Syllabus PDF</a></li>
-                <li><a href="#" className="hover:text-brand-400 transition-colors">Blog</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Get the App</h4>
-              <p className="text-sm text-slate-400 mb-4">Practice on the go with our mobile app.</p>
-              <div className="space-y-3">
-                <a href="#" className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-4 py-2 hover:bg-white/10 transition-colors">
-                  <i className="fa-brands fa-google-play text-2xl text-brand-400"></i>
-                  <div className="text-left">
-                    <div className="text-[10px] text-slate-400 leading-none">GET IT ON</div>
-                    <div className="font-bold text-sm leading-tight">Google Play</div>
-                  </div>
-                </a>
-                <a href="#" className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-4 py-2 hover:bg-white/10 transition-colors">
-                  <i className="fa-brands fa-apple text-2xl"></i>
-                  <div className="text-left">
-                    <div className="text-[10px] text-slate-400 leading-none">Download on the</div>
-                    <div className="font-bold text-sm leading-tight">App Store</div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-            <p>&copy; 2026 ExamPro. All rights reserved.</p>
-            <div className="flex space-x-6">
-              <a href="#" className="hover:text-slate-300">Privacy Policy</a>
-              <a href="#" className="hover:text-slate-300">Terms of Service</a>
-              <a href="#" className="hover:text-slate-300">Contact Support</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter />
 
       <AuthModal
         isOpen={authModalOpen}

@@ -174,13 +174,6 @@ function buildSessionQuestions(
     return subjectOk && topicOk && diffOk;
   });
 
-  if (matches.length === 0 && subject && normSubject !== 'all') {
-    matches = mcqBank.filter((q) => normalizeText(q.subject) === normSubject);
-  }
-  if (matches.length === 0) {
-    matches = [...mcqBank];
-  }
-
   const count = mode === 'full'
     ? matches.length
     : Math.min(MODE_META[mode].questionCount, matches.length);
@@ -246,7 +239,7 @@ export default function PracticePage() {
   const [session,       setSession]       = useState<SessionState | null>(null);
   const [timeLeft,      setTimeLeft]      = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>('');
-  const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success'; onConfirm?: () => void; onCancel?: () => void } | null>(null);
+  const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success' | 'info'; confirmText?: string; onConfirm?: () => void; onCancel?: () => void } | null>(null);
   const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
   const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
 
@@ -286,7 +279,13 @@ export default function PracticePage() {
     setBankLoading(true);
     setBankError(null);
     try {
-      const res  = await fetch('/api/practice-mcqs?limit=500&page=1');
+      let url = '/api/practice-mcqs?limit=500&page=1';
+      const subject = searchParams.get('subject');
+      const topic = searchParams.get('topic');
+      if (subject && subject !== 'all') url += `&subject=${encodeURIComponent(subject)}`;
+      if (topic && topic !== 'all') url += `&topic=${encodeURIComponent(topic)}`;
+      
+      const res  = await fetch(url);
       const json = await res.json() as {
         success: boolean;
         data: ApiMcqRow[];
@@ -303,7 +302,7 @@ export default function PracticePage() {
     } finally {
       setBankLoading(false);
     }
-  }, []);
+  }, [searchParams]);
 
   const fetchBookmarks = useCallback(async () => {
     if (bookmarksFetchedRef.current) return;
@@ -388,6 +387,19 @@ export default function PracticePage() {
     const questions = buildSessionQuestions(
       mcqBank, selectedMode, selectedSubject, selectedTopic, selectedDifficulties,
     );
+
+    if (questions.length === 0) {
+      setModalConfig({
+        isOpen: true,
+        type: 'info',
+        title: 'No Questions Found',
+        message: 'There are no questions matching the selected topic and difficulty levels. Please adjust your filters.',
+        confirmText: 'Got it',
+        onConfirm: () => setModalConfig(null)
+      });
+      return;
+    }
+
     const nextSession: SessionState = {
       mode: selectedMode,
       subject: selectedSubject,
@@ -411,10 +423,34 @@ export default function PracticePage() {
 
   const beginExam = () => { if (!session) return; setStatusMessage(''); setView('exam'); };
 
-  const submitSession = (auto = false) => {
-    setSession((cur) => { if (!cur || cur.submitted) return cur; return { ...cur, submitted: true }; });
+  const submitSession = async (auto = false) => {
+    if (!session || session.submitted) return;
+    
+    const submittedSession = { ...session, submitted: true };
+    const finalResult = calculateResult(submittedSession);
+
+    setSession(submittedSession);
     if (auto) setStatusMessage((c) => c || 'The session was submitted automatically.');
     setView('result');
+
+    try {
+      const modeLabel = MODE_META[session.mode].label;
+      const title = `${modeLabel} - ${session.subject === 'All Subjects' ? 'Mixed' : session.subject}`;
+      
+      await fetch('/api/test-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          mode: session.mode,
+          totalMarks: session.questions.length,
+          earnedMarks: finalResult.finalScore,
+          percentage: finalResult.accuracy
+        })
+      });
+    } catch (e) {
+      console.error('Failed to save test submission', e);
+    }
   };
 
   const showSuccessAndSubmit = () => {
@@ -1422,10 +1458,10 @@ export default function PracticePage() {
       {modalConfig?.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-dark-bg border border-white/10 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : 'bg-warning'}`}></div>
+            <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : modalConfig.type === 'info' ? 'bg-brand-500' : 'bg-warning'}`}></div>
             <div className="flex items-center gap-4 mb-5">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-warning/10 text-warning'}`}>
-                <i className={`fa-solid ${modalConfig.type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'}`}></i>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : modalConfig.type === 'info' ? 'bg-brand-500/10 text-brand-400' : 'bg-warning/10 text-warning'}`}>
+                <i className={`fa-solid ${modalConfig.type === 'success' ? 'fa-check' : modalConfig.type === 'info' ? 'fa-circle-info' : 'fa-exclamation-triangle'}`}></i>
               </div>
               <h3 className="text-xl font-heading font-black text-white">{modalConfig.title}</h3>
             </div>
@@ -1443,9 +1479,9 @@ export default function PracticePage() {
               )}
               <button 
                 onClick={modalConfig.onConfirm}
-                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
+                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : modalConfig.type === 'info' ? 'bg-brand-500 shadow-[0_10px_20px_rgba(99,102,241,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
               >
-                {modalConfig.type === 'success' ? 'View Results' : 'Submit Anyway'}
+                {modalConfig.confirmText || (modalConfig.type === 'success' ? 'View Results' : 'Submit Anyway')}
               </button>
             </div>
           </div>

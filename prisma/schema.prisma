@@ -23,6 +23,7 @@ model User {
     answers   MCQAnswer[]
     progress  UserProgress[]
     bookmarks Bookmark[]
+    testSubmissions TestSubmission[]
 }
 
 model Plan {
@@ -165,4 +166,17 @@ model Bookmark {
     updatedAt DateTime @updatedAt
 
     @@unique([userId, mcqId])
+}
+
+model TestSubmission {
+    id            String   @id @default(cuid())
+    userId        String
+    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    title         String
+    mode          String
+    totalMarks    Int
+    earnedMarks   Float
+    percentage    Float
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 }
