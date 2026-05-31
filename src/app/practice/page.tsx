@@ -20,6 +20,9 @@ export interface PracticeMcq {
   options: Record<'A' | 'B' | 'C' | 'D', string>;
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   explanation: string;
+  language?: string;
+  translationId?: string | null;
+  translations?: PracticeMcq[];
 }
 
 // Raw shape returned by the API
@@ -36,6 +39,8 @@ interface ApiMcqRow {
   optionD: string;
   correctAnswer: string;
   explanation: string | null;
+  language?: string;
+  translationId?: string | null;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -152,6 +157,8 @@ function toMcq(row: ApiMcqRow): PracticeMcq {
     options: { A: row.optionA, B: row.optionB, C: row.optionC, D: row.optionD },
     correctAnswer: row.correctAnswer as 'A' | 'B' | 'C' | 'D',
     explanation: row.explanation ?? '',
+    language: row.language || 'English',
+    translationId: row.translationId || null,
   };
 }
 
@@ -242,6 +249,7 @@ export default function PracticePage() {
   const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success' | 'info'; confirmText?: string; onConfirm?: () => void; onCancel?: () => void } | null>(null);
   const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
   const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
+  const [activeLanguage, setActiveLanguage] = useState<string>('English');
 
   // ── Derived lists from live bank ───────────────────────────────────────────
   const availableSubjectsWithParts = React.useMemo(() => {
@@ -293,8 +301,28 @@ export default function PracticePage() {
         message?: string;
       };
       if (!json.success) throw new Error(json.message ?? 'API error');
-      setMcqBank(json.data.map(toMcq));
-      setTotalInDb(json.meta.total);
+      
+      const allMcqs = json.data.map(toMcq);
+      const mcqMap = new Map<string, PracticeMcq>();
+      const groupedMcqs: PracticeMcq[] = [];
+
+      allMcqs.forEach((mcq) => {
+        if (mcq.translationId) {
+          if (mcqMap.has(mcq.translationId)) {
+            const primary = mcqMap.get(mcq.translationId)!;
+            if (!primary.translations) primary.translations = [];
+            primary.translations.push(mcq);
+          } else {
+            mcqMap.set(mcq.translationId, mcq);
+            groupedMcqs.push(mcq);
+          }
+        } else {
+          groupedMcqs.push(mcq);
+        }
+      });
+
+      setMcqBank(groupedMcqs);
+      setTotalInDb(groupedMcqs.length);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load MCQs';
       setBankError(msg);
@@ -591,6 +619,11 @@ export default function PracticePage() {
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentQuestion  = session ? session.questions[session.currentIndex] : null;
+  let displayedQuestion = currentQuestion;
+  if (currentQuestion && activeLanguage !== (currentQuestion.language || 'English')) {
+    const translation = currentQuestion.translations?.find((t) => (t.language || 'English') === activeLanguage);
+    if (translation) displayedQuestion = translation;
+  }
   const currentResponse  = currentQuestion ? session?.responses[currentQuestion.id] : undefined;
   const modeMeta         = MODE_META[selectedMode];
   const activeModeMeta   = session ? MODE_META[session.mode] : modeMeta;
@@ -1065,14 +1098,37 @@ export default function PracticePage() {
                   />
                 </div>
 
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    {currentQuestion.translations && currentQuestion.translations.length > 0 && (
+                      <div className="flex bg-dark-bg/80 rounded-lg p-1 border border-white/10">
+                        {['English', 'Gujarati'].map((lang) => {
+                          const hasTranslation = (currentQuestion.language || 'English') === lang || currentQuestion.translations?.some(t => (t.language || 'English') === lang);
+                          if (!hasTranslation) return null;
+                          return (
+                            <button
+                              key={lang}
+                              type="button"
+                              onClick={() => setActiveLanguage(lang)}
+                              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeLanguage === lang ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                            >
+                              {lang}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Question text */}
                 <div className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5 md:p-6">
-                  <div className="text-lg font-semibold leading-8 text-white">{currentQuestion.question}</div>
+                  <div className="text-lg font-semibold leading-8 text-white">{displayedQuestion?.question}</div>
                 </div>
 
                 {/* Options */}
                 <div className="mt-5 space-y-3">
-                  {getOptionEntries(currentQuestion).map(([key, label]) => {
+                  {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
                     const selected  = currentResponse === key;
                     const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
                     const correct   = key === currentQuestion.correctAnswer;
@@ -1121,7 +1177,7 @@ export default function PracticePage() {
                 {session.mode !== 'mock' && currentResponse && (
                   <div className="mt-5 rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/8 p-5">
                     <div className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Explanation</div>
-                    <p className="mt-3 text-sm leading-7 text-slate-300">{currentQuestion.explanation}</p>
+                    <p className="mt-3 text-sm leading-7 text-slate-300">{displayedQuestion?.explanation}</p>
                   </div>
                 )}
 

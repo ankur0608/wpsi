@@ -33,13 +33,13 @@ export default function LandingFooter() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white mb-4">Resources</h4>
+            <h4 className="font-bold text-white mb-4">Legal & Support</h4>
             <ul className="space-y-2 text-sm text-slate-400">
-              <li><Link href="/faq" className="hover:text-brand-400 transition-colors">FAQ</Link></li>
+              <li><Link href="/contact" className="hover:text-brand-400 transition-colors">Contact Us</Link></li>
               <li><Link href="/terms" className="hover:text-brand-400 transition-colors">Terms and Conditions</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Previous Year Papers</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Syllabus PDF</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Blog</Link></li>
+              <li><Link href="/privacy" className="hover:text-brand-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-brand-400 transition-colors">Refund Policy</Link></li>
+              <li><Link href="/shipping-policy" className="hover:text-brand-400 transition-colors">Shipping Policy</Link></li>
             </ul>
           </div>
 
@@ -67,11 +67,12 @@ export default function LandingFooter() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
           <p>&copy; 2026 ExamPro. All rights reserved.</p>
-          <div className="flex space-x-6">
+          <div className="flex space-x-6 flex-wrap justify-center mt-4 md:mt-0">
             <Link href="/faq" className="hover:text-slate-300">FAQ</Link>
-            <Link href="/terms" className="hover:text-slate-300">Terms and Conditions</Link>
-            <Link href="#" className="hover:text-slate-300">Privacy Policy</Link>
-            <Link href="#" className="hover:text-slate-300">Contact Support</Link>
+            <Link href="/terms" className="hover:text-slate-300">Terms</Link>
+            <Link href="/privacy" className="hover:text-slate-300">Privacy</Link>
+            <Link href="/refund-policy" className="hover:text-slate-300">Refunds</Link>
+            <Link href="/contact" className="hover:text-slate-300">Contact</Link>
           </div>
         </div>
       </div>

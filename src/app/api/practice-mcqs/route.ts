@@ -35,38 +35,42 @@ export async function GET(req: NextRequest) {
           id: true,
           difficulty: true,
           question: true,
-          optionA: true,
-          optionB: true,
-          optionC: true,
-          optionD: true,
-          correctAnswer: true,
-          explanation: true,
-          topic: {
-            select: {
-              name: true,
-              subject: {
-                select: { name: true, part: true }
-              }
-            }
+      optionA: true,
+      optionB: true,
+      optionC: true,
+      optionD: true,
+      correctAnswer: true,
+      explanation: true,
+      language: true,
+      translationId: true,
+      topic: {
+        select: {
+          name: true,
+          subject: {
+            select: { name: true, part: true }
           }
-        },
-      }),
-    ]);
+        }
+      }
+    },
+  }),
+]);
 
-    const mcqs = rawMcqs.map((m) => ({
-      id: m.id,
-      subject: m.topic?.subject?.name || 'Unknown',
-      part: m.topic?.subject?.part || 'A',
-      topic: m.topic?.name || 'Unknown',
-      difficulty: m.difficulty,
-      question: m.question,
-      optionA: m.optionA,
-      optionB: m.optionB,
-      optionC: m.optionC,
-      optionD: m.optionD,
-      correctAnswer: m.correctAnswer,
-      explanation: m.explanation,
-    }));
+const mcqs = rawMcqs.map((m) => ({
+  id: m.id,
+  subject: m.topic?.subject?.name || 'Unknown',
+  part: m.topic?.subject?.part || 'A',
+  topic: m.topic?.name || 'Unknown',
+  difficulty: m.difficulty,
+  question: m.question,
+  optionA: m.optionA,
+  optionB: m.optionB,
+  optionC: m.optionC,
+  optionD: m.optionD,
+  correctAnswer: m.correctAnswer,
+  explanation: m.explanation,
+  language: m.language,
+  translationId: m.translationId,
+}));
 
     return Response.json({ success: true, data: mcqs, meta: { total, page, limit } });
   } catch (err) {

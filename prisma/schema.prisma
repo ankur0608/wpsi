@@ -89,6 +89,8 @@ model MCQ {
     explanation   String?
     difficulty    String      @default("Medium")
     isPyq         Boolean     @default(false)
+    language      String      @default("English")
+    translationId String?
     topicId       String
     topic         Topic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
     answers       MCQAnswer[]
@@ -179,4 +181,15 @@ model TestSubmission {
     percentage    Float
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
+}
+
+model ContactMessage {
+    id        String   @id @default(cuid())
+    name      String
+    email     String
+    subject   String?
+    message   String
+    status    String   @default("UNREAD")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

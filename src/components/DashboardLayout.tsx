@@ -74,7 +74,7 @@ function ProtectedShell({ children }: DashboardLayoutProps) {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const pathname = usePathname();
 
-  const isAuthPage = ['/', '/login', '/register', '/faq', '/terms'].includes(pathname);
+  const isAuthPage = ['/', '/login', '/register', '/faq', '/terms', '/privacy', '/contact', '/refund-policy', '/shipping-policy'].includes(pathname);
 
   if (isAuthPage) {
     return <>{children}</>;

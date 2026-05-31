@@ -77,7 +77,7 @@ export async function POST(
   try {
     const { topicId } = await params;
     const body = await request.json();
-    const { question, optionA, optionB, optionC, optionD, correctAnswer, explanation, difficulty } = body;
+    const { question, optionA, optionB, optionC, optionD, correctAnswer, explanation, difficulty, language, translationId } = body;
 
     const mcq = await prisma.mCQ.create({
       data: {
@@ -89,6 +89,8 @@ export async function POST(
         correctAnswer,
         explanation,
         difficulty: difficulty || 'Medium',
+        language: language || 'English',
+        translationId: translationId || null,
         topicId,
       },
     });
