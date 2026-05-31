@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
 
-type SettingsSectionId = "profile" | "notifications" | "security" | "appearance";
+type SettingsSectionId = "profile" | "security";
 
 type StatusState = {
   tone: "success" | "error" | "info";
@@ -41,9 +41,7 @@ const SETTINGS_SECTIONS: Array<{
   icon: string;
 }> = [
   { id: "profile", label: "General Profile", icon: "fa-user" },
-  { id: "notifications", label: "Notifications", icon: "fa-bell" },
   { id: "security", label: "Security", icon: "fa-shield-halved" },
-  { id: "appearance", label: "Appearance", icon: "fa-palette" },
 ];
 
 const DEFAULT_NOTIFICATIONS: NotificationState = {
@@ -171,6 +169,16 @@ export default function SettingsPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const root = document.documentElement;
+      root.classList.remove('theme-amber', 'theme-emerald', 'theme-indigo', 'reduced-motion', 'compact-mode');
+      if (appearance.accent) root.classList.add(`theme-${appearance.accent.toLowerCase()}`);
+      if (appearance.reducedMotion) root.classList.add('reduced-motion');
+      if (appearance.compactCards) root.classList.add('compact-mode');
+    }
+  }, [appearance]);
 
   const updateProfileField = (field: keyof ProfileFormState, value: string) => {
     setProfileForm((current) => ({
@@ -423,61 +431,6 @@ export default function SettingsPage() {
               </>
             )}
 
-            {activeSection === "notifications" && (
-              <div className="glass-card rounded-2xl border border-white/5 p-6">
-                <h3 className="mb-2 text-lg font-bold text-white">Notifications</h3>
-                <p className="mb-6 text-sm text-slate-400">
-                  Keep alerts tidy while holding on to the same visual style from the reference screen.
-                </p>
-
-                <div className="space-y-4">
-                  <ToggleRow
-                    label="Study reminders"
-                    description="Receive gentle reminders when your revision streak is about to break."
-                    enabled={notifications.reminders}
-                    onToggle={() =>
-                      setNotifications((current) => ({
-                        ...current,
-                        reminders: !current.reminders,
-                      }))
-                    }
-                  />
-                  <ToggleRow
-                    label="Weekly performance summary"
-                    description="Get a recap of tests, practice accuracy, and progress trends."
-                    enabled={notifications.weeklySummary}
-                    onToggle={() =>
-                      setNotifications((current) => ({
-                        ...current,
-                        weeklySummary: !current.weeklySummary,
-                      }))
-                    }
-                  />
-                  <ToggleRow
-                    label="Offers and product updates"
-                    description="See plan offers, feature launches, and seasonal WPSI announcements."
-                    enabled={notifications.productUpdates}
-                    onToggle={() =>
-                      setNotifications((current) => ({
-                        ...current,
-                        productUpdates: !current.productUpdates,
-                      }))
-                    }
-                  />
-                </div>
-
-                <div className="mt-6 flex justify-end border-t border-white/10 pt-4">
-                  <button
-                    type="button"
-                    onClick={handlePreferenceSave}
-                    disabled={isSavingPreferences}
-                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {isSavingPreferences ? "Saving..." : "Save Preferences"}
-                  </button>
-                </div>
-              </div>
-            )}
 
             {activeSection === "security" && (
               <div className="glass-card rounded-2xl border border-white/5 p-6">
@@ -510,88 +463,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {activeSection === "appearance" && (
-              <div className="glass-card rounded-2xl border border-white/5 p-6">
-                <h3 className="mb-2 text-lg font-bold text-white">Appearance</h3>
-                <p className="mb-6 text-sm text-slate-400">
-                  Small personal display preferences, stored locally for now.
-                </p>
-
-                <div className="space-y-4">
-                  <ToggleRow
-                    label="Compact cards"
-                    description="Tighten card spacing for denser dashboards and quicker scanning."
-                    enabled={appearance.compactCards}
-                    onToggle={() =>
-                      setAppearance((current) => ({
-                        ...current,
-                        compactCards: !current.compactCards,
-                      }))
-                    }
-                  />
-                  <ToggleRow
-                    label="Reduced motion"
-                    description="Tone down visual motion while keeping the current layout intact."
-                    enabled={appearance.reducedMotion}
-                    onToggle={() =>
-                      setAppearance((current) => ({
-                        ...current,
-                        reducedMotion: !current.reducedMotion,
-                      }))
-                    }
-                  />
-                </div>
-
-                <div className="mt-6">
-                  <div className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Accent Style
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {["Indigo", "Emerald", "Amber"].map((accent) => {
-                      const selected = appearance.accent === accent;
-                      const swatchClass =
-                        accent === "Emerald"
-                          ? "from-emerald-400 to-emerald-600"
-                          : accent === "Amber"
-                            ? "from-amber-400 to-orange-500"
-                            : "from-brand-400 to-secondary";
-
-                      return (
-                        <button
-                          key={accent}
-                          type="button"
-                          onClick={() =>
-                            setAppearance((current) => ({
-                              ...current,
-                              accent,
-                            }))
-                          }
-                          className={`rounded-2xl border px-4 py-3 text-sm font-bold transition-colors ${
-                            selected
-                              ? "border-brand-500/40 bg-white/10 text-white"
-                              : "border-white/10 bg-dark-bg/70 text-slate-300 hover:border-white/20"
-                          }`}
-                        >
-                          <span className={`mb-2 block h-2.5 w-16 rounded-full bg-gradient-to-r ${swatchClass}`} />
-                          {accent}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-end border-t border-white/10 pt-4">
-                  <button
-                    type="button"
-                    onClick={handlePreferenceSave}
-                    disabled={isSavingPreferences}
-                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {isSavingPreferences ? "Saving..." : "Save Preferences"}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

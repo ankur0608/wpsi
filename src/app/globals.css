@@ -380,3 +380,45 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(212, 146, 42, 0.35);
     color: #F2ECD9;
 }
+
+/* ─────────────────────────────────────────────────────────
+   DYNAMIC APPEARANCE (SETTINGS)
+   ───────────────────────────────────────────────────────── */
+
+/* Themes */
+:root.theme-amber {
+  --color-primary-accent: #D4922A;
+  --rgb-accent: 212, 146, 42;
+}
+:root.theme-emerald {
+  --color-primary-accent: #3DD68C;
+  --rgb-accent: 61, 214, 140;
+}
+:root.theme-indigo {
+  --color-primary-accent: #6366F1;
+  --rgb-accent: 99, 102, 241;
+}
+
+/* Reduced Motion */
+:root.reduced-motion *,
+:root.reduced-motion *::before,
+:root.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Compact Mode */
+:root.compact-mode .p-4 { padding: 0.5rem !important; }
+:root.compact-mode .p-5 { padding: 0.75rem !important; }
+:root.compact-mode .p-6 { padding: 1rem !important; }
+:root.compact-mode .py-4 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+:root.compact-mode .py-5 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+:root.compact-mode .py-6 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+:root.compact-mode .gap-4 { gap: 0.5rem !important; }
+:root.compact-mode .gap-6 { gap: 0.75rem !important; }
+:root.compact-mode .gap-8 { gap: 1rem !important; }
+:root.compact-mode .h-12 { height: 2.5rem !important; }
+:root.compact-mode .w-12 { width: 2.5rem !important; }
+:root.compact-mode .h-16 { height: 3rem !important; }
+:root.compact-mode .w-16 { width: 3rem !important; }

@@ -1,13 +1,13 @@
 
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
 
 /* ─── tiny helpers ─────────────────────────────────────────── */
-const GOLD      = "#D4922A";
-const GOLD_GLOW = "rgba(212,146,42,0.18)";
-const GOLD_BR   = "rgba(212,146,42,0.20)";
+const GOLD      = "var(--color-primary-accent, #D4922A)";
+const GOLD_GLOW = "rgba(var(--rgb-accent, 212, 146, 42), 0.18)";
+const GOLD_BR   = "rgba(var(--rgb-accent, 212, 146, 42), 0.20)";
 const SURFACE   = "#162436";
 const BG        = "#0D1B2A";
 const TEXT      = "#F2ECD9";
@@ -109,6 +109,27 @@ function QuickCard({
 /* ─── PAGE ──────────────────────────────────────────────────── */
 export default function Dashboard() {
   const { user, loading } = useUser();
+  const [stats, setStats] = useState({ mockTestsAttempted: 0, mcqsSolved: 0, averageAccuracy: 0 });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/user/dashboard-stats');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data) {
+            setStats(json.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats:", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
 
   const currentLevel = user?.level ?? 0;
   const currentXp    = user?.xp ?? 0;
@@ -167,9 +188,9 @@ export default function Dashboard() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed" style={{ color: MUTED }}>
               {loading
-                ? "We are syncing your latest progress, streak, and rewards."
+                ? "We are syncing your latest progress and rewards."
                 : currentLevel > 0
-                ? `You're ${Math.max(nextLevelXp - currentXp, 0)} XP away from Level ${currentLevel + 1}. Complete the daily quiz to keep your streak moving.`
+                ? `You're ${Math.max(nextLevelXp - currentXp, 0)} XP away from Level ${currentLevel + 1}.`
                 : "Start your journey towards a secure government job with India's most trusted practice platform."}
             </p>
 
@@ -211,19 +232,19 @@ export default function Dashboard() {
       </div>
 
       {/* ────────────────── STAT CARDS ─────────────────── */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 animate-on-scroll">
-        <StatCard icon="fa-book-open"    value="24"      label="Mock Tests"       sub="Tests Attempted"      color={GOLD}  />
-        <StatCard icon="fa-bullseye"     value="2,350"   label="MCQs Solved"      sub="Across All Topics"    color={BLUE}  />
-        <StatCard icon="fa-chart-line"   value="85.6%"   label="Average Accuracy" sub="All Time"             color={GREEN} />
-        <StatCard icon="fa-fire"         value="12"      label="Day Streak"       sub="Keep it up!"          color={GOLD}  />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 animate-on-scroll">
+        <StatCard icon="fa-book-open"    value={statsLoading ? "--" : stats.mockTestsAttempted.toLocaleString()}      label="Mock Tests"       sub="Tests Attempted"      color={GOLD}  />
+        <StatCard icon="fa-bullseye"     value={statsLoading ? "--" : stats.mcqsSolved.toLocaleString()}   label="MCQs Solved"      sub="Across All Topics"    color={BLUE}  />
+        <StatCard icon="fa-chart-line"   value={statsLoading ? "--" : `${stats.averageAccuracy}%`}   label="Average Accuracy" sub="All Time"             color={GREEN} />
+        {/* <StatCard icon="fa-fire"         value="12"      label="Day Streak"       sub="Keep it up!"          color={GOLD}  /> */}
       </div>
 
       {/* ────────────────── QUICK ACCESS ─────────────────── */}
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 animate-on-scroll">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 animate-on-scroll">
         <QuickCard href="/subjects"  icon="fa-book"             label="Syllabus"    color={GOLD}  />
         <QuickCard href="/practice"  icon="fa-pen-to-square"    label="Practice"    color={GREEN} badge="Daily" />
         <QuickCard href="/test"      icon="fa-clipboard-check"  label="Mock Tests"  color={GOLD}  badge="New"   />
-        <QuickCard href="/rewards"   icon="fa-gift"             label="Rewards"     color={BLUE}  />
+        {/* <QuickCard href="/rewards"   icon="fa-gift"             label="Rewards"     color={BLUE}  /> */}
         <QuickCard href="/pricing"   icon="fa-tags"             label="Plans"       color={GOLD}  />
         <QuickCard href="/profile"   icon="fa-user"             label="Profile"     color={MUTED as string} />
       </div>
@@ -495,7 +516,7 @@ export default function Dashboard() {
               sub: "Exam in 35 Days",
               color: GOLD,
             },
-            {
+            /* {
               href: "/profile",
               icon: "fa-share-nodes",
               title: "Refer & Earn",
@@ -509,7 +530,7 @@ export default function Dashboard() {
               sub: "Unlock with Coins",
               color: BLUE,
               locked: true,
-            },
+            }, */
             {
               href: "/test",
               icon: "fa-file-signature",
@@ -524,7 +545,7 @@ export default function Dashboard() {
               className="hover-card-up relative flex flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center"
               style={{ background: SURFACE, borderColor: GOLD_BR }}
             >
-              {card.locked && (
+              {(card as any).locked && (
                 <div
                   className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full"
                   style={{ background: GOLD }}

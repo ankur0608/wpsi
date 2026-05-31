@@ -67,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth antialiased">
+    <html lang="en" className="scroll-smooth antialiased" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -91,6 +91,23 @@ export default function RootLayout({
                 "https://instagram.com/exampro"
               ]
             })
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var appearance = localStorage.getItem('wpsi-settings-appearance');
+                if (appearance) {
+                  var parsed = JSON.parse(appearance);
+                  if (parsed.reducedMotion) document.documentElement.classList.add('reduced-motion');
+                  if (parsed.compactCards) document.documentElement.classList.add('compact-mode');
+                  if (parsed.accent) document.documentElement.classList.add('theme-' + parsed.accent.toLowerCase());
+                } else {
+                  document.documentElement.classList.add('theme-indigo');
+                }
+              } catch(e) {}
+            `
           }}
         />
       </head>

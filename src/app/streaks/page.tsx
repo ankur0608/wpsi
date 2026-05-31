@@ -25,9 +25,8 @@ export default function Streaks() {
       
 
 <main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-dark-bg">
-<div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(circle at 50% -20%, rgba(249,115,22,0.15), transparent 70%), radial-gradient(circle at 0% 100%, rgba(99,102,241,0.05), transparent 40%)"}}>
+{/* <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(circle at 50% -20%, rgba(249,115,22,0.15), transparent 70%), radial-gradient(circle at 0% 100%, rgba(99,102,241,0.05), transparent 40%)"}}>
     <div className="max-w-4xl mx-auto pb-24 space-y-8">
-        {/*  Streak Hero  */}
         <div className="text-center py-12 rounded-[2rem] relative overflow-hidden group" style={{"background":"linear-gradient(145deg, rgba(20,29,46,0.9), rgba(11,15,26,0.98))","border":"1px solid rgba(249,115,22,0.25)","boxShadow":"0 25px 50px -12px rgba(0,0,0,0.5)"}}>
             <div className="absolute -top-32 -left-32 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full transition-all duration-700 group-hover:bg-orange-500/15"></div>
             <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-brand-500/5 blur-[100px] rounded-full"></div>
@@ -46,7 +45,6 @@ export default function Streaks() {
             </div>
         </div>
 
-        {/*  Streak Stats  */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="rounded-[1.5rem] p-6 bg-dark-card/60 backdrop-blur-md border border-white/5 flex items-center gap-5 transition-all hover:border-orange-500/30 group">
                 <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 text-2xl transition-transform group-hover:scale-110 shadow-lg">
@@ -77,7 +75,6 @@ export default function Streaks() {
             </div>
         </div>
 
-        {/*  Weekly Progress  */}
         <div className="rounded-2xl p-8 bg-dark-card border border-white/5">
             <h3 className="text-lg font-bold text-white mb-6">This Week</h3>
             <div className="flex justify-between items-center gap-2">
@@ -134,7 +131,6 @@ export default function Streaks() {
             </div>
         </div>
 
-        {/*  Rewards CTA  */}
         <div className="rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6" style={{"background":"linear-gradient(90deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))","border":"1px solid rgba(99,102,241,0.2)"}}>
             <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-brand-500/20 flex items-center justify-center text-brand-400 text-2xl">
@@ -148,7 +144,7 @@ export default function Streaks() {
             <a href="/subjects" className="px-8 py-3 rounded-xl font-bold text-sm text-white transition-all hover:scale-105" style={{"background":"linear-gradient(135deg, #6366f1, #8b5cf6)","boxShadow":"0 4px 15px rgba(99,102,241,0.3)"}}>Continue Practice</a>
         </div>
     </div>
-</div>
+</div> */}
 </main>
 
 

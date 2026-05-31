@@ -340,10 +340,10 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="animate-on-scroll">
               <h2 className="text-3xl md:text-4xl font-heading font-bold mb-6">Learning that feels like a <span className="text-gradient">Game</span></h2>
-              <p className="text-slate-400 mb-8 text-lg">We use proven psychological triggers to keep you motivated. Build streaks, earn XP, and climb the leaderboard. Your brain will crave the next study session.</p>
+              <p className="text-slate-400 mb-8 text-lg">We use proven psychological triggers to keep you motivated. Earn XP and climb the leaderboard. Your brain will crave the next study session.</p>
 
               <div className="space-y-6">
-                <div className="flex gap-4">
+                {/* <div className="flex gap-4">
                   <div className="w-12 h-12 rounded-xl bg-dark-bg border border-white/10 flex items-center justify-center flex-shrink-0 text-warning text-xl shadow-[0_0_15px_rgba(245,158,11,0.2)]">
                     <i className="fa-solid fa-fire"></i>
                   </div>
@@ -360,7 +360,7 @@ export default function Home() {
                     <h4 className="text-lg font-bold text-white">XP Levels & Coins</h4>
                     <p className="text-sm text-slate-400">Earn coins for correct answers. Use them to unlock premium mock tests and topic hints.</p>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex gap-4">
                   <div className="w-12 h-12 rounded-xl bg-dark-bg border border-white/10 flex items-center justify-center flex-shrink-0 text-secondary text-xl shadow-[0_0_15px_rgba(124,58,237,0.2)]">
                     <i className="fa-solid fa-trophy"></i>
@@ -384,14 +384,14 @@ export default function Home() {
                       <p className="text-xs text-brand-400 font-medium">Level 14 Scholar</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  {/* <div className="text-right">
                     <div className="flex items-center gap-1 text-warning font-bold">
                       <i className="fa-solid fa-coins"></i> 2,450
                     </div>
                     <div className="flex items-center gap-1 text-accent font-bold text-sm">
                       <i className="fa-solid fa-fire"></i> 12 Day Streak
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="mb-2 flex justify-between text-sm">

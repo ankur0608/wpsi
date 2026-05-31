@@ -123,7 +123,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
 
         {/* Right: badges + profile */}
         <div className="flex items-center gap-2 sm:gap-3" ref={popoverRef}>
-          {/* Streak */}
+          {/* Streak
           <div className="hidden items-center gap-2 sm:flex">
             <button
               type="button"
@@ -181,7 +181,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
               </div>
             )}
 
-            {/* Coins */}
+            Coins
             <button
               type="button"
               className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all hover:scale-105"
@@ -246,7 +246,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                 </Link>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Notification bell */}
           <button
@@ -310,7 +310,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                 {[
                   { href: "/profile",  icon: "fa-user",               label: "My Profile",     iconColor: "rgba(255,255,255,0.5)" },
                   { href: "/pricing",  icon: "fa-crown",               label: "Upgrade Store",  iconColor: "#D4922A" },
-                  { href: "/rewards",  icon: "fa-coins",               label: "Rewards Store",  iconColor: "#4A9EDB" },
+                  // { href: "/rewards",  icon: "fa-coins",               label: "Rewards Store",  iconColor: "#4A9EDB" },
                   { href: "/settings", icon: "fa-gear",                label: "Settings",       iconColor: "rgba(255,255,255,0.5)" },
                 ].map((item) => (
                   <Link
@@ -340,7 +340,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
       </div>
 
       {/* Mobile stats bar */}
-      <div
+      {/* <div
         className="flex items-center gap-2 pb-3 pt-2 sm:hidden"
         style={{ borderTop: "1px solid rgba(212,146,42,0.06)" }}
       >
@@ -362,7 +362,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
             {loading ? "--" : `${user?.coins?.toLocaleString() ?? 0} coins`}
           </span>
         </div>
-      </div>
+      </div> */}
     </header>
   );
 };

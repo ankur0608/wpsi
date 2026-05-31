@@ -25,10 +25,9 @@ export default function Rewards() {
       
 
 <main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-dark-bg">
-<div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(circle at 50% -20%, rgba(99,102,241,0.15), transparent 70%), radial-gradient(circle at 100% 100%, rgba(245,158,11,0.05), transparent 40%)"}}>
+{/* <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(circle at 50% -20%, rgba(99,102,241,0.15), transparent 70%), radial-gradient(circle at 100% 100%, rgba(245,158,11,0.05), transparent 40%)"}}>
     <div className="max-w-6xl mx-auto pb-24 space-y-12">
         
-        {/*  Expert Header: Tier & Progress  */}
         <div className="group py-12 px-8 sm:px-12 rounded-[2.5rem] relative overflow-hidden transition-all duration-500 border border-white/5 shadow-2xl" style={{"background":"linear-gradient(145deg, #141D2E, #0D1120)"}}>
             <div className="absolute -top-24 -right-24 w-80 h-80 bg-brand-500/10 blur-[100px] rounded-full group-hover:bg-brand-500/15 transition-all duration-700"></div>
             
@@ -55,7 +54,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Strategic Progress Card  */}
                 <div className="w-full lg:w-[26rem] bg-white/5 backdrop-blur-xl p-8 rounded-[2rem] border border-white/10 relative overflow-hidden group/card">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="flex justify-between items-end mb-4 relative z-10">
@@ -76,7 +74,6 @@ export default function Rewards() {
             </div>
         </div>
 
-        {/*  Membership Tiers: Premium Grid  */}
         <section className="space-y-8">
             <div className="flex items-center gap-4">
                 <div className="w-1.5 h-8 bg-brand-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
@@ -84,7 +81,6 @@ export default function Rewards() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/*  Bronze (Current)  */}
                 <div className="rounded-3xl p-8 bg-white/5 border-2 border-orange-500/40 relative group/tier overflow-hidden">
                     <div className="absolute inset-0 bg-orange-500/5 opacity-20"></div>
                     <div className="relative z-10">
@@ -100,7 +96,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Silver  */}
                 <div className="rounded-3xl p-8 bg-white/5 border border-white/5 relative group/tier overflow-hidden transition-all hover:border-cyan-500/30">
                     <div className="relative z-10">
                         <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6 text-2xl shadow-lg"><i className="fa-solid fa-shield-halved"></i></div>
@@ -114,7 +109,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Gold  */}
                 <div className="rounded-3xl p-8 bg-white/5 border border-white/5 relative group/tier overflow-hidden transition-all hover:border-warning/30">
                     <div className="relative z-10">
                         <div className="w-12 h-12 rounded-2xl bg-warning/10 flex items-center justify-center text-warning mb-6 text-2xl shadow-lg"><i className="fa-solid fa-crown"></i></div>
@@ -128,7 +122,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Platinum  */}
                 <div className="rounded-3xl p-8 bg-white/5 border border-white/5 relative group/tier overflow-hidden transition-all hover:border-brand-500/30">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-500/5 blur-3xl"></div>
                     <div className="relative z-10">
@@ -145,7 +138,6 @@ export default function Rewards() {
             </div>
         </section>
 
-        {/*  Expert Redemption Catalog  */}
         <section className="space-y-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
@@ -159,7 +151,6 @@ export default function Rewards() {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/*  Mock Test (High Desire)  */}
                 <div className="rounded-3xl p-6 bg-dark-card/40 border border-white/5 group hover:border-warning/40 transition-all">
                     <div className="w-14 h-14 rounded-2xl bg-warning/10 flex items-center justify-center text-warning mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fa-solid fa-file-signature"></i></div>
                     <h5 className="text-sm font-bold text-white mb-1">Single Mock Test</h5>
@@ -167,7 +158,6 @@ export default function Rewards() {
                     <button className="w-full py-3.5 rounded-2xl bg-warning/10 border border-warning/20 text-warning font-black text-[10px] uppercase tracking-widest transition-all hover:bg-warning hover:text-dark-bg">Redeem 200 🪙</button>
                 </div>
 
-                {/*  Chapter Unlock  */}
                 <div className="rounded-3xl p-6 bg-dark-card/40 border border-white/5 group hover:border-brand-500/40 transition-all">
                     <div className="w-14 h-14 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fa-solid fa-lock-open"></i></div>
                     <h5 className="text-sm font-bold text-white mb-1">Unlock 1 Chapter</h5>
@@ -175,7 +165,6 @@ export default function Rewards() {
                     <button className="w-full py-3.5 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 font-black text-[10px] uppercase tracking-widest transition-all hover:bg-brand-500 hover:text-white">Redeem 100 🪙</button>
                 </div>
 
-                {/*  7-Day Access  */}
                 <div className="rounded-3xl p-6 bg-dark-card/40 border border-white/5 group hover:border-cyan-500/40 transition-all">
                     <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fa-solid fa-bolt-lightning"></i></div>
                     <h5 className="text-sm font-bold text-white mb-1">7-Day Full Access</h5>
@@ -183,7 +172,6 @@ export default function Rewards() {
                     <button className="w-full py-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-black text-[10px] uppercase tracking-widest transition-all hover:bg-cyan-500 hover:text-dark-bg">Redeem 500 🪙</button>
                 </div>
 
-                {/*  Cash Discount  */}
                 <div className="rounded-3xl p-6 bg-dark-card/40 border border-white/5 group hover:border-accent/40 transition-all">
                     <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fa-solid fa-tag"></i></div>
                     <h5 className="text-sm font-bold text-white mb-1">₹50 Flat Coupon</h5>
@@ -193,7 +181,6 @@ export default function Rewards() {
             </div>
         </section>
 
-        {/*  Earning Rules (Expert Table)  */}
         <section className="rounded-[2.5rem] p-10 bg-dark-card border border-white/5 relative overflow-hidden group/earn">
             <div className="absolute top-0 right-0 p-12 opacity-[0.03] -rotate-12 group-hover/earn:rotate-0 transition-transform duration-1000">
                 <i className="fa-solid fa-coins text-[15rem]"></i>
@@ -205,7 +192,6 @@ export default function Rewards() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                {/*  Daily & Habit  */}
                 <div className="space-y-6">
                     <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-6">Habit Builder</h5>
                     <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
@@ -222,7 +208,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Performance  */}
                 <div className="space-y-6">
                     <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-6">Merit Rewards</h5>
                     <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
@@ -239,7 +224,6 @@ export default function Rewards() {
                     </div>
                 </div>
 
-                {/*  Social & Growth  */}
                 <div className="space-y-6">
                     <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-6">Network Power</h5>
                     <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
@@ -258,7 +242,7 @@ export default function Rewards() {
             </div>
         </section>
     </div>
-</div>
+</div> */}
 </main>
 
 
