@@ -1078,7 +1078,7 @@ export default function PracticePage() {
                   <button
                     type="button"
                     onClick={(e) => toggleBookmark(e)}
-                    className={`rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
+                    className={`hidden md:block rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
                       session.bookmarked.includes(currentQuestion.id)
                         ? 'border-warning/30 bg-warning/10 text-warning'
                         : 'border-white/10 bg-white/5 text-slate-300'
@@ -1247,8 +1247,15 @@ export default function PracticePage() {
 
             {/* Mobile Palette Modal */}
             {isMobilePaletteOpen && (
-              <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm md:hidden">
-                <div className="w-full max-h-[80vh] overflow-y-auto rounded-t-[2rem] border-t border-white/10 bg-[#11141d] p-6 shadow-2xl">
+              <div 
+                className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm md:hidden overscroll-none" 
+                onClick={() => setIsMobilePaletteOpen(false)}
+              >
+                <div 
+                  className="w-full max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-white/10 bg-[#11141d] p-6 shadow-2xl" 
+                  onClick={e => e.stopPropagation()}
+                  style={{ WebkitOverflowScrolling: 'touch' }}
+                >
                   <div className="mb-6 flex items-center justify-between">
                     <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Question Palette</div>
                     <button
