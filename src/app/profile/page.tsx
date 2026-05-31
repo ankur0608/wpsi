@@ -62,7 +62,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/*  Account Info  */}
       <div className="rounded-3xl p-6 bg-dark-card/40 border border-white/5">
         <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6">Account Info</h4>
         <div className="space-y-4 text-xs font-medium">
