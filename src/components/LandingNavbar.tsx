@@ -12,7 +12,7 @@ export default function LandingNavbar() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center shadow-lg shadow-brand-500/30">
                 <i className="fa-solid fa-graduation-cap text-xl text-white"></i>
               </div>
-              <span className="font-heading font-bold text-2xl tracking-tight text-white">Exam<span className="text-brand-500">Pro</span></span>
+              <span className="font-heading font-bold text-2xl tracking-tight text-white">Mcpprep<span className="text-brand-500">zone</span></span>
             </Link>
           </div>
 

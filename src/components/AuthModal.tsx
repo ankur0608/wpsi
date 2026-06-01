@@ -126,7 +126,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
               <i className="fa-solid fa-graduation-cap text-white text-lg" />
             </div>
             <span className="font-heading font-bold text-2xl tracking-tight">
-              Exam<span className="text-brand-500">Pro</span>
+              Mcpprep<span className="text-brand-500">zone</span>
             </span>
           </Link>
           <h2 className="text-2xl font-bold text-white mb-2">{isLogin ? "Welcome Back" : "Create an Account"}</h2>

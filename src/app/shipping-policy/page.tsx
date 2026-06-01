@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Shipping and Delivery Policy',
-  description: 'Read the Shipping and Delivery Policy for ExamPro digital products.',
+  description: 'Read the Shipping and Delivery Policy for Mcpprepzone digital products.',
 };
 
 export default function ShippingPolicyPage() {

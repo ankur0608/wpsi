@@ -1,8 +1,12 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import AuthModal, { AuthMode } from '../components/AuthModal';
-import LandingFooter from '../components/LandingFooter';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { AuthMode } from '../components/AuthModal';
+
+const AuthModal = dynamic(() => import('../components/AuthModal'), { ssr: false });
+const LandingFooter = dynamic(() => import('../components/LandingFooter'), { ssr: true });
 
 interface LandingUser {
   name?: string | null;
@@ -125,7 +129,7 @@ export default function Home() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center shadow-lg shadow-brand-500/30">
                 <i className="fa-solid fa-graduation-cap text-xl text-white"></i>
               </div>
-              <span className="font-heading font-bold text-2xl tracking-tight">Exam<span className="text-brand-500">Pro</span></span>
+              <span className="font-heading font-bold text-2xl tracking-tight">Mcpprep<span className="text-brand-500">zone</span></span>
             </div>
 
             {/* Desktop Menu */}
@@ -142,10 +146,12 @@ export default function Home() {
                 <div className="h-11 w-44 rounded-full border border-white/5 bg-white/5 animate-pulse"></div>
               ) : sessionUser ? (
                 <Link href="/dashboard" className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3 py-2 transition-colors hover:border-brand-500/30 hover:bg-white/10">
-                  <img
+                  <Image
                     src={`https://ui-avatars.com/api/?name=${avatarName}&background=1e293b&color=818cf8&bold=true&size=80`}
                     alt={displayName}
-                    className="h-9 w-9 rounded-full border border-white/10"
+                    width={36}
+                    height={36}
+                    className="rounded-full border border-white/10"
                   />
                   <div className="text-left">
                     <div className="text-sm font-semibold text-white leading-tight">{displayName}</div>
@@ -187,10 +193,12 @@ export default function Home() {
             {sessionChecked && sessionUser ? (
               <>
                 <Link href="/dashboard" className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-3">
-                  <img
+                  <Image
                     src={`https://ui-avatars.com/api/?name=${avatarName}&background=1e293b&color=818cf8&bold=true&size=80`}
                     alt={displayName}
-                    className="h-10 w-10 rounded-full border border-white/10"
+                    width={40}
+                    height={40}
+                    className="rounded-full border border-white/10"
                   />
                   <div>
                     <div className="text-sm font-bold text-white">{displayName}</div>
@@ -378,7 +386,7 @@ export default function Home() {
               <div className="glass-card rounded-2xl p-6 border border-white/10 shadow-2xl relative z-10">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" className="w-12 h-12 rounded-full border-2 border-brand-500" />
+                    <Image src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" width={48} height={48} className="rounded-full border-2 border-brand-500" />
                     <div>
                       <h5 className="font-bold">Rahul Parmar</h5>
                       <p className="text-xs text-brand-400 font-medium">Level 14 Scholar</p>

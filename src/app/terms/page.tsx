@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Terms and Conditions',
-  description: 'Read the Terms and Conditions for ExamPro. Understand our policies regarding user accounts, subscriptions, mock test usage, content ownership, and dispute resolution for our government exam preparation platform.',
+  description: 'Read the Terms and Conditions for Mcpprepzone. Understand our policies regarding user accounts, subscriptions, mock test usage, content ownership, and dispute resolution for our government exam preparation platform.',
 };
 
 export default function TermsPage() {
@@ -17,14 +17,14 @@ export default function TermsPage() {
           Terms and <span className="text-gradient">Conditions</span>
         </h1>
         <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
-          Please read these terms carefully before using the ExamPro platform for your competitive exam preparation.
+          Please read these terms carefully before using the Mcpprepzone platform for your competitive exam preparation.
         </p>
 
         <div className="glass-card p-8 rounded-2xl border border-white/5 space-y-8 text-slate-300 leading-relaxed">
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
             <p>
-              By accessing and using ExamPro ("the Platform"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you are prohibited from using or accessing this site. The materials contained in this Platform are protected by applicable copyright and trademark law.
+              By accessing and using Mcpprepzone ("the Platform"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you are prohibited from using or accessing this site. The materials contained in this Platform are protected by applicable copyright and trademark law.
             </p>
           </section>
 
@@ -41,21 +41,21 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">3. Intellectual Property</h2>
             <p>
-              The Platform and its original content (including mock tests, MCQs, study notes, and AI algorithms), features, and functionality are and will remain the exclusive property of ExamPro and its licensors. Content is intended solely for personal, non-commercial use in preparing for government exams like Wireless PSI, GPSC, and Talati.
+              The Platform and its original content (including mock tests, MCQs, study notes, and AI algorithms), features, and functionality are and will remain the exclusive property of Mcpprepzone and its licensors. Content is intended solely for personal, non-commercial use in preparing for government exams like Wireless PSI, GPSC, and Talati.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">4. Subscriptions and Refunds</h2>
             <p>
-              ExamPro offers both free and premium subscription plans. Premium plans ("Pro" and "Elite") are billed in advance on a recurring and periodic basis. You may cancel your subscription at any time; however, there are no refunds for partially used billing periods, except as explicitly stated in our 3-day money-back guarantee policy.
+              Mcpprepzone offers both free and premium subscription plans. Premium plans ("Pro" and "Elite") are billed in advance on a recurring and periodic basis. You may cancel your subscription at any time; however, there are no refunds for partially used billing periods, except as explicitly stated in our 3-day money-back guarantee policy.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">5. Limitation of Liability</h2>
             <p>
-              In no event shall ExamPro, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service. We do not guarantee exam clearance; the platform is an educational aid.
+              In no event shall Mcpprepzone, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service. We do not guarantee exam clearance; the platform is an educational aid.
             </p>
           </section>
 

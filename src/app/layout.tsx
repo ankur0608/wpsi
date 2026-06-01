@@ -1,12 +1,32 @@
 import type { Metadata } from "next";
+import { Inter, Poppins, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import DashboardLayout from "@/components/DashboardLayout";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  weight: ["500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 export const metadata: Metadata = {
   metadataBase: new URL('https://mcqprepzone.online'),
   title: {
-    default: "ExamPro - Elite Government Exam Preparation",
-    template: "%s | ExamPro"
+    default: "Mcpprepzone - Elite Government Exam Preparation",
+    template: "%s | Mcpprepzone"
   },
   description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
   keywords: [
@@ -30,22 +50,22 @@ export const metadata: Metadata = {
     "police sub inspector exam",
     "GSSSB exams",
     "Gujarat competitive exams",
-    "ExamPro"
+    "Mcpprepzone"
   ],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "ExamPro - Elite Government Exam Preparation",
+    title: "Mcpprepzone - Elite Government Exam Preparation",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
     url: 'https://mcqprepzone.online',
-    siteName: 'ExamPro',
+    siteName: 'Mcpprepzone',
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "ExamPro - Elite Government Exam Preparation",
+    title: "Mcpprepzone - Elite Government Exam Preparation",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
   },
   robots: {
@@ -67,14 +87,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth antialiased" suppressHydrationWarning>
+    <html lang="en" className={`scroll-smooth antialiased ${inter.variable} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
-        />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <script
           type="application/ld+json"
@@ -82,13 +96,13 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "EducationalOrganization",
-              "name": "ExamPro",
+              "name": "Mcpprepzone",
               "url": "https://mcqprepzone.online",
               "description": "Premium mock tests, AI study planner, and interactive MCQ practice for students preparing for GPSC, SSC, and other government exams.",
               "sameAs": [
-                "https://twitter.com/exampro",
-                "https://facebook.com/exampro",
-                "https://instagram.com/exampro"
+                "https://twitter.com/mcpprepzone",
+                "https://facebook.com/mcpprepzone",
+                "https://instagram.com/mcpprepzone"
               ]
             })
           }}
