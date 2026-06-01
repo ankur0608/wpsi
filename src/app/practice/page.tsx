@@ -50,8 +50,8 @@ type ReviewFilter = 'all' | 'correct' | 'wrong' | 'na' | 'unanswered' | 'bookmar
 
 interface SessionState {
   mode: PracticeMode;
-  subject: string;
-  topic: string;
+  subjects: string[];
+  topics: string[];
   difficulties: Difficulty[];
   questions: PracticeMcq[];
   currentIndex: number;
@@ -165,18 +165,18 @@ function toMcq(row: ApiMcqRow): PracticeMcq {
 function buildSessionQuestions(
   mcqBank: PracticeMcq[],
   mode: PracticeMode,
-  subject: string,
-  topic: string,
+  subjects: string[],
+  topics: string[],
   difficulties: Difficulty[],
 ) {
-  const normSubject = normalizeText(subject);
-  const normTopic   = normalizeText(topic);
+  const normSubjects = subjects.map(normalizeText);
+  const normTopics   = topics.map(normalizeText);
 
   let matches = mcqBank.filter((q) => {
     const subjectOk =
-      !subject || normSubject === 'all' || normalizeText(q.subject) === normSubject;
+      subjects.length === 0 || normSubjects.includes('all subjects') || normSubjects.includes('all') || normSubjects.includes(normalizeText(q.subject));
     const topicOk =
-      !topic || normTopic === 'all' || normalizeText(q.topic).includes(normTopic);
+      topics.length === 0 || normTopics.includes('all topics') || normTopics.includes('all') || normTopics.some((t) => normalizeText(q.topic).includes(t));
     const diffOk = difficulties.includes(q.difficulty);
     return subjectOk && topicOk && diffOk;
   });
@@ -221,6 +221,132 @@ function calculateResult(session: SessionState | null) {
   return { correct, wrong, notAttempted, unanswered, negativeMarks, finalScore, accuracy, topicStats };
 }
 
+// ─── MultiSelect Component ──────────────────────────────────────────────────
+function MultiSelectDropdown({
+  options,
+  value,
+  onChange,
+  label,
+  allLabel = 'All'
+}: {
+  options: { label: string; value: string; group?: string }[];
+  value: string[];
+  onChange: (val: string[]) => void;
+  label: string;
+  allLabel?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const clickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', clickOutside);
+    return () => document.removeEventListener('mousedown', clickOutside);
+  }, []);
+
+  const toggleOption = (opt: string) => {
+    if (opt === allLabel) {
+       onChange([allLabel]);
+       return;
+    }
+    
+    let newValue = [...value];
+    if (newValue.includes(allLabel)) {
+       newValue = newValue.filter(v => v !== allLabel);
+    }
+    
+    if (newValue.includes(opt)) {
+      newValue = newValue.filter(v => v !== opt);
+      if (newValue.length === 0) newValue = [allLabel];
+    } else {
+      newValue.push(opt);
+    }
+    onChange(newValue);
+  };
+
+  const displayText = value.includes(allLabel) || value.length === 0
+    ? allLabel
+    : value.length <= 2
+    ? value.join(', ')
+    : `${value.length} selected`;
+
+  const groups: Record<string, typeof options> = {};
+  const unGrouped: typeof options = [];
+  options.forEach(opt => {
+    if (opt.group) {
+      if (!groups[opt.group]) groups[opt.group] = [];
+      groups[opt.group].push(opt);
+    } else {
+      unGrouped.push(opt);
+    }
+  });
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+        {label}
+      </div>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full text-left rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60 flex justify-between items-center"
+      >
+        <span className="truncate">{displayText}</span>
+        <i className={`fa-solid fa-chevron-down transition-transform ${isOpen ? 'rotate-180' : ''}`}></i>
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-white/10 bg-[#11141d] shadow-2xl overflow-hidden max-h-64 flex flex-col">
+          <div className="overflow-y-auto p-2 space-y-1">
+            <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+              <input
+                type="checkbox"
+                checked={value.includes(allLabel) || value.length === 0}
+                onChange={() => toggleOption(allLabel)}
+                className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+              />
+              <span className="text-sm text-slate-200">{allLabel}</span>
+            </label>
+            
+            {unGrouped.map((opt) => (
+              <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={value.includes(opt.value)}
+                  onChange={() => toggleOption(opt.value)}
+                  className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+                />
+                <span className="text-sm text-slate-200">{opt.label}</span>
+              </label>
+            ))}
+
+            {Object.entries(groups).map(([groupName, groupOpts]) => (
+              <div key={groupName}>
+                <div className="px-3 py-1 mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">{groupName}</div>
+                {groupOpts.map((opt) => (
+                  <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={value.includes(opt.value)}
+                      onChange={() => toggleOption(opt.value)}
+                      className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+                    />
+                    <span className="text-sm text-slate-200">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function PracticePage() {
   const searchParams = useSearchParams();
@@ -237,8 +363,8 @@ export default function PracticePage() {
 
   // ── Setup state ────────────────────────────────────────────────────────────
   const [selectedMode,        setSelectedMode]        = useState<PracticeMode>('quick');
-  const [selectedSubject,     setSelectedSubject]     = useState<string>('All Subjects');
-  const [selectedTopic,       setSelectedTopic]       = useState<string>('');
+  const [selectedSubjects,    setSelectedSubjects]    = useState<string[]>(['All Subjects']);
+  const [selectedTopics,      setSelectedTopics]      = useState<string[]>(['All Topics']);
   const [selectedDifficulties,setSelectedDifficulties]= useState<Difficulty[]>(DEFAULT_DIFFICULTIES);
 
   // ── Session / view state ───────────────────────────────────────────────────
@@ -270,15 +396,14 @@ export default function PracticePage() {
   }, [mcqBank]);
 
   const topicsForSubject: string[] = React.useMemo(() => {
-    if (!selectedSubject || selectedSubject === 'All Subjects') return [];
-    const norm = normalizeText(selectedSubject);
-    const set = new Set(
-      mcqBank
-        .filter((q) => normalizeText(q.subject) === norm)
-        .map((q) => q.topic),
-    );
+    let filtered = mcqBank;
+    if (selectedSubjects.length > 0 && !selectedSubjects.includes('All Subjects')) {
+      const norms = selectedSubjects.map(normalizeText);
+      filtered = mcqBank.filter((q) => norms.includes(normalizeText(q.subject)));
+    }
+    const set = new Set(filtered.map((q) => q.topic).filter(Boolean));
     return Array.from(set).sort();
-  }, [mcqBank, selectedSubject]);
+  }, [mcqBank, selectedSubjects]);
 
   // ── Fetch ALL practice MCQs from API on mount ──────────────────────────────
   const fetchBank = useCallback(async () => {
@@ -358,12 +483,12 @@ export default function PracticePage() {
     const topicFromUrl   = searchParams.get('topic');
     const diffsFromUrl   = formatDifficulties(searchParams.get('diff'));
     const autoFromUrl    = searchParams.get('auto') === 'true';
-    const nextSubject = subjectFromUrl && subjectFromUrl !== 'all' ? subjectFromUrl : 'All Subjects';
-    const nextTopic   = topicFromUrl   && topicFromUrl   !== 'all' ? topicFromUrl   : '';
+    const nextSubjects = subjectFromUrl && subjectFromUrl !== 'all' ? subjectFromUrl.split(',') : ['All Subjects'];
+    const nextTopics   = topicFromUrl   && topicFromUrl   !== 'all' ? topicFromUrl.split(',') : ['All Topics'];
 
     setSelectedMode((c) => (c === modeFromUrl ? c : modeFromUrl));
-    setSelectedSubject((c) => (c === nextSubject ? c : nextSubject));
-    setSelectedTopic((c) => (c === nextTopic ? c : nextTopic));
+    setSelectedSubjects((c) => (arraysEqual(c, nextSubjects) ? c : nextSubjects));
+    setSelectedTopics((c) => (arraysEqual(c, nextTopics) ? c : nextTopics));
     setSelectedDifficulties((c) => (arraysEqual(c, diffsFromUrl) ? c : diffsFromUrl));
     setAutoStartRequested((c) => c || autoFromUrl);
   }, [searchParams]);
@@ -413,7 +538,7 @@ export default function PracticePage() {
   // ─── Actions ───────────────────────────────────────────────────────────────
   const startSession = (skipInstructions = false) => {
     const questions = buildSessionQuestions(
-      mcqBank, selectedMode, selectedSubject, selectedTopic, selectedDifficulties,
+      mcqBank, selectedMode, selectedSubjects, selectedTopics, selectedDifficulties,
     );
 
     if (questions.length === 0) {
@@ -430,8 +555,8 @@ export default function PracticePage() {
 
     const nextSession: SessionState = {
       mode: selectedMode,
-      subject: selectedSubject,
-      topic: selectedTopic,
+      subjects: selectedSubjects,
+      topics: selectedTopics,
       difficulties: selectedDifficulties,
       questions,
       currentIndex: 0,
@@ -463,7 +588,7 @@ export default function PracticePage() {
 
     try {
       const modeLabel = MODE_META[session.mode].label;
-      const title = `${modeLabel} - ${session.subject === 'All Subjects' ? 'Mixed' : session.subject}`;
+      const title = `${modeLabel} - ${session.subjects.includes('All Subjects') ? 'Mixed' : session.subjects.join(', ')}`;
       
       await fetch('/api/test-submissions', {
         method: 'POST',
@@ -822,49 +947,27 @@ export default function PracticePage() {
 
             {/* Subject + Topic */}
             <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              <div>
-                <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Subject</div>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => { setSelectedSubject(e.target.value); setSelectedTopic(''); }}
-                  className="w-full rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60"
-                >
-                  <option>All Subjects</option>
-                  {availableSubjectsWithParts.partA.length > 0 && (
-                    <optgroup label="Part A">
-                      {availableSubjectsWithParts.partA.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </optgroup>
-                  )}
-                  {availableSubjectsWithParts.partB.length > 0 && (
-                    <optgroup label="Part B">
-                      {availableSubjectsWithParts.partB.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </optgroup>
-                  )}
-                </select>
-              </div>
+              <MultiSelectDropdown
+                label="Subjects"
+                allLabel="All Subjects"
+                value={selectedSubjects}
+                onChange={(val) => {
+                   setSelectedSubjects(val);
+                   setSelectedTopics(['All Topics']);
+                }}
+                options={[
+                  ...availableSubjectsWithParts.partA.map(s => ({ label: s, value: s, group: 'Part A' })),
+                  ...availableSubjectsWithParts.partB.map(s => ({ label: s, value: s, group: 'Part B' }))
+                ]}
+              />
 
-              <div>
-                <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                  Topic {topicsForSubject.length > 0 && <span className="normal-case text-brand-400 ml-1">({topicsForSubject.length} available)</span>}
-                </div>
-                {topicsForSubject.length > 0 ? (
-                  <select
-                    value={selectedTopic}
-                    onChange={(e) => setSelectedTopic(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60"
-                  >
-                    <option value="">All Topics</option>
-                    {topicsForSubject.map((t) => <option key={t}>{t}</option>)}
-                  </select>
-                ) : (
-                  <input
-                    value={selectedTopic}
-                    onChange={(e) => setSelectedTopic(e.target.value)}
-                    placeholder="Optional topic filter"
-                    className="w-full rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors placeholder:text-slate-500 focus:border-brand-500/60"
-                  />
-                )}
-              </div>
+              <MultiSelectDropdown
+                label={`Topics ${topicsForSubject.length > 0 ? `(${topicsForSubject.length} available)` : ''}`}
+                allLabel="All Topics"
+                value={selectedTopics}
+                onChange={setSelectedTopics}
+                options={topicsForSubject.map(t => ({ label: t, value: t }))}
+              />
             </div>
 
             {/* Difficulty */}
@@ -937,7 +1040,9 @@ export default function PracticePage() {
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
                   <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Subject</div>
-                  <div className="mt-1 text-base font-bold text-white truncate">{selectedSubject}</div>
+                  <div className="mt-1 text-base font-bold text-white truncate" title={selectedSubjects.join(', ')}>
+                    {selectedSubjects.includes('All Subjects') ? 'All Subjects' : selectedSubjects.join(', ')}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
                   <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Difficulty</div>
@@ -993,7 +1098,7 @@ export default function PracticePage() {
                   {[
                     ['Mode',      activeModeMeta.label],
                     ['Questions', session.questions.length],
-                    ['Subject',   session.subject],
+                    ['Subject',   session.subjects.includes('All Subjects') ? 'All Subjects' : session.subjects.join(', ')],
                     ['Timer',     activeModeMeta.timerMinutes ? `${activeModeMeta.timerMinutes} minutes` : 'Not timed'],
                   ].map(([k, v]) => (
                     <div key={String(k)} className="flex items-center justify-between">
@@ -1123,7 +1228,7 @@ export default function PracticePage() {
 
                 {/* Question text */}
                 <div className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5 md:p-6">
-                  <div className="text-lg font-semibold leading-8 text-white">{displayedQuestion?.question}</div>
+                  <div className="text-base md:text-lg font-semibold leading-7 md:leading-8 text-white">{displayedQuestion?.question}</div>
                 </div>
 
                 {/* Options */}
@@ -1316,26 +1421,12 @@ export default function PracticePage() {
             </div>
 
             <div className="glass-card rounded-[1.75rem] border border-white/5 p-5">
-              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Live Score</div>
-              <div className="mt-4 space-y-3 text-sm text-slate-300">
-                {[
-                  ['Correct',      result.correct,      'text-accent'],
-                  ['Wrong',        result.wrong,        'text-danger'],
-                  ['Not attempted',result.notAttempted, 'text-sky-400'],
-                  ['Unanswered',   result.unanswered,   'text-warning'],
-                ].map(([label, val, cls]) => (
-                  <div key={String(label)} className="flex items-center justify-between">
-                    <span>{label}</span>
-                    <span className={`font-bold ${cls}`}>{val}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-4">
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Current score</div>
-                <div className="mt-2 text-2xl font-black text-white">{result.finalScore.toFixed(2)}</div>
-              </div>
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Exam Actions</div>
+              <p className="mt-4 text-sm text-slate-400 leading-relaxed">
+                Click below when you are ready to finish the session. Your final score and full review will be available after submission.
+              </p>
               <button type="button" onClick={confirmSubmit}
-                className="mt-5 w-full rounded-xl bg-gradient-to-r from-danger to-red-500 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white">
+                className="mt-5 w-full rounded-xl bg-gradient-to-r from-danger to-red-500 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_8px_20px_rgba(239,68,68,0.2)] transition-transform hover:scale-[1.02]">
                 Submit Exam
               </button>
             </div>

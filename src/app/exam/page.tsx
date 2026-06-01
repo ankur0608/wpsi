@@ -6,16 +6,20 @@ export default function Subjects() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ averagePercentage: number; totalTests: number; submissions: any[] }>({ averagePercentage: 0, totalTests: 0, submissions: [] });
 
   useEffect(() => {
-    fetch('/api/syllabus')
-      .then(res => res.json())
-      .then(json => {
-        if (json.data) setData(json.data);
+    Promise.all([
+      fetch('/api/syllabus').then(res => res.json()),
+      fetch('/api/test-submissions').then(res => res.json())
+    ])
+      .then(([syllabusRes, progressRes]) => {
+        if (syllabusRes.data) setData(syllabusRes.data);
+        if (progressRes.data) setProgress(progressRes.data);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to fetch syllabus', err);
+        console.error('Failed to fetch dashboard data', err);
         setLoading(false);
       });
   }, []);
@@ -62,8 +66,8 @@ export default function Subjects() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
                 <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(99,102,241,0.08)","border":"1px solid rgba(99,102,241,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-brand-400 shrink-0" style={{"background":"rgba(99,102,241,0.15)"}}><i className="fa-solid fa-layer-group text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">{loading ? '-' : totalSubjects}</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Subjects</div></div></div>
                 <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(16,185,129,0.08)","border":"1px solid rgba(16,185,129,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-accent shrink-0" style={{"background":"rgba(16,185,129,0.15)"}}><i className="fa-solid fa-list-check text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">{loading ? '-' : totalTopics}</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Topics</div></div></div>
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(245,158,11,0.08)","border":"1px solid rgba(245,158,11,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-warning shrink-0" style={{"background":"rgba(245,158,11,0.15)"}}><i className="fa-solid fa-trophy text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">{loading ? '-' : data.length}</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Exams</div></div></div>
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(139,92,246,0.08)","border":"1px solid rgba(139,92,246,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-secondary shrink-0" style={{"background":"rgba(139,92,246,0.15)"}}><i className="fa-solid fa-chart-line text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">0%</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Progress</div></div></div>
+                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(245,158,11,0.08)","border":"1px solid rgba(245,158,11,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-warning shrink-0" style={{"background":"rgba(245,158,11,0.15)"}}><i className="fa-solid fa-trophy text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">{loading ? '-' : progress.totalTests}</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Tests Taken</div></div></div>
+                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(139,92,246,0.08)","border":"1px solid rgba(139,92,246,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-secondary shrink-0" style={{"background":"rgba(139,92,246,0.15)"}}><i className="fa-solid fa-chart-line text-sm"></i></div><div><div className="text-lg font-bold text-white font-mono">{loading ? '-' : `${progress.averagePercentage}%`}</div><div className="text-[10px] text-slate-400 uppercase font-semibold">Avg Score</div></div></div>
               </div>
             </div>
 
@@ -140,6 +144,11 @@ export default function Subjects() {
                             { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
                           ];
                           const c = colors[idx % colors.length];
+                          const subjectTests = progress.submissions.filter(s => s.title.includes(subject.name));
+                          const subjectAvg = subjectTests.length > 0 
+                            ? Math.round(subjectTests.reduce((acc, s) => acc + s.percentage, 0) / subjectTests.length) 
+                            : 0;
+
                           return (
                             <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
                               style={{background:'linear-gradient(145deg,rgba(20,29,46,0.9),rgba(11,15,26,0.95))', border:`1px solid ${c.bg}`}}>
@@ -151,10 +160,10 @@ export default function Subjects() {
                               </div>
                               <p className="text-[11px] text-slate-500 mb-3">{subject.topics?.length || 0} Chapters</p>
                               <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:'rgba(255,255,255,0.05)'}}>
-                                <div className="h-1.5 rounded-full transition-all duration-1000" style={{width: '0%'}}></div>
+                                <div className="h-1.5 rounded-full transition-all duration-1000 bg-brand-500" style={{width: `${subjectAvg}%`}}></div>
                               </div>
                               <div className="flex justify-between items-center text-[11px]">
-                                <span className="text-slate-500">Not Started</span>
+                                <span className="text-slate-500">{subjectAvg > 0 ? `${subjectAvg}% Avg Score` : 'Not Started'}</span>
                                 <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
                               </div>
                             </Link>
@@ -174,6 +183,11 @@ export default function Subjects() {
                         { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
                       ];
                       const c = colors[idx % colors.length];
+                      const subjectTests = progress.submissions.filter(s => s.title.includes(subject.name));
+                      const subjectAvg = subjectTests.length > 0 
+                        ? Math.round(subjectTests.reduce((acc, s) => acc + s.percentage, 0) / subjectTests.length) 
+                        : 0;
+
                       return (
                         <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
                           style={{background:'linear-gradient(145deg,rgba(20,29,46,0.9),rgba(11,15,26,0.95))', border:`1px solid ${c.bg}`}}>
@@ -185,10 +199,10 @@ export default function Subjects() {
                           </div>
                           <p className="text-[11px] text-slate-500 mb-3">{subject.topics?.length || 0} Chapters</p>
                           <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:'rgba(255,255,255,0.05)'}}>
-                            <div className="h-1.5 rounded-full transition-all duration-1000" style={{width: '0%'}}></div>
+                            <div className="h-1.5 rounded-full transition-all duration-1000 bg-brand-500" style={{width: `${subjectAvg}%`}}></div>
                           </div>
                           <div className="flex justify-between items-center text-[11px]">
-                            <span className="text-slate-500">Not Started</span>
+                            <span className="text-slate-500">{subjectAvg > 0 ? `${subjectAvg}% Avg Score` : 'Not Started'}</span>
                             <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
                           </div>
                         </Link>

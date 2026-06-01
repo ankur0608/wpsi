@@ -15,10 +15,12 @@ export async function GET(req: NextRequest) {
 
     const where: any = {};
     if (subject && subject !== 'all') {
-      where.topic = { subject: { name: subject } };
+      const subjectList = subject.split(',').map(s => s.trim());
+      where.topic = { subject: { name: { in: subjectList } } };
     }
     if (topic && topic !== 'all') {
-      where.topic = { ...where.topic, name: { contains: topic, mode: 'insensitive' as const } };
+      const topicList = topic.split(',').map(t => t.trim());
+      where.topic = { ...where.topic, name: { in: topicList } };
     }
     if (difficulty) {
       where.difficulty = difficulty;

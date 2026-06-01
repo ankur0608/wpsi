@@ -23,13 +23,13 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const displayLevel = user?.level;
 
   const links: NavLink[] = [
-    { href: "/dashboard",  icon: "fa-house",           label: "Dashboard"         },
-    { href: "/subjects",   icon: "fa-book",             label: "Syllabus & Topics" },
-    { href: "/practice",   icon: "fa-pen-to-square",    label: "MCQ Practice"      },
-    { href: "/test",       icon: "fa-clipboard-check",  label: "Mock Tests"        },
-    { href: "/results",    icon: "fa-chart-pie",        label: "Results"           },
-    { href: "/bookmarks",  icon: "fa-bookmark",         label: "Saved MCQs"        },
-    { href: "/pricing",    icon: "fa-tags",             label: "Pricing & Plans"   },
+    { href: "/dashboard", icon: "fa-house", label: "Dashboard" },
+    { href: "/exam", icon: "fa-book", label: "Exam" },
+    { href: "/practice", icon: "fa-pen-to-square", label: "MCQ Practice" },
+    { href: "/test", icon: "fa-clipboard-check", label: "Mock Tests" },
+    { href: "/results", icon: "fa-chart-pie", label: "Results" },
+    { href: "/bookmarks", icon: "fa-bookmark", label: "Saved MCQs" },
+    { href: "/pricing", icon: "fa-tags", label: "Pricing & Plans" },
   ];
 
   const isActive = (href: string) => {
@@ -42,17 +42,15 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       {/* Mobile overlay */}
       <div
         id="mobile-sidebar-overlay"
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
-          isOpen ? "visible opacity-100" : "invisible opacity-0"
-        }`}
+        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
+          }`}
         onClick={onClose}
       />
 
       <aside
         id="sidebar"
-        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col shadow-[0_0_80px_rgba(0,0,0,0.6)] transition-transform duration-300 md:relative md:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col shadow-[0_0_80px_rgba(0,0,0,0.6)] transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         style={{
           background: "rgba(9, 21, 34, 0.99)",
           borderRight: "1px solid rgba(212, 146, 42, 0.12)",
@@ -114,15 +112,13 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   key={link.href}
                   href={link.href}
                   onClick={onClose}
-                  className={`nav-item group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                    active ? "nav-active" : "border-transparent"
-                  }`}
+                  className={`nav-item group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active ? "nav-active" : "border-transparent"
+                    }`}
                   style={{ color: active ? "#F2ECD9" : "rgba(255,255,255,0.55)" }}
                 >
                   <div
-                    className={`nav-icon flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-                      active ? "" : "group-hover:bg-white/5"
-                    }`}
+                    className={`nav-icon flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${active ? "" : "group-hover:bg-white/5"
+                      }`}
                     style={
                       active
                         ? { background: "rgba(212,146,42,0.18)", color: "#D4922A" }
@@ -205,8 +201,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   {loading
                     ? "Syncing profile"
                     : displayLevel !== undefined
-                    ? `Level ${displayLevel}`
-                    : "Profile unavailable"}
+                      ? `Level ${displayLevel}`
+                      : "Profile unavailable"}
                 </div>
               </div>
             </Link>

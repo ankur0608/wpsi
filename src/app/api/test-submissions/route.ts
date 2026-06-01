@@ -43,3 +43,41 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = getSessionFromRequest(request);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Not authenticated' },
+        { status: 401 }
+      );
+    }
+
+    const submissions = await prisma.testSubmission.findMany({
+      where: { userId: session.userId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    let averagePercentage = 0;
+    if (submissions.length > 0) {
+      const sum = submissions.reduce((acc, sub) => acc + sub.percentage, 0);
+      averagePercentage = Math.round(sum / submissions.length);
+    }
+
+    return NextResponse.json({ 
+      data: {
+        submissions,
+        averagePercentage,
+        totalTests: submissions.length
+      } 
+    }, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching test submissions:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch test submissions' },
+      { status: 500 }
+    );
+  }
+}
