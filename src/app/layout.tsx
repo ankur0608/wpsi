@@ -25,8 +25,8 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mcqprepzone.online'),
   title: {
-    default: "Mcpprepzone - Elite Government Exam Preparation",
-    template: "%s | Mcpprepzone"
+    default: "Mcqprepzone - Elite Government Exam Preparation",
+    template: "%s | Mcqprepzone"
   },
   description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
   keywords: [
@@ -50,22 +50,22 @@ export const metadata: Metadata = {
     "police sub inspector exam",
     "GSSSB exams",
     "Gujarat competitive exams",
-    "Mcpprepzone"
+    "Mcqprepzone"
   ],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Mcpprepzone - Elite Government Exam Preparation",
+    title: "Mcqprepzone - Elite Government Exam Preparation",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
     url: 'https://mcqprepzone.online',
-    siteName: 'Mcpprepzone',
+    siteName: 'Mcqprepzone',
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Mcpprepzone - Elite Government Exam Preparation",
+    title: "Mcqprepzone - Elite Government Exam Preparation",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
   },
   robots: {
@@ -96,13 +96,13 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "EducationalOrganization",
-              "name": "Mcpprepzone",
+              "name": "Mcqprepzone",
               "url": "https://mcqprepzone.online",
               "description": "Premium mock tests, AI study planner, and interactive MCQ practice for students preparing for GPSC, SSC, and other government exams.",
               "sameAs": [
-                "https://twitter.com/mcpprepzone",
-                "https://facebook.com/mcpprepzone",
-                "https://instagram.com/mcpprepzone"
+                "https://twitter.com/mcqprepzone",
+                "https://facebook.com/mcqprepzone",
+                "https://instagram.com/mcqprepzone"
               ]
             })
           }}

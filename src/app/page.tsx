@@ -129,7 +129,7 @@ export default function Home() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center shadow-lg shadow-brand-500/30">
                 <i className="fa-solid fa-graduation-cap text-xl text-white"></i>
               </div>
-              <span className="font-heading font-bold text-2xl tracking-tight">Mcpprep<span className="text-brand-500">zone</span></span>
+              <span className="font-heading font-bold text-2xl tracking-tight">Mcqprep<span className="text-brand-500">zone</span></span>
             </div>
 
             {/* Desktop Menu */}
@@ -152,6 +152,7 @@ export default function Home() {
                     width={36}
                     height={36}
                     className="rounded-full border border-white/10"
+                    unoptimized
                   />
                   <div className="text-left">
                     <div className="text-sm font-semibold text-white leading-tight">{displayName}</div>
@@ -199,6 +200,7 @@ export default function Home() {
                     width={40}
                     height={40}
                     className="rounded-full border border-white/10"
+                    unoptimized
                   />
                   <div>
                     <div className="text-sm font-bold text-white">{displayName}</div>
@@ -386,7 +388,7 @@ export default function Home() {
               <div className="glass-card rounded-2xl p-6 border border-white/10 shadow-2xl relative z-10">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <Image src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" width={48} height={48} className="rounded-full border-2 border-brand-500" />
+                    <Image src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" width={48} height={48} className="rounded-full border-2 border-brand-500" unoptimized />
                     <div>
                       <h5 className="font-bold">Rahul Parmar</h5>
                       <p className="text-xs text-brand-400 font-medium">Level 14 Scholar</p>

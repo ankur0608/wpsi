@@ -11,7 +11,7 @@ export default function LandingFooter() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center">
                 <i className="fa-solid fa-graduation-cap text-white text-sm"></i>
               </div>
-              <span className="font-heading font-bold text-xl text-white">Mcpprep<span className="text-brand-500">zone</span></span>
+              <span className="font-heading font-bold text-xl text-white">Mcqprep<span className="text-brand-500">zone</span></span>
             </div>
             <p className="text-slate-400 text-sm mb-6">Empowering aspirants to achieve their government job dreams with AI-driven, gamified learning.</p>
             <div className="flex space-x-4">
@@ -66,7 +66,7 @@ export default function LandingFooter() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>&copy; 2026 Mcpprepzone. All rights reserved.</p>
+          <p>&copy; 2026 Mcqprepzone. All rights reserved.</p>
           <div className="flex space-x-6 flex-wrap justify-center mt-4 md:mt-0">
             <Link href="/faq" className="hover:text-slate-300">FAQ</Link>
             <Link href="/terms" className="hover:text-slate-300">Terms</Link>

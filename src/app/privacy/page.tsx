@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Read the Privacy Policy for Mcpprepzone to understand how we collect, use, and protect your personal data.',
+  description: 'Read the Privacy Policy for Mcqprepzone to understand how we collect, use, and protect your personal data.',
 };
 
 export default function PrivacyPage() {

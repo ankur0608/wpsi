@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Refund Policy',
-  description: 'Read the Cancellation and Refund Policy for Mcpprepzone.',
+  description: 'Read the Cancellation and Refund Policy for Mcqprepzone.',
 };
 
 export default function RefundPolicyPage() {

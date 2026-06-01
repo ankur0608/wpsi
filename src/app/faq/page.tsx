@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
-  description: 'Find answers to common questions about Mcpprepzone, including details about our government exam mock tests, pricing plans, syllabus coverage for Wireless PSI and GPSC, and platform features.',
+  description: 'Find answers to common questions about Mcqprepzone, including details about our government exam mock tests, pricing plans, syllabus coverage for Wireless PSI and GPSC, and platform features.',
 };
 
 export default function FAQPage() {
@@ -17,7 +17,7 @@ export default function FAQPage() {
           Frequently Asked <span className="text-gradient">Questions</span>
         </h1>
         <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
-          Everything you need to know about Mcpprepzone's mock tests, study materials, and platform features for Gujarat Government exams.
+          Everything you need to know about Mcqprepzone's mock tests, study materials, and platform features for Gujarat Government exams.
         </p>
 
         <div className="space-y-6">
@@ -38,7 +38,7 @@ export default function FAQPage() {
           <div className="glass-card p-6 rounded-2xl border border-white/5">
             <h3 className="text-xl font-bold mb-3 text-white">Can I access the platform on my mobile phone?</h3>
             <p className="text-slate-300 leading-relaxed">
-              Absolutely! Mcpprepzone is fully responsive and optimized for mobile devices. You can practice MCQs, check your stats, and take full-length mock tests on any smartphone or tablet directly through your web browser.
+              Absolutely! Mcqprepzone is fully responsive and optimized for mobile devices. You can practice MCQs, check your stats, and take full-length mock tests on any smartphone or tablet directly through your web browser.
             </p>
           </div>
 
