@@ -648,6 +648,7 @@ export default function PracticePage() {
   // ── Navigation ─────────────────────────────────────────────────────────────
   const selectOption = (option: AnswerKey) => {
     if (!session || !currentQuestion || session.submitted) return;
+    if (session.responses[currentQuestion.id] !== undefined) return;
     updateSession((cur) => ({
       ...cur,
       responses: { ...cur.responses, [currentQuestion.id]: option },
@@ -678,14 +679,7 @@ export default function PracticePage() {
     }));
   };
 
-  const clearResponse = () => {
-    if (!session || !currentQuestion || session.submitted) return;
-    updateSession((cur) => {
-      const next = { ...cur.responses };
-      delete next[currentQuestion.id];
-      return { ...cur, responses: next };
-    });
-  };
+
 
   const toggleReviewMark = () => {
     if (!session || !currentQuestion || session.submitted) return;
@@ -1303,12 +1297,7 @@ export default function PracticePage() {
                       <span className="hidden md:inline">Mark for Review</span>
                     </button>
                     
-                    <button type="button" onClick={clearResponse}
-                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-danger/10 bg-danger/5 p-2 text-[10px] font-bold text-danger transition-colors hover:bg-danger/10 md:min-w-0 md:flex-row md:border-danger/20 md:bg-danger/10 md:px-4 md:py-2.5 md:text-sm">
-                      <i className="fa-solid fa-xmark text-sm md:hidden"></i>
-                      <span className="md:hidden">Clear</span>
-                      <span className="hidden md:inline">Clear</span>
-                    </button>
+
 
                     {/* Mobile Only Save Button */}
                     <button type="button" onClick={(e) => toggleBookmark(e)}
