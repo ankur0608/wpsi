@@ -17,15 +17,23 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [otp, setOtp] = useState("");
+  const [verificationId, setVerificationId] = useState("");
 
   const handleClose = useCallback(() => {
     setError("");
     setName("");
     setEmail("");
+    setMobile("");
     setPassword("");
+    setOtp("");
+    setVerificationId("");
+    setStep(1);
     onClose();
   }, [onClose]);
 
@@ -33,7 +41,11 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setError("");
     setName("");
     setEmail("");
+    setMobile("");
     setPassword("");
+    setOtp("");
+    setVerificationId("");
+    setStep(1);
     onModeChange(nextMode);
   };
 
@@ -63,10 +75,56 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setError("");
     setLoading(true);
 
-    const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
-    const payload = mode === "login" ? { email, password } : { name, email, password };
-
     try {
+      if (mode === "register" && step === 1) {
+        // Step 1: Send OTP
+        const response = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          setVerificationId(data.verificationId);
+          setStep(2);
+          setLoading(false);
+          return;
+        } else {
+          setError(data.error || "Failed to send OTP");
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (mode === "register" && step === 2) {
+        // Step 2: Verify OTP
+        const response = await fetch("/api/auth/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile, otp, verificationId }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          setStep(3);
+          setLoading(false);
+          return;
+        } else {
+          setError(data.error || "Failed to verify OTP");
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Login or Step 3 Register
+      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
+      const payload = mode === "login" 
+        ? { email, password } 
+        : { name, email, password, mobile }; // OTP is checked via verified_mobile cookie
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -138,16 +196,17 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         {error && <div className="mb-4 text-red-500 text-sm text-center">{error}</div>}
 
         <form onSubmit={handleSubmit} className={isLogin ? "space-y-5" : "space-y-4"}>
-          {!isLogin && (
+          {!isLogin && step === 1 && (
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Mobile Number</label>
               <div className="relative">
-                <i className="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
+                <i className="fa-solid fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
                 <input
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Rahul Parmar"
+                  type="tel"
+                  value={mobile}
+                  onChange={(event) => setMobile(event.target.value)}
+                  placeholder="9999999999"
+                  pattern="[0-9]{10}"
                   className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
                   required
                 />
@@ -155,49 +214,103 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
-            <div className="relative">
-              <i className="fa-solid fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
-                required
-              />
+          {!isLogin && step === 2 && (
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enter OTP</label>
+              <div className="relative">
+                <i className="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(event) => setOtp(event.target.value)}
+                  placeholder="123456"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+                  required
+                />
+              </div>
+              <p className="text-xs text-slate-400 mt-2">OTP sent to {mobile}. <button type="button" onClick={() => setStep(1)} className="text-brand-400 hover:underline">Change number</button></p>
             </div>
-          </div>
+          )}
 
-          <div>
-            <div className={isLogin ? "flex justify-between items-center mb-2" : "mb-2"}>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
-              {isLogin && (
-                <a href="#" className="text-xs text-brand-400 hover:text-brand-300 font-bold transition-colors">
-                  Forgot Password?
-                </a>
-              )}
-            </div>
-            <div className="relative">
-              <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
-                required
-              />
-            </div>
-          </div>
+          {!isLogin && step === 3 && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Verified Mobile Number</label>
+                <div className="relative">
+                  <i className="fa-solid fa-check-circle absolute left-4 top-1/2 transform -translate-y-1/2 text-accent" />
+                  <input
+                    type="tel"
+                    value={mobile}
+                    readOnly
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-slate-400 cursor-not-allowed"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+                <div className="relative">
+                  <i className="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Rahul Parmar"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {(isLogin || (!isLogin && step === 3)) && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                <div className="relative">
+                  <i className="fa-solid fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className={isLogin ? "flex justify-between items-center mb-2" : "mb-2"}>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
+                  {isLogin && (
+                    <a href="#" className="text-xs text-brand-400 hover:text-brand-300 font-bold transition-colors">
+                      Forgot Password?
+                    </a>
+                  )}
+                </div>
+                <div className="relative">
+                  <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder={isLogin ? "Enter your password" : "Create a strong password"}
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3 rounded-xl btn-primary font-bold shadow-lg shadow-brand-500/20 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"} <i className="fa-solid fa-arrow-right ml-2" />
+            {loading ? "Please wait..." : isLogin ? "Sign In" : step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Create Account"} <i className="fa-solid fa-arrow-right ml-2" />
           </button>
         </form>
 

@@ -287,29 +287,29 @@ function MultiSelectDropdown({
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+      <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">
         {label}
       </div>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left rounded-2xl border border-white/10 bg-dark-bg/70 px-4 py-3 text-sm font-medium text-white outline-none transition-colors focus:border-brand-500/60 flex justify-between items-center"
+        className="w-full text-left rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] outline-none transition-colors focus:border-brand-500/60 flex justify-between items-center"
       >
         <span className="truncate">{displayText}</span>
         <i className={`fa-solid fa-chevron-down transition-transform ${isOpen ? 'rotate-180' : ''}`}></i>
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-white/10 bg-[#11141d] shadow-2xl overflow-hidden max-h-64 flex flex-col">
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border-subtle)] bg-[#11141d] shadow-2xl overflow-hidden max-h-64 flex flex-col">
           <div className="overflow-y-auto p-2 space-y-1">
             <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
               <input
                 type="checkbox"
                 checked={value.includes(allLabel) || value.length === 0}
                 onChange={() => toggleOption(allLabel)}
-                className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+                className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
               />
-              <span className="text-sm text-slate-200">{allLabel}</span>
+              <span className="text-sm text-[var(--text-primary)]">{allLabel}</span>
             </label>
             
             {unGrouped.map((opt) => (
@@ -318,24 +318,24 @@ function MultiSelectDropdown({
                   type="checkbox"
                   checked={value.includes(opt.value)}
                   onChange={() => toggleOption(opt.value)}
-                  className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+                  className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
                 />
-                <span className="text-sm text-slate-200">{opt.label}</span>
+                <span className="text-sm text-[var(--text-primary)]">{opt.label}</span>
               </label>
             ))}
 
             {Object.entries(groups).map(([groupName, groupOpts]) => (
               <div key={groupName}>
-                <div className="px-3 py-1 mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">{groupName}</div>
+                <div className="px-3 py-1 mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{groupName}</div>
                 {groupOpts.map((opt) => (
                   <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
                     <input
                       type="checkbox"
                       checked={value.includes(opt.value)}
                       onChange={() => toggleOption(opt.value)}
-                      className="w-4 h-4 rounded border-white/10 bg-transparent text-brand-500 focus:ring-brand-500/30"
+                      className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
                     />
-                    <span className="text-sm text-slate-200">{opt.label}</span>
+                    <span className="text-sm text-[var(--text-primary)]">{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -412,7 +412,8 @@ export default function PracticePage() {
     setBankLoading(true);
     setBankError(null);
     try {
-      let url = '/api/practice-mcqs?limit=500&page=1';
+      const testId = searchParams.get('testId');
+      let url = testId ? `/api/mock-tests/${testId}/questions` : '/api/practice-mcqs?limit=500&page=1';
       const subject = searchParams.get('subject');
       const topic = searchParams.get('topic');
       if (subject && subject !== 'all') url += `&subject=${encodeURIComponent(subject)}`;
@@ -786,7 +787,7 @@ export default function PracticePage() {
   };
 
   const paletteStyleMap: Record<string, { background: string; borderColor: string; color: string }> = {
-    's-none':      { background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: '#94a3b8' },
+    's-none':      { background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: "var(--text-muted)" },
     's-unanswered':{ background: 'rgba(239,68,68,0.1)',    borderColor: 'rgba(239,68,68,0.25)',    color: '#fca5a5' },
     's-na':        { background: 'rgba(56,189,248,0.12)',  borderColor: 'rgba(56,189,248,0.28)',   color: '#7dd3fc' },
     's-answered':  { background: 'rgba(16,185,129,0.12)',  borderColor: 'rgba(16,185,129,0.26)',   color: '#86efac' },
@@ -798,7 +799,7 @@ export default function PracticePage() {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="h-12 w-12 rounded-full border-4 border-brand-500/20 border-t-brand-500 animate-spin" />
-        <p className="text-sm text-slate-400">Loading MCQ bank from database…</p>
+        <p className="text-sm text-[var(--text-muted)]">Loading MCQ bank from database…</p>
       </div>
     );
   }
@@ -808,11 +809,11 @@ export default function PracticePage() {
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="text-4xl">⚠️</div>
         <p className="text-sm font-bold text-danger">Failed to load MCQs</p>
-        <p className="text-xs text-slate-500">{bankError}</p>
+        <p className="text-xs text-[var(--text-muted)]">{bankError}</p>
         <button
           type="button"
           onClick={() => { fetchedRef.current = false; fetchBank(); }}
-          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-white"
+          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-[var(--text-primary)]"
         >
           Retry
         </button>
@@ -824,8 +825,8 @@ export default function PracticePage() {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="text-4xl">📭</div>
-        <p className="text-sm font-bold text-white">No MCQs found in the database</p>
-        <p className="text-xs text-slate-500">Upload MCQs from the Admin panel to get started.</p>
+        <p className="text-sm font-bold text-[var(--text-primary)]">No MCQs found in the database</p>
+        <p className="text-xs text-[var(--text-muted)]">Upload MCQs from the Admin panel to get started.</p>
       </div>
     );
   }
@@ -837,7 +838,7 @@ export default function PracticePage() {
       {/* <section
         className="rounded-[2rem] border p-6 md:p-8 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.16), rgba(20,29,46,0.96))',
+          background: 'linear-gradient(135deg, rgba(99,102,241,0.16), var(--bg-surface))',
           borderColor: 'rgba(99,102,241,0.24)',
         }}
       >
@@ -847,30 +848,30 @@ export default function PracticePage() {
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-400/25 bg-brand-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-brand-300">
               Live MCQ Workspace
             </div>
-            <h2 className="text-2xl font-heading font-black text-white md:text-4xl">
+            <h2 className="text-2xl font-heading font-black text-[var(--text-primary)] md:text-4xl">
               Practice exactly like the real exam — powered by live data
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-300">
+            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
               MCQs are fetched live from the database. Setup your filters, pick a mode, and start your session.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">User</div>
-              <div className="mt-1 text-sm font-bold text-white">{user?.name ?? 'Loading…'}</div>
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">User</div>
+              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.name ?? 'Loading…'}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Coins</div>
-              <div className="mt-1 text-sm font-bold text-white">{user?.coins?.toLocaleString() ?? '--'}</div>
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Coins</div>
+              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.coins?.toLocaleString() ?? '--'}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Streak</div>
-              <div className="mt-1 text-sm font-bold text-white">{user?.streak ?? '--'} days</div>
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Streak</div>
+              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.streak ?? '--'} days</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Bank</div>
-              <div className="mt-1 text-sm font-bold text-white">{totalInDb.toLocaleString()} MCQs</div>
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Bank</div>
+              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{totalInDb.toLocaleString()} MCQs</div>
             </div>
           </div>
         </div>
@@ -888,18 +889,18 @@ export default function PracticePage() {
 
       {view === 'setup' && (
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <div className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-400">Session Setup</div>
-                <h3 className="mt-2 text-2xl font-heading font-black text-white">Choose your MCQ mode</h3>
-                <p className="mt-2 max-w-xl text-sm text-slate-400">
+                <h3 className="mt-2 text-2xl font-heading font-black text-[var(--text-primary)]">Choose your MCQ mode</h3>
+                <p className="mt-2 max-w-xl text-sm text-[var(--text-muted)]">
                   Setup, instructions, question palette, results, and review — the same flow as the original HTML exam.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-dark-bg/60 px-4 py-3 text-right">
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Current preset</div>
-                <div className="mt-1 text-sm font-bold text-white">{MODE_META[selectedMode].label}</div>
+              <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)]/60 px-4 py-3 text-right">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Current preset</div>
+                <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{MODE_META[selectedMode].label}</div>
               </div>
             </div>
 
@@ -915,22 +916,22 @@ export default function PracticePage() {
                     onClick={() => setSelectedMode(mode)}
                     className={`rounded-[1.5rem] border p-5 text-left transition-all ${active ? 'scale-[1.01]' : 'hover:-translate-y-1'}`}
                     style={{
-                      background:  active ? 'linear-gradient(145deg, rgba(99,102,241,0.14), rgba(20,29,46,0.98))' : 'linear-gradient(145deg, rgba(20,29,46,0.92), rgba(11,15,26,0.98))',
+                      background:  active ? 'linear-gradient(145deg, rgba(99,102,241,0.14), var(--bg-surface))' : 'var(--glass-card-bg)',
                       borderColor: active ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)',
                       boxShadow:   active ? '0 18px 40px rgba(99,102,241,0.12)' : 'none',
                     }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${meta.accent} text-white shadow-lg`}>
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${meta.accent} text-[var(--text-primary)] shadow-lg`}>
                         <i className={`fa-solid ${meta.icon}`} />
                       </div>
                       {active && <i className="fa-solid fa-circle-check text-brand-400" />}
                     </div>
-                    <div className="mt-5 text-lg font-bold text-white">{meta.label}</div>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">{meta.description}</p>
+                    <div className="mt-5 text-lg font-bold text-[var(--text-primary)]">{meta.label}</div>
+                    <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{meta.description}</p>
                     <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
-                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">{meta.questionCount} Questions</span>
-                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+                      <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-[var(--text-secondary)]">{meta.questionCount} Questions</span>
+                      <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-[var(--text-secondary)]">
                         {meta.timerMinutes ? `${meta.timerMinutes} Min Timer` : 'Untimed'}
                       </span>
                     </div>
@@ -966,7 +967,7 @@ export default function PracticePage() {
 
             {/* Difficulty */}
             <div className="mt-8">
-              <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Difficulty</div>
+              <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Difficulty</div>
               <div className="flex flex-wrap gap-3">
                 {DEFAULT_DIFFICULTIES.map((diff) => {
                   const active = selectedDifficulties.includes(diff);
@@ -985,9 +986,9 @@ export default function PracticePage() {
                       }}
                       className="rounded-full border px-4 py-2 text-sm font-bold transition-all"
                       style={{
-                        background:  active ? 'rgba(99,102,241,0.14)' : 'rgba(255,255,255,0.03)',
-                        borderColor: active ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.1)',
-                        color:       active ? '#c7d2fe' : '#94a3b8',
+                        background:  active ? 'rgba(99,102,241,0.14)' : "var(--bg-surface)",
+                        borderColor: active ? 'rgba(99,102,241,0.35)' : "var(--border-subtle)",
+                        color:       active ? '#c7d2fe' : "var(--text-muted)",
                       }}
                     >
                       {diff}
@@ -1002,13 +1003,13 @@ export default function PracticePage() {
               <button
                 type="button"
                 onClick={() => startSession()}
-                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition-transform hover:scale-[1.02]"
+                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--text-primary)] shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition-transform hover:scale-[1.02]"
               >
                 Continue to Instructions
               </button>
               <Link
                 href="/test"
-                className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-slate-300 transition-colors hover:text-white"
+                className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-6 py-3 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
                 View Mock Tests
               </Link>
@@ -1017,44 +1018,44 @@ export default function PracticePage() {
 
           {/* Sidebar preview */}
           <aside className="space-y-6">
-            <div className="glass-card rounded-[1.75rem] border border-white/5 p-6">
+            <div className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6">
               <div className="text-[11px] font-black uppercase tracking-[0.2em] text-accent">Preview</div>
-              <h3 className="mt-2 text-xl font-heading font-black text-white">{modeMeta.label}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-400">{modeMeta.description}</p>
+              <h3 className="mt-2 text-xl font-heading font-black text-[var(--text-primary)]">{modeMeta.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{modeMeta.description}</p>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Questions</div>
-                  <div className="mt-1 text-base font-bold text-white">{modeMeta.questionCount}</div>
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Questions</div>
+                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">{modeMeta.questionCount}</div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Timer</div>
-                  <div className="mt-1 text-base font-bold text-white">
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Timer</div>
+                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">
                     {modeMeta.timerMinutes ? `${modeMeta.timerMinutes} min` : 'No timer'}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Subject</div>
-                  <div className="mt-1 text-base font-bold text-white truncate" title={selectedSubjects.join(', ')}>
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Subject</div>
+                  <div className="mt-1 text-base font-bold text-[var(--text-primary)] truncate" title={selectedSubjects.join(', ')}>
                     {selectedSubjects.includes('All Subjects') ? 'All Subjects' : selectedSubjects.join(', ')}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-dark-bg/70 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Difficulty</div>
-                  <div className="mt-1 text-base font-bold text-white">{selectedDifficulties.join(', ')}</div>
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Difficulty</div>
+                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">{selectedDifficulties.join(', ')}</div>
                 </div>
               </div>
             </div>
 
-            <div className="glass-card rounded-[1.75rem] border border-white/5 p-6">
+            <div className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6">
               <div className="text-[11px] font-black uppercase tracking-[0.2em] text-warning">Scoring</div>
-              <ul className="mt-4 space-y-3 text-sm text-slate-300">
+              <ul className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
                 {[
                   { label: 'Correct answer',   score: '+1.00',  color: 'text-accent'  },
                   { label: 'Wrong answer',     score: '-0.25',  color: 'text-danger'  },
                   { label: 'Option E selected',score: '0.00',   color: 'text-sky-400' },
                   { label: 'Blank question',   score: '-0.25',  color: 'text-warning' },
                 ].map((row) => (
-                  <li key={row.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <li key={row.label} className="flex items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-4 py-3">
                     <span>{row.label}</span>
                     <span className={`font-bold ${row.color}`}>{row.score}</span>
                   </li>
@@ -1067,12 +1068,12 @@ export default function PracticePage() {
 
       {view === 'instructions' && session && (
         <div className="mx-auto max-w-4xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={restartSession}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-slate-300 transition-colors hover:text-white"
+                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
                 Back
               </button>
@@ -1080,15 +1081,15 @@ export default function PracticePage() {
                 {activeModeMeta.label}
               </span>
             </div>
-            <h3 className="mt-5 text-3xl font-heading font-black text-white">Exam Instructions</h3>
-            <p className="mt-2 text-sm leading-7 text-slate-400">
+            <h3 className="mt-5 text-3xl font-heading font-black text-[var(--text-primary)]">Exam Instructions</h3>
+            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
               Read these once before starting. The layout mirrors the original HTML flow.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5">
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Session Info</div>
-                <div className="mt-4 space-y-3 text-sm text-slate-300">
+              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Session Info</div>
+                <div className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
                   {[
                     ['Mode',      activeModeMeta.label],
                     ['Questions', session.questions.length],
@@ -1097,15 +1098,15 @@ export default function PracticePage() {
                   ].map(([k, v]) => (
                     <div key={String(k)} className="flex items-center justify-between">
                       <span>{k}</span>
-                      <span className="font-bold text-white">{v}</span>
+                      <span className="font-bold text-[var(--text-primary)]">{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5">
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Rules</div>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
+              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Rules</div>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
                   <li>Each correct answer gives 1 mark.</li>
                   <li>Wrong and blank answers both carry a -0.25 penalty.</li>
                   <li>Selecting option E marks the question as intentionally skipped with 0 marks.</li>
@@ -1115,10 +1116,10 @@ export default function PracticePage() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5">
-              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Palette Legend</div>
-              <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-300">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">Not visited</span>
+            <div className="mt-6 rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Palette Legend</div>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-[var(--text-secondary)]">
+                <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-2">Not visited</span>
                 <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-emerald-300">Answered</span>
                 <span className="rounded-full border border-red-400/25 bg-red-500/10 px-3 py-2 text-red-300">Visited, unanswered</span>
                 <span className="rounded-full border border-sky-400/25 bg-sky-500/10 px-3 py-2 text-sky-300">Not attempted (E)</span>
@@ -1130,14 +1131,14 @@ export default function PracticePage() {
               <button
                 type="button"
                 onClick={restartSession}
-                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-slate-300 transition-colors hover:text-white"
+                className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-5 py-3 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={beginExam}
-                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)]"
+                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--text-primary)] shadow-[0_18px_35px_rgba(99,102,241,0.25)]"
               >
                 Begin Session
               </button>
@@ -1145,334 +1146,419 @@ export default function PracticePage() {
           </section>
         </div>
       )}
-
-      {/* ─── EXAM ──────────────────────────────────────────────────────────── */}
+{/* ─── EXAM ──────────────────────────────────────────────────────────── */}
       {view === 'exam' && session && currentQuestion && (
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
-          <section className="space-y-6">
-            <div className="glass-card rounded-[1.75rem] border border-white/5 overflow-hidden">
+          <section className="w-full min-w-0">
+            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[#F2ECD9] p-3 md:p-4 shadow-2xl">
               {/* Header */}
-              <div className="flex flex-wrap items-center gap-3 border-b border-white/5 px-5 py-4">
-                <span className="text-sm font-bold text-white">
-                  Question {session.currentIndex + 1} / {session.questions.length}
-                </span>
-                {[currentQuestion.part ? `Part ${currentQuestion.part}` : '', currentQuestion.subject, currentQuestion.topic, currentQuestion.difficulty].filter(Boolean).map((tag, idx) => (
-                  <span key={`${tag}-${idx}`} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
-                    {tag}
-                  </span>
-                ))}
-                {session.markedForReview.includes(currentQuestion.id) && (
-                  <span className="rounded-full border border-violet-400/25 bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-300">Review</span>
-                )}
-                <div className="ml-auto flex items-center gap-3">
-                  {session.mode === 'mock' && (
-                    <div className={`rounded-xl border px-3 py-2 text-sm font-bold ${
-                      timeLeft <= 60 ? 'border-danger/30 bg-danger/10 text-danger'
-                      : timeLeft <= 300 ? 'border-warning/30 bg-warning/10 text-warning'
-                      : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300'
-                    }`}>
-                      {formatTime(timeLeft)}
-                    </div>
+              <div className="flex justify-between items-center mb-1 md:mb-2">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-base md:text-lg font-bold m-0">Question {session.currentIndex + 1} of {session.questions.length}</h2>
+                  {currentQuestion.part && (
+                    <span className="bg-[#4A9EDB]/10 border border-[#4A9EDB]/25 text-[#4A9EDB] px-3 py-1 rounded-full text-xs font-semibold">
+                      Part {currentQuestion.part}
+                    </span>
                   )}
-                  <button
-                    type="button"
-                    onClick={(e) => toggleBookmark(e)}
-                    className={`hidden md:block rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
-                      session.bookmarked.includes(currentQuestion.id)
-                        ? 'border-warning/30 bg-warning/10 text-warning'
-                        : 'border-white/10 bg-white/5 text-slate-300'
-                    }`}
-                  >
-                    <i className="fa-solid fa-bookmark mr-2" />Save
-                  </button>
+                </div>
+                <button 
+                  onClick={(e) => toggleBookmark(e)}
+                  className="bg-transparent border border-[var(--border-subtle)] text-[#D4922A] px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-white/5 transition-colors"
+                >
+                  <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-base`}></i>
+                  <span className="hidden md:inline">Save</span>
+                </button>
+              </div>
+
+              {/* Progress */}
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-1 md:mb-3">
+                <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[#D4922A] rounded-full transition-all" 
+                    style={{ width: `${((session.currentIndex + 1) / session.questions.length) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-[#D4922A] font-semibold text-right md:text-left">
+                  {Math.round(((session.currentIndex + 1) / session.questions.length) * 100)}% Completed
+                </span>
+              </div>
+
+              {/* Meta Cards */}
+              <div className="flex flex-nowrap gap-2 mb-1 md:mb-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#8B5CF6]/10 text-[#8B5CF6] shrink-0">
+                    <i className="fa-solid fa-book-open"></i>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Subject</span>
+                    <span className="text-xs font-semibold leading-tight">{currentQuestion.subject || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#10B981]/10 text-[#10B981] shrink-0">
+                    <i className="fa-regular fa-file-lines"></i>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Topic</span>
+                    <span className="text-xs font-semibold leading-tight">{currentQuestion.topic || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-[100px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#3B82F6]/10 text-[#3B82F6] shrink-0">
+                    <i className="fa-solid fa-chart-simple"></i>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Difficulty</span>
+                    <span className="text-xs font-semibold leading-tight">{currentQuestion.difficulty}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="px-5 py-6 md:px-7">
-                {/* Progress bar */}
-                <div className="mb-5 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400 transition-all"
-                    style={{ width: `${((session.currentIndex + 1) / session.questions.length) * 100}%` }}
-                  />
+              {/* Controls */}
+              <div className="flex flex-row justify-between items-center gap-2 mb-1 md:mb-3">
+                <div className="flex bg-white/5 rounded-lg p-0.5">
+                  <button 
+                    onClick={() => setActiveLanguage('English')}
+                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'English' ? 'bg-[#D4922A] text-[#111]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                  >
+                    English
+                  </button>
+                  {(currentQuestion.language === 'Gujarati' || currentQuestion.translations?.some(t => t.language === 'Gujarati')) && (
+                    <button 
+                      onClick={() => setActiveLanguage('Gujarati')}
+                      className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'Gujarati' ? 'bg-[#D4922A] text-[#111]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                    >
+                      Gujarati
+                    </button>
+                  )}
                 </div>
+                <button 
+                  onClick={toggleReviewMark}
+                  className="bg-transparent border border-[var(--border-subtle)] text-[var(--text-secondary)] px-2 md:px-3 py-1 rounded-lg cursor-pointer text-xs flex items-center gap-1 hover:bg-white/5 transition-colors"
+                >
+                  Mark for Review <i className={`fa-bookmark ${session.markedForReview.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-[#D4922A]`}></i>
+                </button>
+              </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2">
-                    {currentQuestion.translations && currentQuestion.translations.length > 0 && (
-                      <div className="flex bg-dark-bg/80 rounded-lg p-1 border border-white/10">
-                        {['English', 'Gujarati'].map((lang) => {
-                          const hasTranslation = (currentQuestion.language || 'English') === lang || currentQuestion.translations?.some(t => (t.language || 'English') === lang);
-                          if (!hasTranslation) return null;
-                          return (
-                            <button
-                              key={lang}
-                              type="button"
-                              onClick={() => setActiveLanguage(lang)}
-                              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeLanguage === lang ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
-                            >
-                              {lang}
-                            </button>
-                          );
-                        })}
+              {/* Question Area */}
+              <div className="flex gap-2 md:gap-3 items-start mb-2 md:mb-4">
+                <div className="w-6 h-6 md:w-8 md:h-8 bg-[#D4922A] text-[#111] rounded-md flex items-center justify-center font-black text-sm shrink-0 mt-0.5">Q</div>
+                <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-[var(--text-primary)] font-medium">{displayedQuestion?.question}</div>
+                <button onClick={(e) => toggleBookmark(e)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer text-lg hover:text-[var(--text-primary)] transition-colors shrink-0">
+                  <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid text-[#D4922A]' : 'fa-regular'}`}></i>
+                </button>
+              </div>
+
+              {/* Options List */}
+              <div className="flex flex-col gap-1 md:gap-2 mb-2 md:mb-4">
+                {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
+                  const selected  = currentResponse === key;
+                  const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
+                  const correct   = key === currentQuestion.correctAnswer;
+                  const wrongSel  = selected && key !== currentQuestion.correctAnswer && key !== 'E';
+
+                  let bgClass = "bg-white/[0.03]";
+                  let borderClass = "border-[var(--border-subtle)]";
+                  let radioClass = "border-[var(--border-subtle)]";
+                  let radioFill = false;
+
+                  if (showState && correct) {
+                    bgClass = "bg-[#10B981]/10";
+                    borderClass = "border-[#10B981]/30";
+                  } else if (showState && wrongSel) {
+                    bgClass = "bg-[#EF4444]/10";
+                    borderClass = "border-[#EF4444]/30";
+                  } else if (selected && key === 'E') {
+                    bgClass = "bg-[#38BDF8]/10";
+                    borderClass = "border-[#38BDF8]/30";
+                    radioClass = "border-[#38BDF8]";
+                    radioFill = true;
+                  } else if (selected) {
+                    bgClass = "bg-[#D4922A]/10";
+                    borderClass = "border-[#D4922A]/40";
+                    radioClass = "border-[#D4922A]";
+                    radioFill = true;
+                  }
+
+                  return (
+                    <button 
+                      key={key}
+                      type="button"
+                      onClick={() => selectOption(key)}
+                      className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-1.5 md:p-3 flex items-center gap-2 md:gap-3 cursor-pointer transition-all hover:bg-white/5 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
+                    >
+                      <div className={`w-5 h-5 md:w-7 md:h-7 rounded md:rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${selected ? 'bg-[#D4922A]/20 text-[#D4922A]' : 'bg-white/5 text-[var(--text-muted)]'}`}>
+                        {key}
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Question text */}
-                <div className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5 md:p-6">
-                  <div className="text-base md:text-lg font-semibold leading-7 md:leading-8 text-white">{displayedQuestion?.question}</div>
-                </div>
-
-                {/* Options */}
-                <div className="mt-5 space-y-3">
-                  {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
-                    const selected  = currentResponse === key;
-                    const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
-                    const correct   = key === currentQuestion.correctAnswer;
-                    const wrongSel  = selected && key !== currentQuestion.correctAnswer && key !== 'E';
-
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => selectOption(key)}
-                        className={`w-full rounded-[1.35rem] border px-4 py-4 text-left transition-all ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
-                        style={{
-                          background: showState && correct ? 'rgba(16,185,129,0.12)'
-                            : showState && wrongSel ? 'rgba(239,68,68,0.1)'
-                            : selected && key === 'E' ? 'rgba(56,189,248,0.1)'
-                            : selected ? 'rgba(99,102,241,0.12)'
-                            : 'rgba(20,29,46,0.82)',
-                          borderColor: showState && correct ? 'rgba(16,185,129,0.32)'
-                            : showState && wrongSel ? 'rgba(239,68,68,0.3)'
-                            : selected && key === 'E' ? 'rgba(56,189,248,0.28)'
-                            : selected ? 'rgba(99,102,241,0.35)'
-                            : 'rgba(255,255,255,0.08)',
-                        }}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div
-                            className="flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-black"
-                            style={{
-                              background:  selected ? 'rgba(99,102,241,0.16)' : 'rgba(255,255,255,0.04)',
-                              borderColor: selected ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)',
-                              color:       selected ? '#c7d2fe' : '#94a3b8',
-                            }}
-                          >
-                            {key}
-                          </div>
-                          <div className="flex-1 text-sm leading-7 text-slate-200">{label}</div>
-                          {showState && correct   && <i className="fa-solid fa-circle-check text-accent" />}
-                          {showState && wrongSel  && <i className="fa-solid fa-circle-xmark text-danger" />}
+                      <div className="flex-1 text-xs md:text-sm leading-tight text-[var(--text-primary)]">{label}</div>
+                      
+                      {showState && correct ? (
+                        <i className="fa-solid fa-circle-check text-[#10B981] text-xl"></i>
+                      ) : showState && wrongSel ? (
+                        <i className="fa-solid fa-circle-xmark text-[#EF4444] text-xl"></i>
+                      ) : (
+                        <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border-2 flex items-center justify-center ${radioClass}`}>
+                          {radioFill && <div className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${key === 'E' ? 'bg-[#38BDF8]' : 'bg-[#D4922A]'}`}></div>}
                         </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
 
-                {/* Explanation (non-mock, after answer) */}
-                {session.mode !== 'mock' && currentResponse && (
-                  <div className="mt-5 rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/8 p-5">
-                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Explanation</div>
-                    <p className="mt-3 text-sm leading-7 text-slate-300">{displayedQuestion?.explanation}</p>
+              {/* Explanation */}
+              {session.mode !== 'mock' && currentResponse && (
+                <div className="mb-2 md:mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 md:p-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
+                  <p className="mt-2 text-xs md:text-sm leading-6 text-[var(--text-secondary)]">{displayedQuestion?.explanation || 'No explanation available.'}</p>
+                </div>
+              )}
+
+              {/* Bottom Bar */}
+              <div className="grid grid-cols-4 md:flex md:items-stretch gap-1.5 md:gap-2">
+                <button 
+                  onClick={() => setIsMobilePaletteOpen(true)}
+                  className="xl:hidden col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0"
+                >
+                  <i className="fa-solid fa-grip text-sm"></i>
+                  <span className="truncate">Palette</span>
+                </button>
+                <button 
+                  onClick={() => navigateQuestion(-1)} disabled={session.currentIndex === 0}
+                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors disabled:opacity-40 min-w-0"
+                >
+                  <i className="fa-solid fa-arrow-left text-sm"></i>
+                  <span className="truncate">Prev</span>
+                </button>
+                <button 
+                  onClick={() => setView('review')}
+                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0"
+                >
+                  <i className="fa-regular fa-eye text-sm"></i>
+                  <span className="truncate">Review</span>
+                </button>
+
+                {/* Timer — only shown for mock/timed mode */}
+                {session.mode === 'mock' && (
+                  <div className="col-span-4 md:col-span-1 md:flex-[1.5] bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] py-1.5 px-3 rounded-xl flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 md:gap-0 order-first md:order-none mb-1.5 md:mb-0">
+                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Time Left</span>
+                    <span className="text-sm md:text-base text-[#4A9EDB] font-bold">{formatTime(timeLeft)}</span>
                   </div>
                 )}
 
-                {/* Controls */}
-                <div className="mt-6 flex flex-wrap gap-3 pb-24 md:pb-0">
-                  <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-2 border-t border-white/10 bg-[#11141d]/95 p-3 backdrop-blur-md md:relative md:border-0 md:bg-transparent md:p-0 md:justify-start md:gap-3">
-                    <button type="button" onClick={() => navigateQuestion(-1)} disabled={session.currentIndex === 0}
-                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-white/5 bg-white/[0.02] p-2 text-[10px] font-bold text-slate-400 transition-colors hover:text-white disabled:opacity-40 md:min-w-0 md:flex-row md:border-white/10 md:bg-white/5 md:px-4 md:py-2.5 md:text-sm">
-                      <i className="fa-solid fa-arrow-left text-sm md:hidden"></i>
-                      <span className="md:hidden">Prev</span>
-                      <span className="hidden md:inline">Prev</span>
-                    </button>
-                    
-                    <button type="button" onClick={toggleReviewMark}
-                      className="flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border border-white/5 bg-white/[0.02] p-2 text-[10px] font-bold text-slate-400 transition-colors hover:text-white md:min-w-0 md:flex-row md:border-white/10 md:bg-white/5 md:px-4 md:py-2.5 md:text-sm">
-                      <i className="fa-solid fa-flag text-sm md:hidden"></i>
-                      <span className="md:hidden">Review</span>
-                      <span className="hidden md:inline">Mark for Review</span>
-                    </button>
-                    
-
-
-                    {/* Mobile Only Save Button */}
-                    <button type="button" onClick={(e) => toggleBookmark(e)}
-                      className={`flex min-w-[4rem] flex-col items-center justify-center gap-1 rounded-xl border p-2 text-[10px] font-bold transition-colors md:hidden ${
-                        session.bookmarked.includes(currentQuestion.id)
-                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-                          : 'border-white/5 bg-white/[0.02] text-slate-400'
-                      }`}>
-                      <i className="fa-solid fa-floppy-disk text-sm" />
-                      <span>Save</span>
-                    </button>
-
-                    <div className="hidden md:block flex-1" />
-
-                    {session.currentIndex === session.questions.length - 1 ? (
-                      <button type="button" onClick={confirmSubmit}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-danger to-red-500 py-3 text-sm font-black uppercase tracking-[0.16em] text-white md:flex-none md:px-5 md:py-2.5">
-                        Submit
-                      </button>
-                    ) : (
-                      <button type="button" onClick={() => navigateQuestion(1)}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 py-3 text-sm font-black uppercase tracking-[0.16em] text-white md:flex-none md:px-5 md:py-2.5">
-                        <span className="md:hidden">Next <i className="fa-solid fa-arrow-right ml-1"></i></span>
-                        <span className="hidden md:inline">Next</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Floating Action Button for Question Palette (Mobile Only) */}
-                  <div className="fixed bottom-[5.5rem] right-4 z-40 md:hidden">
-                    <button 
-                      type="button" 
-                      onClick={() => setIsMobilePaletteOpen(true)}
-                      className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-[0_8px_30px_rgba(99,102,241,0.4)] transition-transform hover:scale-105 active:scale-95">
-                      <i className="fa-solid fa-table-cells text-xl"></i>
-                    </button>
-                  </div>
-                </div>
+                <button 
+                  onClick={() => navigateQuestion(1)} disabled={session.currentIndex === session.questions.length - 1}
+                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-2 sm:p-3 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[9px] sm:text-[10px] md:text-sm hover:bg-white/5 transition-colors disabled:opacity-40 min-w-0"
+                >
+                  <span className="hidden md:inline">Next</span>
+                  <i className="fa-solid fa-arrow-right text-base md:text-sm"></i>
+                  <span className="md:hidden truncate">Next</span>
+                </button>
+                
+                <button 
+                  onClick={session.currentIndex === session.questions.length - 1 ? confirmSubmit : () => navigateQuestion(1)}
+                  className="col-span-4 md:flex-[2] bg-[#D4922A] text-[#111] p-2.5 md:p-3 rounded-xl flex items-center justify-center gap-2 text-xs md:text-base font-bold hover:bg-[#B97A20] transition-colors mt-1 md:mt-0 shadow-lg shadow-[#D4922A]/20"
+                >
+                  <i className="fa-regular fa-paper-plane"></i>
+                  <span>{session.currentIndex === session.questions.length - 1 ? 'Submit Exam' : 'Save & Next'}</span>
+                </button>
               </div>
             </div>
-
-            {/* Mobile Palette Modal */}
-            {isMobilePaletteOpen && (
-              <div 
-                className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm md:hidden overscroll-none" 
-                onClick={() => setIsMobilePaletteOpen(false)}
-              >
-                <div 
-                  className="w-full max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-white/10 bg-[#11141d] p-6 shadow-2xl" 
-                  onClick={e => e.stopPropagation()}
-                  style={{ WebkitOverflowScrolling: 'touch' }}
-                >
-                  <div className="mb-6 flex items-center justify-between">
-                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Question Palette</div>
-                    <button
-                      type="button"
-                      onClick={() => setIsMobilePaletteOpen(false)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"
-                    >
-                      <i className="fa-solid fa-xmark"></i>
-                    </button>
-                  </div>
-                  
-                  <div className="grid grid-cols-5 gap-3">
-                    {session.questions.map((q, idx) => {
-                      const ps     = renderPaletteState(q);
-                      const active = idx === session.currentIndex;
-                      return (
-                        <button
-                          key={q.id}
-                          type="button"
-                          onClick={() => {
-                            jumpToQuestion(idx);
-                            setIsMobilePaletteOpen(false);
-                          }}
-                          className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
-                          style={{ ...paletteStyleMap[ps], boxShadow: active ? '0 0 0 2px rgba(99,102,241,0.5)' : 'none' }}
-                        >
-                          {idx + 1}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
           </section>
 
-          {/* Sidebar: palette + live score */}
-          <aside className="hidden xl:block space-y-6">
-            <div className="glass-card rounded-[1.75rem] border border-white/5 p-5">
-              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Question Palette</div>
-              <div className="mt-4 grid grid-cols-5 gap-2">
+          {/* Sidebar: Question Palette (Desktop Only) */}
+          <aside className="hidden xl:block">
+            <div className="w-full rounded-[1.5rem] bg-[var(--bg-primary)] p-5 shadow-2xl border border-[var(--border-subtle)] h-fit sticky top-6">
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] m-0">Question Palette</h3>
+                <i className="fa-solid fa-chevron-up text-[var(--text-muted)] text-xs"></i>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#10B981]"></div>
+                  <span className="text-[11px] text-[var(--text-secondary)]">Answered</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#D4922A]"></div>
+                  <span className="text-[11px] text-[var(--text-secondary)]">Review</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#3B82F6]"></div>
+                  <span className="text-[11px] text-[var(--text-secondary)]">Current</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[var(--bg-surface)]"></div>
+                  <span className="text-[11px] text-[var(--text-secondary)]">Not Answered</span>
+                </div>
+                <div className="flex items-center gap-2 col-span-2">
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center text-[8px] font-bold text-[var(--text-muted)]">E</div>
+                  <span className="text-[11px] text-[var(--text-secondary)]">Not Attempted</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-5 gap-2 mb-6">
                 {session.questions.map((q, idx) => {
                   const ps     = renderPaletteState(q);
                   const active = idx === session.currentIndex;
+                  
                   return (
                     <button
                       key={q.id}
                       type="button"
-                      onClick={() => jumpToQuestion(idx)}
-                      className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
-                      style={{ ...paletteStyleMap[ps], boxShadow: active ? '0 0 0 2px rgba(99,102,241,0.5)' : 'none' }}
+                      onClick={() => {
+                        jumpToQuestion(idx);
+                      }}
+                      className="aspect-square rounded-lg border border-[var(--border-subtle)] text-[11px] font-bold transition-transform hover:scale-105"
+                      style={{ 
+                        ...paletteStyleMap[ps], 
+                        boxShadow: active ? '0 0 0 2px rgba(212,146,42,0.8)' : 'none',
+                        ...(active && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                        ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
+                        ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
+                        ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: '#fff', borderColor: "var(--bg-surface)" }),
+                        ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" }),
+                        ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" })
+                      }}
                     >
                       {idx + 1}
                     </button>
                   );
                 })}
               </div>
-            </div>
 
-            <div className="glass-card rounded-[1.75rem] border border-white/5 p-5">
-              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Exam Actions</div>
-              <p className="mt-4 text-sm text-slate-400 leading-relaxed">
-                Click below when you are ready to finish the session. Your final score and full review will be available after submission.
-              </p>
-              <button type="button" onClick={confirmSubmit}
-                className="mt-5 w-full rounded-xl bg-gradient-to-r from-danger to-red-500 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_8px_20px_rgba(239,68,68,0.2)] transition-transform hover:scale-[1.02]">
-                Submit Exam
-              </button>
+              <div className="flex flex-col gap-2 text-[10px] text-[var(--text-muted)] border-t border-[var(--border-subtle)] pt-4">
+                <div className="flex items-start gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#10B981] mt-0.5 shrink-0"></div>
+                  <span><span className="text-[var(--text-secondary)]">Answered:</span> You have answered the question</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#D4922A] mt-0.5 shrink-0"></div>
+                  <span><span className="text-[var(--text-secondary)]">Review:</span> Marked for review</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[var(--bg-surface)] mt-0.5 shrink-0"></div>
+                  <span><span className="text-[var(--text-secondary)]">Not Answered:</span> You have not answered yet</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center text-[6px] font-bold text-[var(--text-muted)] mt-0.5 shrink-0">E</div>
+                  <span><span className="text-[var(--text-secondary)]">Not Attempted:</span> You have not visited yet</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#3B82F6] mt-0.5 shrink-0"></div>
+                  <span><span className="text-[var(--text-secondary)]">Current:</span> Question you are on</span>
+                </div>
+              </div>
             </div>
           </aside>
+
+          {/* Mobile Palette Modal */}
+          {isMobilePaletteOpen && (
+            <div 
+              className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm overscroll-none xl:hidden" 
+              onClick={() => setIsMobilePaletteOpen(false)}
+            >
+              <div 
+                className="w-full max-w-[800px] max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-[var(--border-subtle)] bg-[#11141d] p-6 shadow-2xl" 
+                onClick={e => e.stopPropagation()}
+                style={{ WebkitOverflowScrolling: 'touch' }}
+              >
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Question Palette</div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobilePaletteOpen(false)}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
+                  {session.questions.map((q, idx) => {
+                    const ps     = renderPaletteState(q);
+                    const active = idx === session.currentIndex;
+                    return (
+                      <button
+                        key={q.id}
+                        type="button"
+                        onClick={() => {
+                          jumpToQuestion(idx);
+                          setIsMobilePaletteOpen(false);
+                        }}
+                        className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
+                        style={{ 
+                          ...paletteStyleMap[ps], 
+                          boxShadow: active ? '0 0 0 2px rgba(212,146,42,0.8)' : 'none',
+                          ...(active && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                          ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
+                          ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
+                          ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: '#fff', borderColor: "var(--bg-surface)" }),
+                          ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" }),
+                          ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" })
+                        }}
+                      >
+                        {idx + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ─── RESULT ────────────────────────────────────────────────────────── */}
+{/* ─── RESULT ────────────────────────────────────────────────────────── */}
       {view === 'result' && session && (
         <div className="mx-auto max-w-5xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8 text-center">
+          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-accent">
               {activeModeMeta.label} Complete
             </div>
-            <h3 className="mt-5 text-3xl font-heading font-black text-white">Session Results</h3>
-            <p className="mt-3 text-sm text-slate-400">
+            <h3 className="mt-5 text-3xl font-heading font-black text-[var(--text-primary)]">Session Results</h3>
+            <p className="mt-3 text-sm text-[var(--text-muted)]">
               Score {result.finalScore.toFixed(2)} / {session.questions.length} with {result.accuracy}% accuracy.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3 xl:grid-cols-6">
               {[
-                { val: result.finalScore.toFixed(2), label: 'Score',    cls: 'text-white',    border: 'border-white/10',        bg: 'bg-white/5' },
+                { val: result.finalScore.toFixed(2), label: 'Score',    cls: 'text-[var(--text-primary)]',    border: 'border-[var(--border-subtle)]',        bg: 'bg-white/5' },
                 { val: result.correct,               label: 'Correct',  cls: 'text-accent',   border: 'border-emerald-500/15',   bg: 'bg-emerald-500/8' },
                 { val: result.wrong,                 label: 'Wrong',    cls: 'text-danger',   border: 'border-red-500/15',       bg: 'bg-red-500/8' },
                 { val: result.notAttempted,          label: 'Option E', cls: 'text-sky-400',  border: 'border-sky-500/15',       bg: 'bg-sky-500/8' },
                 { val: result.unanswered,            label: 'Blank',    cls: 'text-warning',  border: 'border-amber-500/15',     bg: 'bg-amber-500/8' },
-                { val: `${result.accuracy}%`,        label: 'Accuracy', cls: 'text-white',    border: 'border-white/10',         bg: 'bg-white/5' },
+                { val: `${result.accuracy}%`,        label: 'Accuracy', cls: 'text-[var(--text-primary)]',    border: 'border-[var(--border-subtle)]',         bg: 'bg-white/5' },
               ].map((card) => (
                 <div key={card.label} className={`rounded-[1.5rem] border ${card.border} ${card.bg} p-4`}>
                   <div className={`text-2xl font-black ${card.cls}`}>{card.val}</div>
-                  <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">{card.label}</div>
+                  <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{card.label}</div>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Topic Analysis</div>
-                <h4 className="mt-2 text-xl font-heading font-black text-white">Performance by topic</h4>
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Topic Analysis</div>
+                <h4 className="mt-2 text-xl font-heading font-black text-[var(--text-primary)]">Performance by topic</h4>
               </div>
               <button type="button" onClick={() => setView('review')}
-                className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-black uppercase tracking-[0.16em] text-white">
+                className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-black uppercase tracking-[0.16em] text-[var(--text-primary)]">
                 Review Answers
               </button>
             </div>
 
             <div className="mt-6 space-y-4">
               {result.topicStats.map((item) => (
-                <div key={item.topic} className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-4">
+                <div key={item.topic} className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <div className="text-base font-bold text-white">{item.topic}</div>
-                      <div className="text-xs text-slate-500">{item.subject}</div>
+                      <div className="text-base font-bold text-[var(--text-primary)]">{item.topic}</div>
+                      <div className="text-xs text-[var(--text-muted)]">{item.subject}</div>
                     </div>
-                    <div className="text-sm font-bold text-white">{item.correct}/{item.total}</div>
+                    <div className="text-sm font-bold text-[var(--text-primary)]">{item.correct}/{item.total}</div>
                   </div>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/5">
                     <div
@@ -1486,7 +1572,7 @@ export default function PracticePage() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button type="button" onClick={restartSession}
-                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-slate-300">
+                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-5 py-3 text-sm font-bold text-[var(--text-secondary)]">
                 New Session
               </button>
               <button type="button" onClick={() => setView('review')}
@@ -1501,14 +1587,14 @@ export default function PracticePage() {
       {/* ─── REVIEW ────────────────────────────────────────────────────────── */}
       {view === 'review' && session && (
         <div className="mx-auto max-w-5xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Answer Review</div>
-                <h3 className="mt-2 text-2xl font-heading font-black text-white">Review every response</h3>
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Answer Review</div>
+                <h3 className="mt-2 text-2xl font-heading font-black text-[var(--text-primary)]">Review every response</h3>
               </div>
               <button type="button" onClick={() => setView('result')}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-slate-300">
+                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)]">
                 Back to Results
               </button>
             </div>
@@ -1525,8 +1611,8 @@ export default function PracticePage() {
                     className="rounded-full border px-4 py-2 text-sm font-bold transition-all"
                     style={{
                       background:  active ? 'rgba(99,102,241,0.14)' : 'rgba(255,255,255,0.04)',
-                      borderColor: active ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.1)',
-                      color:       active ? '#c7d2fe' : '#94a3b8',
+                      borderColor: active ? 'rgba(99,102,241,0.35)' : "var(--border-subtle)",
+                      color:       active ? '#c7d2fe' : "var(--text-muted)",
                     }}
                   >
                     {label}
@@ -1545,18 +1631,18 @@ export default function PracticePage() {
                 const isUnanswered = res === undefined;
 
                 return (
-                  <article key={q.id} className="rounded-[1.5rem] border border-white/10 bg-dark-bg/70 p-5">
+                  <article key={q.id} className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="text-sm font-bold text-slate-400">Q{idx + 1}</div>
-                        <div className="mt-2 text-base font-semibold leading-7 text-white">{q.question}</div>
+                        <div className="text-sm font-bold text-[var(--text-muted)]">Q{idx + 1}</div>
+                        <div className="mt-2 text-base font-semibold leading-7 text-[var(--text-primary)]">{q.question}</div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {isCorrect    && <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-accent">Correct</span>}
                         {isWrong      && <span className="rounded-full border border-red-500/20    bg-red-500/10    px-3 py-1 text-xs font-bold text-danger">Wrong</span>}
                         {isNa         && <span className="rounded-full border border-sky-500/20    bg-sky-500/10    px-3 py-1 text-xs font-bold text-sky-400">Not Attempted</span>}
                         {isUnanswered && <span className="rounded-full border border-amber-500/20  bg-amber-500/10  px-3 py-1 text-xs font-bold text-warning">Blank</span>}
-                        {session.bookmarked.includes(q.id) && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">Bookmarked</span>}
+                        {session.bookmarked.includes(q.id) && <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs font-bold text-[var(--text-secondary)]">Bookmarked</span>}
                       </div>
                     </div>
 
@@ -1569,12 +1655,12 @@ export default function PracticePage() {
                             key={key}
                             className="rounded-xl border px-4 py-3 text-sm"
                             style={{
-                              background:  correct ? 'rgba(16,185,129,0.1)' : selected ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)',
+                              background:  correct ? 'rgba(16,185,129,0.1)' : selected ? 'rgba(239,68,68,0.1)' : "var(--bg-surface)",
                               borderColor: correct ? 'rgba(16,185,129,0.2)' : selected ? 'rgba(239,68,68,0.22)' : 'rgba(255,255,255,0.08)',
                             }}
                           >
-                            <span className="font-black text-slate-400">{key}</span>
-                            <span className="ml-3 text-slate-200">{label}</span>
+                            <span className="font-black text-[var(--text-muted)]">{key}</span>
+                            <span className="ml-3 text-[var(--text-primary)]">{label}</span>
                           </div>
                         );
                       })}
@@ -1582,14 +1668,14 @@ export default function PracticePage() {
 
                     <div className="mt-5 rounded-xl border border-emerald-500/15 bg-emerald-500/8 p-4">
                       <div className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Explanation</div>
-                      <p className="mt-2 text-sm leading-7 text-slate-300">{q.explanation || 'No explanation provided.'}</p>
+                      <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">{q.explanation || 'No explanation provided.'}</p>
                     </div>
                   </article>
                 );
               })}
 
               {filteredReviewQuestions.length === 0 && (
-                <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-white/3 px-6 py-10 text-center text-sm text-slate-500">
+                <div className="rounded-[1.5rem] border border-dashed border-[var(--border-subtle)] bg-white/3 px-6 py-10 text-center text-sm text-[var(--text-muted)]">
                   No questions match the current review filter.
                 </div>
               )}
@@ -1600,29 +1686,29 @@ export default function PracticePage() {
       {/* ─── MODAL ────────────────────────────────────────────────────────── */}
       {modalConfig?.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-dark-bg border border-white/10 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
             <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : modalConfig.type === 'info' ? 'bg-brand-500' : 'bg-warning'}`}></div>
             <div className="flex items-center gap-4 mb-5">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : modalConfig.type === 'info' ? 'bg-brand-500/10 text-brand-400' : 'bg-warning/10 text-warning'}`}>
                 <i className={`fa-solid ${modalConfig.type === 'success' ? 'fa-check' : modalConfig.type === 'info' ? 'fa-circle-info' : 'fa-exclamation-triangle'}`}></i>
               </div>
-              <h3 className="text-xl font-heading font-black text-white">{modalConfig.title}</h3>
+              <h3 className="text-xl font-heading font-black text-[var(--text-primary)]">{modalConfig.title}</h3>
             </div>
-            <p className="text-slate-300 text-sm mb-8 leading-relaxed">
+            <p className="text-[var(--text-secondary)] text-sm mb-8 leading-relaxed">
               {modalConfig.message}
             </p>
             <div className="flex justify-end gap-3">
               {modalConfig.type === 'confirm' && (
                 <button 
                   onClick={modalConfig.onCancel}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--text-secondary)] hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
               )}
               <button 
                 onClick={modalConfig.onConfirm}
-                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : modalConfig.type === 'info' ? 'bg-brand-500 shadow-[0_10px_20px_rgba(99,102,241,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
+                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-[var(--text-primary)] transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : modalConfig.type === 'info' ? 'bg-brand-500 shadow-[0_10px_20px_rgba(99,102,241,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
               >
                 {modalConfig.confirmText || (modalConfig.type === 'success' ? 'View Results' : 'Submit Anyway')}
               </button>

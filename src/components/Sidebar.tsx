@@ -52,14 +52,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col shadow-[0_0_80px_rgba(0,0,0,0.6)] transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         style={{
-          background: "rgba(9, 21, 34, 0.99)",
-          borderRight: "1px solid rgba(212, 146, 42, 0.12)",
+          background: "var(--sidebar-bg)",
+          borderRight: "1px solid var(--border-accent)",
         }}
       >
         {/* Logo */}
         <div
           className="flex h-[68px] items-center gap-3 px-5"
-          style={{ borderBottom: "1px solid rgba(212, 146, 42, 0.10)" }}
+          style={{ borderBottom: "1px solid var(--border-accent)" }}
         >
           <Link href="/" className="flex flex-1 items-center gap-3" onClick={onClose}>
             <div
@@ -71,13 +71,13 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <div>
               <div
                 className="font-heading text-[17px] font-bold"
-                style={{ color: "#F2ECD9" }}
+                style={{ color: "var(--text-primary)" }}
               >
                 WPSI<span style={{ color: "#D4922A" }}>Pro</span>
               </div>
               <div
                 className="text-[9px] uppercase tracking-[0.28em]"
-                style={{ color: "rgba(255,255,255,0.35)" }}
+                style={{ color: "var(--text-muted)" }}
               >
                 Study Console
               </div>
@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           <button
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-white/5 md:hidden"
-            style={{ color: "rgba(255,255,255,0.5)" }}
+            style={{ color: "var(--text-secondary)" }}
             onClick={onClose}
             aria-label="Close sidebar"
           >
@@ -99,7 +99,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <div
             className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.32em]"
-            style={{ color: "rgba(255,255,255,0.3)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             Navigation
           </div>
@@ -114,7 +114,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   onClick={onClose}
                   className={`nav-item group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active ? "nav-active" : "border-transparent"
                     }`}
-                  style={{ color: active ? "#F2ECD9" : "rgba(255,255,255,0.55)" }}
+                  style={{ color: active ? "var(--text-primary)" : "var(--text-secondary)" }}
                 >
                   <div
                     className={`nav-icon flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${active ? "" : "group-hover:bg-white/5"
@@ -122,7 +122,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     style={
                       active
                         ? { background: "rgba(212,146,42,0.18)", color: "#D4922A" }
-                        : { background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)" }
+                        : { background: "var(--input-bg)", color: "var(--text-secondary)" }
                     }
                   >
                     <i className={`fa-solid ${link.icon} text-xs`}></i>
@@ -156,9 +156,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 WPSI 2025 Combo
               </span>
             </div>
-            <p className="mt-1.5 text-sm leading-5" style={{ color: "rgba(242,236,217,0.7)" }}>
+            <p className="mt-1.5 text-sm leading-5" style={{ color: "var(--text-secondary)" }}>
               Full Part A + B access at{" "}
-              <span className="font-bold" style={{ color: "#F2ECD9" }}>
+              <span className="font-bold" style={{ color: "var(--text-primary)" }}>
                 Rs 249
               </span>{" "}
               with the cleanest prep flow.
@@ -177,11 +177,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         {/* User footer */}
         <div
           className="p-3"
-          style={{ borderTop: "1px solid rgba(212,146,42,0.10)", background: "rgba(9,21,34,0.99)" }}
+          style={{ borderTop: "1px solid var(--border-accent)", background: "var(--sidebar-bg)" }}
         >
           <div
             className="flex items-center gap-3 rounded-xl border p-2.5 transition-colors hover:bg-white/[0.03]"
-            style={{ borderColor: "rgba(212,146,42,0.12)" }}
+            style={{ borderColor: "var(--border-accent)" }}
           >
             <Link href="/profile" onClick={onClose} className="group flex min-w-0 flex-1 items-center gap-3">
               <img
@@ -193,11 +193,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               <div className="min-w-0 flex-1">
                 <div
                   className="truncate text-sm font-bold transition-colors group-hover:text-[#D4922A]"
-                  style={{ color: "#F2ECD9" }}
+                  style={{ color: "var(--text-primary)" }}
                 >
                   {loading ? "Loading..." : displayName}
                 </div>
-                <div className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>
                   {loading
                     ? "Syncing profile"
                     : displayLevel !== undefined
@@ -210,7 +210,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               href="/settings"
               onClick={onClose}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: "rgba(255,255,255,0.4)" }}
+              style={{ color: "var(--text-secondary)" }}
               title="Settings"
             >
               <i className="fa-solid fa-gear text-xs"></i>

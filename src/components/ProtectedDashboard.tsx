@@ -37,13 +37,13 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6" style={{ background: "#0D1B2A" }}>
-        <div className="rounded-3xl px-8 py-10 text-center max-w-md w-full" style={{ background: "#162436", border: "1px solid rgba(212,146,42,0.16)" }}>
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="rounded-3xl px-8 py-10 text-center max-w-md w-full" style={{ background: "var(--bg-surface)", border: "1px solid rgba(212,146,42,0.16)" }}>
           <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(212,146,42,0.12)", border: "1px solid rgba(212,146,42,0.22)", color: "#D4922A" }}>
             <i className="fa-solid fa-shield-halved text-xl"></i>
           </div>
-          <h2 className="text-xl font-heading font-bold" style={{ color: "#F2ECD9" }}>Checking your session</h2>
-          <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>We are verifying your login and loading your dashboard.</p>
+          <h2 className="text-xl font-heading font-bold" style={{ color: "var(--text-primary)" }}>Checking your session</h2>
+          <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>We are verifying your login and loading your dashboard.</p>
         </div>
       </div>
     );
@@ -54,7 +54,7 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden w-full" style={{ background: "#0D1B2A" }}>
+    <div className="flex h-screen overflow-hidden w-full" style={{ background: "var(--bg-primary)" }}>
       <Sidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}

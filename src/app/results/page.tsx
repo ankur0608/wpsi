@@ -4,17 +4,17 @@ import Link from "next/link";
 import { useUser } from "@/context/UserContext";
 
 /* ─── tiny helpers ─────────────────────────────────────────── */
-const GOLD      = "#D4922A";
-const GOLD_GLOW = "rgba(212,146,42,0.18)";
-const GOLD_BR   = "rgba(212,146,42,0.20)";
-const SURFACE   = "#162436";
-const BG        = "#0D1B2A";
-const TEXT      = "#F2ECD9";
-const MUTED     = "rgba(255,255,255,0.5)";
-const BLUE      = "#4A9EDB";
-const GREEN     = "#3DD68C";
-const RED       = "#E55353";
-const PURPLE    = "#B47AF3";
+const GOLD      = "var(--color-primary-accent, #D4922A)";
+const GOLD_GLOW = "rgba(var(--rgb-accent, 212,146,42),0.18)";
+const GOLD_BR   = "rgba(var(--rgb-accent, 212,146,42),0.20)";
+const SURFACE   = "var(--bg-surface)";
+const BG        = "var(--bg-primary)";
+const TEXT      = "var(--text-primary)";
+const MUTED     = "var(--text-muted)";
+const BLUE      = "var(--color-secondary, #4A9EDB)";
+const GREEN     = "var(--color-accent, #3DD68C)";
+const RED       = "var(--color-danger, #E55353)";
+const PURPLE    = "var(--color-brand-500, #B47AF3)";
 
 function StatCard({
   label, value, color, icon
@@ -110,22 +110,22 @@ export default function ResultsPage() {
       <div
         className="relative overflow-hidden rounded-2xl p-8 md:p-10"
         style={{
-          background: "linear-gradient(135deg, #2c3e75 0%, #162436 100%)",
-          border: `1px solid rgba(255,255,255,0.05)`,
-          boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)"
+          background: "var(--glass-card-bg)",
+          border: `1px solid var(--border-subtle)`,
+          boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
         }}
       >
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="max-w-2xl">
             <h1 className="text-3xl font-bold mb-3" style={{ color: TEXT }}>Results & Performance</h1>
-            <p className="text-sm leading-relaxed max-w-lg" style={{ color: "rgba(242,236,217,0.8)" }}>
+            <p className="text-sm leading-relaxed max-w-lg" style={{ color: MUTED }}>
               Track your progress, analyze your accuracy, and review your past mock tests to identify areas of improvement.
             </p>
           </div>
           <div 
             className="flex-shrink-0 h-24 w-24 flex items-center justify-center rounded-full" 
             style={{ 
-              background: "rgba(255,255,255,0.05)", 
+              background: "var(--glass-card-bg)", 
               border: "1px solid rgba(255,255,255,0.1)",
               boxShadow: "inset 0 0 20px rgba(255,255,255,0.05)"
             }}
@@ -160,7 +160,7 @@ export default function ResultsPage() {
         
         {results.recentSubmissions.length === 0 ? (
           <div className="rounded-2xl p-8 text-center" style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}>
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full mb-4" style={{ background: "rgba(255,255,255,0.03)", color: MUTED }}>
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full mb-4" style={{ background: "var(--bg-surface)", color: MUTED }}>
               <i className="fa-solid fa-folder-open text-2xl"></i>
             </div>
             <h4 className="text-base font-bold mb-2" style={{ color: TEXT }}>No submissions yet</h4>
@@ -181,7 +181,7 @@ export default function ResultsPage() {
               <div className="flex items-start gap-4">
                 <div 
                   className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg" 
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: TEXT }}
+                  style={{ background: "var(--bg-surface)", border: "1px solid rgba(255,255,255,0.1)", color: TEXT }}
                 >
                   <i className="fa-solid fa-clipboard-list"></i>
                 </div>
@@ -217,11 +217,11 @@ export default function ResultsPage() {
                   className="rounded-xl px-5 py-2.5 text-xs font-bold whitespace-nowrap border flex items-center justify-center w-full md:w-auto transition-all" 
                   style={{ 
                     background: "transparent",
-                    borderColor: "rgba(255,255,255,0.1)",
+                    borderColor: "var(--border-subtle)",
                     color: TEXT 
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                    e.currentTarget.style.background = "var(--glass-card-bg)";
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.background = "transparent";

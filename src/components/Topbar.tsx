@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface TopbarProps {
   title?: string;
@@ -62,10 +63,10 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
   };
 
   const popoverBase =
-    "absolute z-50 right-0 top-full mt-3 rounded-2xl p-5 shadow-[0_28px_80px_rgba(0,0,0,0.7)]";
+    "absolute z-50 right-0 top-full mt-3 rounded-2xl p-5 shadow-[0_28px_80px_rgba(0,0,0,0.35)]";
   const popoverStyle = {
-    background: "rgba(9,21,34,0.98)",
-    border: "1px solid rgba(212,146,42,0.16)",
+    background: "var(--popover-bg)",
+    border: "1px solid var(--popover-border)",
     backdropFilter: "blur(24px)",
   };
 
@@ -76,9 +77,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
         position: "relative",
         zIndex: 50,
         minHeight: "64px",
-        background: "rgba(13,27,42,0.96)",
-        borderBottom: "1px solid rgba(212,146,42,0.10)",
-        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid var(--border-accent)",
       }}
       className="px-4 sm:px-6"
     >
@@ -261,6 +260,9 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
             ></span>
           </button>
 
+          {/* Dark / Light mode toggle */}
+          <ThemeToggle />
+
           {/* Profile dropdown */}
           <div className="relative">
             <button
@@ -285,7 +287,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
               </div>
               <i
                 className="fa-solid fa-chevron-down hidden text-[10px] sm:block"
-                style={{ color: "rgba(255,255,255,0.35)" }}
+                style={{ color: "var(--text-muted)" }}
               ></i>
             </button>
 
@@ -293,9 +295,9 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
               <div className={`${popoverBase} w-56 p-2`} style={popoverStyle}>
                 <div
                   className="mb-1 rounded-xl px-3 py-3"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,146,42,0.10)" }}
+                  style={{ background: "var(--input-bg)", border: "1px solid var(--border-accent)" }}
                 >
-                  <p className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+                  <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                     {loading ? "Loading profile..." : displayName}
                   </p>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#D4922A" }}>
@@ -308,16 +310,16 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                 </div>
 
                 {[
-                  { href: "/profile",  icon: "fa-user",               label: "My Profile",     iconColor: "rgba(255,255,255,0.5)" },
+                  { href: "/profile",  icon: "fa-user",               label: "My Profile",     iconColor: "var(--text-secondary)" },
                   { href: "/pricing",  icon: "fa-crown",               label: "Upgrade Store",  iconColor: "#D4922A" },
                   // { href: "/rewards",  icon: "fa-coins",               label: "Rewards Store",  iconColor: "#4A9EDB" },
-                  { href: "/settings", icon: "fa-gear",                label: "Settings",       iconColor: "rgba(255,255,255,0.5)" },
+                  { href: "/settings", icon: "fa-gear",                label: "Settings",       iconColor: "var(--text-secondary)" },
                 ].map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-white/[0.05]"
-                    style={{ color: "rgba(242,236,217,0.8)" }}
+                    style={{ color: "var(--text-primary)" }}
                   >
                     <i className={`fa-solid ${item.icon} w-4 text-xs`} style={{ color: item.iconColor }}></i>
                     {item.label}
@@ -328,7 +330,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                   type="button"
                   onClick={handleLogout}
                   className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-red-500/10"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)", color: "#E55353" }}
+                  style={{ borderTop: "1px solid var(--border-subtle)", color: "#E55353" }}
                 >
                   <i className="fa-solid fa-right-from-bracket w-4 text-xs"></i>
                   Logout

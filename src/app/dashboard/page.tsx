@@ -8,13 +8,13 @@ import { useUser } from "@/context/UserContext";
 const GOLD      = "var(--color-primary-accent, #D4922A)";
 const GOLD_GLOW = "rgba(var(--rgb-accent, 212, 146, 42), 0.18)";
 const GOLD_BR   = "rgba(var(--rgb-accent, 212, 146, 42), 0.20)";
-const SURFACE   = "#162436";
-const BG        = "#0D1B2A";
-const TEXT      = "#F2ECD9";
-const MUTED     = "rgba(255,255,255,0.5)";
-const BLUE      = "#4A9EDB";
-const GREEN     = "#3DD68C";
-const RED       = "#E55353";
+const SURFACE   = "var(--bg-surface)";
+const BG        = "var(--bg-primary)";
+const TEXT      = "var(--text-primary)";
+const MUTED     = "var(--text-muted)";
+const BLUE      = "var(--color-secondary, #4A9EDB)";
+const GREEN     = "var(--color-accent, #3DD68C)";
+const RED       = "var(--color-danger, #E55353)";
 
 /* ─── stat card ─────────────────────────────────────────────── */
 function StatCard({
@@ -156,7 +156,7 @@ export default function Dashboard() {
       <div
         className="relative overflow-hidden rounded-2xl p-6 md:p-8"
         style={{
-          background: "linear-gradient(135deg, #162436 0%, #0D1B2A 60%, #111d2c 100%)",
+          background: "var(--glass-card-bg)",
           border: `1px solid ${GOLD_BR}`,
         }}
       >
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 <div key={item.title} className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-2 min-w-0">
                     <i className="fa-regular fa-calendar-days mt-0.5 text-[11px] shrink-0" style={{ color: GOLD }}></i>
-                    <span className="text-xs leading-snug truncate" style={{ color: "rgba(242,236,217,0.8)" }}>
+                    <span className="text-xs leading-snug truncate" style={{ color: MUTED }}>
                       {item.title}
                     </span>
                   </div>
@@ -483,7 +483,7 @@ export default function Dashboard() {
               <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold" style={{ color: RED }}>
                 <i className="fa-solid fa-triangle-exclamation"></i> Weak Area Detected
               </div>
-              <p className="text-sm" style={{ color: "rgba(242,236,217,0.8)" }}>
+              <p className="text-sm" style={{ color: MUTED }}>
                 Your accuracy in <strong style={{ color: TEXT }}>Communication Engineering</strong> dropped by 15% this week.
               </p>
               <Link
@@ -498,7 +498,7 @@ export default function Dashboard() {
               <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold" style={{ color: GREEN }}>
                 <i className="fa-solid fa-chart-line"></i> Strong Momentum
               </div>
-              <p className="text-sm" style={{ color: "rgba(242,236,217,0.8)" }}>
+              <p className="text-sm" style={{ color: MUTED }}>
                 You are in the <strong style={{ color: GREEN }}>top 10%</strong> of students for{" "}
                 <strong style={{ color: TEXT }}>Digital Electronics & VLSI</strong>.
               </p>

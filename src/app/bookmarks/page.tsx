@@ -119,7 +119,7 @@ export default function BookmarksPage() {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-500/20 border-t-brand-500" />
-        <p className="text-sm text-slate-400">Loading your bookmarks...</p>
+        <p className="text-sm text-[var(--text-muted)]">Loading your bookmarks...</p>
       </div>
     );
   }
@@ -129,10 +129,10 @@ export default function BookmarksPage() {
       <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
         <div className="text-4xl">⚠️</div>
         <p className="text-sm font-bold text-danger">Failed to load</p>
-        <p className="text-xs text-slate-500">{error}</p>
+        <p className="text-xs text-[var(--text-muted)]">{error}</p>
         <button
           onClick={fetchBookmarks}
-          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-white"
+          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-[var(--text-primary)]"
         >
           Retry
         </button>
@@ -143,47 +143,47 @@ export default function BookmarksPage() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <section className="glass-card rounded-[1.75rem] border border-white/5 p-6 md:p-8">
+      <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-brand-400/25 bg-brand-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-brand-300">
               Your Saved Collection
             </div>
-            <h2 className="text-2xl font-heading font-black text-white md:text-3xl">
+            <h2 className="text-2xl font-heading font-black text-[var(--text-primary)] md:text-3xl">
               Bookmarks
             </h2>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
               Review questions you've saved during your practice sessions.
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-dark-bg/60 px-4 py-3 text-center min-w-[120px]">
-            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Total</div>
-            <div className="mt-1 text-xl font-bold text-white">{bookmarks.length}</div>
+          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-3 text-center min-w-[120px]">
+            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Total</div>
+            <div className="mt-1 text-xl font-bold text-[var(--text-primary)]">{bookmarks.length}</div>
           </div>
         </div>
       </section>
 
       {/* Filters Section */}
       {bookmarks.length > 0 && (
-        <section className="glass-card flex flex-col gap-4 rounded-[1.5rem] border border-white/5 p-4 md:flex-row md:items-center">
+        <section className="glass-card flex flex-col gap-4 rounded-[1.5rem] border border-[var(--border-subtle)] p-4 md:flex-row md:items-center">
           <div className="relative flex-1">
-            <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Search questions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
+              className="w-full rounded-xl border border-[var(--border-subtle)] bg-white/5 py-3 pl-11 pr-4 text-sm text-[var(--text-primary)] placeholder-slate-500 outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
             />
           </div>
           <div className="flex flex-col gap-3 sm:flex-row md:w-auto">
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="min-w-[150px] cursor-pointer rounded-xl border border-white/10 bg-dark-bg/80 py-3 px-4 text-sm text-white outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
+              className="min-w-[150px] cursor-pointer rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-3 px-4 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
             >
               {subjects.map(s => (
-                <option key={s} value={s} className="bg-[#0f172a] text-slate-200">
+                <option key={s} value={s} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">
                   {s === 'All' ? 'All Subjects' : s}
                 </option>
               ))}
@@ -191,11 +191,11 @@ export default function BookmarksPage() {
             <select
               value={selectedTopic}
               onChange={(e) => setSelectedTopic(e.target.value)}
-              className="min-w-[150px] cursor-pointer rounded-xl border border-white/10 bg-dark-bg/80 py-3 px-4 text-sm text-white outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
+              className="min-w-[150px] cursor-pointer rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-3 px-4 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
               disabled={selectedSubject === 'All' && topics.length <= 1}
             >
               {topics.map(t => (
-                <option key={t} value={t} className="bg-[#0f172a] text-slate-200">
+                <option key={t} value={t} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">
                   {t === 'All' ? 'All Topics' : t}
                 </option>
               ))}
@@ -206,29 +206,29 @@ export default function BookmarksPage() {
 
       {/* Bookmarks List */}
       {bookmarks.length === 0 ? (
-        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-white/5 p-12 text-center">
-          <i className="fa-regular fa-bookmark mb-4 text-5xl text-slate-600" />
-          <h3 className="text-lg font-bold text-white">No bookmarks yet</h3>
-          <p className="mt-2 text-sm text-slate-400 max-w-md">
+        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-[var(--border-subtle)] p-12 text-center">
+          <i className="fa-regular fa-bookmark mb-4 text-5xl text-[var(--text-muted)]" />
+          <h3 className="text-lg font-bold text-[var(--text-primary)]">No bookmarks yet</h3>
+          <p className="mt-2 text-sm text-[var(--text-muted)] max-w-md">
             You haven't saved any questions. Start a practice session and click the bookmark icon on any question to save it here for later review.
           </p>
           <Link
             href="/practice"
-            className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105"
+            className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-[var(--text-primary)] shadow-lg transition-transform hover:scale-105"
           >
             Start Practicing
           </Link>
         </div>
       ) : filteredBookmarks.length === 0 ? (
-        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-white/5 p-12 text-center">
-          <i className="fa-solid fa-filter-circle-xmark mb-4 text-5xl text-slate-600" />
-          <h3 className="text-lg font-bold text-white">No matches found</h3>
-          <p className="mt-2 text-sm text-slate-400 max-w-md">
+        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-[var(--border-subtle)] p-12 text-center">
+          <i className="fa-solid fa-filter-circle-xmark mb-4 text-5xl text-[var(--text-muted)]" />
+          <h3 className="text-lg font-bold text-[var(--text-primary)]">No matches found</h3>
+          <p className="mt-2 text-sm text-[var(--text-muted)] max-w-md">
             No bookmarks match your current filters and search query.
           </p>
           <button
             onClick={() => { setSearchQuery(''); setSelectedSubject('All'); setSelectedTopic('All'); }}
-            className="mt-6 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-slate-300 transition-transform hover:scale-105"
+            className="mt-6 inline-flex items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-white/5 px-6 py-3 text-sm font-bold text-[var(--text-secondary)] transition-transform hover:scale-105"
           >
             Clear Filters
           </button>
@@ -247,14 +247,14 @@ export default function BookmarksPage() {
             return (
               <div
                 key={b.id}
-                className="glass-card rounded-[1.5rem] border border-white/5 p-5 transition-colors hover:border-white/10 md:p-6"
+                className="glass-card rounded-[1.5rem] border border-[var(--border-subtle)] p-5 transition-colors hover:border-[var(--border-subtle)] md:p-6"
               >
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
+                    <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs font-bold text-[var(--text-secondary)]">
                       {b.mcq.topic.subject.name}
                     </span>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+                    <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs text-[var(--text-muted)]">
                       {b.mcq.topic.name}
                     </span>
                     <span
@@ -271,22 +271,22 @@ export default function BookmarksPage() {
                   </div>
                   <button
                     onClick={() => removeBookmark(b.mcqId)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-danger/10 text-danger transition-colors hover:bg-danger hover:text-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-danger/10 text-danger transition-colors hover:bg-danger hover:text-[var(--text-primary)]"
                     title="Remove Bookmark"
                   >
                     <i className="fa-solid fa-trash-can text-sm" />
                   </button>
                 </div>
 
-                <div className="mb-5 text-base font-medium leading-relaxed text-slate-200">
+                <div className="mb-5 text-base font-medium leading-relaxed text-[var(--text-primary)]">
                   {b.mcq.question}
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
                   {options.map((opt) => {
                     const isCorrect = opt.key === b.mcq.correctAnswer;
-                    let bgStyle = 'bg-dark-bg/60 border-white/5';
-                    let textStyle = 'text-slate-300';
+                    let bgStyle = 'bg-[var(--bg-surface)] border-[var(--border-subtle)]';
+                    let textStyle = 'text-[var(--text-secondary)]';
                     let icon = null;
 
                     if (isRevealed && isCorrect) {
@@ -301,10 +301,10 @@ export default function BookmarksPage() {
                         className={`flex items-center gap-3 rounded-xl border p-4 ${bgStyle}`}
                       >
                         <div
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 text-xs font-black ${
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border-subtle)] text-xs font-black ${
                             isRevealed && isCorrect
-                              ? 'bg-emerald-500 text-white border-emerald-500'
-                              : 'bg-white/5 text-slate-400'
+                              ? 'bg-emerald-500 text-[var(--text-primary)] border-emerald-500'
+                              : 'bg-white/5 text-[var(--text-muted)]'
                           }`}
                         >
                           {opt.key}
@@ -316,10 +316,10 @@ export default function BookmarksPage() {
                   })}
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-5">
+                <div className="mt-5 flex items-center justify-between border-t border-[var(--border-subtle)] pt-5">
                   <button
                     onClick={() => toggleReveal(b.id)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-sm font-bold text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary)]"
                   >
                     <i className={`fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}`} />
                     {isRevealed ? 'Hide Answer' : 'Show Answer & Explanation'}
@@ -331,7 +331,7 @@ export default function BookmarksPage() {
                     <div className="mb-1 text-[11px] font-black uppercase tracking-wider text-brand-400">
                       Explanation
                     </div>
-                    <div className="text-sm leading-relaxed text-slate-300">
+                    <div className="text-sm leading-relaxed text-[var(--text-secondary)]">
                       {b.mcq.explanation}
                     </div>
                   </div>

@@ -11,6 +11,8 @@ model User {
     id        String   @id @default(cuid())
     email     String   @unique
     name      String?
+    mobile    String?  @unique
+    isMobileVerified Boolean @default(false)
     password  String
     level     Int      @default(1)
     xp        Int      @default(0)
@@ -146,6 +148,39 @@ model PracticeMcq {
     explanation   String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
+}
+
+model MockTest {
+    id             String            @id @default(cuid())
+    title          String            @unique
+    description    String?
+    durationMinutes Int?
+    csvFilename    String?
+    totalQuestions  Int               @default(0)
+    failedRows      Int               @default(0)
+    uploadStatus    String            @default("draft")
+    questions       MockTestQuestion[]
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt
+}
+
+model MockTestQuestion {
+    id            String   @id @default(cuid())
+    mockTestId    String
+    mockTest      MockTest @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+    no            Int?
+    question      String
+    optionA       String
+    optionB       String
+    optionC       String
+    optionD       String
+    correctAnswer String
+    explanation   String?
+    difficulty    String   @default("Medium")
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    @@index([mockTestId])
 }
 
 model CSVUpload {

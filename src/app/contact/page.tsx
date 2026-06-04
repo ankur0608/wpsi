@@ -45,18 +45,18 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="relative w-full overflow-x-hidden bg-[#0D1B2A] text-[#F2ECD9] min-h-screen">
+    <div className="relative w-full overflow-x-hidden min-h-screen">
       <LandingNavbar />
       <main className="relative pt-28 md:pt-32 pb-20 lg:pt-40 lg:pb-28">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <h1 className="text-4xl md:text-5xl font-heading font-extrabold tracking-tight mb-8 text-center">
             Contact <span className="text-gradient">Us</span>
           </h1>
-          <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-center opacity-70 mb-12 max-w-2xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
 
-          <div className="glass-card p-8 rounded-2xl border border-white/5 space-y-8 text-slate-300">
+          <div className="glass-card p-8 rounded-2xl border border-[var(--border-subtle)] space-y-8 opacity-90">
             {status === "success" ? (
               <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 mb-4">
@@ -65,10 +65,10 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-emerald-400 mb-2">Message Sent Successfully!</h3>
-                <p className="text-slate-400 mb-6">We've received your message and will be in touch soon.</p>
+                <p className="opacity-70 mb-6">We've received your message and will be in touch soon.</p>
                 <button
                   onClick={() => setStatus("idle")}
-                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10"
+                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-[var(--text-primary)] rounded-lg transition-colors border border-[var(--border-subtle)]"
                 >
                   Send another message
                 </button>
@@ -83,7 +83,7 @@ export default function ContactPage() {
                 
                 <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">Name</label>
+                    <label htmlFor="name" className="block text-sm font-medium opacity-90 mb-2">Name</label>
                     <input
                       type="text"
                       name="name"
@@ -91,13 +91,13 @@ export default function ContactPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      className="w-full bg-white/5 border border-[var(--border-subtle)] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       placeholder="John Doe"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                    <label htmlFor="email" className="block text-sm font-medium opacity-90 mb-2">Email</label>
                     <input
                       type="email"
                       name="email"
@@ -105,27 +105,27 @@ export default function ContactPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      className="w-full bg-white/5 border border-[var(--border-subtle)] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       placeholder="john@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-2">Subject (Optional)</label>
+                  <label htmlFor="subject" className="block text-sm font-medium opacity-90 mb-2">Subject (Optional)</label>
                   <input
                     type="text"
                     name="subject"
                     id="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full bg-white/5 border border-[var(--border-subtle)] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="How can we help you?"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">Message</label>
+                  <label htmlFor="message" className="block text-sm font-medium opacity-90 mb-2">Message</label>
                   <textarea
                     id="message"
                     name="message"
@@ -133,7 +133,7 @@ export default function ContactPage() {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                    className="w-full bg-white/5 border border-[var(--border-subtle)] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
                     placeholder="Your message here..."
                   ></textarea>
                 </div>
@@ -142,7 +142,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={status === "submitting"}
-                    className={`w-full py-3 px-6 rounded-lg text-white font-medium bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0D1B2A] transition-all ${status === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`w-full py-3 px-6 rounded-lg text-[var(--text-primary)] font-medium bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0D1B2A] transition-all ${status === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     {status === "submitting" ? "Sending..." : "Send Message"}
                   </button>
@@ -150,26 +150,26 @@ export default function ContactPage() {
               </form>
             )}
 
-            {/* <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* <div className="mt-12 pt-8 border-t border-[var(--border-subtle)] grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-lg font-bold text-white mb-4">Contact Information</h3>
-                <div className="space-y-3 text-slate-400">
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Contact Information</h3>
+                <div className="space-y-3 opacity-70">
                   <p className="flex items-center">
-                    <span className="w-20 font-medium text-slate-300">Company:</span>
+                    <span className="w-20 font-medium opacity-90">Company:</span>
                     [Your Legal Company Name]
                   </p>
                   <p className="flex items-center">
-                    <span className="w-20 font-medium text-slate-300">Email:</span>
+                    <span className="w-20 font-medium opacity-90">Email:</span>
                     [Your Support Email]
                   </p>
                   <p className="flex items-center">
-                    <span className="w-20 font-medium text-slate-300">Address:</span>
+                    <span className="w-20 font-medium opacity-90">Address:</span>
                     [Your Registered Address]
                   </p>
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-4">Legal Policies</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Legal Policies</h3>
                 <ul className="space-y-2 text-indigo-400">
                   <li><Link href="/terms" className="hover:text-indigo-300 transition-colors">Terms & Conditions</Link></li>
                   <li><Link href="/privacy" className="hover:text-indigo-300 transition-colors">Privacy Policy</Link></li>

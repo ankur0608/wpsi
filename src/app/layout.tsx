@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Poppins, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import DashboardLayout from "@/components/DashboardLayout";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -92,6 +94,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
@@ -107,10 +110,23 @@ export default function RootLayout({
             })
           }}
         />
+      </head>
+      <body className="min-h-screen relative">
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               try {
+                // Restore theme (dark/light)
+                var t = localStorage.getItem('wpsi-theme');
+                if (t === 'light') {
+                  document.documentElement.classList.add('light-mode');
+                  document.documentElement.classList.remove('dark-mode');
+                } else {
+                  document.documentElement.classList.add('dark-mode');
+                  document.documentElement.classList.remove('light-mode');
+                }
+                // Restore appearance settings
                 var appearance = localStorage.getItem('wpsi-settings-appearance');
                 if (appearance) {
                   var parsed = JSON.parse(appearance);
@@ -124,11 +140,11 @@ export default function RootLayout({
             `
           }}
         />
-      </head>
-      <body className="min-h-screen relative" style={{ background: "#0D1B2A", color: "#F2ECD9" }}>
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
+        <ThemeProvider>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
+        </ThemeProvider>
       </body>
     </html>
   );
