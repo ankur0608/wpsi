@@ -87,7 +87,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06] md:hidden"
-            style={{ borderColor: "rgba(212,146,42,0.16)", color: "rgba(255,255,255,0.6)" }}
+            style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
             onClick={onMenuClick}
             aria-label="Open navigation"
           >
@@ -98,7 +98,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
             <Link
               href="/subjects"
               className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
-              style={{ borderColor: "rgba(212,146,42,0.16)", color: "rgba(255,255,255,0.6)" }}
+              style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
             >
               <i className="fa-solid fa-arrow-left"></i>
             </Link>
@@ -107,13 +107,13 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
           <div className="min-w-0">
             <h1
               className="truncate text-base font-heading font-bold sm:text-lg"
-              style={{ color: "#F2ECD9" }}
+              style={{ color: "var(--text-primary)" }}
             >
               {displayTitle}
             </h1>
             <div
               className="hidden text-[9px] font-medium uppercase tracking-[0.28em] sm:block"
-              style={{ color: "rgba(255,255,255,0.35)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               WPSI Exam: June 21, 2026
             </div>
@@ -134,7 +134,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
               onClick={() => togglePopover("streak")}
             >
               <i className="fa-solid fa-fire text-sm" style={{ color: "#D4922A" }}></i>
-              <span className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                 {loading ? "--" : user?.streak ?? "--"}
               </span>
             </button>
@@ -153,10 +153,10 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                     <i className="fa-solid fa-fire"></i>
                   </div>
                   <div>
-                    <div className="font-bold" style={{ color: "#F2ECD9" }}>
+                    <div className="font-bold" style={{ color: "var(--text-primary)" }}>
                       {loading ? "Loading streak" : `${user?.streak ?? 0} Day Streak`}
                     </div>
-                    <div className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>
                       Stay consistent to keep your momentum growing.
                     </div>
                   </div>
@@ -166,7 +166,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                   style={{ background: "rgba(212,146,42,0.06)", border: "1px solid rgba(212,146,42,0.12)" }}
                 >
                   <div className="flex justify-between text-xs">
-                    <span style={{ color: "rgba(255,255,255,0.5)" }}>Next milestone reward</span>
+                    <span style={{ color: "var(--text-secondary)" }}>Next milestone reward</span>
                     <span className="font-bold" style={{ color: "#D4922A" }}>+30 bonus coins</span>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
               onClick={() => togglePopover("coins")}
             >
               <i className="fa-solid fa-coins text-sm" style={{ color: "#4A9EDB" }}></i>
-              <span className="text-sm font-bold" style={{ color: "#F2ECD9" }}>
+              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                 {loading ? "--" : user?.coins?.toLocaleString() ?? "--"}
               </span>
             </button>
@@ -210,7 +210,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                     <i className="fa-solid fa-coins"></i>
                   </div>
                   <div>
-                    <div className="font-bold" style={{ color: "#F2ECD9" }}>
+                    <div className="font-bold" style={{ color: "var(--text-primary)" }}>
                       {loading ? "Loading coins" : `${user?.coins?.toLocaleString() ?? 0} Coins`}
                     </div>
                     <div
@@ -223,16 +223,16 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                 </div>
                 <div
                   className="mb-1 h-1.5 w-full overflow-hidden rounded-full"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  style={{ background: "var(--input-bg)" }}
                 >
                   <div
                     className="h-full rounded-full"
                     style={{ width: "81.6%", background: "linear-gradient(90deg, #D4922A, #F0B85A)" }}
                   ></div>
                 </div>
-                <div className="mb-3 text-center text-[10px] leading-tight" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <div className="mb-3 text-center text-[10px] leading-tight" style={{ color: "var(--text-muted)" }}>
                   550 more to{" "}
-                  <span className="font-bold" style={{ color: "#F2ECD9" }}>
+                  <span className="font-bold" style={{ color: "var(--text-primary)" }}>
                     Silver Tier
                   </span>
                 </div>
@@ -251,7 +251,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
           <button
             type="button"
             className="relative flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
-            style={{ borderColor: "rgba(212,146,42,0.14)", color: "rgba(255,255,255,0.55)" }}
+            style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
           >
             <i className="fa-solid fa-bell text-base"></i>
             <span
@@ -268,7 +268,7 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
             <button
               type="button"
               className="flex items-center gap-2 rounded-xl border px-2 py-1.5 transition-colors hover:bg-white/[0.06]"
-              style={{ borderColor: "rgba(212,146,42,0.16)" }}
+              style={{ borderColor: "var(--border-accent)" }}
               onClick={() => togglePopover("profile")}
             >
               <img
@@ -278,10 +278,10 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
                 alt="User avatar"
               />
               <div className="hidden text-left sm:block">
-                <div className="max-w-28 truncate text-sm font-semibold" style={{ color: "#F2ECD9" }}>
+                <div className="max-w-28 truncate text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
                   {loading ? "Loading..." : displayName}
                 </div>
-                <div className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <div className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
                   {loading ? "Syncing" : displayLevel !== undefined ? `Level ${displayLevel}` : "Profile"}
                 </div>
               </div>

@@ -15,11 +15,11 @@ export async function GET(req: NextRequest) {
 
     const where: any = {};
     if (subject && subject !== 'all') {
-      const subjectList = subject.split(',').map(s => s.trim());
+      const subjectList = subject.split('|').map(s => s.trim());
       where.topic = { subject: { name: { in: subjectList } } };
     }
     if (topic && topic !== 'all') {
-      const topicList = topic.split(',').map(t => t.trim());
+      const topicList = topic.split('|').map(t => t.trim());
       where.topic = { ...where.topic, name: { in: topicList } };
     }
     if (difficulty) {

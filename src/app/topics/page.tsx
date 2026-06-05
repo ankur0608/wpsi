@@ -189,7 +189,7 @@ function TopicsContent() {
 
             {isTopicModalOpen && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <div className="w-full max-w-3xl rounded-[1.5rem] border border-[var(--border-subtle)] bg-[#11141d] shadow-2xl overflow-hidden flex flex-col">
+                <div className="w-full max-w-3xl max-h-[90vh] rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] shadow-2xl overflow-hidden flex flex-col">
                   {/* Header */}
                   <div className="relative p-6 md:p-8 border-b border-[var(--border-subtle)]">
                     <button
@@ -209,7 +209,7 @@ function TopicsContent() {
                   </div>
 
                   {/* Body */}
-                  <div className="p-6 md:p-8">
+                  <div className="p-6 md:p-8 overflow-y-auto">
                     {/* Practice Mode */}
                     <div className="flex items-center gap-2 mb-4">
                       <i className="fa-solid fa-gamepad text-[var(--text-muted)]"></i>

@@ -300,7 +300,7 @@ function MultiSelectDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border-subtle)] bg-[#11141d] shadow-2xl overflow-hidden max-h-64 flex flex-col">
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] shadow-2xl overflow-hidden max-h-64 flex flex-col">
           <div className="overflow-y-auto p-2 space-y-1">
             <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
               <input
@@ -484,8 +484,8 @@ export default function PracticePage() {
     const topicFromUrl   = searchParams.get('topic');
     const diffsFromUrl   = formatDifficulties(searchParams.get('diff'));
     const autoFromUrl    = searchParams.get('auto') === 'true';
-    const nextSubjects = subjectFromUrl && subjectFromUrl !== 'all' ? subjectFromUrl.split(',') : ['All Subjects'];
-    const nextTopics   = topicFromUrl   && topicFromUrl   !== 'all' ? topicFromUrl.split(',') : ['All Topics'];
+    const nextSubjects = subjectFromUrl && subjectFromUrl !== 'all' ? subjectFromUrl.split('|') : ['All Subjects'];
+    const nextTopics   = topicFromUrl   && topicFromUrl   !== 'all' ? topicFromUrl.split('|') : ['All Topics'];
 
     setSelectedMode((c) => (c === modeFromUrl ? c : modeFromUrl));
     setSelectedSubjects((c) => (arraysEqual(c, nextSubjects) ? c : nextSubjects));
@@ -1459,7 +1459,7 @@ export default function PracticePage() {
               onClick={() => setIsMobilePaletteOpen(false)}
             >
               <div 
-                className="w-full max-w-[800px] max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-[var(--border-subtle)] bg-[#11141d] p-6 shadow-2xl" 
+                className="w-full max-w-[800px] max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] p-6 shadow-2xl" 
                 onClick={e => e.stopPropagation()}
                 style={{ WebkitOverflowScrolling: 'touch' }}
               >

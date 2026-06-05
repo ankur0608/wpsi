@@ -427,8 +427,8 @@ h1, h2, h3, h4, h5, h6 {
    TOPBAR / NAVBAR
    ───────────────────────────────────────────────────────── */
 #main-topbar {
-    background: rgba(13, 27, 42, 0.94);
-    border-bottom-color: rgba(212, 146, 42, 0.12);
+    background: var(--topbar-bg);
+    border-bottom-color: var(--border-accent);
     backdrop-filter: blur(20px);
 }
 
@@ -436,8 +436,8 @@ h1, h2, h3, h4, h5, h6 {
    SIDEBAR
    ───────────────────────────────────────────────────────── */
 #sidebar {
-    background: rgba(9, 21, 34, 0.98);
-    border-right-color: rgba(212, 146, 42, 0.12);
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-accent);
 }
 
 /* ─────────────────────────────────────────────────────────
