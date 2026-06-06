@@ -5,7 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/settings/', '/profile/', '/api/'],
+      disallow: [
+        '/dashboard/',
+        '/settings/',
+        '/profile/',
+        '/api/',
+        '/bookmarks/',
+        '/results/',
+        '/streaks/',
+        '/rewards/',
+        '/referral/',
+      ],
     },
     sitemap: 'https://mcqprepzone.online/sitemap.xml',
   }

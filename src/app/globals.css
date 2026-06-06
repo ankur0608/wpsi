@@ -51,7 +51,7 @@ html {
   --bg-surface:       #162436;
   --bg-card:          #162436;
   --bg-card-hover:    #1E3248;
-  --text-primary:     #F2ECD9;
+  --text-primary:     #FFFFFF;
   --text-secondary:   rgba(255, 255, 255, 0.5);
   --text-muted:       rgba(255, 255, 255, 0.35);
   --border-accent:    rgba(212, 146, 42, 0.14);
@@ -69,7 +69,7 @@ html {
   --progress-track:   rgba(255, 255, 255, 0.06);
   --circle-bg-stroke: #1E3248;
   --selection-bg:     rgba(212, 146, 42, 0.35);
-  --selection-text:   #F2ECD9;
+  --selection-text:   #FFFFFF;
   --popover-bg:       rgba(9,21,34,0.98);
   --popover-border:   rgba(212,146,42,0.16);
 }
@@ -79,32 +79,36 @@ html {
    ───────────────────────────────────────────────────────── */
 :root.light-mode {
   color-scheme: light;
-  --bg-primary:       #F7F2E8;
-  --bg-secondary:     #EEE6D8;
+  --bg-primary:       #FFFFFF;
+  --bg-secondary:     #FFFFFF;
   --bg-surface:       #FFFFFF;
-  --bg-card:          #FFFCF7;
-  --bg-card-hover:    #F7F0E5;
+  --bg-card:          #FFFFFF;
+  --bg-card-hover:    #FFFFFF;
   --text-primary:     #162436;
   --text-secondary:   rgba(22, 36, 54, 0.68);
   --text-muted:       rgba(22, 36, 54, 0.46);
   --border-accent:    rgba(180, 122, 32, 0.18);
   --border-subtle:    rgba(22, 36, 54, 0.08);
-  --glass-bg:         linear-gradient(180deg, rgba(247,242,232,0.98) 0%, rgba(238,230,216,0.96) 100%);
-  --glass-card-bg:    linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(247,240,229,0.95) 100%);
-  --topbar-bg:        rgba(247, 242, 232, 0.97);
-  --sidebar-bg:       rgba(238, 230, 216, 0.99);
+  --glass-bg:         #FFFFFF;
+  --glass-card-bg:    #FFFFFF;
+  --topbar-bg:        #FFFFFF;
+  --sidebar-bg:       #FFFFFF;
   --nav-hover-bg:     rgba(212, 146, 42, 0.08);
   --input-bg:         rgba(22, 36, 54, 0.04);
-  --scrollbar-track:  #F7F2E8;
+  --scrollbar-track:  #FFFFFF;
   --scrollbar-thumb:  rgba(180, 122, 32, 0.30);
   --skeleton-a:       rgba(22, 36, 54, 0.05);
   --skeleton-b:       rgba(212, 146, 42, 0.10);
   --progress-track:   rgba(22, 36, 54, 0.08);
-  --circle-bg-stroke: #DED4C4;
+  --circle-bg-stroke: #E5E7EB;
   --selection-bg:     rgba(212, 146, 42, 0.22);
   --selection-text:   #162436;
-  --popover-bg:       rgba(255,255,255,0.99);
+  --popover-bg:       #FFFFFF;
   --popover-border:   rgba(180,122,32,0.18);
+}
+
+:root.light-mode * {
+  box-shadow: none !important;
 }
 
 /* ─────────────────────────────────────────────────────────

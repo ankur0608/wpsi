@@ -988,7 +988,7 @@ export default function PracticePage() {
                       style={{
                         background:  active ? 'rgba(99,102,241,0.14)' : "var(--bg-surface)",
                         borderColor: active ? 'rgba(99,102,241,0.35)' : "var(--border-subtle)",
-                        color:       active ? '#c7d2fe' : "var(--text-muted)",
+                        color:       active ? 'var(--text-primary)' : "var(--text-muted)",
                       }}
                     >
                       {diff}
@@ -1150,9 +1150,9 @@ export default function PracticePage() {
       {view === 'exam' && session && currentQuestion && (
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <section className="w-full min-w-0">
-            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[#F2ECD9] p-3 md:p-4 shadow-2xl">
+            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[var(--text-primary)] p-3 md:p-4 shadow-2xl">
               {/* Header */}
-              <div className="flex justify-between items-center mb-1 md:mb-2">
+              <div className="flex justify-between items-center mb-3 md:mb-4">
                 <div className="flex items-center gap-4">
                   <h2 className="text-base md:text-lg font-bold m-0">Question {session.currentIndex + 1} of {session.questions.length}</h2>
                   {currentQuestion.part && (
@@ -1171,7 +1171,7 @@ export default function PracticePage() {
               </div>
 
               {/* Progress */}
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-1 md:mb-3">
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-3 md:mb-4">
                 <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-[#D4922A] rounded-full transition-all" 
@@ -1184,7 +1184,7 @@ export default function PracticePage() {
               </div>
 
               {/* Meta Cards */}
-              <div className="flex flex-nowrap gap-2 mb-1 md:mb-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex flex-nowrap gap-2 mb-3 md:mb-5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                 <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
                   <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#8B5CF6]/10 text-[#8B5CF6] shrink-0">
                     <i className="fa-solid fa-book-open"></i>
@@ -1215,7 +1215,7 @@ export default function PracticePage() {
               </div>
 
               {/* Controls */}
-              <div className="flex flex-row justify-between items-center gap-2 mb-1 md:mb-3">
+              <div className="flex flex-row justify-between items-center gap-2 mb-3 md:mb-5">
                 <div className="flex bg-white/5 rounded-lg p-0.5">
                   <button 
                     onClick={() => setActiveLanguage('English')}
@@ -1241,7 +1241,7 @@ export default function PracticePage() {
               </div>
 
               {/* Question Area */}
-              <div className="flex gap-2 md:gap-3 items-start mb-2 md:mb-4">
+              <div className="flex gap-2 md:gap-3 items-start mb-4 md:mb-6">
                 <div className="w-6 h-6 md:w-8 md:h-8 bg-[#D4922A] text-[#111] rounded-md flex items-center justify-center font-black text-sm shrink-0 mt-0.5">Q</div>
                 <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-[var(--text-primary)] font-medium">{displayedQuestion?.question}</div>
                 <button onClick={(e) => toggleBookmark(e)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer text-lg hover:text-[var(--text-primary)] transition-colors shrink-0">
@@ -1250,7 +1250,7 @@ export default function PracticePage() {
               </div>
 
               {/* Options List */}
-              <div className="flex flex-col gap-1 md:gap-2 mb-2 md:mb-4">
+              <div className="flex flex-col gap-2 md:gap-3 mb-4 md:mb-6">
                 {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
                   const selected  = currentResponse === key;
                   const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
@@ -1331,10 +1331,10 @@ export default function PracticePage() {
                   <span className="truncate">Prev</span>
                 </button>
                 <button 
-                  onClick={() => setView('review')}
-                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0"
+                  onClick={toggleReviewMark}
+                  className={`col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0 ${session.markedForReview.includes(currentQuestion.id) ? 'text-[#D4922A]' : 'text-[var(--text-secondary)]'}`}
                 >
-                  <i className="fa-regular fa-eye text-sm"></i>
+                  <i className={`fa-bookmark ${session.markedForReview.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-sm`}></i>
                   <span className="truncate">Review</span>
                 </button>
 
@@ -1360,7 +1360,7 @@ export default function PracticePage() {
                   className="col-span-4 md:flex-[2] bg-[#D4922A] text-[#111] p-2.5 md:p-3 rounded-xl flex items-center justify-center gap-2 text-xs md:text-base font-bold hover:bg-[#B97A20] transition-colors mt-1 md:mt-0 shadow-lg shadow-[#D4922A]/20"
                 >
                   <i className="fa-regular fa-paper-plane"></i>
-                  <span>{session.currentIndex === session.questions.length - 1 ? 'Submit Exam' : 'Save & Next'}</span>
+                  <span>{session.currentIndex === session.questions.length - 1 ? 'Submit Exam' :'Next'}</span>
                 </button>
               </div>
             </div>
@@ -1412,13 +1412,14 @@ export default function PracticePage() {
                       className="aspect-square rounded-lg border border-[var(--border-subtle)] text-[11px] font-bold transition-transform hover:scale-105"
                       style={{ 
                         ...paletteStyleMap[ps], 
-                        boxShadow: active ? '0 0 0 2px rgba(212,146,42,0.8)' : 'none',
-                        ...(active && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                        boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
+                        ...(active && ps !== 's-review' && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                        ...(active && ps === 's-review' && { background: '#D4922A', color: '#fff', borderColor: '#3B82F6' }),
                         ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
                         ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
-                        ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: '#fff', borderColor: "var(--bg-surface)" }),
-                        ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" }),
-                        ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" })
+                        ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
+                        ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
+                        ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" })
                       }}
                     >
                       {idx + 1}
@@ -1489,13 +1490,14 @@ export default function PracticePage() {
                         className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
                         style={{ 
                           ...paletteStyleMap[ps], 
-                          boxShadow: active ? '0 0 0 2px rgba(212,146,42,0.8)' : 'none',
-                          ...(active && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                          boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
+                          ...(active && ps !== 's-review' && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
+                          ...(active && ps === 's-review' && { background: '#D4922A', color: '#fff', borderColor: '#3B82F6' }),
                           ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
                           ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
-                          ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: '#fff', borderColor: "var(--bg-surface)" }),
-                          ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" }),
-                          ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-muted)", borderColor: "var(--border-subtle)" })
+                          ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
+                          ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
+                          ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" })
                         }}
                       >
                         {idx + 1}

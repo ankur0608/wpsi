@@ -49,7 +49,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       <aside
         id="sidebar"
-        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col shadow-[0_0_80px_rgba(0,0,0,0.6)] transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         style={{
           background: "var(--sidebar-bg)",

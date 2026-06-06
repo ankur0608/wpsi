@@ -91,7 +91,7 @@ export default function LandingNavbar() {
         className="fixed top-0 left-0 right-0 w-full z-50 border-b transition-all-300"
         style={{
           background: isLight
-            ? 'rgba(245,240,232,0.97)'
+            ? 'rgba(255,255,255,0.97)'
             : 'rgba(13,27,42,0.96)',
           borderColor: isLight
             ? 'rgba(180,122,32,0.18)'
@@ -109,7 +109,7 @@ export default function LandingNavbar() {
                 </div>
                 <span
                   className="font-heading font-bold text-2xl tracking-tight"
-                  style={{ color: isLight ? '#1A2A3A' : '#F2ECD9' }}
+                  style={{ color: isLight ? '#1A2A3A' : '#FFFFFF' }}
                 >
                   Mcqprep<span className="text-brand-500">zone</span>
                 </span>
@@ -193,7 +193,7 @@ export default function LandingNavbar() {
           id="landing-mobile-menu"
           className={`${mobileMenuOpen ? 'block' : 'hidden'} absolute left-0 right-0 top-full w-full border-b border-white/10 shadow-2xl md:hidden`}
           style={{
-            background: isLight ? 'rgba(245,240,232,0.99)' : 'rgba(15,23,42,0.99)',
+            background: isLight ? 'rgba(255,255,255,0.99)' : 'rgba(15,23,42,0.99)',
             borderColor: isLight ? 'rgba(180,122,32,0.18)' : 'rgba(255,255,255,0.10)',
           }}
         >

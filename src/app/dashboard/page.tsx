@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
 
-/* ─── tiny helpers ─────────────────────────────────────────── */
 const GOLD      = "var(--color-primary-accent, #D4922A)";
 const GOLD_GLOW = "rgba(var(--rgb-accent, 212, 146, 42), 0.18)";
 const GOLD_BR   = "rgba(var(--rgb-accent, 212, 146, 42), 0.20)";
@@ -16,7 +15,6 @@ const BLUE      = "var(--color-secondary, #4A9EDB)";
 const GREEN     = "var(--color-accent, #3DD68C)";
 const RED       = "var(--color-danger, #E55353)";
 
-/* ─── stat card ─────────────────────────────────────────────── */
 function StatCard({
   icon, value, label, sub, color = GOLD,
 }: {
@@ -48,7 +46,6 @@ function StatCard({
   );
 }
 
-/* ─── progress row ──────────────────────────────────────────── */
 function ProgressRow({
   label, pct, color = GOLD, icon,
 }: {
@@ -73,7 +70,6 @@ function ProgressRow({
   );
 }
 
-/* ─── quick link card ───────────────────────────────────────── */
 function QuickCard({
   href, icon, label, color = GOLD, badge,
 }: {
