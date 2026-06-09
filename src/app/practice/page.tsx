@@ -654,6 +654,7 @@ export default function PracticePage() {
       ...cur,
       responses: { ...cur.responses, [currentQuestion.id]: option },
       visited: cur.visited.includes(currentQuestion.id) ? cur.visited : [...cur.visited, currentQuestion.id],
+      markedForReview: cur.markedForReview.filter(id => id !== currentQuestion.id),
     }));
   };
 
