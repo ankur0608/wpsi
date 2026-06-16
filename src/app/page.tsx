@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
@@ -9,6 +10,41 @@ import LandingNavbar from '../components/LandingNavbar';
 const LandingFooter = dynamic(() => import('../components/LandingFooter'), { ssr: true });
 
 export default function Home() {
+  /*
+  const router = useRouter();
+
+  const handleClaimDiscount = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const sessionRes = await fetch('/api/auth/session', {
+        method: 'GET',
+        cache: 'no-store',
+      });
+      let userData = null;
+      if (sessionRes.ok) {
+        const json = await sessionRes.json();
+        userData = json.data;
+      }
+      
+      await fetch('https://ankrpatel.app.n8n.cloud/webhook-test/b4d6888d-2e63-4161-b6b2-8b11f229bcb8', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event: 'claim_60_discount_clicked',
+          user: userData,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    } catch (error) {
+      console.error('Webhook error:', error);
+    } finally {
+      router.push('/dashboard');
+    }
+  };
+  */
+
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -329,6 +365,7 @@ export default function Home() {
                 <li className="flex items-start gap-3"><i className="fa-solid fa-check text-brand-400 mt-1"></i> Ad-free experience</li>
                 <li className="flex items-start gap-3"><i className="fa-solid fa-check text-brand-400 mt-1"></i> Detailed PDF Notes</li>
               </ul>
+              {/* <a href="/dashboard" onClick={handleClaimDiscount} className="w-full py-3 rounded-lg btn-primary text-center font-bold shadow-lg shadow-brand-500/30 text-[var(--text-primary)]">Claim 60% Discount</a> */}
               <a href="/dashboard" className="w-full py-3 rounded-lg btn-primary text-center font-bold shadow-lg shadow-brand-500/30 text-[var(--text-primary)]">Claim 60% Discount</a>
             </div>
 

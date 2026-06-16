@@ -176,7 +176,7 @@ function buildSessionQuestions(
     const subjectOk =
       subjects.length === 0 || normSubjects.includes('all subjects') || normSubjects.includes('all') || normSubjects.includes(normalizeText(q.subject));
     const topicOk =
-      topics.length === 0 || normTopics.includes('all topics') || normTopics.includes('all') || normTopics.some((t) => normalizeText(q.topic).includes(t));
+      topics.length === 0 || normTopics.includes('all topics') || normTopics.includes('all') || normTopics.includes(normalizeText(q.topic));
     const diffOk = difficulties.includes(q.difficulty);
     return subjectOk && topicOk && diffOk;
   });
@@ -447,8 +447,14 @@ export default function PracticePage() {
         }
       });
 
-      setMcqBank(groupedMcqs);
-      setTotalInDb(groupedMcqs.length);
+      const filteredMcqs = groupedMcqs.filter(mcq => {
+        const hasEnglish = mcq.language === 'English' || mcq.translations?.some(t => t.language === 'English');
+        const hasGujarati = mcq.language === 'Gujarati' || mcq.translations?.some(t => t.language === 'Gujarati');
+        return hasEnglish && hasGujarati;
+      });
+
+      setMcqBank(filteredMcqs);
+      setTotalInDb(filteredMcqs.length);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load MCQs';
       setBankError(msg);
@@ -515,25 +521,46 @@ export default function PracticePage() {
     else if (timeLeft === 0) submitSession(true);
   }, [session?.mode, session?.submitted, timeLeft, view]);
 
-  // ── Tab-switch anti-cheat (mock only) ─────────────────────────────────────
+  // ── Inactivity Auto-submit & Tab-switch anti-cheat ────────────────────────
+  const [forceSubmit, setForceSubmit] = useState(false);
+  const awayTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (view !== 'exam' || !session || session.mode !== 'mock' || session.submitted) return;
+    if (view !== 'exam' || !session || session.submitted) return;
     const handler = () => {
-      if (!document.hidden) return;
-      setSession((cur) => {
-        if (!cur || cur.submitted || cur.mode !== 'mock') return cur;
-        const violations = cur.violations + 1;
-        if (violations >= 3) {
-          setStatusMessage('3 tab-switch violations detected. Your mock test was auto-submitted.');
-          window.setTimeout(() => submitSession(true), 0);
-        } else {
-          setStatusMessage(`Tab switch warning ${violations}/3. One more violation can end your mock test.`);
+      if (document.hidden) {
+        awayTimerRef.current = window.setTimeout(() => {
+          setStatusMessage('Exam auto-submitted due to 10 minutes of inactivity away from the tab.');
+          setForceSubmit(true);
+        }, 10 * 60 * 1000);
+
+        if (session.mode === 'mock') {
+          setSession((cur) => {
+            if (!cur || cur.submitted || cur.mode !== 'mock') return cur;
+            const violations = cur.violations + 1;
+            if (violations >= 3) {
+              setStatusMessage('3 tab-switch violations detected. Your mock test was auto-submitted.');
+              setForceSubmit(true);
+            } else {
+              setStatusMessage(`Tab switch warning ${violations}/3. One more violation can end your mock test.`);
+            }
+            return { ...cur, violations };
+          });
         }
-        return { ...cur, violations };
-      });
+      } else {
+        if (awayTimerRef.current !== null) {
+          window.clearTimeout(awayTimerRef.current);
+          awayTimerRef.current = null;
+        }
+      }
     };
     document.addEventListener('visibilitychange', handler);
-    return () => document.removeEventListener('visibilitychange', handler);
+    return () => {
+      document.removeEventListener('visibilitychange', handler);
+      if (awayTimerRef.current !== null) {
+        window.clearTimeout(awayTimerRef.current);
+      }
+    };
   }, [session?.mode, session?.submitted, view]);
 
   // ─── Actions ───────────────────────────────────────────────────────────────
@@ -737,6 +764,14 @@ export default function PracticePage() {
     if (!session) return;
     updateSession((cur) => ({ ...cur, reviewFilter: filter }));
   };
+
+  useEffect(() => {
+    if (forceSubmit) {
+      submitSession(true);
+      setForceSubmit(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceSubmit, session]);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentQuestion  = session ? session.questions[session.currentIndex] : null;
@@ -1233,21 +1268,12 @@ export default function PracticePage() {
                     </button>
                   )}
                 </div>
-                <button 
-                  onClick={toggleReviewMark}
-                  className="bg-transparent border border-[var(--border-subtle)] text-[var(--text-secondary)] px-2 md:px-3 py-1 rounded-lg cursor-pointer text-xs flex items-center gap-1 hover:bg-white/5 transition-colors"
-                >
-                  Mark for Review <i className={`fa-bookmark ${session.markedForReview.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-[#D4922A]`}></i>
-                </button>
               </div>
 
               {/* Question Area */}
               <div className="flex gap-2 md:gap-3 items-start mb-4 md:mb-6">
                 <div className="w-6 h-6 md:w-8 md:h-8 bg-[#D4922A] text-[#111] rounded-md flex items-center justify-center font-black text-sm shrink-0 mt-0.5">Q</div>
                 <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-[var(--text-primary)] font-medium">{displayedQuestion?.question}</div>
-                <button onClick={(e) => toggleBookmark(e)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer text-lg hover:text-[var(--text-primary)] transition-colors shrink-0">
-                  <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid text-[#D4922A]' : 'fa-regular'}`}></i>
-                </button>
               </div>
 
               {/* Options List */}
