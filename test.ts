@@ -1,1 +1,0 @@
-import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const mcqs = await prisma.mCQ.findMany({ where: { translationId: { not: null } } }); console.log('MCQs with translationId:', mcqs.length); } main().finally(() => prisma.$disconnect());
