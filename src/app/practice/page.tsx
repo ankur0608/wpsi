@@ -1186,7 +1186,7 @@ export default function PracticePage() {
       {view === 'exam' && session && currentQuestion && (
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <section className="w-full min-w-0">
-            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[var(--text-primary)] p-3 md:p-4 shadow-2xl">
+            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[var(--text-primary)] p-4 md:p-6 shadow-2xl">
               {/* Header */}
               <div className="flex justify-between items-center mb-3 md:mb-4">
                 <div className="flex items-center gap-4">
@@ -1207,7 +1207,7 @@ export default function PracticePage() {
               </div>
 
               {/* Progress */}
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-3 md:mb-4">
+              <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4 md:mb-6">
                 <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-[#D4922A] rounded-full transition-all" 
@@ -1220,7 +1220,7 @@ export default function PracticePage() {
               </div>
 
               {/* Meta Cards */}
-              <div className="flex flex-nowrap gap-2 mb-3 md:mb-5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex flex-nowrap gap-3 mb-5 md:mb-6 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                 <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
                   <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#8B5CF6]/10 text-[#8B5CF6] shrink-0">
                     <i className="fa-solid fa-book-open"></i>
@@ -1271,13 +1271,13 @@ export default function PracticePage() {
               </div>
 
               {/* Question Area */}
-              <div className="flex gap-2 md:gap-3 items-start mb-4 md:mb-6">
+              <div className="flex gap-3 items-start mb-5 md:mb-6 mt-2">
                 <div className="w-6 h-6 md:w-8 md:h-8 bg-[#D4922A] text-[#111] rounded-md flex items-center justify-center font-black text-sm shrink-0 mt-0.5">Q</div>
                 <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-[var(--text-primary)] font-medium">{displayedQuestion?.question}</div>
               </div>
 
               {/* Options List */}
-              <div className="flex flex-col gap-2 md:gap-3 mb-4 md:mb-6">
+              <div className="flex flex-col gap-3 mb-6">
                 {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
                   const selected  = currentResponse === key;
                   const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
@@ -1312,7 +1312,7 @@ export default function PracticePage() {
                       key={key}
                       type="button"
                       onClick={() => selectOption(key)}
-                      className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-1.5 md:p-3 flex items-center gap-2 md:gap-3 cursor-pointer transition-all hover:bg-white/5 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
+                      className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-3 md:p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-white/5 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
                     >
                       <div className={`w-5 h-5 md:w-7 md:h-7 rounded md:rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${selected ? 'bg-[#D4922A]/20 text-[#D4922A]' : 'bg-white/5 text-[var(--text-muted)]'}`}>
                         {key}
@@ -1333,16 +1333,10 @@ export default function PracticePage() {
                 })}
               </div>
 
-              {/* Explanation */}
-              {session.mode !== 'mock' && currentResponse && (
-                <div className="mb-2 md:mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 md:p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
-                  <p className="mt-2 text-xs md:text-sm leading-6 text-[var(--text-secondary)]">{displayedQuestion?.explanation || 'No explanation available.'}</p>
-                </div>
-              )}
+
 
               {/* Bottom Bar */}
-              <div className="grid grid-cols-4 md:flex md:items-stretch gap-1.5 md:gap-2">
+              <div className="grid grid-cols-3 md:flex md:items-stretch gap-2 md:gap-3 mt-4">
                 <button 
                   onClick={() => setIsMobilePaletteOpen(true)}
                   className="xl:hidden col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0"
@@ -1367,29 +1361,28 @@ export default function PracticePage() {
 
                 {/* Timer — only shown for mock/timed mode */}
                 {session.mode === 'mock' && (
-                  <div className="col-span-4 md:col-span-1 md:flex-[1.5] bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] py-1.5 px-3 rounded-xl flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 md:gap-0 order-first md:order-none mb-1.5 md:mb-0">
+                  <div className="col-span-3 md:col-span-1 md:flex-[1.5] bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] py-1.5 px-3 rounded-xl flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 md:gap-0 order-first md:order-none mb-2 md:mb-0">
                     <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Time Left</span>
                     <span className="text-sm md:text-base text-[#4A9EDB] font-bold">{formatTime(timeLeft)}</span>
                   </div>
                 )}
 
                 <button 
-                  onClick={() => navigateQuestion(1)} disabled={session.currentIndex === session.questions.length - 1}
-                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-2 sm:p-3 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[9px] sm:text-[10px] md:text-sm hover:bg-white/5 transition-colors disabled:opacity-40 min-w-0"
-                >
-                  <span className="hidden md:inline">Next</span>
-                  <i className="fa-solid fa-arrow-right text-base md:text-sm"></i>
-                  <span className="md:hidden truncate">Next</span>
-                </button>
-                
-                <button 
                   onClick={session.currentIndex === session.questions.length - 1 ? confirmSubmit : () => navigateQuestion(1)}
-                  className="col-span-4 md:flex-[2] bg-[#D4922A] text-[#111] p-2.5 md:p-3 rounded-xl flex items-center justify-center gap-2 text-xs md:text-base font-bold hover:bg-[#B97A20] transition-colors mt-1 md:mt-0 shadow-lg shadow-[#D4922A]/20"
+                  className="col-span-3 md:flex-[2] bg-[#D4922A] text-[#111] p-3 md:p-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base font-bold hover:bg-[#B97A20] transition-colors mt-2 md:mt-0 shadow-lg shadow-[#D4922A]/20"
                 >
                   <i className="fa-regular fa-paper-plane"></i>
                   <span>{session.currentIndex === session.questions.length - 1 ? 'Submit Exam' :'Next'}</span>
                 </button>
               </div>
+
+              {/* Explanation */}
+              {session.mode !== 'mock' && currentResponse && (
+                <div className="mt-5 md:mt-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 md:p-5">
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
+                  <p className="mt-2 text-xs md:text-sm leading-6 text-[var(--text-secondary)]">{displayedQuestion?.explanation || 'No explanation available.'}</p>
+                </div>
+              )}
             </div>
           </section>
 
