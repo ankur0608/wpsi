@@ -17,12 +17,7 @@ export function applyThemeToDOM(t: Theme) {
 }
 
 export function getStoredTheme(): Theme {
-  try {
-    const stored = localStorage.getItem("wpsi-theme");
-    return stored === "light" ? "light" : "dark";
-  } catch {
-    return "dark";
-  }
+  return "light";
 }
 
 export function saveTheme(t: Theme) {
@@ -47,16 +42,7 @@ export function useThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      saveTheme(next);
-      applyThemeToDOM(next);
-      // Notify other ThemeToggle instances asynchronously to avoid React state collisions
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("wpsi-theme-change", { detail: next }));
-      }, 0);
-      return next;
-    });
+    // No-op since we are removing dark theme
   };
 
   // Listen for theme changes from other toggles
@@ -78,7 +64,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = React.createContext<ThemeContextType>({
-  theme: "dark",
+  theme: "light",
   toggleTheme: () => {},
 });
 

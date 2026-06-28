@@ -1,280 +1,432 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-
-interface Plan {
-  id?: string;
-  name: string;
-  price: number;
-  discountPrice?: number | null;
-  description?: string | null;
-  features: string[];
-  isPopular: boolean;
-}
+import DynamicNavbar from '@/components/DynamicNavbar';
 
 export default function Pricing() {
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Basic Intersection Observer for Scroll Animations
-    const animatedElements = document.querySelectorAll('.animate-on-scroll');
-    if (animatedElements.length > 0) {
-      const observer = new IntersectionObserver((entries, obs) => {
-          entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                  entry.target.classList.add('is-visible');
-                  obs.unobserve(entry.target);
-              }
-          });
-      }, { threshold: 0.1 });
-      animatedElements.forEach(el => observer.observe(el));
-    }
+    // Handle FAQ toggles
+    const toggles = document.querySelectorAll('.faq-toggle');
+    toggles.forEach(toggle => {
+        const handler = () => {
+            const content = toggle.nextElementSibling;
+            const icon = toggle.querySelector('.faq-icon');
+            
+            if (!content) return;
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                if(icon) icon.classList.add('rotate-180');
+                toggle.setAttribute('aria-expanded', 'true');
+            } else {
+                content.classList.add('hidden');
+                if(icon) icon.classList.remove('rotate-180');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        };
+        toggle.addEventListener('click', handler);
+        return () => toggle.removeEventListener('click', handler);
+    });
 
-    const fetchPlans = async () => {
-      try {
-        const res = await fetch('/api/plans');
-        const json = await res.json();
-        if (json.data) {
-          setPlans(json.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch plans', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPlans();
+    // Testimonials Scroll Controls
+    const track = document.getElementById('testimonial-track');
+    const prevBtn = document.getElementById('prev-testimonial');
+    const nextBtn = document.getElementById('next-testimonial');
+    
+    let autoPlay: ReturnType<typeof setInterval> | undefined;
+    if (track && prevBtn && nextBtn) {
+        const getScrollStep = () => {
+            const card = track.querySelector('div');
+            return card ? card.offsetWidth + 24 : 340; 
+        };
+        
+        const scrollPrev = () => {
+            track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+        };
+        const scrollNext = () => {
+            track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+        };
+        
+        prevBtn.addEventListener('click', scrollPrev);
+        nextBtn.addEventListener('click', scrollNext);
+        
+        let autoScrollDirection = 1;
+        autoPlay = setInterval(() => {
+            const step = getScrollStep();
+            const maxScroll = track.scrollWidth - track.clientWidth;
+            if (track.scrollLeft >= maxScroll - 10) {
+                autoScrollDirection = -1;
+            } else if (track.scrollLeft <= 10) {
+                autoScrollDirection = 1;
+            }
+            track.scrollBy({ left: autoScrollDirection * step, behavior: 'smooth' });
+        }, 5000);
+        
+        const stopAutoPlay = () => clearInterval(autoPlay);
+        prevBtn.addEventListener('click', stopAutoPlay);
+        nextBtn.addEventListener('click', stopAutoPlay);
+        track.addEventListener('touchstart', stopAutoPlay, { passive: true });
+        track.addEventListener('mousedown', stopAutoPlay);
+        
+        return () => {
+            clearInterval(autoPlay);
+            prevBtn.removeEventListener('click', scrollPrev);
+            nextBtn.removeEventListener('click', scrollNext);
+            prevBtn.removeEventListener('click', stopAutoPlay);
+            nextBtn.removeEventListener('click', stopAutoPlay);
+            track.removeEventListener('touchstart', stopAutoPlay);
+            track.removeEventListener('mousedown', stopAutoPlay);
+        };
+    }
   }, []);
 
   return (
-    <>
-      
+    <div className="relative w-full overflow-x-hidden page-transition">
+        <DynamicNavbar />
+        
 
-<main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-[var(--bg-primary)]">
-<div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15), transparent 70%)"}}>
-<div className="max-w-6xl mx-auto pb-24 space-y-16">
-
-    {/*  Premium Urgency Banner  */}
-    <div className="relative rounded-[2.5rem] p-10 overflow-hidden border border-warning/20" style={{"background":"var(--glass-card-bg)"}}>
-        <div className="absolute -right-20 -top-20 w-80 h-80 bg-warning/5 blur-[100px] rounded-full"></div>
-        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
-            <div className="text-center lg:text-left space-y-4">
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-warning/10 border border-warning/20 text-warning text-[11px] font-black uppercase tracking-[0.2em]">
-                    <span className="flex h-2 w-2 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-warning opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-warning"></span></span> Early Bird Phase Active
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-heading font-black text-[var(--text-primary)] tracking-tight">WPSI Exam: <span className="text-warning">June 21, 2026</span></h1>
-                <p className="text-[var(--text-muted)] font-medium text-lg">35 days remaining. <span className="text-[var(--text-primary)] font-bold underline decoration-warning/40 underline-offset-4">Price rises by up to ₹80 on June 2nd.</span></p>
-            </div>
             
-            <div className="flex gap-4">
-                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-3xl border border-[var(--border-subtle)] min-w-[90px] text-center">
-                    <div className="text-4xl font-black text-[var(--text-primary)] font-mono tracking-tighter">35</div>
-                    <div className="text-[10px] text-[var(--text-muted)] uppercase font-black mt-2 tracking-widest">Days</div>
-                </div>
-                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-3xl border border-[var(--border-subtle)] min-w-[90px] text-center">
-                    <div className="text-4xl font-black text-[var(--text-primary)] font-mono tracking-tighter">18</div>
-                    <div className="text-[10px] text-[var(--text-muted)] uppercase font-black mt-2 tracking-widest">Hours</div>
-                </div>
-            </div>
-        </div>
+    
+<section className="relative bg-primary-900 pt-40 pb-28 overflow-hidden border-b border-primary-800">
+    {/*  Premium Grid Background  */}
+    <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fillRule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.02\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    
+    {/*  Soft Glowing Orbs  */}
+    <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white/5 to-transparent"></div>
+    <div className="absolute -right-40 -top-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="absolute -left-40 top-20 w-72 h-72 bg-accent-400/15 rounded-full blur-3xl pointer-events-none"></div>
+    
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 page-transition">
+        
+            <span className="inline-flex items-center gap-2 bg-primary-900 border border-primary-100 shadow-sm text-accent-300 rounded-full px-5 py-2 text-sm font-bold tracking-wide mb-8 hover:-translate-y-0.5 transition-transform"><svg className="w-4 h-4 text-accent-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>Pricing Plans</span>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">Secure Your Rank <span className="text-accent-400">Excellence</span></h1>
+            <p className="text-lg md:text-xl text-primary-200 max-w-2xl mx-auto leading-relaxed">Choose a plan that fits your goals and budget. Start mastering your exams today.</p>
+        
     </div>
-
-    {/*  Trust Markers  */}
-    <div className="flex flex-wrap items-center justify-center gap-12">
-        <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-transform"><i className="fa-solid fa-users"></i></div>
-            <span className="text-[13px] font-bold text-[var(--text-muted)]">3,247 Aspirants Enrolled</span>
-        </div>
-        <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform"><i className="fa-solid fa-share-nodes"></i></div>
-            <span className="text-[13px] font-bold text-[var(--text-muted)]">Refer & Save ₹30</span>
-        </div>
-        <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-cyan-400/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform"><i className="fa-solid fa-shield-check"></i></div>
-            <span className="text-[13px] font-bold text-[var(--text-muted)]">Secure Payments</span>
-        </div>
-    </div>
-
-    {/*  Referral Discount Applied (Conditional Style)  */}
-    <div className="max-w-2xl mx-auto p-4 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center gap-3 animate-pulse">
-        <i className="fa-solid fa-gift text-accent"></i>
-        <span className="text-[11px] font-black text-accent uppercase tracking-widest">Referral Bonus Applied: Extra ₹30 Discount at Checkout</span>
-    </div>
-
-    {/*  Core Decision Hub  */}
-    <section className="space-y-12">
-        <div className="text-center space-y-4">
-            <h2 className="text-4xl font-heading font-black text-[var(--text-primary)]">One decision, zero confusion.</h2>
-            <p className="text-[var(--text-muted)] max-w-2xl mx-auto text-base">Everything you need. One price. Zero regrets. Lock in your preparation today.</p>
-        </div>
-
-        {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-500"></div>
-            </div>
-        ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                {plans.map((plan, index) => {
-                    const isPopular = plan.isPopular;
-                    const hoverColor = index % 2 !== 0 ? 'cyan' : 'brand';
-                    
-                    if (isPopular) {
-                        return (
-                            <div key={plan.id || index} className="relative rounded-[3rem] p-10 flex flex-col border-2 border-brand-500 shadow-[0_30px_60px_-15px_rgba(99,102,241,0.3)] transform lg:scale-110 lg:-translate-y-4 z-20" style={{"background":"var(--glass-card-bg)"}}>
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-brand-500 text-[var(--text-primary)] text-[10px] font-black px-10 py-2.5 rounded-b-[1.5rem] uppercase tracking-[0.3em] shadow-[0_10px_20px_rgba(99,102,241,0.4)]">Most Popular</div>
-                                
-                                <div className="mb-8 mt-4">
-                                    <span className="text-[10px] font-black text-brand-400 uppercase tracking-[0.25em] block mb-4">Full Preparation Suite</span>
-                                    <h3 className="text-3xl font-heading font-black text-[var(--text-primary)] mb-2">{plan.name}</h3>
-                                    <div className="flex items-baseline gap-4 mb-2">
-                                        <span className="text-7xl font-black text-[var(--text-primary)] tracking-tighter">₹{plan.price}</span>
-                                        {plan.discountPrice && (
-                                            <span className="text-xl text-[var(--text-muted)] line-through font-bold">₹{plan.discountPrice}</span>
-                                        )}
-                                    </div>
-                                    {plan.description && (
-                                        <p className="text-sm font-medium text-[var(--text-secondary)] mb-4">{plan.description}</p>
-                                    )}
-                                    {plan.discountPrice && (
-                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent text-[11px] font-black uppercase tracking-widest">
-                                            <i className="fa-solid fa-sparkles"></i> Save ₹{plan.discountPrice - plan.price} Today
-                                        </div>
-                                    )}
-                                </div>
-
-                                <ul className="space-y-5 mb-12 flex-1">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-center gap-4 text-[var(--text-secondary)] font-medium">
-                                            <i className="fa-solid fa-shield-check text-brand-400 text-xl"></i> {feature}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <button className="w-full py-5 rounded-[1.5rem] bg-brand-500 text-[var(--text-primary)] font-black text-sm uppercase tracking-[0.25em] transition-all hover:bg-brand-600 hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)]">Enroll in Everything</button>
-                            </div>
-                        );
-                    }
-
-                    return (
-                        <div key={plan.id || index} className={`glass-card rounded-[2.5rem] p-8 flex flex-col group transition-all duration-500 hover:border-${hoverColor}-500/30`}>
-                            <div className="mb-8">
-                                <span className={`text-[10px] font-black text-${hoverColor}-500 uppercase tracking-[0.25em] block mb-4`}>Specialized Pack</span>
-                                <h3 className="text-2xl font-heading font-black text-[var(--text-primary)] mb-2">{plan.name}</h3>
-                                <div className="flex items-baseline gap-3 mb-4">
-                                    <span className="text-5xl font-black text-[var(--text-primary)] tracking-tighter">₹{plan.price}</span>
-                                    {plan.discountPrice && (
-                                        <span className="text-lg text-[var(--text-muted)] line-through font-bold">₹{plan.discountPrice}</span>
-                                    )}
-                                </div>
-                                {plan.description && (
-                                    <p className={`text-sm font-medium text-${hoverColor}-300/80 leading-relaxed italic`}>"{plan.description}"</p>
-                                )}
-                            </div>
-                            
-                            <ul className="space-y-4 mb-10 flex-1">
-                                {plan.features.map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-                                        <i className={`fa-solid fa-check-circle text-${hoverColor}-500`}></i> {feature}
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className={`w-full py-4 rounded-2xl bg-white/5 border border-[var(--border-subtle)] text-[var(--text-primary)] font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-${hoverColor}-500 hover:border-${hoverColor}-500 cta-glow`}>Select Pack</button>
-                        </div>
-                    );
-                })}
-            </div>
-        )}
-    </section>
-
-    {/*  Mock Simulation Section  */}
-    <section className="max-w-5xl mx-auto space-y-10">
-        <div className="text-center space-y-2">
-            <h3 className="text-3xl font-heading font-black text-[var(--text-primary)]">Simulation & Mocks</h3>
-            <p className="text-[var(--text-muted)] font-medium">Practice under pressure. Succeed under stress.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/*  Single Mock  */}
-            <div className="glass-card rounded-[2rem] p-8 group transition-all hover:border-[var(--border-subtle)]">
-                <div className="flex justify-between items-start mb-8">
-                    <div className="space-y-1">
-                        <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block">Entry Point</span>
-                        <h4 className="text-2xl font-bold text-[var(--text-primary)]">Single Mock Test</h4>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-black text-[var(--text-primary)] font-mono">₹49</div>
-                        <div className="text-xs text-[var(--text-muted)] line-through font-bold">₹99</div>
-                    </div>
+</section>
+    {/*  Pricing Section  */}
+    <section id="pricing" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+                <span
+                    className="inline-block bg-accent-100 text-accent-800 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">Pricing
+                    Plans</span>
+                <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 mb-4">Invest in your WPSI
+                    <span className="text-primary-600">Future</span>
+                </h2>
+                <p className="text-dark-500 text-lg">Get access to premium materials, AI analysis, and unlimited mock tests.
+                    Less than the cost of a daily tea.</p>
+                <div
+                    className="mt-6 inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-4 py-2 rounded-full text-sm font-bold">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Flat 60% OFF - Ends Today!
                 </div>
-                <ul className="space-y-4 mb-10">
-                    <li className="flex items-center gap-3 text-sm text-[var(--text-muted)]"><i className="fa-solid fa-check-circle text-brand-400"></i> Full 200-question paper</li>
-                    <li className="flex items-center gap-3 text-sm text-[var(--text-muted)]"><i className="fa-solid fa-check-circle text-brand-400"></i> Real-time rank generation</li>
-                </ul>
-                <button className="w-full py-4 rounded-xl border border-[var(--border-subtle)] text-[11px] font-black uppercase tracking-widest transition-all hover:bg-white/10">Unlock Single Test</button>
             </div>
 
-            {/*  Pack of 3  */}
-            <div className="rounded-[2.5rem] p-1 bg-gradient-to-br from-brand-500/40 to-brand-600/40 border border-brand-500/30">
-                <div className="rounded-[2.3rem] p-8 h-full relative overflow-hidden" style={{"background":"var(--bg-surface)"}}>
-                    <div className="absolute top-0 right-0 px-6 py-2 bg-brand-500 text-[var(--text-primary)] text-[9px] font-black uppercase tracking-widest rounded-bl-2xl">Best Value</div>
-                    <div className="flex justify-between items-start mb-8">
-                        <div className="space-y-1">
-                            <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest block">Strategy Choice</span>
-                            <h4 className="text-2xl font-bold text-[var(--text-primary)]">Mock Pack — 3 Tests</h4>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-3xl font-black text-[var(--text-primary)] font-mono">₹99</div>
-                            <div className="text-[11px] text-brand-400 font-bold uppercase tracking-widest mt-1">₹33 / Test</div>
-                        </div>
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {/*  Basic  */}
+                <div className="bg-white rounded-[2.5rem] p-8 border border-dark-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
+                    <div className="mb-6">
+                        <h3 className="font-display text-xl font-bold text-dark-900 mb-2">WPSI Basic</h3>
+                        <p className="text-dark-500 text-sm">Perfect for starting your journey.</p>
                     </div>
-                    <ul className="space-y-4 mb-10">
-                        <li className="flex items-center gap-3 text-sm text-[var(--text-secondary)]"><i className="fa-solid fa-star text-warning"></i> 3 Full 200-question papers</li>
-                        <li className="flex items-center gap-3 text-sm text-[var(--text-secondary)]"><i className="fa-solid fa-star text-warning"></i> AI-powered weak area analysis</li>
-                        <li className="flex items-center gap-3 text-sm text-[var(--text-secondary)]"><i className="fa-solid fa-star text-warning"></i> WhatsApp Performance Report</li>
+                    <div className="mb-6">
+                        <span className="text-4xl font-display font-bold text-dark-900">₹0</span>
+                        <span className="text-dark-500">/ forever</span>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Daily 1 Free WPSI Quiz
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Basic Analytics
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-400">
+                            <svg className="w-5 h-5 text-dark-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            No Full Mock Tests
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-400">
+                            <svg className="w-5 h-5 text-dark-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Ads Enabled
+                        </li>
                     </ul>
-                    <button className="w-full py-4 rounded-[1.2rem] bg-brand-500 text-[var(--text-primary)] font-black text-[11px] uppercase tracking-widest transition-all hover:bg-brand-600 shadow-lg shadow-brand-500/30">Get Pack of 3</button>
+                    <a href="#"
+                        className="block w-full text-center bg-dark-100 hover:bg-dark-200 text-dark-700 font-semibold py-3 rounded-xl transition-colors">Get
+                        Started Free</a>
+                </div>
+
+                {/*  Pro Scholar  */}
+
+                <div
+                    className="pricing-popular bg-primary-900 rounded-[2.5rem] p-8 border-2 border-primary-700 shadow-2xl hover:-translate-y-2 transition-all duration-300 relative text-white">
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <span
+                            className="badge-shine bg-accent-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">Most
+                            Popular</span>
+                    </div>
+                    <div className="mb-6 pt-2">
+                        <h3 className="font-display text-xl font-bold text-white mb-2">WPSI Part A Mastery</h3>
+                        <p className="text-primary-200 text-sm">Master the General Studies syllabus (Part A).</p>
+                    </div>
+                    <div className="mb-6">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-display font-bold text-white">₹299</span>
+                            <span className="text-lg text-primary-300/50 line-through">₹799</span>
+                            <span className="text-primary-200">/ mo</span>
+                        </div>
+                        <div className="text-xs text-success-400 font-semibold mt-1">Save ₹500/month (60% OFF)</div>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                        <li className="flex items-center gap-3 text-sm text-primary-100">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Unlimited Premium MCQs
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-primary-100">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            50+ Full Mock Tests (A & B)
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-primary-100">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            AI Weakness Detection
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-primary-100">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Ad-free experience
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-primary-100">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Detailed PDF Notes
+                        </li>
+                    </ul>
+                    <a href="#"
+                        className="block w-full text-center bg-white hover:bg-dark-50 text-primary-900 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl">Claim
+                        60% Discount</a>
+                    <p className="text-center text-xs text-primary-300 mt-3">7-day money-back guarantee</p>
+                </div>
+
+                {/*  Elite Master  */}
+
+                <div className="bg-white rounded-[2.5rem] p-8 border border-dark-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
+                    <div className="mb-6">
+                        <h3 className="font-display text-xl font-bold text-dark-900 mb-2">WPSI Part A + B Combo</h3>
+                        <p className="text-dark-500 text-sm">Personalized guidance and mentorship.</p>
+                    </div>
+                    <div className="mb-6">
+                        <span className="text-4xl font-display font-bold text-dark-900">₹999</span>
+                        <span className="text-dark-500">/ mo</span>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            All Pro Features
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            1-on-1 Mentor Calls
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Mains Answer Evaluation
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-dark-600">
+                            <svg className="w-5 h-5 text-success-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd" />
+                            </svg>
+                            Private Telegram Group
+                        </li>
+                    </ul>
+                    <a href="#"
+                        className="block w-full text-center bg-primary-800 hover:bg-primary-900 text-white font-semibold py-3 rounded-xl transition-colors">Upgrade
+                        to Elite</a>
+                    <p className="text-center text-xs text-dark-400 mt-3">7-day money-back guarantee</p>
+                </div>
+            </div>
+
+            {/*  Trust Badges  */}
+            <div className="mt-12 flex flex-wrap justify-center items-center gap-6 text-dark-400">
+                <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd"
+                            d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">SSL Secured</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">7-Day Refund</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">RBI Compliant</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">GST Invoice</span>
                 </div>
             </div>
         </div>
     </section>
 
-    {/*  Psychological Motivator  */}
-    <section className="max-w-4xl mx-auto rounded-[3rem] p-12 bg-danger/5 border border-danger/10 flex flex-col md:flex-row items-center gap-10 text-center md:text-left relative overflow-hidden group">
-        <div className="absolute inset-0 bg-danger/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div className="w-20 h-20 rounded-[2rem] bg-danger/10 flex items-center justify-center text-4xl text-danger shrink-0 ring-4 ring-danger/5"><i className="fa-solid fa-triangle-exclamation"></i></div>
-        <div className="flex-1 space-y-3 relative z-10">
-            <h4 className="text-2xl font-bold text-[var(--text-primary)]">Don't leave your exam to chance</h4>
-            <p className="text-[var(--text-muted)] leading-relaxed">3,200 students are already practicing. Every topic you leave locked today is a subject they are mastering. <span className="text-[var(--text-primary)] font-bold">Your weak areas: Constitution, Network Theory — Still Locked.</span></p>
-        </div>
-        <button className="px-10 py-4 rounded-[1.5rem] bg-white text-dark-bg font-black text-xs uppercase tracking-[0.2em] transition-all hover:bg-slate-200 hover:scale-105 active:scale-95 shrink-0 relative z-10 shadow-2xl">Fix it Now</button>
-    </section>
 
-    {/*  Trust Footer  */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-10 border-t border-[var(--border-subtle)] opacity-80">
-        <div className="text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mx-auto text-[var(--text-muted)] text-xl"><i className="fa-solid fa-lock-open"></i></div>
-            <h6 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest">Instant Unlock</h6>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed">Immediate access to all modules after successful payment.</p>
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    
+    {/*  Common Footer  */}
+    <footer className="bg-dark-900 text-dark-300 py-16 border-t border-dark-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-12 mb-12">
+                <div className="md:col-span-1">
+                    <h2 className="font-display font-bold text-2xl text-white tracking-tight mb-4">MCQ Prep Zone</h2>
+                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Wireless PSI Examination.</p>
+                </div>
+                <div>
+                    <h4 className="text-white font-bold mb-4">Quick Links</h4>
+                    <ul className="space-y-2 text-sm">
+                        <li><a href="/" className="hover:text-accent-400 transition-colors">Home</a></li>
+                        <li><a href="/pricing" className="hover:text-accent-400 transition-colors">Pricing</a></li>
+                        <li><a href="/blog" className="hover:text-accent-400 transition-colors">Blogs</a></li>
+                        <li><a href="/about" className="hover:text-accent-400 transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="text-white font-bold mb-4">Legal</h4>
+                    <ul className="space-y-2 text-sm">
+                        <li><a href="/privacy" className="hover:text-accent-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" className="hover:text-accent-400 transition-colors">Terms of Service</a></li>
+                        <li><a href="/cancellation" className="hover:text-accent-400 transition-colors">Cancellation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="text-white font-bold mb-4">Contact</h4>
+                    <ul className="space-y-2 text-sm">
+                        <li>Email: support@mcqprepzone.online</li>
+                        <li>Phone: +91 83477 85879</li>
+                        <li>Location: Ahmedabad, Gujarat</li>
+                    </ul>
+                </div>
+            </div>
+            <div className="text-center text-xs border-t border-dark-800 pt-8">
+                &copy; 2026 MCQ Prep Zone Pvt Ltd. All rights reserved.
+            </div>
         </div>
-        <div className="text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mx-auto text-[var(--text-muted)] text-xl"><i className="fa-solid fa-calendar-day"></i></div>
-            <h6 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest">Valid till Exam Day</h6>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed">One-time payment valid until WPSI 2025 on June 21st.</p>
-        </div>
-        <div className="text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mx-auto text-[var(--text-muted)] text-xl"><i className="fa-solid fa-headset"></i></div>
-            <h6 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest">WhatsApp Support</h6>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed">Priority technical support for premium students.</p>
-        </div>
+    </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {/*  JavaScript  */}
+    
+
+    
+
+
     </div>
-
-</div></div></main>
-
-
-
-
-    </>
   );
 }

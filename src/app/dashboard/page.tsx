@@ -1,611 +1,277 @@
-
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
+import { subjectMeta, defaultMeta } from "@/lib/subjectMeta";
 
-const GOLD      = "var(--color-primary-accent, #D4922A)";
-const GOLD_GLOW = "rgba(var(--rgb-accent, 212, 146, 42), 0.18)";
-const GOLD_BR   = "rgba(var(--rgb-accent, 212, 146, 42), 0.20)";
-const SURFACE   = "var(--bg-surface)";
-const BG        = "var(--bg-primary)";
-const TEXT      = "var(--text-primary)";
-const MUTED     = "var(--text-muted)";
-const BLUE      = "var(--color-secondary, #4A9EDB)";
-const GREEN     = "var(--color-accent, #3DD68C)";
-const RED       = "var(--color-danger, #E55353)";
-
-function StatCard({
-  icon, value, label, sub, color = GOLD,
-}: {
-  icon: string; value: React.ReactNode; label: string; sub: string; color?: string;
-}) {
-  return (
-    <div
-      className="hover-card-up flex items-center gap-4 rounded-2xl p-5"
-      style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-    >
-      <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl"
-        style={{ background: `${color}18`, border: `1px solid ${color}30`, color }}
-      >
-        <i className={`fa-solid ${icon}`}></i>
-      </div>
-      <div>
-        <div className="text-2xl font-heading font-bold leading-none" style={{ color: TEXT }}>
-          {value}
-        </div>
-        <div className="mt-0.5 text-sm font-semibold" style={{ color: TEXT }}>
-          {label}
-        </div>
-        <div className="text-xs" style={{ color: MUTED }}>
-          {sub}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProgressRow({
-  label, pct, color = GOLD, icon,
-}: {
-  label: string; pct: number; color?: string; icon: string;
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between text-sm mb-1.5">
-        <span className="flex items-center gap-2 font-medium" style={{ color: TEXT }}>
-          <i className={`fa-solid ${icon} text-xs`} style={{ color }}></i>
-          {label}
-        </span>
-        <span className="font-bold" style={{ color }}>{pct}%</span>
-      </div>
-      <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <div
-          className="h-full rounded-full transition-all duration-1000"
-          style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}, ${color}cc)` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function QuickCard({
-  href, icon, label, color = GOLD, badge,
-}: {
-  href: string; icon: string; label: string; color?: string; badge?: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="hover-card-up relative flex flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center transition-all"
-      style={{ background: SURFACE, borderColor: GOLD_BR }}
-    >
-      {badge && (
-        <span
-          className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide"
-          style={{ background: `${color}18`, color }}
-        >
-          {badge}
-        </span>
-      )}
-      <div
-        className="flex h-12 w-12 items-center justify-center rounded-xl text-xl"
-        style={{ background: `${color}18`, border: `1px solid ${color}28`, color }}
-      >
-        <i className={`fa-solid ${icon}`}></i>
-      </div>
-      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: TEXT }}>
-        {label}
-      </span>
-    </Link>
-  );
-}
-
-/* ─── PAGE ──────────────────────────────────────────────────── */
 export default function Dashboard() {
-  const { user, loading } = useUser();
-  const [stats, setStats] = useState({ mockTestsAttempted: 0, mcqsSolved: 0, averageAccuracy: 0 });
-  const [statsLoading, setStatsLoading] = useState(true);
+  const { user, loading: userLoading } = useUser();
+  const [stats, setStats] = useState<any>({
+    mockTestsAttempted: 0,
+    mcqsSolved: 0,
+    averageAccuracy: 0,
+    resumePractice: null,
+    weakTopics: [],
+    syllabusCoverage: { overall: 0, partA: 0, partB: 0 },
+    weeklyActivity: ['0%', '0%', '0%', '0%', '0%', '0%', '0%'],
+    dayLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    rank: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [timeLeft, setTimeLeft] = useState("04:22:15");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft("04:22:14"); // Demo countdown
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch('/api/user/dashboard-stats');
+        const res = await fetch("/api/user/dashboard-stats");
         if (res.ok) {
           const json = await res.json();
-          if (json.data) {
-            setStats(json.data);
-          }
+          setStats((prev: any) => ({ ...prev, ...json.data }));
         }
-      } catch (err) {
-        console.error("Failed to fetch dashboard stats:", err);
+      } catch (e) {
+        console.error("Failed to fetch dashboard stats", e);
       } finally {
-        setStatsLoading(false);
+        setLoadingStats(false);
       }
     }
     fetchStats();
   }, []);
 
-  const currentLevel = user?.level ?? 0;
-  const currentXp    = user?.xp ?? 0;
-  const nextLevelXp  = Math.max((currentLevel || 1) * 1000, 1000);
-  const xpProgress   = currentLevel > 0 ? ((currentXp % 1000) / 10) : 0;
-  const profileName  = user?.name?.trim() || "Aspirant";
+  const currentLevel = user?.level ?? 7;
+  const currentXp = user?.xp ?? 2400;
 
-  /* scroll reveal */
-  useEffect(() => {
-    const els = document.querySelectorAll(".animate-on-scroll");
-    if (!els.length) return;
-    const obs = new IntersectionObserver(
-      (entries, o) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("is-visible"); o.unobserve(e.target); } }),
-      { threshold: 0.08 }
-    );
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
+  if (userLoading || loadingStats) {
+      return (
+        <div className="flex h-[80vh] flex-col items-center justify-center bg-dark-50">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary-500/20 border-t-primary-500" />
+          <p className="mt-4 text-sm font-bold text-primary-600 uppercase tracking-widest">Loading Dashboard...</p>
+        </div>
+      );
+  }
 
   return (
-    <div className="space-y-6">
-
-      {/* ────────────────── HERO ─────────────────── */}
-      <div
-        className="relative overflow-hidden rounded-2xl p-6 md:p-8"
-        style={{
-          background: "var(--glass-card-bg)",
-          border: `1px solid ${GOLD_BR}`,
-        }}
-      >
-        {/* decorative glows */}
-        <div
-          className="pointer-events-none absolute right-0 top-0 h-64 w-64 -translate-y-1/3 translate-x-1/3 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(212,146,42,0.14) 0%, transparent 70%)" }}
-        />
-        <div
-          className="pointer-events-none absolute bottom-0 left-1/3 h-40 w-40 translate-y-1/2 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(74,158,219,0.10) 0%, transparent 70%)" }}
-        />
-
-        <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          {/* Text */}
-          <div className="max-w-xl">
-            <div
-              className="mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold"
-              style={{ background: GOLD_GLOW, border: `1px solid ${GOLD_BR}`, color: GOLD }}
-            >
-              <i className="fa-solid fa-crown text-[10px]"></i>
-              {loading ? "Loading profile…" : currentLevel > 0 ? `Level ${currentLevel} Scholar` : "Profile Sync Pending"}
+    <div className="flex-1 p-4 lg:p-6 max-w-[1360px] mx-auto w-full space-y-4">
+        {/* ── HERO BANNER ── */}
+        <div className="relative overflow-hidden rounded-2xl border border-dark-100 shadow-sm bg-white">
+            <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4 flex-1">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center shrink-0">
+                        <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest leading-none mb-1">Today's Mission</p>
+                        <h2 className="font-display text-xl sm:text-2xl font-bold text-dark-800 leading-tight">Daily Quiz Challenge</h2>
+                        <p className="text-xs font-medium text-dark-500 mt-0.5">🔥 {user?.streak || 0}-day streak · <span className="text-emerald-600 font-bold">+50 XP</span> on completion</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-1.5 bg-dark-50 border border-dark-100 rounded-lg px-3 py-1.5">
+                        <svg className="w-3.5 h-3.5 text-dark-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span className="text-[10px] text-dark-500 font-semibold uppercase tracking-wide">Resets in</span>
+                        <span className="countdown text-[11px] font-bold text-dark-800">{timeLeft}</span>
+                    </div>
+                    <Link href="/exam" className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
+                        Start Practice
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </Link>
+                </div>
             </div>
-
-            <h2 className="text-2xl font-bold leading-tight md:text-3xl" style={{ color: TEXT }}>
-              {loading
-                ? "Loading your dashboard…"
-                : <>Your Preparation,{" "}<span style={{ color: GOLD }}>Your Selection.</span></>}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed" style={{ color: MUTED }}>
-              {loading
-                ? "We are syncing your latest progress and rewards."
-                : currentLevel > 0
-                ? `You're ${Math.max(nextLevelXp - currentXp, 0)} XP away from Level ${currentLevel + 1}.`
-                : "Start your journey towards a secure government job with India's most trusted practice platform."}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/test"
-                className="btn-primary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold shadow-lg"
-              >
-                Start Mock Test <i className="fa-solid fa-arrow-right text-xs"></i>
-              </Link>
-              <Link
-                href="/practice"
-                className="btn-secondary inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold"
-              >
-                Practice MCQs
-              </Link>
-            </div>
-          </div>
-
-          {/* Circular XP */}
-          <div className="relative mx-auto h-36 w-36 flex-shrink-0 md:mx-0">
-            <svg viewBox="0 0 36 36" className="circular-chart w-full h-full" style={{ filter: "drop-shadow(0 0 12px rgba(212,146,42,0.25))" }}>
-              <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path
-                className="circle"
-                strokeDasharray={`${xpProgress}, 100`}
-                stroke={GOLD}
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold" style={{ color: TEXT }}>{xpProgress.toFixed(0)}%</span>
-              <span className="text-[10px]" style={{ color: MUTED }}>
-                {currentLevel > 0 ? `to Lvl ${currentLevel + 1}` : "Overall Progress"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ────────────────── STAT CARDS ─────────────────── */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 animate-on-scroll">
-        <StatCard icon="fa-book-open"    value={statsLoading ? "--" : stats.mockTestsAttempted.toLocaleString()}      label="Mock Tests"       sub="Tests Attempted"      color={GOLD}  />
-        <StatCard icon="fa-bullseye"     value={statsLoading ? "--" : stats.mcqsSolved.toLocaleString()}   label="MCQs Solved"      sub="Across All Topics"    color={BLUE}  />
-        <StatCard icon="fa-chart-line"   value={statsLoading ? "--" : `${stats.averageAccuracy}%`}   label="Average Accuracy" sub="All Time"             color={GREEN} />
-        {/* <StatCard icon="fa-fire"         value="12"      label="Day Streak"       sub="Keep it up!"          color={GOLD}  /> */}
-      </div>
-
-      {/* ────────────────── QUICK ACCESS ─────────────────── */}
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 animate-on-scroll">
-        <QuickCard href="/subjects"  icon="fa-book"             label="Syllabus"    color={GOLD}  />
-        <QuickCard href="/practice"  icon="fa-pen-to-square"    label="Practice"    color={GREEN} badge="Daily" />
-        <QuickCard href="/test"      icon="fa-clipboard-check"  label="Mock Tests"  color={GOLD}  badge="New"   />
-        {/* <QuickCard href="/rewards"   icon="fa-gift"             label="Rewards"     color={BLUE}  /> */}
-        <QuickCard href="/pricing"   icon="fa-tags"             label="Plans"       color={GOLD}  />
-        <QuickCard href="/profile"   icon="fa-user"             label="Profile"     color={MUTED as string} />
-      </div>
-
-      {/* ────────────────── MIDDLE ROW ─────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 animate-on-scroll">
-
-        {/* Progress panel */}
-        <div
-          className="lg:col-span-2 rounded-2xl p-6"
-          style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-base font-bold" style={{ color: TEXT }}>Your Progress</h3>
-            <span
-              className="rounded-lg px-3 py-1 text-xs font-bold"
-              style={{ background: GOLD_GLOW, color: GOLD, border: `1px solid ${GOLD_BR}` }}
-            >
-              This Month
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            <ProgressRow label="General Knowledge"      pct={76} icon="fa-brain"         color={GOLD}  />
-            <ProgressRow label="Reasoning"              pct={68} icon="fa-puzzle-piece"   color={BLUE}  />
-            <ProgressRow label="Quantitative Aptitude"  pct={71} icon="fa-calculator"     color={GREEN} />
-            <ProgressRow label="Gujarati Language"      pct={80} icon="fa-language"       color={GOLD}  />
-            <ProgressRow label="English Language"       pct={65} icon="fa-spell-check"    color={BLUE}  />
-          </div>
-
-          <button
-            className="btn-secondary mt-6 w-full rounded-xl py-2.5 text-sm"
-          >
-            View Detailed Analysis <i className="fa-solid fa-arrow-right ml-1 text-xs"></i>
-          </button>
         </div>
 
-        {/* Recent mock test */}
-        <div
-          className="rounded-2xl p-6 flex flex-col"
-          style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-base font-bold" style={{ color: TEXT }}>Recent Mock Test</h3>
-            <Link href="/test" className="text-xs font-bold hover:underline" style={{ color: GOLD }}>
-              View All
+        {/* ── STAT CARDS ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Link href="/streaks" className="feature-card bg-white border border-dark-100 rounded-2xl p-4 shadow-sm hover:border-amber-300 flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center border border-amber-100 shrink-0 group-hover:bg-amber-100 transition-colors">
+                    <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>
+                </div>
+                <div className="min-w-0"><p className="font-display text-xl font-bold text-dark-800 leading-none">{user?.streak || 0}</p><p className="text-[10px] text-dark-500 font-bold uppercase tracking-widest mt-0.5">Day Streak</p></div>
+                <span className={`ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-lg border shrink-0 ${user?.streak && user.streak > 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-dark-50 text-dark-500 border-dark-100'}`}>{user?.streak && user.streak > 0 ? 'Active' : 'Inactive'}</span>
             </Link>
-          </div>
-
-          {/* test entry */}
-          <div
-            className="flex-1 rounded-xl p-4"
-            style={{ background: BG, border: `1px solid ${GOLD_BR}` }}
-          >
-            <div className="flex items-start gap-3 mb-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm"
-                style={{ background: GOLD_GLOW, border: `1px solid ${GOLD_BR}`, color: GOLD }}
-              >
-                <i className="fa-solid fa-clipboard-list"></i>
-              </div>
-              <div>
-                <div className="text-sm font-bold" style={{ color: TEXT }}>GPSC Class 1 Mock Test – 07</div>
-                <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>Full Length Mock Test</div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 text-[11px] mb-4" style={{ color: MUTED }}>
-              <span><i className="fa-regular fa-circle-question mr-1"></i>150 Questions</span>
-              <span><i className="fa-regular fa-clock mr-1"></i>3 Hours</span>
-              <span><i className="fa-solid fa-star mr-1"></i>400 Marks</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 text-center mb-4">
-              {[
-                { label: "Your Score", value: "256/400", color: GOLD },
-                { label: "Accuracy",   value: "84%",     color: GREEN },
-                { label: "Rank",       value: "125/2450", color: BLUE },
-              ].map(s => (
-                <div key={s.label} className="rounded-lg p-2" style={{ background: `${s.color}0d` }}>
-                  <div className="text-sm font-bold" style={{ color: s.color }}>{s.value}</div>
-                  <div className="text-[10px]" style={{ color: MUTED }}>{s.label}</div>
+            <Link href="/leaderboard" className="feature-card bg-white border border-dark-100 rounded-2xl p-4 shadow-sm hover:border-primary-200 flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center border border-primary-100 shrink-0 group-hover:bg-primary-100 transition-colors">
+                    <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138z"/></svg>
                 </div>
-              ))}
-            </div>
-
-            <Link
-              href="/test"
-              className="btn-primary flex w-full items-center justify-center gap-2 rounded-xl py-2 text-xs font-bold"
-            >
-              View Test Analysis <i className="fa-solid fa-arrow-right text-[10px]"></i>
+                <div className="min-w-0"><p className="font-display text-xl font-bold text-dark-800 leading-none">#{stats.rank || '-'}</p><p className="text-[10px] text-dark-500 font-bold uppercase tracking-widest mt-0.5">Rank</p></div>
+                <span className="ml-auto text-[9px] text-emerald-600 font-bold shrink-0">Live</span>
             </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ────────────────── BOTTOM ROW ─────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 animate-on-scroll">
-
-        {/* Top Exams */}
-        <div
-          className="lg:col-span-2 rounded-2xl p-6"
-          style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-base font-bold" style={{ color: TEXT }}>Top Exams</h3>
-            <Link href="/subjects" className="text-xs font-bold hover:underline" style={{ color: GOLD }}>
-              View All
+            <Link href="/results" className="feature-card bg-white border border-dark-100 rounded-2xl p-4 shadow-sm hover:border-emerald-200 flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 shrink-0 group-hover:bg-emerald-100 transition-colors">
+                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div className="min-w-0"><p className="font-display text-xl font-bold text-dark-800 leading-none">{stats.averageAccuracy}%</p><p className="text-[10px] text-dark-500 font-bold uppercase tracking-widest mt-0.5">Accuracy</p></div>
+                <span className="ml-auto text-[9px] text-primary-600 font-bold shrink-0">Overall</span>
             </Link>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { name: "GPSC",    count: 12, icon: "fa-landmark" },
-              { name: "SSC CGL", count: 18, icon: "fa-scroll" },
-              { name: "PSI",     count: 15, icon: "fa-shield-halved" },
-              { name: "Banking", count: 20, icon: "fa-building-columns" },
-              { name: "Railway", count: 14, icon: "fa-train" },
-            ].map(exam => (
-              <Link
-                key={exam.name}
-                href="/subjects"
-                className="exam-card flex flex-col items-center gap-2 rounded-xl p-4 text-center w-[calc(20%-0.6rem)] min-w-[80px] flex-1"
-              >
-                <div
-                  className="flex h-11 w-11 items-center justify-center rounded-xl text-lg"
-                  style={{ background: GOLD_GLOW, border: `1px solid ${GOLD_BR}`, color: GOLD }}
-                >
-                  <i className={`fa-solid ${exam.icon}`}></i>
+            <div className="feature-card bg-white border border-dark-100 rounded-2xl p-4 shadow-sm hover:border-indigo-200 flex items-center gap-3 group cursor-default">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 shrink-0 group-hover:bg-indigo-100 transition-colors">
+                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <div>
-                  <div className="text-xs font-bold" style={{ color: TEXT }}>{exam.name}</div>
-                  <div className="text-[10px]" style={{ color: MUTED }}>{exam.count} Tests</div>
+                <div className="min-w-0"><p className="font-display text-xl font-bold text-dark-800 leading-none">{stats.mcqsSolved.toLocaleString()}</p><p className="text-[10px] text-dark-500 font-bold uppercase tracking-widest mt-0.5">MCQs Solved</p></div>
+            </div>
+        </div>
+
+        {/* ── 3 COLUMN GRID ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+            {/* COL 1: ACTIONABLE PRACTICE */}
+            <div className="flex flex-col gap-4">
+                {/* Resume Practice */}
+                <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
+                        <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
+                            <span className="w-6 h-6 bg-primary-50 border border-primary-100 rounded-lg flex items-center justify-center shrink-0">
+                                <svg className="w-3.5 h-3.5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </span>
+                            Resume Practice
+                        </h3>
+                        {stats.resumePractice ? (
+                            <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">In Progress</span>
+                        ) : (
+                            <span className="text-[9px] text-dark-500 font-bold bg-dark-50 px-2 py-0.5 rounded border border-dark-100">Ready</span>
+                        )}
+                    </div>
+                    {stats.resumePractice ? (
+                        <div className="space-y-3">
+                            <Link href="/subjects" className="block p-3 bg-dark-50 border border-dark-100 rounded-xl hover:border-primary-200 transition-colors group">
+                                <p className="text-[9px] text-primary-600 font-bold uppercase tracking-widest mb-0.5 group-hover:text-primary-700">{stats.resumePractice.part || 'Part B'} · Subject</p>
+                                <h4 className="font-bold text-dark-800 text-sm mb-2 group-hover:text-primary-600 transition-colors">{stats.resumePractice.subjectName}</h4>
+                                <div className="flex justify-between text-[10px] font-bold text-dark-500 mb-1.5">
+                                    <span>{stats.resumePractice.totalAttempts} attempts</span><span className="text-primary-600">{Math.round(stats.resumePractice.accuracy)}% Accuracy</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-dark-200 rounded-full overflow-hidden">
+                                    <div className="h-full bg-primary-500 rounded-full transition-all duration-1000" style={{ width: `${Math.round(stats.resumePractice.accuracy)}%` }}></div>
+                                </div>
+                            </Link>
+                            <Link href="/subjects" className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-dark-800 hover:bg-primary-600 text-white font-bold rounded-xl text-xs transition-all shadow-sm">
+                                Continue
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="text-center py-4">
+                            <p className="text-sm text-dark-500 font-medium">You haven't started practicing yet.</p>
+                            <Link href="/subjects" className="mt-3 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm">
+                                Explore Subjects
+                            </Link>
+                        </div>
+                    )}
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
 
-        {/* Current Affairs + Daily Goal combined */}
-        <div className="flex flex-col gap-4">
-
-          {/* Daily Goal */}
-          <div
-            className="rounded-2xl p-5"
-            style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>Daily Goal</h3>
-              <button className="text-xs font-bold hover:underline" style={{ color: GOLD }}>
-                Edit Goal
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 flex-shrink-0">
-                <svg viewBox="0 0 36 36" className="w-full h-full">
-                  <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path
-                    className="circle"
-                    strokeDasharray="70, 100"
-                    stroke={GOLD}
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-sm font-bold" style={{ color: TEXT }}>7/10</span>
+                {/* Syllabus Coverage */}
+                <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
+                        <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
+                            <span className="w-6 h-6 bg-indigo-50 border border-indigo-100 rounded-lg flex items-center justify-center shrink-0">
+                                <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </span>
+                            Syllabus Coverage
+                        </h3>
+                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg">{stats.syllabusCoverage.overall}% Overall</span>
+                    </div>
+                    <div className="space-y-3.5">
+                        <div>
+                            <div className="flex justify-between text-[11px] font-bold mb-1.5"><span className="text-dark-700">Part A — General</span><span className="text-emerald-600">{stats.syllabusCoverage.partA}%</span></div>
+                            <div className="h-2 bg-dark-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${stats.syllabusCoverage.partA}%` }}></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-[11px] font-bold mb-1.5"><span className="text-dark-700">Part B — Technical</span><span className="text-primary-600">{stats.syllabusCoverage.partB}%</span></div>
+                            <div className="h-2 bg-dark-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-primary-500 rounded-full transition-all duration-1000" style={{ width: `${stats.syllabusCoverage.partB}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm font-semibold" style={{ color: TEXT }}>Tests</div>
-                <div className="text-xs mt-0.5" style={{ color: GREEN }}>Great! You're on track.</div>
-              </div>
             </div>
-            <Link
-              href="/practice"
-              className="btn-primary mt-4 flex w-full items-center justify-center rounded-xl py-2 text-sm font-bold"
-            >
-              Continue Practice
-            </Link>
-          </div>
 
-          {/* Current Affairs */}
-          <div
-            className="rounded-2xl p-5"
-            style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>Current Affairs</h3>
-              <Link href="/subjects" className="text-xs font-bold hover:underline" style={{ color: GOLD }}>
-                View All
-              </Link>
-            </div>
-            <div className="space-y-2.5">
-              {[
-                { title: "Important Committee on Education", date: "May 19, 2025" },
-                { title: "New Agricultural Scheme Launched",  date: "May 18, 2025" },
-                { title: "Sports Current Affairs – May 2025", date: "May 17, 2025" },
-              ].map(item => (
-                <div key={item.title} className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2 min-w-0">
-                    <i className="fa-regular fa-calendar-days mt-0.5 text-[11px] shrink-0" style={{ color: GOLD }}></i>
-                    <span className="text-xs leading-snug truncate" style={{ color: MUTED }}>
-                      {item.title}
-                    </span>
-                  </div>
-                  <span className="text-[10px] shrink-0" style={{ color: MUTED }}>{item.date}</span>
+            {/* COL 2: WEAK TOPICS */}
+            <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
+                    <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
+                        <span className="w-6 h-6 bg-rose-50 border border-rose-100 rounded-lg flex items-center justify-center shrink-0">
+                            <svg className="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </span>
+                        Targeted Practice
+                    </h3>
+                    <span className="text-[9px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Needs Work</span>
                 </div>
-              ))}
-            </div>
-            <button
-              className="btn-secondary mt-4 w-full rounded-xl py-2 text-xs font-bold"
-            >
-              Read More Current Affairs <i className="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ────────────────── AI INSIGHTS + ACTION CARDS ─────────────────── */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 animate-on-scroll">
-
-        {/* AI Insights */}
-        <div
-          className="relative overflow-hidden rounded-2xl p-6"
-          style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-        >
-          <div
-            className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(74,158,219,0.15) 0%, transparent 70%)" }}
-          />
-          <h3 className="mb-4 flex items-center gap-2 text-base font-bold" style={{ color: TEXT }}>
-            <i className="fa-solid fa-wand-magic-sparkles" style={{ color: BLUE }}></i>
-            AI Insights
-          </h3>
-          <div className="space-y-3">
-            <div className="rounded-xl p-4" style={{ background: `${RED}0d`, border: `1px solid ${RED}25` }}>
-              <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold" style={{ color: RED }}>
-                <i className="fa-solid fa-triangle-exclamation"></i> Weak Area Detected
-              </div>
-              <p className="text-sm" style={{ color: MUTED }}>
-                Your accuracy in <strong style={{ color: TEXT }}>Communication Engineering</strong> dropped by 15% this week.
-              </p>
-              <Link
-                href="/practice?mode=quick"
-                className="mt-2 inline-block text-xs font-bold hover:underline"
-                style={{ color: RED }}
-              >
-                Practice Weakness →
-              </Link>
-            </div>
-            <div className="rounded-xl p-4" style={{ background: `${GREEN}0d`, border: `1px solid ${GREEN}25` }}>
-              <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold" style={{ color: GREEN }}>
-                <i className="fa-solid fa-chart-line"></i> Strong Momentum
-              </div>
-              <p className="text-sm" style={{ color: MUTED }}>
-                You are in the <strong style={{ color: GREEN }}>top 10%</strong> of students for{" "}
-                <strong style={{ color: TEXT }}>Digital Electronics & VLSI</strong>.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action cards */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            {
-              href: "/practice?mode=quick",
-              icon: "fa-bolt",
-              title: "Quick Practice",
-              sub: "Exam in 35 Days",
-              color: GOLD,
-            },
-            /* {
-              href: "/profile",
-              icon: "fa-share-nodes",
-              title: "Refer & Earn",
-              sub: "Get 300 Coins",
-              color: GREEN,
-            },
-            {
-              href: "/rewards",
-              icon: "fa-book-open-reader",
-              title: "Premium Notes",
-              sub: "Unlock with Coins",
-              color: BLUE,
-              locked: true,
-            }, */
-            {
-              href: "/test",
-              icon: "fa-file-signature",
-              title: "Full Mock Test",
-              sub: "June 21 Goal",
-              color: GOLD,
-            },
-          ].map(card => (
-            <Link
-              key={card.href}
-              href={card.href}
-              className="hover-card-up relative flex flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center"
-              style={{ background: SURFACE, borderColor: GOLD_BR }}
-            >
-              {(card as any).locked && (
-                <div
-                  className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full"
-                  style={{ background: GOLD }}
-                >
-                  <i className="fa-solid fa-lock text-[8px]" style={{ color: BG }}></i>
+                <div className="space-y-2.5">
+                    {stats.weakTopics.length > 0 ? stats.weakTopics.map((topic: any, idx: number) => {
+                        const bgClasses = [
+                            'bg-rose-50 border-rose-100 hover:border-rose-300 text-rose-600 group-hover:text-rose-700 group-hover:bg-rose-600',
+                            'bg-amber-50 border-amber-100 hover:border-amber-300 text-amber-600 group-hover:text-amber-700 group-hover:bg-amber-600',
+                            'bg-dark-50 border-dark-100 hover:border-dark-300 text-dark-600 group-hover:text-dark-700 group-hover:bg-dark-600'
+                        ];
+                        const classSet = bgClasses[idx % 3];
+                        const [bg, border, hover, text, textHover, iconHover] = classSet.split(' ');
+                        
+                        return (
+                            <Link href="/subjects" key={idx} className={`flex items-center gap-3 p-3 ${bg} ${border} rounded-xl ${hover} transition-colors group`}>
+                                <div className="w-9 h-9 rounded-xl bg-white border border-dark-100 flex flex-col items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                    <span className="text-[9px] text-dark-400 font-bold leading-none mb-0.5">Acc</span>
+                                    <span className={`${text} font-bold text-[11px] leading-none`}>{Math.round(topic.accuracy)}%</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-bold text-dark-800 truncate ${textHover} transition-colors`}>{topic.subjectName}</p>
+                                    <p className={`text-[10px] ${text} font-semibold mt-0.5`}>{topic.errors} errors recently</p>
+                                </div>
+                                <div className={`w-6 h-6 rounded-full bg-white border border-dark-100 ${text} flex items-center justify-center shrink-0 ${iconHover} group-hover:text-white transition-colors`}>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7m0 7 7-7"/></svg>
+                                </div>
+                            </Link>
+                        );
+                    }) : (
+                        <div className="text-center py-6">
+                            <p className="text-sm text-dark-500 font-medium">Keep practicing! We'll track your weak areas here.</p>
+                        </div>
+                    )}
                 </div>
-              )}
-              <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-xl"
-                style={{ background: `${card.color}18`, border: `1px solid ${card.color}28`, color: card.color }}
-              >
-                <i className={`fa-solid ${card.icon}`}></i>
-              </div>
-              <div>
-                <div className="text-sm font-bold" style={{ color: TEXT }}>{card.title}</div>
-                <div className="text-[11px]" style={{ color: card.color }}>{card.sub}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+            </div>
 
-      {/* ────────────────── TARGET PROGRESS ─────────────────── */}
-      <div
-        className="rounded-2xl p-6 animate-on-scroll"
-        style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-      >
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold" style={{ color: TEXT }}>Target: Wireless PSI (WPSI)</h3>
-          <span
-            className="rounded-lg px-3 py-1 text-xs font-bold"
-            style={{ background: GOLD_GLOW, color: GOLD, border: `1px solid ${GOLD_BR}` }}
-          >
-            Overall: 68%
-          </span>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <ProgressRow label="Part A: General & Aptitude"  pct={89} icon="fa-brain"            color={GOLD}  />
-          <ProgressRow label="Part B: Technical Subjects"  pct={55} icon="fa-microchip"        color={BLUE}  />
-          <ProgressRow label="Communication Engineering"   pct={24} icon="fa-satellite-dish"   color={RED}   />
-        </div>
-        <button className="btn-secondary mt-5 w-full rounded-xl py-2.5 text-sm">
-          Resume Study Plan
-        </button>
-      </div>
+            {/* COL 3: ACTIVITY / PERFORMANCE */}
+            <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm flex flex-col">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
+                    <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
+                        <span className="w-6 h-6 bg-violet-50 border border-violet-100 rounded-lg flex items-center justify-center shrink-0">
+                            <svg className="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                        </span>
+                        Weekly Activity
+                    </h3>
+                    <Link href="/results" className="text-[10px] text-primary-600 font-bold hover:underline">Full Analytics →</Link>
+                </div>
+                
+                <div className="flex-1 flex flex-col justify-end min-h-[160px] relative">
+                    <div className="absolute inset-0 flex items-end justify-between gap-1 sm:gap-2 pb-6 pt-8">
+                        {stats.weeklyActivity.map((height: string, i: number) => (
+                           <div key={i} className={`w-full rounded-t-sm transition-all duration-500 hover:opacity-80 ${i === 6 ? 'bg-primary-500' : 'bg-dark-200 hover:bg-dark-300'}`} style={{ height }}></div>
+                        ))}
+                    </div>
+                    
+                    <div className="flex justify-between items-center text-[9px] font-bold text-dark-400 mt-auto border-t border-dark-100 pt-2 z-10">
+                        {stats.dayLabels.map((label: string, i: number) => (
+                           <span key={i} className={`flex-1 text-center ${i === 6 ? 'text-primary-600' : ''}`}>{label}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
-      {/* ────────────────── FOOTER TRUST BAR ─────────────────── */}
-      <div
-        className="grid grid-cols-2 gap-3 rounded-2xl p-4 text-center text-xs sm:grid-cols-4 animate-on-scroll"
-        style={{ background: SURFACE, border: `1px solid ${GOLD_BR}` }}
-      >
-        {[
-          { icon: "fa-users",              text: "Trusted by 10L+ Aspirants"           },
-          { icon: "fa-shield-halved",      text: "India's Most Comprehensive Test Series" },
-          { icon: "fa-file-lines",         text: "Detailed Solutions & Analysis"       },
-          { icon: "fa-rotate",             text: "Regular Updates & Current Affairs"   },
-        ].map(item => (
-          <div key={item.text} className="flex items-center justify-center gap-2" style={{ color: MUTED }}>
-            <i className={`fa-solid ${item.icon} text-sm`} style={{ color: GOLD }}></i>
-            <span>{item.text}</span>
-          </div>
-        ))}
-      </div>
-
+        </div>
     </div>
   );
 }

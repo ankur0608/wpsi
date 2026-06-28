@@ -54,17 +54,15 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden w-full" style={{ background: "var(--bg-primary)" }}>
+    <div className="text-dark-800 font-sans antialiased flex h-screen overflow-hidden selection:bg-primary-200 selection:text-primary-900 w-full bg-dark-50">
       <Sidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
-      <main id="nav-main-wrapper" className="flex-1 flex flex-col h-full overflow-hidden">
+      <main id="nav-main-wrapper" className="flex-1 overflow-y-auto bg-dark-50 relative flex flex-col hide-scrollbar">
         <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative">
-          <div className="max-w-6xl mx-auto">
-            {children}
-          </div>
+        <div className="flex-1">
+          {children}
         </div>
       </main>
     </div>

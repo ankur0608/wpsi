@@ -9,6 +9,8 @@ interface User {
   xp: number;
   coins: number;
   streak: number;
+  bestStreak: number;
+  totalStudyDays: number;
 }
 
 interface UserContextType {

@@ -5,221 +5,125 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 
-interface NavLink {
-  href: string;
-  icon: string;
-  label: string;
-}
-
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, loading } = useUser();
   const displayName = user?.name?.trim() || "Profile";
-  const displayLevel = user?.level;
+  const displayLevel = user?.level || 1;
 
-  const links: NavLink[] = [
-    { href: "/dashboard", icon: "fa-house", label: "Dashboard" },
-    { href: "/exam", icon: "fa-book", label: "Exam" },
-    { href: "/practice", icon: "fa-pen-to-square", label: "MCQ Practice" },
-    { href: "/test", icon: "fa-clipboard-check", label: "Mock Tests" },
-    { href: "/results", icon: "fa-chart-pie", label: "Results" },
-    { href: "/bookmarks", icon: "fa-bookmark", label: "Saved MCQs" },
-    { href: "/pricing", icon: "fa-tags", label: "Pricing & Plans" },
-  ];
-
-  const isActive = (href: string) => {
-    if (href === "/subjects" && (pathname === "/subjects" || pathname === "/topics")) return true;
-    return pathname === href;
+  const isActive = (path: string) => {
+    if (path === '/exam') {
+      return pathname === '/exam' || pathname.startsWith('/subjects') || pathname.startsWith('/topics');
+    }
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   return (
     <>
-      {/* Mobile overlay */}
-      <div
-        id="mobile-sidebar-overlay"
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isOpen ? "visible opacity-100" : "invisible opacity-0"
-          }`}
+      {/* Mobile Overlay */}
+      <div 
+        className={`fixed inset-0 bg-dark-800/60 backdrop-blur-sm z-40 lg:hidden transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} 
         onClick={onClose}
-      />
+      ></div>
 
-      <aside
-        id="sidebar"
-        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[17rem] flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        style={{
-          background: "var(--sidebar-bg)",
-          borderRight: "1px solid var(--border-accent)",
-        }}
-      >
-        {/* Logo */}
-        <div
-          className="flex h-[68px] items-center gap-3 px-5"
-          style={{ borderBottom: "1px solid var(--border-accent)" }}
-        >
-          <Link href="/" className="flex flex-1 items-center gap-3" onClick={onClose}>
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl shadow-lg"
-              style={{ background: "linear-gradient(135deg, #D4922A, #F0B85A)" }}
-            >
-              <i className="fa-solid fa-graduation-cap text-sm" style={{ color: "#0D1B2A" }}></i>
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-dark-100 z-50 transform lg:static transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        
+        {/* Logo section */}
+        <div className="h-20 flex items-center px-6 border-b border-dark-100 shrink-0">
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 text-white font-bold text-xl tracking-tighter">
+                    W
+                </div>
+                <div>
+                    <h1 className="font-display font-bold text-xl text-dark-800 leading-none tracking-tight">WPSI <span className="text-primary-600">Pro</span></h1>
+                    <p className="text-[10px] font-bold text-dark-400 uppercase tracking-widest mt-0.5">Study Console</p>
+                </div>
             </div>
-            <div>
-              <div
-                className="font-heading text-[17px] font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
-                WPSI<span style={{ color: "#D4922A" }}>Pro</span>
-              </div>
-              <div
-                className="text-[9px] uppercase tracking-[0.28em]"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Study Console
-              </div>
-            </div>
-          </Link>
-
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-white/5 md:hidden"
-            style={{ color: "var(--text-secondary)" }}
-            onClick={onClose}
-            aria-label="Close sidebar"
-          >
-            <i className="fa-solid fa-xmark text-lg"></i>
-          </button>
+            <button className="ml-auto lg:hidden text-dark-400 hover:text-dark-600" onClick={onClose}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
 
-        {/* Nav */}
-        <div className="flex-1 overflow-y-auto px-3 py-4">
-          <div
-            className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.32em]"
-            style={{ color: "var(--text-muted)" }}
-          >
-            Navigation
-          </div>
-
-          <nav className="space-y-1">
-            {links.map((link) => {
-              const active = isActive(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={onClose}
-                  className={`nav-item group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active ? "nav-active" : "border-transparent"
-                    }`}
-                  style={{ color: active ? "var(--text-primary)" : "var(--text-secondary)" }}
-                >
-                  <div
-                    className={`nav-icon flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${active ? "" : "group-hover:bg-white/5"
-                      }`}
-                    style={
-                      active
-                        ? { background: "rgba(212,146,42,0.18)", color: "#D4922A" }
-                        : { background: "var(--input-bg)", color: "var(--text-secondary)" }
-                    }
-                  >
-                    <i className={`fa-solid ${link.icon} text-xs`}></i>
-                  </div>
-                  <span className="flex-1">{link.label}</span>
-                  {active && (
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ background: "#D4922A" }}
-                    ></span>
-                  )}
+        {/* Navigation items */}
+        <div className="flex-1 overflow-y-auto py-6 px-4 hide-scrollbar relative z-10">
+            <p className="text-[10px] font-bold text-dark-400 mb-3 px-3 uppercase tracking-widest">Navigation</p>
+            <nav className="space-y-1">
+                <Link href="/dashboard" onClick={onClose} className={`sidebar-item ${isActive('/dashboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Dashboard
                 </Link>
-              );
-            })}
-          </nav>
+                <Link href="/exam" onClick={onClose} className={`sidebar-item ${isActive('/exam') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Exam
+                </Link>
+                <Link href="/practice" onClick={onClose} className={`sidebar-item ${isActive('/practice') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    Practice
+                </Link>
+                <Link href="/test" onClick={onClose} className={`sidebar-item ${isActive('/test') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    Mock Tests
+                </Link>
+                <Link href="/results" onClick={onClose} className={`sidebar-item ${isActive('/results') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Results
+                </Link>
+                <Link href="/bookmarks" onClick={onClose} className={`sidebar-item ${isActive('/bookmarks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    Saved MCQs
+                </Link>
+                <Link href="/dashboard/pricing" onClick={onClose} className={`sidebar-item ${isActive('/dashboard/pricing') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                    Pricing & Plans
+                </Link>
+            </nav>
 
-          {/* Upgrade card */}
-          <div
-            className="mt-6 rounded-2xl p-4"
-            style={{
-              background: "linear-gradient(135deg, rgba(212,146,42,0.14) 0%, rgba(13,27,42,0.9) 100%)",
-              border: "1px solid rgba(212,146,42,0.24)",
-            }}
-          >
-            <div className="mb-1 flex items-center gap-2">
-              <i className="fa-solid fa-crown text-xs" style={{ color: "#D4922A" }}></i>
-              <span
-                className="text-[9px] font-bold uppercase tracking-[0.28em]"
-                style={{ color: "#D4922A" }}
-              >
-                WPSI 2025 Combo
-              </span>
+            <p className="text-[10px] font-bold text-dark-400 mt-6 mb-3 px-3 uppercase tracking-widest">Gamification</p>
+            <nav className="space-y-1">
+                <Link href="/streaks" onClick={onClose} className={`sidebar-item ${isActive('/streaks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
+                    Streak
+                </Link>
+                <Link href="/leaderboard" onClick={onClose} className={`sidebar-item ${isActive('/leaderboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    Leaderboard
+                </Link>
+            </nav>
+        </div>
+        
+        {/* Bottom section */}
+        <div className="p-4 relative z-10 shrink-0">
+            <div className="bg-gradient-to-br from-dark-800 to-dark-900 border border-dark-700 rounded-2xl p-5 mb-4 shadow-xl relative overflow-hidden group hidden sm:block">
+                <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="flex items-center gap-2 mb-2 relative z-10">
+                    <span className="text-accent-400 text-[10px] font-bold uppercase tracking-widest">👑 WPSI Combo</span>
+                </div>
+                <p className="text-[11px] text-dark-300 mb-4 leading-relaxed relative z-10">Full access at <b className="text-white">Rs 249</b> with the cleanest prep flow.</p>
+                <Link href="/dashboard/pricing" className="block w-full bg-accent-500 hover:bg-accent-600 text-dark-800 text-center py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-accent-500/20 relative z-10">
+                    ⚡ Upgrade Now
+                </Link>
             </div>
-            <p className="mt-1.5 text-sm leading-5" style={{ color: "var(--text-secondary)" }}>
-              Full Part A + B access at{" "}
-              <span className="font-bold" style={{ color: "var(--text-primary)" }}>
-                Rs 249
-              </span>{" "}
-              with the cleanest prep flow.
-            </p>
-            <Link
-              href="/pricing"
-              onClick={onClose}
-              className="btn-primary mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm"
-            >
-              <i className="fa-solid fa-bolt text-xs"></i>
-              Upgrade Now
-            </Link>
-          </div>
-        </div>
-
-        {/* User footer */}
-        <div
-          className="p-3"
-          style={{ borderTop: "1px solid var(--border-accent)", background: "var(--sidebar-bg)" }}
-        >
-          <div
-            className="flex items-center gap-3 rounded-xl border p-2.5 transition-colors hover:bg-white/[0.03]"
-            style={{ borderColor: "var(--border-accent)" }}
-          >
-            <Link href="/profile" onClick={onClose} className="group flex min-w-0 flex-1 items-center gap-3">
-              <img
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=162436&color=D4922A&bold=true&size=80`}
-                className="h-10 w-10 shrink-0 rounded-xl border"
-                style={{ borderColor: "rgba(212,146,42,0.2)" }}
-                alt="User avatar"
-              />
-              <div className="min-w-0 flex-1">
-                <div
-                  className="truncate text-sm font-bold transition-colors group-hover:text-[#D4922A]"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {loading ? "Loading..." : displayName}
+            
+            <Link href="/profile" onClick={onClose} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
+                <div className="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center text-primary-700 font-bold mr-3 text-xs border border-primary-200 group-hover:bg-primary-200 transition-colors uppercase">
+                    {loading ? '...' : displayName.slice(0, 2)}
                 </div>
-                <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                  {loading
-                    ? "Syncing profile"
-                    : displayLevel !== undefined
-                      ? `Level ${displayLevel}`
-                      : "Profile unavailable"}
+                <div className="flex-1">
+                    <p className="text-[13px] font-bold text-dark-800 leading-tight">{loading ? 'Loading...' : displayName}</p>
+                    <p className="text-[10px] text-dark-500 font-medium">🏆 Master (Level {displayLevel})</p>
                 </div>
-              </div>
+                <svg className="w-4 h-4 text-dark-400 group-hover:text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                </svg>
             </Link>
-            <Link
-              href="/settings"
-              onClick={onClose}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: "var(--text-secondary)" }}
-              title="Settings"
-            >
-              <i className="fa-solid fa-gear text-xs"></i>
-            </Link>
-          </div>
         </div>
-      </aside>
+    </aside>
     </>
   );
-};
-
-export default Sidebar;
+}

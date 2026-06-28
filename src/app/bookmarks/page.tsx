@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser } from '@/context/UserContext';
+import { subjectMeta, defaultMeta } from '@/lib/subjectMeta';
 
 interface BookmarkRow {
   id: string;
@@ -29,7 +29,6 @@ interface BookmarkRow {
 }
 
 export default function BookmarksPage() {
-  const { user } = useUser();
   const [bookmarks, setBookmarks] = useState<BookmarkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,10 +36,12 @@ export default function BookmarksPage() {
   // Track which explanations are revealed
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
 
-  // Filter States
+  // View States
+  const [activeSubject, setActiveSubject] = useState<string | null>(null);
+  
+  // Filter States for the Subject Cards View
+  const [activeFilter, setActiveFilter] = useState<'all' | 'part-a' | 'part-b'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('All');
-  const [selectedTopic, setSelectedTopic] = useState('All');
 
   const fetchBookmarks = async () => {
     setLoading(true);
@@ -62,20 +63,16 @@ export default function BookmarksPage() {
   }, []);
 
   const removeBookmark = async (mcqId: string) => {
-    // Optimistic UI update
     setBookmarks((prev) => prev.filter((b) => b.mcqId !== mcqId));
     try {
       const res = await fetch('/api/bookmarks', {
-        method: 'POST', // The endpoint uses POST to toggle
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mcqId }),
       });
-      if (!res.ok) {
-        throw new Error('Failed to remove bookmark');
-      }
+      if (!res.ok) throw new Error('Failed to remove bookmark');
     } catch (err) {
       console.error(err);
-      // Revert if failed by re-fetching
       fetchBookmarks();
     }
   };
@@ -84,263 +81,267 @@ export default function BookmarksPage() {
     setRevealed((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Filter Logic
-  const subjects = useMemo(() => {
-    const set = new Set(bookmarks.map(b => b.mcq.topic.subject.name));
-    return ['All', ...Array.from(set).sort()];
+  // Grouping logic for the Subject Cards View
+  const subjectGroups = useMemo(() => {
+    const groups: Record<string, BookmarkRow[]> = {};
+    bookmarks.forEach(b => {
+      const subjName = b.mcq.topic.subject.name;
+      if (!groups[subjName]) groups[subjName] = [];
+      groups[subjName].push(b);
+    });
+    return groups;
   }, [bookmarks]);
 
-  const topics = useMemo(() => {
-    let filtered = bookmarks;
-    if (selectedSubject !== 'All') {
-      filtered = filtered.filter(b => b.mcq.topic.subject.name === selectedSubject);
-    }
-    const set = new Set(filtered.map(b => b.mcq.topic.name));
-    return ['All', ...Array.from(set).sort()];
-  }, [bookmarks, selectedSubject]);
+  const getPartForSubject = (subjName: string) => {
+    const meta = subjectMeta[subjName];
+    if (meta?.part) return meta.part.toLowerCase().replace(' ', '-');
+    const firstMcq = subjectGroups[subjName]?.[0];
+    if (firstMcq?.mcq.topic.subject.part.includes('A')) return 'part-a';
+    if (firstMcq?.mcq.topic.subject.part.includes('B')) return 'part-b';
+    return 'part-b';
+  };
 
-  useEffect(() => {
-    setSelectedTopic('All');
-  }, [selectedSubject]);
-
-  const filteredBookmarks = useMemo(() => {
-    return bookmarks.filter(b => {
-      if (selectedSubject !== 'All' && b.mcq.topic.subject.name !== selectedSubject) return false;
-      if (selectedTopic !== 'All' && b.mcq.topic.name !== selectedTopic) return false;
-      if (searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase();
-        if (!b.mcq.question.toLowerCase().includes(q)) return false;
-      }
-      return true;
+  const filteredSubjects = useMemo(() => {
+    const subjects = Object.keys(subjectGroups);
+    return subjects.filter(subj => {
+      const part = getPartForSubject(subj);
+      const matchesPart = activeFilter === 'all' || part === activeFilter;
+      const matchesSearch = !searchQuery || subj.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesPart && matchesSearch;
     });
-  }, [bookmarks, selectedSubject, selectedTopic, searchQuery]);
+  }, [subjectGroups, activeFilter, searchQuery]);
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-500/20 border-t-brand-500" />
-        <p className="text-sm text-[var(--text-muted)]">Loading your bookmarks...</p>
+      <div className="flex h-screen flex-col items-center justify-center bg-dark-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary-500/20 border-t-primary-500" />
+        <p className="mt-4 text-sm font-bold text-primary-600 uppercase tracking-widest">Loading MCQs...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
-        <div className="text-4xl">⚠️</div>
-        <p className="text-sm font-bold text-danger">Failed to load</p>
-        <p className="text-xs text-[var(--text-muted)]">{error}</p>
-        <button
-          onClick={fetchBookmarks}
-          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-[var(--text-primary)]"
-        >
+      <div className="flex h-screen flex-col items-center justify-center bg-dark-50">
+        <div className="text-4xl mb-2">⚠️</div>
+        <p className="text-sm font-bold text-rose-500 uppercase tracking-widest">Failed to load</p>
+        <button onClick={fetchBookmarks} className="mt-4 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg">
           Retry
         </button>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6 pb-10">
-      {/* Header */}
-      <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-brand-400/25 bg-brand-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-brand-300">
-              Your Saved Collection
-            </div>
-            <h2 className="text-2xl font-heading font-black text-[var(--text-primary)] md:text-3xl">
-              Bookmarks
-            </h2>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Review questions you've saved during your practice sessions.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-3 text-center min-w-[120px]">
-            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Total</div>
-            <div className="mt-1 text-xl font-bold text-[var(--text-primary)]">{bookmarks.length}</div>
-          </div>
-        </div>
-      </section>
+  // ==== DETAILED VIEW (QUESTIONS LIST) ====
+  if (activeSubject) {
+    const activeBookmarks = subjectGroups[activeSubject] || [];
+    const meta = subjectMeta[activeSubject] || defaultMeta;
 
-      {/* Filters Section */}
-      {bookmarks.length > 0 && (
-        <section className="glass-card flex flex-col gap-4 rounded-[1.5rem] border border-[var(--border-subtle)] p-4 md:flex-row md:items-center">
-          <div className="relative flex-1">
-            <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-            <input
-              type="text"
-              placeholder="Search questions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-[var(--border-subtle)] bg-white/5 py-3 pl-11 pr-4 text-sm text-[var(--text-primary)] placeholder-slate-500 outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
-            />
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row md:w-auto">
-            <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              className="min-w-[150px] cursor-pointer rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-3 px-4 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
-            >
-              {subjects.map(s => (
-                <option key={s} value={s} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">
-                  {s === 'All' ? 'All Subjects' : s}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedTopic}
-              onChange={(e) => setSelectedTopic(e.target.value)}
-              className="min-w-[150px] cursor-pointer rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-3 px-4 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-brand-500/50 focus:bg-white/10"
-              disabled={selectedSubject === 'All' && topics.length <= 1}
-            >
-              {topics.map(t => (
-                <option key={t} value={t} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">
-                  {t === 'All' ? 'All Topics' : t}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-      )}
-
-      {/* Bookmarks List */}
-      {bookmarks.length === 0 ? (
-        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-[var(--border-subtle)] p-12 text-center">
-          <i className="fa-regular fa-bookmark mb-4 text-5xl text-[var(--text-muted)]" />
-          <h3 className="text-lg font-bold text-[var(--text-primary)]">No bookmarks yet</h3>
-          <p className="mt-2 text-sm text-[var(--text-muted)] max-w-md">
-            You haven't saved any questions. Start a practice session and click the bookmark icon on any question to save it here for later review.
-          </p>
-          <Link
-            href="/practice"
-            className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-[var(--text-primary)] shadow-lg transition-transform hover:scale-105"
+    return (
+      <div className="flex-1 overflow-y-auto bg-dark-50 relative p-5 lg:p-8">
+        <div className="max-w-5xl mx-auto w-full">
+          <button 
+            onClick={() => setActiveSubject(null)}
+            className="mb-6 flex items-center gap-2 text-sm font-bold text-dark-500 hover:text-dark-900 transition-colors"
           >
-            Start Practicing
-          </Link>
-        </div>
-      ) : filteredBookmarks.length === 0 ? (
-        <div className="glass-card flex flex-col items-center justify-center rounded-[1.75rem] border border-[var(--border-subtle)] p-12 text-center">
-          <i className="fa-solid fa-filter-circle-xmark mb-4 text-5xl text-[var(--text-muted)]" />
-          <h3 className="text-lg font-bold text-[var(--text-primary)]">No matches found</h3>
-          <p className="mt-2 text-sm text-[var(--text-muted)] max-w-md">
-            No bookmarks match your current filters and search query.
-          </p>
-          <button
-            onClick={() => { setSearchQuery(''); setSelectedSubject('All'); setSelectedTopic('All'); }}
-            className="mt-6 inline-flex items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-white/5 px-6 py-3 text-sm font-bold text-[var(--text-secondary)] transition-transform hover:scale-105"
-          >
-            Clear Filters
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Subjects
           </button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredBookmarks.map((b) => {
-            const isRevealed = revealed[b.id];
-            const options = [
-              { key: 'A', text: b.mcq.optionA },
-              { key: 'B', text: b.mcq.optionB },
-              { key: 'C', text: b.mcq.optionC },
-              { key: 'D', text: b.mcq.optionD },
-            ];
 
-            return (
-              <div
-                key={b.id}
-                className="glass-card rounded-[1.5rem] border border-[var(--border-subtle)] p-5 transition-colors hover:border-[var(--border-subtle)] md:p-6"
-              >
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs font-bold text-[var(--text-secondary)]">
-                      {b.mcq.topic.subject.name}
+          <div className="bg-white border border-dark-100 rounded-3xl p-7 mb-7 flex items-center gap-5 shadow-sm relative overflow-hidden">
+             <div className="absolute -right-10 -top-10 w-48 h-48 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
+             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${meta.gradient} shadow-lg shrink-0 z-10`}>
+                {meta.icon}
+             </div>
+             <div className="z-10">
+                <h2 className="font-display text-2xl font-black text-dark-900">{activeSubject}</h2>
+                <p className="text-dark-500 text-sm font-medium">{activeBookmarks.length} saved questions</p>
+             </div>
+          </div>
+
+          <div className="space-y-5">
+            {activeBookmarks.length === 0 ? (
+                <div className="text-center py-10">
+                    <p className="text-dark-500 font-bold">No questions found.</p>
+                </div>
+            ) : activeBookmarks.map((b, idx) => {
+              const isRevealed = revealed[b.id];
+              const options = [
+                { key: 'A', text: b.mcq.optionA },
+                { key: 'B', text: b.mcq.optionB },
+                { key: 'C', text: b.mcq.optionC },
+                { key: 'D', text: b.mcq.optionD },
+              ];
+
+              return (
+                <div key={b.id} className="bg-white rounded-2xl border border-dark-100 p-6 sm:p-8 shadow-sm">
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100">
+                      Question {idx + 1}
                     </span>
-                    <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs text-[var(--text-muted)]">
-                      {b.mcq.topic.name}
-                    </span>
-                    <span
-                      className={`rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wider ${
-                        b.mcq.difficulty === 'Easy'
-                          ? 'bg-emerald-500/10 text-emerald-400'
-                          : b.mcq.difficulty === 'Hard'
-                          ? 'bg-danger/10 text-red-400'
-                          : 'bg-warning/10 text-amber-400'
-                      }`}
+                    <button 
+                      onClick={() => removeBookmark(b.mcqId)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors"
                     >
-                      {b.mcq.difficulty}
-                    </span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeBookmark(b.mcqId)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-danger/10 text-danger transition-colors hover:bg-danger hover:text-[var(--text-primary)]"
-                    title="Remove Bookmark"
-                  >
-                    <i className="fa-solid fa-trash-can text-sm" />
-                  </button>
-                </div>
 
-                <div className="mb-5 text-base font-medium leading-relaxed text-[var(--text-primary)]">
-                  {b.mcq.question}
-                </div>
+                  <p className="text-base sm:text-lg font-bold text-dark-900 mb-6 leading-relaxed">
+                    {b.mcq.question}
+                  </p>
 
-                <div className="grid gap-3 md:grid-cols-2">
-                  {options.map((opt) => {
-                    const isCorrect = opt.key === b.mcq.correctAnswer;
-                    let bgStyle = 'bg-[var(--bg-surface)] border-[var(--border-subtle)]';
-                    let textStyle = 'text-[var(--text-secondary)]';
-                    let icon = null;
+                  <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                    {options.map((opt) => {
+                      const isCorrect = opt.key === b.mcq.correctAnswer;
+                      let bgClass = "bg-dark-50 border-dark-200 text-dark-700";
+                      
+                      if (isRevealed && isCorrect) {
+                        bgClass = "bg-emerald-50 border-emerald-500 text-emerald-700 font-bold shadow-[0_0_15px_rgba(16,185,129,0.1)]";
+                      }
 
-                    if (isRevealed && isCorrect) {
-                      bgStyle = 'bg-emerald-500/10 border-emerald-500/30';
-                      textStyle = 'text-emerald-400 font-bold';
-                      icon = <i className="fa-solid fa-check text-emerald-400" />;
-                    }
-
-                    return (
-                      <div
-                        key={opt.key}
-                        className={`flex items-center gap-3 rounded-xl border p-4 ${bgStyle}`}
-                      >
-                        <div
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border-subtle)] text-xs font-black ${
-                            isRevealed && isCorrect
-                              ? 'bg-emerald-500 text-[var(--text-primary)] border-emerald-500'
-                              : 'bg-white/5 text-[var(--text-muted)]'
-                          }`}
-                        >
-                          {opt.key}
+                      return (
+                        <div key={opt.key} className={`flex items-center p-4 rounded-xl border transition-colors ${bgClass}`}>
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold mr-3 shrink-0 ${isRevealed && isCorrect ? 'bg-emerald-500 text-white' : 'bg-white border border-dark-200 text-dark-500'}`}>
+                            {opt.key}
+                          </div>
+                          <span className="text-sm">{opt.text}</span>
+                          {isRevealed && isCorrect && (
+                            <svg className="w-5 h-5 text-emerald-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                          )}
                         </div>
-                        <div className={`flex-1 text-sm ${textStyle}`}>{opt.text}</div>
-                        {icon && <div>{icon}</div>}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-5 flex items-center justify-between border-t border-[var(--border-subtle)] pt-5">
-                  <button
-                    onClick={() => toggleReveal(b.id)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary)]"
-                  >
-                    <i className={`fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}`} />
-                    {isRevealed ? 'Hide Answer' : 'Show Answer & Explanation'}
-                  </button>
-                </div>
-
-                {isRevealed && b.mcq.explanation && (
-                  <div className="mt-4 rounded-xl border border-brand-500/20 bg-brand-500/5 p-4">
-                    <div className="mb-1 text-[11px] font-black uppercase tracking-wider text-brand-400">
-                      Explanation
-                    </div>
-                    <div className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {b.mcq.explanation}
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
+
+                  <div className="flex items-center justify-between border-t border-dark-100 pt-6">
+                    <button 
+                      onClick={() => toggleReveal(b.id)}
+                      className="px-5 py-2.5 rounded-xl text-sm font-bold bg-dark-50 hover:bg-dark-100 text-dark-700 transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      {isRevealed ? 'Hide Answer' : 'Show Answer & Explanation'}
+                    </button>
+                  </div>
+
+                  {isRevealed && b.mcq.explanation && (
+                    <div className="mt-5 p-5 bg-primary-50 border border-primary-100 rounded-xl">
+                      <div className="text-[10px] font-black uppercase tracking-widest text-primary-600 mb-2">Explanation</div>
+                      <div className="text-sm text-dark-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: b.mcq.explanation }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==== MAIN VIEW (SUBJECT CARDS) ====
+  return (
+    <div className="flex-1 p-5 lg:p-8 max-w-5xl mx-auto w-full">
+      {/* Hero Banner */}
+      <div className="bg-white border border-dark-100 rounded-3xl p-7 mb-7 relative overflow-hidden shadow-sm">
+          <div className="absolute -right-10 -top-10 w-48 h-48 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -left-6 -bottom-6 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
+              <div>
+                  <div className="flex items-center gap-2 mb-2">
+                      <div className="w-9 h-9 bg-primary-100 rounded-xl flex items-center justify-center">
+                          <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                      </div>
+                      <h2 className="font-display text-2xl font-black text-dark-900">Saved For Review</h2>
+                  </div>
+                  <p className="text-dark-500 text-sm max-w-md leading-relaxed">Your personalized collection of challenging questions. Click any subject card to review its saved MCQs.</p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                  <div className="bg-primary-50 border border-primary-100 rounded-2xl px-5 py-4 text-center shadow-sm">
+                      <span className="block text-3xl font-display font-black text-primary-600">{bookmarks.length}</span>
+                      <span className="text-[10px] uppercase tracking-widest font-bold text-primary-500">Total Saved</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      {/* Filter Bar + Search */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between mb-6">
+          <div className="flex flex-wrap gap-2">
+              <button 
+                onClick={() => setActiveFilter('all')} 
+                className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${activeFilter === 'all' ? 'bg-primary-600 text-white border-primary-600 shadow-[0_2px_8px_rgba(0,127,255,0.25)]' : 'bg-white border-dark-200 text-dark-600 hover:text-dark-900'}`}
+              >
+                Show All
+              </button>
+              <button 
+                onClick={() => setActiveFilter('part-a')} 
+                className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${activeFilter === 'part-a' ? 'bg-primary-600 text-white border-primary-600 shadow-[0_2px_8px_rgba(0,127,255,0.25)]' : 'bg-white border-dark-200 text-dark-600 hover:text-dark-900'}`}
+              >
+                Part A
+              </button>
+              <button 
+                onClick={() => setActiveFilter('part-b')} 
+                className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${activeFilter === 'part-b' ? 'bg-primary-600 text-white border-primary-600 shadow-[0_2px_8px_rgba(0,127,255,0.25)]' : 'bg-white border-dark-200 text-dark-600 hover:text-dark-900'}`}
+              >
+                Part B
+              </button>
+          </div>
+          <div className="relative w-full sm:w-60">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search subjects..." 
+                className="w-full pl-9 pr-4 py-2.5 text-xs font-semibold rounded-xl border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white shadow-sm placeholder-dark-400"
+              />
+          </div>
+      </div>
+
+      {/* Subject Cards Grid */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-4">
+        {filteredSubjects.length === 0 ? (
+           <div className="sm:col-span-2 lg:col-span-3 py-14 text-center">
+               <div className="w-14 h-14 bg-dark-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🔍</div>
+               <p className="font-bold text-dark-700">No subjects found</p>
+               <p className="text-sm text-dark-400 mt-1">Try a different search term or filter</p>
+           </div>
+        ) : filteredSubjects.map((subj) => {
+            const count = subjectGroups[subj].length;
+            const meta = subjectMeta[subj] || defaultMeta;
+            const partId = getPartForSubject(subj);
+            const isPartA = partId === 'part-a';
+            
+            // Reconstruct the styling closely matching the HTML template but using gradient backgrounds from meta.
+            return (
+              <div 
+                key={subj}
+                onClick={() => setActiveSubject(subj)}
+                className="bg-white border border-dark-100 rounded-2xl p-6 flex flex-col cursor-pointer group hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(0,0,0,0.10)] transition-all duration-250"
+              >
+                  <div className="flex items-start justify-between mb-5">
+                      <div className={`w-12 h-12 bg-gradient-to-br ${meta.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                          {meta.icon}
+                      </div>
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider border ${
+                        isPartA ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-rose-50 text-rose-600 border-rose-100'
+                      }`}>
+                        {isPartA ? 'Part A' : 'Part B'}
+                      </span>
+                  </div>
+                  <h4 className="font-bold text-dark-900 text-base mb-1 group-hover:text-primary-700 transition-colors">{subj}</h4>
+                  <p className="text-sm text-dark-400 font-medium mb-4">{count} questions saved</p>
+                  <div className="mt-auto flex justify-end">
+                      <span className="text-xs font-bold text-primary-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Open 
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                      </span>
+                  </div>
               </div>
             );
-          })}
-        </div>
-      )}
+        })}
+      </div>
     </div>
   );
 }

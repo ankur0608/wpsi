@@ -7,7 +7,13 @@ export async function GET() {
       include: {
         subjects: {
           include: {
-            topics: true,
+            topics: {
+              include: {
+                _count: {
+                  select: { mcqs: true }
+                }
+              }
+            },
           },
         },
       },
@@ -16,12 +22,17 @@ export async function GET() {
     const syllabuses = exams.map(exam => ({
       id: exam.id,
       name: exam.name,
+      description: exam.description,
       subjects: exam.subjects.map(subject => ({
         id: subject.id,
         name: subject.name,
         icon: subject.icon,
         part: subject.part,
-        topics: subject.topics
+        topics: subject.topics.map(topic => ({
+          ...topic,
+          mcqCount: topic._count?.mcqs || 0,
+          _count: undefined // Remove internal _count object
+        }))
       }))
     }));
 

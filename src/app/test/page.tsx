@@ -39,119 +39,77 @@ export default function Test() {
   }, []);
 
   return (
-    <div className="-m-4 sm:-m-6 lg:-m-8 p-4 sm:p-6 lg:p-8 min-h-full" style={{"background":"radial-gradient(ellipse 70% 40% at 80% 0%,rgba(239,68,68,0.07) 0%,transparent 60%),radial-gradient(ellipse 50% 30% at 20% 100%,rgba(99,102,241,0.06) 0%,transparent 50%)"}}>
-      <div className="max-w-5xl mx-auto pb-24 space-y-8">
-
-        {/* Hero */}
-        <div className="rounded-2xl p-6 md:p-8 relative overflow-hidden" style={{"background":"linear-gradient(135deg,rgba(239,68,68,0.1),var(--bg-surface))","border":"1px solid rgba(239,68,68,0.2)"}}>
-          <div className="absolute right-0 top-0 w-64 h-64 rounded-full opacity-20" style={{"background":"radial-gradient(circle,#ef4444,transparent)","transform":"translate(40%,-40%)"}}></div>
-          <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{"background":"rgba(239,68,68,0.15)","border":"1px solid rgba(239,68,68,0.3)"}}>
-              <i className="fa-solid fa-stopwatch text-danger"></i>
-            </div>
+    <div className="bg-dark-50 w-full font-sans text-dark-800 h-full overflow-y-auto">
+      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
-              <div className="text-xs font-bold text-danger uppercase tracking-widest mb-1">Exam Simulation</div>
-              <h2 className="text-2xl font-heading font-bold text-[var(--text-primary)]">Full-Length Mock Tests</h2>
+                <h2 className="font-display text-3xl font-bold text-dark-900 mb-1">Available Mock Tests</h2>
+                <p className="text-dark-500 text-sm">Challenge yourself with exam-simulated environments.</p>
             </div>
-          </div>
-          <p className="text-[var(--text-muted)] text-sm max-w-2xl relative z-10 leading-relaxed">Experience the exact WPSI exam environment. Realistic negative marking (−0.25), strict time limits, and auto-submit — just like the real exam.</p>
-          <div className="flex flex-wrap gap-4 mt-4 relative z-10">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]"><i className="fa-solid fa-circle-check text-accent"></i>Anti-Tab Violation</div>
-            <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]"><i className="fa-solid fa-circle-check text-accent"></i>Auto Submit on Time</div>
-            <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]"><i className="fa-solid fa-circle-check text-accent"></i>Topic-wise Analysis</div>
-            <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]"><i className="fa-solid fa-circle-check text-accent"></i>Detailed Review</div>
-          </div>
+            <div className="flex gap-2">
+                <button className="bg-white border border-dark-200 text-dark-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-dark-50 transition-colors">Filter</button>
+                <button className="bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 hover:bg-primary-700 transition-all hover:-translate-y-0.5">All Tests</button>
+            </div>
         </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(239,68,68,0.08)","border":"1px solid rgba(239,68,68,0.2)"}}>
-            <i className="fa-solid fa-file-signature text-danger"></i>
-            <div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">1</div><div className="text-[10px] text-[var(--text-muted)] uppercase">Available</div></div>
-          </div>
-          <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(245,158,11,0.08)","border":"1px solid rgba(245,158,11,0.2)"}}>
-            <i className="fa-solid fa-clock text-warning"></i>
-            <div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">15m</div><div className="text-[10px] text-[var(--text-muted)] uppercase">Per Test</div></div>
-          </div>
-          <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(99,102,241,0.08)","border":"1px solid rgba(99,102,241,0.2)"}}>
-            <i className="fa-solid fa-circle-question text-brand-400"></i>
-            <div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">20</div><div className="text-[10px] text-[var(--text-muted)] uppercase">Questions</div></div>
-          </div>
-          <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(16,185,129,0.08)","border":"1px solid rgba(16,185,129,0.2)"}}>
-            <i className="fa-solid fa-minus-circle text-accent"></i>
-            <div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">−0.25</div><div className="text-[10px] text-[var(--text-muted)] uppercase">Negative</div></div>
-          </div>
-        </div>
-
-        {/* Test List */}
-        <div>
-          <div className="flex items-center justify-between mb-4 pb-3" style={{"borderBottom":"1px solid rgba(255,255,255,0.07)"}}>
-            <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2"><i className="fa-solid fa-clipboard-list text-[var(--text-muted)] text-sm"></i>Available Tests</h3>
-            <span className="text-xs text-[var(--text-muted)]">{mockTests.length} Tests Available</span>
-          </div>
-          
-          {isLoading ? (
-            <div className="text-center py-12 text-[var(--text-muted)]">Loading mock tests...</div>
-          ) : mockTests.length === 0 ? (
-            <div className="text-center py-12 text-[var(--text-muted)]">No mock tests available at the moment. Check back later!</div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {mockTests.map((test, index) => (
-                <div key={test.id} className="rounded-2xl p-5 relative overflow-hidden group transition-all duration-300 hover:-translate-y-1" style={{"background":"var(--glass-card-bg)","border":"1px solid rgba(239,68,68,0.35)","boxShadow":"0 0 30px rgba(239,68,68,0.06)"}}>
-                  {index === 0 && (
-                    <div className="absolute top-0 right-0 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider" style={{"background":"rgba(239,68,68,0.9)","color":"white"}}>NEW</div>
-                  )}
-                  <div className="flex items-start gap-4 mb-5">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style={{"background":"rgba(239,68,68,0.12)","border":"1px solid rgba(239,68,68,0.25)","color":"#ef4444"}}>
-                      <i className="fa-solid fa-file-signature"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg text-[var(--text-primary)] mb-0.5">{test.title}</h4>
-                      <p className="text-xs text-[var(--text-muted)] line-clamp-1">{test.description || 'Full syllabus simulation'}</p>
-                    </div>
+        
+        {isLoading ? (
+          <div className="text-center py-12 text-dark-500">Loading mock tests...</div>
+        ) : mockTests.length === 0 ? (
+          <div className="text-center py-12 text-dark-500">No mock tests available at the moment. Check back later!</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockTests.map((test, index) => (
+              <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white">
+                  <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
+                  <div className="relative z-10 flex flex-col h-full">
+                      <div className="flex items-center justify-between mb-5">
+                          <span className="bg-primary-50 text-primary-600 border border-primary-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            {test.type || 'Full Length'}
+                          </span>
+                          <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
+                            {test.durationMinutes || 120} Mins
+                          </span>
+                      </div>
+                      <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      </div>
+                      <h3 className="font-display font-bold text-dark-900 text-xl mb-2 group-hover:text-primary-700 transition-colors">{test.title}</h3>
+                      <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">{test.description || 'Complete coverage of Reasoning, Aptitude, Constitution, and Current Affairs.'}</p>
+                      <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
+                          <div className="text-[11px] text-dark-500 font-medium">{test._count?.questions || test.totalQuestions || 100} MCQs • {test.totalMarks || 100} Marks</div>
+                          <Link href={`/practice?mode=mock&testId=${test.id}&auto=true`} className="bg-primary-50 group-hover:bg-primary-600 text-primary-600 group-hover:text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm shadow-sm flex items-center gap-1">
+                            Start <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                          </Link>
+                      </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 mb-5">
-                    <div className="text-center rounded-lg py-2" style={{"background":"var(--input-bg)","border":"1px solid rgba(255,255,255,0.06)"}}>
-                      <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold mb-0.5">Questions</div>
-                      <div className="text-[var(--text-primary)] font-bold text-sm">{test._count?.questions || test.totalQuestions} MCQs</div>
+              </div>
+            ))}
+            
+            {/* Locked Test Example */}
+            <div className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
+                <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-5">
+                        <span className="bg-dark-100 text-dark-600 border border-dark-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Full Length</span>
+                        <span className="bg-accent-50 text-accent-600 border border-accent-100 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Upcoming
+                        </span>
                     </div>
-                    <div className="text-center rounded-lg py-2" style={{"background":"var(--input-bg)","border":"1px solid rgba(255,255,255,0.06)"}}>
-                      <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold mb-0.5">Duration</div>
-                      <div className="font-bold text-sm text-warning">{test.durationMinutes || 15} Mins</div>
+                    <div className="w-12 h-12 bg-dark-100 rounded-2xl flex items-center justify-center text-dark-400 mb-4">
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                    <div className="text-center rounded-lg py-2" style={{"background":"var(--input-bg)","border":"1px solid rgba(255,255,255,0.06)"}}>
-                      <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold mb-0.5">Marking</div>
-                      <div className="font-bold text-sm text-danger">−0.25</div>
+                    <h3 className="font-display font-bold text-dark-900 text-xl mb-2">WPSI Part B - Technical</h3>
+                    <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">Complete technical curriculum mock test unlocking soon.</p>
+                    <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
+                        <div className="text-[11px] text-accent-600 font-bold">Unlocks 25th June</div>
+                        <button className="bg-dark-100 text-dark-400 font-bold py-2 px-5 rounded-lg text-sm shadow-sm flex items-center gap-1 cursor-not-allowed" disabled>
+                          Locked <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </button>
                     </div>
-                  </div>
-                  <Link href={`/practice?mode=mock&testId=${test.id}&auto=true`} className="flex items-center justify-center w-full py-3 rounded-xl font-bold text-sm text-[var(--text-primary)] transition-all" style={{"background":"linear-gradient(135deg,#ef4444,#dc2626)","boxShadow":"0 0 20px rgba(239,68,68,0.25)"}}>
-                    Start Mock Test <i className="fa-solid fa-arrow-right ml-2 text-xs"></i>
-                  </Link>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* How it Works */}
-        <div className="rounded-2xl p-6" style={{"background":"var(--bg-surface)","border":"1px solid rgba(255,255,255,0.07)"}}>
-          <h3 className="font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2"><i className="fa-solid fa-circle-info text-brand-400 text-sm"></i>How Mock Tests Work</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 font-bold text-brand-400" style={{"background":"rgba(99,102,241,0.15)","border":"1px solid rgba(99,102,241,0.2)"}}>1</div>
-              <div><div className="text-sm font-bold text-[var(--text-primary)] mb-0.5">Start Test</div><div className="text-xs text-[var(--text-muted)]">20 randomized MCQs from all subjects</div></div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 font-bold text-warning" style={{"background":"rgba(245,158,11,0.15)","border":"1px solid rgba(245,158,11,0.2)"}}>2</div>
-              <div><div className="text-sm font-bold text-[var(--text-primary)] mb-0.5">Answer in 15 Mins</div><div className="text-xs text-[var(--text-muted)]">Tab switching triggers auto-submission</div></div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 font-bold text-accent" style={{"background":"rgba(16,185,129,0.15)","border":"1px solid rgba(16,185,129,0.2)"}}>3</div>
-              <div><div className="text-sm font-bold text-[var(--text-primary)] mb-0.5">View Results</div><div className="text-xs text-[var(--text-muted)]">Score, accuracy, topic-wise breakdown</div></div>
             </div>
           </div>
-        </div>
-
+        )}
       </div>
     </div>
   );

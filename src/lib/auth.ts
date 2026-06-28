@@ -119,5 +119,7 @@ export const publicUserSelect = {
   xp: true,
   coins: true,
   streak: true,
+  bestStreak: true,
+  totalStudyDays: true,
   createdAt: true,
 } as const;

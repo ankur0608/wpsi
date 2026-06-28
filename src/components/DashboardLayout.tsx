@@ -14,7 +14,7 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const pathname = usePathname();
 
-  const isAuthPage = ['/', '/login', '/register', '/faq', '/terms', '/privacy', '/contact', '/refund-policy', '/shipping-policy'].includes(pathname);
+  const isAuthPage = ['/', '/login', '/register', '/faq', '/terms', '/privacy', '/contact', '/refund-policy', '/shipping-policy', '/about', '/features', '/pricing', '/blog', '/testimonials', '/cancellation'].includes(pathname) || pathname.startsWith('/blog/');
 
   if (isAuthPage) {
     return <>{children}</>;

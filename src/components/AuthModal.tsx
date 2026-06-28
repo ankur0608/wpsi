@@ -155,7 +155,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-dark-bg/70 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4"
         onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           handleClose();
@@ -165,8 +165,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
       aria-modal="true"
       aria-label={isLogin ? "Login modal" : "Register modal"}
     >
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl">
         <button
@@ -180,11 +180,11 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 cursor-pointer hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center shadow-lg shadow-brand-500/30">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
               <i className="fa-solid fa-graduation-cap text-white text-lg" />
             </div>
             <span className="font-heading font-bold text-2xl tracking-tight">
-              Mcqprep<span className="text-brand-500">zone</span>
+              Mcqprep<span className="text-blue-600 dark:text-blue-500">zone</span>
             </span>
           </Link>
           <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{isLogin ? "Welcome Back" : "Create an Account"}</h2>
@@ -207,7 +207,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   onChange={(event) => setMobile(event.target.value)}
                   placeholder="9999999999"
                   pattern="[0-9]{10}"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                   required
                 />
               </div>
@@ -224,11 +224,11 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   value={otp}
                   onChange={(event) => setOtp(event.target.value)}
                   placeholder="123456"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                   required
                 />
               </div>
-              <p className="text-xs text-[var(--text-secondary)] mt-2">OTP sent to {mobile}. <button type="button" onClick={() => setStep(1)} className="text-brand-400 hover:underline">Change number</button></p>
+              <p className="text-xs text-[var(--text-secondary)] mt-2">OTP sent to {mobile}. <button type="button" onClick={() => setStep(1)} className="text-blue-600 dark:text-blue-400 hover:underline">Change number</button></p>
             </div>
           )}
 
@@ -237,7 +237,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Verified Mobile Number</label>
                 <div className="relative">
-                  <i className="fa-solid fa-check-circle absolute left-4 top-1/2 transform -translate-y-1/2 text-accent" />
+                  <i className="fa-solid fa-check-circle absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500" />
                   <input
                     type="tel"
                     value={mobile}
@@ -256,7 +256,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     placeholder="Rahul Parmar"
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                     required
                   />
                 </div>
@@ -275,7 +275,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                     required
                   />
                 </div>
@@ -285,7 +285,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                 <div className={isLogin ? "flex justify-between items-center mb-2" : "mb-2"}>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Password</label>
                   {isLogin && (
-                    <a href="#" className="text-xs text-brand-400 hover:text-brand-300 font-bold transition-colors">
+                    <a href="#" className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-bold transition-colors">
                       Forgot Password?
                     </a>
                   )}
@@ -297,7 +297,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                     required
                   />
                 </div>
@@ -308,7 +308,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl btn-primary font-bold shadow-lg shadow-brand-500/20 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? "Please wait..." : isLogin ? "Sign In" : step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Create Account"} <i className="fa-solid fa-arrow-right ml-2" />
           </button>
@@ -321,7 +321,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                 <button
                   type="button"
                   onClick={() => handleModeChange("register")}
-                  className="text-brand-400 font-bold hover:text-brand-300 transition-colors"
+                  className="text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                 >
                 Sign up for free
               </button>
@@ -332,7 +332,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                 <button
                   type="button"
                   onClick={() => handleModeChange("login")}
-                  className="text-brand-400 font-bold hover:text-brand-300 transition-colors"
+                  className="text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                 >
                 Sign in
               </button>

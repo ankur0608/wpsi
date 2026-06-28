@@ -5,9 +5,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import ThemeToggle from '@/components/ThemeToggle';
 import type { AuthMode } from '@/components/AuthModal';
-import { useThemeToggle } from '@/context/ThemeContext';
 
 const AuthModal = dynamic(() => import('@/components/AuthModal'), { ssr: false });
 
@@ -17,9 +15,7 @@ interface LandingUser {
 }
 
 export default function LandingNavbar() {
-  const { theme } = useThemeToggle();
   const pathname = usePathname();
-  const isLight = theme === 'light';
   const isHome = pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -90,12 +86,8 @@ export default function LandingNavbar() {
       <nav
         className="fixed top-0 left-0 right-0 w-full z-50 border-b transition-all-300"
         style={{
-          background: isLight
-            ? 'rgba(255,255,255,0.97)'
-            : 'rgba(13,27,42,0.96)',
-          borderColor: isLight
-            ? 'rgba(180,122,32,0.18)'
-            : 'rgba(212,146,42,0.10)',
+          background: 'rgba(255,255,255,0.97)',
+          borderColor: 'rgba(180,122,32,0.18)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
         }}
@@ -109,7 +101,7 @@ export default function LandingNavbar() {
                 </div>
                 <span
                   className="font-heading font-bold text-2xl tracking-tight"
-                  style={{ color: isLight ? '#1A2A3A' : '#FFFFFF' }}
+                  style={{ color: '#1A2A3A' }}
                 >
                   Mcqprep<span className="text-brand-500">zone</span>
                 </span>
@@ -122,7 +114,7 @@ export default function LandingNavbar() {
                   key={link.label}
                   href={link.href}
                   className="transition-colors hover:text-brand-400"
-                  style={{ color: isLight ? 'rgba(26,42,58,0.7)' : 'rgba(255,255,255,0.7)' }}
+                  style={{ color: 'rgba(26,42,58,0.7)' }}
                 >
                   {link.label}
                 </Link>
@@ -130,8 +122,6 @@ export default function LandingNavbar() {
             </div>
 
             <div className="hidden md:flex items-center space-x-3">
-              <ThemeToggle />
-
               {!sessionChecked ? (
                 <div className="h-11 w-44 animate-pulse rounded-full border border-white/5 bg-white/5" />
               ) : sessionUser ? (
@@ -158,7 +148,7 @@ export default function LandingNavbar() {
                     type="button"
                     onClick={() => openAuthModal('login')}
                     className="font-medium text-sm transition-colors hover:text-brand-400"
-                    style={{ color: isLight ? 'rgba(26,42,58,0.75)' : 'rgba(255,255,255,0.75)' }}
+                    style={{ color: 'rgba(26,42,58,0.75)' }}
                   >
                     Log In
                   </button>
@@ -174,7 +164,6 @@ export default function LandingNavbar() {
             </div>
 
             <div className="flex md:hidden items-center gap-2">
-              <ThemeToggle compact />
               <button
                 type="button"
                 aria-controls="landing-mobile-menu"
@@ -193,8 +182,8 @@ export default function LandingNavbar() {
           id="landing-mobile-menu"
           className={`${mobileMenuOpen ? 'block' : 'hidden'} absolute left-0 right-0 top-full w-full border-b border-white/10 shadow-2xl md:hidden`}
           style={{
-            background: isLight ? 'rgba(255,255,255,0.99)' : 'rgba(15,23,42,0.99)',
-            borderColor: isLight ? 'rgba(180,122,32,0.18)' : 'rgba(255,255,255,0.10)',
+            background: 'rgba(255,255,255,0.99)',
+            borderColor: 'rgba(180,122,32,0.18)',
           }}
         >
           <div className="px-4 pt-2 pb-6 space-y-2">

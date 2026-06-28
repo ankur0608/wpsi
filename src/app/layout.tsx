@@ -117,15 +117,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                // Restore theme (dark/light)
-                var t = localStorage.getItem('wpsi-theme');
-                if (t === 'light') {
-                  document.documentElement.classList.add('light-mode');
-                  document.documentElement.classList.remove('dark-mode');
-                } else {
-                  document.documentElement.classList.add('dark-mode');
-                  document.documentElement.classList.remove('light-mode');
-                }
+                // Force light mode theme
+                document.documentElement.classList.add('light-mode');
+                document.documentElement.classList.remove('dark-mode');
                 // Restore appearance settings
                 var appearance = localStorage.getItem('wpsi-settings-appearance');
                 if (appearance) {

@@ -49,257 +49,232 @@ function TopicsContent() {
   }, [subjectId]);
 
   return (
-    <main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-[var(--bg-primary)]">
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8" style={{"background":"radial-gradient(ellipse 60% 40% at 30% 0%,rgba(99,102,241,0.08) 0%,transparent 55%)"}}>
-        <div className="max-w-5xl mx-auto pb-24 space-y-6">
+    <div className="bg-dark-50 w-full font-sans text-dark-800 h-full overflow-y-auto">
+      <div className="p-6 lg:p-10 max-w-6xl mx-auto">
+        <button 
+          onClick={() => window.history.back()}
+          className="inline-flex items-center text-sm font-semibold text-dark-400 hover:text-dark-800 transition-colors mb-6"
+        >
+            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Back
+        </button>
 
-          <button 
-            onClick={() => window.history.back()}
-            className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-          >
-            <i className="fa-solid fa-arrow-left"></i> Back
-          </button>
+        {/* Subject Banner */}
+        <div className="bg-primary-50 rounded-3xl p-8 mb-8 relative overflow-hidden border border-primary-100">
+            <div className="absolute right-0 top-0 bottom-0 w-64 bg-accent-100 rounded-l-full blur-3xl opacity-50"></div>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-primary-200 rounded-2xl flex items-center justify-center text-primary-600 shrink-0 shadow-sm text-2xl">
+                        📚
+                    </div>
+                    <div>
+                        <span className="bg-primary-100 text-primary-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1.5 inline-block">{examName}</span>
+                        <h2 className="font-display text-2xl md:text-3xl font-bold text-dark-900">{subjectName}</h2>
+                        <p className="text-xs text-dark-500 max-w-xl leading-relaxed mt-1">Select a chapter below to view topics and practice configuration parameters.</p>
+                        
+                        <div className="flex flex-wrap items-center gap-3 mt-4">
+                            <span className="bg-white/90 text-dark-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-dark-100/80 flex items-center gap-1.5">
+                                📚 <span>{loading ? '-' : topics.length} Chapters</span>
+                            </span>
+                            <span className="bg-white/90 text-primary-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-primary-100/80 flex items-center gap-1.5">
+                                📑 <span>{topics.length * 50}+ Practice MCQs</span>
+                            </span>
+                            <span className="bg-success-50/90 text-success-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-success-200/80 flex items-center gap-1.5">
+                                👑 Combo Access Available
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-          {/*  Dynamic Subject Header  */}
-          <div id="subject-header" className="rounded-[2rem] p-8 relative overflow-hidden" style={{"background":"linear-gradient(135deg,rgba(99,102,241,0.15),var(--bg-surface))","border":"1px solid rgba(99,102,241,0.35)"}}>
-            <div className="absolute right-0 top-0 w-64 h-64 rounded-full opacity-10 bg-brand-500" style={{"transform":"translate(30%,-30%)"}}></div>
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-              <div className="flex items-center gap-5">
-                <div id="subj-icon" className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0" style={{"background":"rgba(99,102,241,0.15)","border":"1px solid rgba(99,102,241,0.3)","color":"#818cf8"}}>
-                  <i className="fa-solid fa-book-open-reader"></i>
+        {/* Full-Width Chapters List */}
+        <div>
+            <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center">
+                    <div className="w-1.5 h-6 bg-accent-500 rounded-full mr-3"></div>
+                    <h3 className="font-display font-bold text-lg text-dark-900">Chapters & Topics List</h3>
                 </div>
-                <div>
-                  <div className="text-[10px] font-black text-brand-400 uppercase tracking-[0.2em] mb-1">{examName}</div>
-                  <h2 id="subj-name" className="text-3xl font-heading font-black text-[var(--text-primary)] leading-tight">{subjectName}</h2>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Link href={`/practice?subject=${encodeURIComponent(subjectName)}`} className="px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest text-[var(--text-primary)] transition-all hover:scale-105 active:scale-95" style={{"background":"linear-gradient(135deg,#6366f1,#8b5cf6)","boxShadow":"0 10px 20px rgba(99,102,241,0.25)"}}>
-                  <i className="fa-solid fa-bolt mr-2"></i>Full Practice
-                </Link>
-              </div>
+                <p className="text-xs text-dark-400 font-medium hidden sm:block">Click any chapter to configure and start</p>
             </div>
-            
-            <div className="flex flex-wrap gap-4 mt-8 relative z-10 border-t border-[var(--border-subtle)] pt-6">
-              <div className="flex items-center gap-2.5 text-[11px] font-bold text-[var(--text-muted)] bg-white/5 px-4 py-2 rounded-xl">
-                <i className="fa-solid fa-layer-group text-brand-400"></i>
-                <span id="subj-chapters">{loading ? '-' : topics.length} Chapters</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-[11px] font-bold text-[var(--text-muted)] bg-white/5 px-4 py-2 rounded-xl">
-                <i className="fa-solid fa-list-check text-accent"></i>
-                <span id="subj-mcqs">{topics.length * 50}+ Practice MCQs</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-[11px] font-bold text-warning bg-warning/5 px-4 py-2 rounded-xl border border-warning/10">
-                <i className="fa-solid fa-crown"></i>
-                <span>Part A+B Combo Available</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Strategic Upsell Banners */}
-          <div id="pricing-combos" className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-2xl p-5 flex items-center justify-between gap-4 bg-dark-card/60 border border-[var(--border-subtle)] group hover:border-brand-500/30 transition-all">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent"><i className="fa-solid fa-gift"></i></div>
-                <div className="flex-1">
-                    <div className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-0.5">Try before buy</div>
-                    <div className="text-sm font-bold text-[var(--text-primary)]">First 5 MCQs <span className="text-accent ml-1 font-black">FREE</span></div>
-                </div>
-                <button onClick={() => { setSelectedTopicName(topics[0]?.name || ''); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }} className="text-[10px] font-black uppercase tracking-widest text-accent hover:underline">Start Now</button>
-            </div>
-            <div className="rounded-2xl p-5 flex items-center justify-between gap-4 bg-dark-card/60 border border-[var(--border-subtle)] relative overflow-hidden group hover:border-brand-500/40 transition-all">
-                <div className="absolute inset-0 bg-brand-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-400"><i className="fa-solid fa-box-archive"></i></div>
-                <div className="flex-1 relative z-10">
-                    <div className="text-[9px] font-black text-brand-400 uppercase tracking-widest mb-0.5">Full Pack</div>
-                    <div className="text-sm font-bold text-[var(--text-primary)]">₹99 <span className="text-[10px] text-[var(--text-muted)] line-through ml-1">₹249</span></div>
-                </div>
-                <Link href="/pricing" className="px-4 py-2 rounded-lg bg-brand-500 text-[var(--text-primary)] font-black text-[10px] uppercase tracking-widest relative z-10">Unlock</Link>
-            </div>
-            <div className="rounded-2xl p-5 flex items-center justify-between gap-4 bg-dark-card/60 border border-warning/20 group hover:border-warning/40 transition-all">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning"><i className="fa-solid fa-bolt-lightning"></i></div>
-                <div className="flex-1">
-                    <div className="text-[9px] font-black text-warning uppercase tracking-widest mb-0.5">WPSIPro Complete Pack</div>
-                    <div className="text-sm font-bold text-[var(--text-primary)]">₹249 <span className="text-[10px] text-[var(--text-muted)] line-through ml-1">₹594</span></div>
-                </div>
-                <Link href="/pricing" className="px-4 py-2 rounded-lg bg-warning text-dark-bg font-black text-[10px] uppercase tracking-widest">Upgrade</Link>
-            </div>
-          </div>
-
-          {/*  Topics List  */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-brand-500 rounded-full"></div>
-                    <h3 className="font-heading font-black text-[var(--text-primary)] text-lg tracking-tight">Curriculum Breakdown</h3>
-                </div>
-            </div>
-            
-            <div id="topics-list" className="space-y-3">
+            <div className="space-y-2">
               {loading ? (
-                <div className="text-center text-[var(--text-muted)] py-10"><i className="fa-solid fa-circle-notch fa-spin text-2xl mb-3"></i><p>Loading topics...</p></div>
+                <div className="text-center text-dark-400 py-10"><i className="fa-solid fa-circle-notch fa-spin text-2xl mb-3"></i><p>Loading topics...</p></div>
               ) : topics.length === 0 ? (
-                <div className="text-center text-[var(--text-muted)] py-10">No topics found for this subject.</div>
+                <div className="text-center text-dark-400 py-10">No topics found for this subject.</div>
               ) : (
                 topics.map((topic, idx) => {
                   const isFree = idx === 0;
                   return (
                     <div
                       key={topic.id}
-                      className={`rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300 group ${isFree ? 'bg-accent/5 border border-accent/25' : 'bg-dark-card/40 border border-[var(--border-subtle)] hover:border-[var(--border-subtle)]'}`}
+                      onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
+                      className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${isFree ? 'bg-white border-dark-100 hover:border-primary-300 hover:shadow-md hover:shadow-primary-500/5' : 'bg-dark-50/50 border-dark-100 opacity-80 hover:opacity-100'}`}
                     >
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm shrink-0 shadow-xl ${isFree ? 'bg-accent/20 text-accent border border-accent/30' : 'bg-white/5 text-[var(--text-muted)] border border-[var(--border-subtle)]'}`}>
-                          <i className={`fa-solid ${isFree ? 'fa-unlock' : 'fa-lock'}`}></i>
-                        </div>
-                        <div className="min-w-0">
-                          <div className={`font-bold text-sm truncate ${isFree ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'} transition-colors`}>
-                            {idx + 1}. {topic.name}
+                      <div className="flex items-center gap-4 flex-1">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isFree ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-colors' : 'bg-dark-100 text-dark-400'}`}>
+                              <span className="text-xl">{isFree ? '🧩' : '🔒'}</span>
                           </div>
-                          <div className="text-[10px] text-[var(--text-muted)] mt-1 font-medium uppercase tracking-tight flex items-center gap-2">
-                              <span>{Math.floor(Math.random() * 20) + 40} Questions</span>
-                              <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                              <span className={isFree ? 'text-accent' : 'text-[var(--text-muted)]'}>{isFree ? 'Free Trial' : 'Requires Pack'}</span>
+                          <div>
+                              <h4 className="font-bold text-dark-900 text-sm group-hover:text-primary-700 transition-colors">{idx + 1}. {topic.name}</h4>
+                              <div className="flex items-center gap-3 mt-1">
+                                  <span className="text-[10px] text-dark-500 font-medium">{Math.floor(Math.random() * 20) + 40} Questions</span>
+                                  <div className="w-1 h-1 bg-dark-200 rounded-full"></div>
+                                  <span className={`text-[10px] font-bold ${isFree ? 'text-success-600' : 'text-amber-600'}`}>
+                                      {isFree ? 'Unlocked' : 'Premium'}
+                                  </span>
+                              </div>
                           </div>
-                        </div>
                       </div>
-                      <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-                        {isFree ? (
-                          <button
-                            type="button"
-                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
-                            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-accent text-dark-bg font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95"
-                          >
-                            Start Chapter
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
-                            className="flex-1 sm:flex-none py-2.5 px-5 rounded-xl bg-white/5 border border-[var(--border-subtle)] text-[var(--text-primary)] font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
-                          >
-                            Try 5 Free MCQs
-                          </button>
-                        )}
+                      <div className="shrink-0 pl-4 border-l border-dark-100 hidden sm:block">
+                          {isFree ? (
+                            <button className="bg-primary-50 text-primary-600 font-bold py-1.5 px-4 rounded-lg text-xs group-hover:bg-primary-600 group-hover:text-white transition-colors">Start</button>
+                          ) : (
+                            <button className="bg-dark-100 text-dark-500 font-bold py-1.5 px-4 rounded-lg text-xs hover:bg-dark-200 transition-colors flex items-center gap-1.5">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Try 5 Free
+                            </button>
+                          )}
                       </div>
-                    </div>
+                  </div>
                   );
                 })
               )}
             </div>
-
-            {isTopicModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <div className="w-full max-w-3xl max-h-[90vh] rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] shadow-2xl overflow-hidden flex flex-col">
-                  {/* Header */}
-                  <div className="relative p-6 md:p-8 border-b border-[var(--border-subtle)]">
-                    <button
-                      type="button"
-                      onClick={() => setIsTopicModalOpen(false)}
-                      className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/10 transition-colors"
-                      aria-label="Close practice modal"
-                    >
-                      <i className="fa-solid fa-xmark"></i>
-                    </button>
-                    
-                    <div className="border-l-[3px] border-brand-500 pl-4">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-1">TOPIC-WISE PRACTICE</div>
-                      <h3 className="text-2xl font-heading font-black text-[var(--text-primary)]">{selectedTopicName}</h3>
-                      <p className="mt-1 text-sm text-[var(--text-muted)]">Customize your session parameters.</p>
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="p-6 md:p-8 overflow-y-auto">
-                    {/* Practice Mode */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <i className="fa-solid fa-gamepad text-[var(--text-muted)]"></i>
-                      <h4 className="text-sm font-bold text-[var(--text-primary)]">Practice Mode</h4>
-                    </div>
-                    
-                    <div className="grid gap-4 md:grid-cols-3 mb-8">
-                      {[
-                        { id: 'quick', title: 'Quick Practice', desc: '20 random MCQs', icon: 'fa-bolt', color: 'text-brand-400' },
-                        { id: 'full', title: 'Full Practice', desc: 'All MCQs in sequence', icon: 'fa-list-check', color: 'text-emerald-400' },
-                        { id: 'mock', title: 'Timed Test', desc: '20 Questions • 15 Min', icon: 'fa-stopwatch', color: 'text-amber-400' },
-                      ].map((item) => {
-                        const active = selectedMode === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setSelectedMode(item.id as 'quick' | 'full' | 'mock')}
-                            className={`relative rounded-2xl border p-5 text-left transition-all duration-200 ${active ? 'border-brand-500 bg-brand-500/5' : 'border-[var(--border-subtle)] bg-white/[0.02] hover:border-[var(--border-subtle)] hover:bg-white/[0.04]'}`}
-                          >
-                            {active && (
-                              <div className="absolute top-4 right-4 text-brand-500 text-sm">
-                                <i className="fa-solid fa-circle-check"></i>
-                              </div>
-                            )}
-                            <div className={`text-xl mb-3 ${item.color}`}>
-                              <i className={`fa-solid ${item.icon}`}></i>
-                            </div>
-                            <div className="text-sm font-bold text-[var(--text-primary)] mb-1">{item.title}</div>
-                            <div className="text-[11px] text-[var(--text-muted)]">{item.desc}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Difficulty Level */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <i className="fa-solid fa-layer-group text-[var(--text-muted)]"></i>
-                      <h4 className="text-sm font-bold text-[var(--text-primary)]">Difficulty Level</h4>
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-4">
-                      {(['Easy', 'Medium', 'Hard'] as const).map((difficulty) => {
-                        const active = selectedDifficulties.includes(difficulty);
-                        let activeBorder = 'border-brand-500';
-                        if (difficulty === 'Easy') activeBorder = 'border-emerald-500';
-                        if (difficulty === 'Medium') activeBorder = 'border-amber-500';
-                        if (difficulty === 'Hard') activeBorder = 'border-rose-500';
-                        
-                        return (
-                          <button
-                            key={difficulty}
-                            type="button"
-                            onClick={() => {
-                              if (active && selectedDifficulties.length === 1) return;
-                              setSelectedDifficulties(prev => prev.includes(difficulty) ? prev.filter(d => d !== difficulty) : [...prev, difficulty]);
-                            }}
-                            className={`rounded-2xl py-3.5 text-sm font-bold transition-all border ${active ? `${activeBorder} bg-white/5 text-[var(--text-primary)]` : 'border-[var(--border-subtle)] bg-white/[0.02] text-[var(--text-muted)] hover:border-[var(--border-subtle)] hover:bg-white/[0.04]'}`}
-                          >
-                            {difficulty}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="p-6 md:p-8 border-t border-[var(--border-subtle)] bg-white/[0.02] flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsTopicModalOpen(false);
-                        const mode = selectedMode;
-                        const diff = selectedDifficulties.map(d => d.toLowerCase()).join(',');
-                        router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=${encodeURIComponent(selectedTopicName)}&mode=${mode}&diff=${diff}&auto=true`);
-                      }}
-                      className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-[var(--text-primary)] transition hover:bg-brand-400 hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/20"
-                    >
-                      Start Session
-                      <i className="fa-solid fa-arrow-right ml-2"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
         </div>
       </div>
-    </main>
+
+      {/* PRACTICE SETTINGS MODAL */}
+      {isTopicModalOpen && (
+        <>
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9000] transition-opacity" onClick={() => setIsTopicModalOpen(false)}></div>
+          <div className="fixed inset-0 z-[9001] flex items-center justify-center p-4 pointer-events-none sm:p-6">
+              <div className="bg-white rounded-[1.5rem] shadow-2xl w-full max-w-3xl pointer-events-auto flex flex-col max-h-full overflow-hidden relative">
+                  
+                  {/* Modal Header */}
+                  <div className="p-6 border-b border-slate-100 flex items-start justify-between shrink-0">
+                      <div className="border-l-[3px] border-blue-600 pl-4">
+                          <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.15em] mb-1.5">TOPIC-WISE PRACTICE</p>
+                          <h3 className="text-xl sm:text-2xl font-black text-slate-800 leading-tight pr-4">{selectedTopicName}</h3>
+                          <p className="text-xs text-slate-500 font-medium mt-1">Customize your session parameters.</p>
+                      </div>
+                      <button onClick={() => setIsTopicModalOpen(false)} className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors shrink-0">
+                          <i className="fa-solid fa-xmark text-lg"></i>
+                      </button>
+                  </div>
+
+                  {/* Modal Body */}
+                  <div className="px-6 py-8 space-y-10 overflow-y-auto custom-scrollbar min-h-0 flex-1">
+                      {/* Practice Mode */}
+                      <div>
+                          <div className="flex items-center gap-2.5 mb-5">
+                              <i className="fa-solid fa-sliders text-slate-400"></i>
+                              <h4 className="font-bold text-slate-800 text-sm">Practice Mode</h4>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                              {/* Quick Practice */}
+                              <div onClick={() => setSelectedMode('quick')} className={`relative rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-200 border-2 ${selectedMode === 'quick' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                                  <div className={`text-xl ${selectedMode === 'quick' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                      <i className="fa-solid fa-bolt-lightning"></i>
+                                  </div>
+                                  <div className="mt-2">
+                                      <h5 className={`font-bold text-sm mb-1 ${selectedMode === 'quick' ? 'text-blue-900' : 'text-slate-800'}`}>Quick Practice</h5>
+                                      <p className="text-xs text-slate-500 leading-relaxed">20 random MCQs</p>
+                                  </div>
+                                  {selectedMode === 'quick' && (
+                                    <div className="absolute top-5 right-5 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                                        <i className="fa-solid fa-check text-[10px]"></i>
+                                    </div>
+                                  )}
+                              </div>
+
+                              {/* Full Practice */}
+                              <div onClick={() => setSelectedMode('full')} className={`relative rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-200 border-2 ${selectedMode === 'full' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                                  <div className={`text-xl ${selectedMode === 'full' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                      <i className="fa-solid fa-list-check"></i>
+                                  </div>
+                                  <div className="mt-2">
+                                      <h5 className={`font-bold text-sm mb-1 ${selectedMode === 'full' ? 'text-blue-900' : 'text-slate-800'}`}>Full Practice</h5>
+                                      <p className="text-xs text-slate-500 leading-relaxed">All MCQs in sequence</p>
+                                  </div>
+                                  {selectedMode === 'full' && (
+                                    <div className="absolute top-5 right-5 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                                        <i className="fa-solid fa-check text-[10px]"></i>
+                                    </div>
+                                  )}
+                              </div>
+
+                              {/* Timed Test */}
+                              <div onClick={() => setSelectedMode('mock')} className={`relative rounded-2xl p-5 flex flex-col gap-3 cursor-pointer transition-all duration-200 border-2 ${selectedMode === 'mock' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                                  <div className={`text-xl ${selectedMode === 'mock' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                      <i className="fa-solid fa-stopwatch"></i>
+                                  </div>
+                                  <div className="mt-2">
+                                      <h5 className={`font-bold text-sm mb-1 ${selectedMode === 'mock' ? 'text-blue-900' : 'text-slate-800'}`}>Timed Test</h5>
+                                      <p className="text-xs text-slate-500 leading-relaxed">20 Questions • 15 Min</p>
+                                  </div>
+                                  {selectedMode === 'mock' && (
+                                    <div className="absolute top-5 right-5 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                                        <i className="fa-solid fa-check text-[10px]"></i>
+                                    </div>
+                                  )}
+                              </div>
+                          </div>
+                      </div>
+
+                      {/* Difficulty Level */}
+                      <div>
+                          <div className="flex items-center gap-2.5 mb-5">
+                              <i className="fa-solid fa-layer-group text-slate-400"></i>
+                              <h4 className="font-bold text-slate-800 text-sm">Difficulty Level</h4>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4">
+                              {(['Easy', 'Medium', 'Hard'] as const).map((diff) => {
+                                const isActive = selectedDifficulties.includes(diff);
+                                let baseClass = 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50';
+                                
+                                if (isActive) {
+                                  if (diff === 'Easy') baseClass = 'border-emerald-500 bg-emerald-50/30 text-emerald-700 shadow-sm';
+                                  if (diff === 'Medium') baseClass = 'border-amber-500 bg-amber-50/30 text-amber-700 shadow-sm';
+                                  if (diff === 'Hard') baseClass = 'border-rose-500 bg-rose-50/30 text-rose-700 shadow-sm';
+                                }
+
+                                return (
+                                  <button 
+                                    key={diff}
+                                    onClick={() => {
+                                      if (isActive && selectedDifficulties.length === 1) return;
+                                      setSelectedDifficulties(prev => prev.includes(diff) ? prev.filter(d => d !== diff) : [...prev, diff]);
+                                    }}
+                                    className={`py-3 rounded-2xl border-2 ${baseClass} text-sm font-bold transition-all`}
+                                  >
+                                      {diff}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                      </div>
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="p-6 border-t border-slate-100 shrink-0 flex justify-end">
+                      <button 
+                        onClick={() => {
+                          setIsTopicModalOpen(false);
+                          const mode = selectedMode;
+                          const diff = selectedDifficulties.map(d => d.toLowerCase()).join(',');
+                          router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=${encodeURIComponent(selectedTopicName)}&mode=${mode}&diff=${diff}&auto=true`);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                      >
+                          Start Session <i className="fa-solid fa-arrow-right ml-1"></i>
+                      </button>
+                  </div>
+              </div>
+          </div>
+        </>
+      )}
+
+    </div>
   );
 }
 

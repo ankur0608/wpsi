@@ -35,9 +35,11 @@ export async function GET(request: NextRequest) {
     let totalAccuracySum = 0;
     let highestScore = 0;
 
+    let totalQuestions = 0;
     const recentSubmissions = submissions.map(sub => {
       totalEarnedMarks += sub.earnedMarks;
       totalAccuracySum += sub.percentage;
+      totalQuestions += sub.totalMarks; // Assuming 1 mark per question
       
       if (sub.percentage > highestScore) {
         highestScore = sub.percentage;
@@ -65,6 +67,7 @@ export async function GET(request: NextRequest) {
         avgMarks,
         avgAccuracy,
         highestScore,
+        totalQuestions,
         recentSubmissions
       }
     }, { status: 200 });

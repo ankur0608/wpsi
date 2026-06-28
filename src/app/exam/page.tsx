@@ -1,220 +1,229 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 
-export default function Subjects() {
-  const [data, setData] = useState<any[]>([]);
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+interface Topic {
+  id: string;
+  name: string;
+  mcqCount?: number;
+}
+
+interface Subject {
+  id: string;
+  name: string;
+  icon?: string;
+  topics: Topic[];
+}
+
+interface Exam {
+  id: string;
+  name: string;
+  description?: string;
+  subjects: Subject[];
+}
+
+export default function ExamPage() {
+  const router = useRouter();
+  const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
-  const [progress, setProgress] = useState<{ averagePercentage: number; totalTests: number; submissions: any[] }>({ averagePercentage: 0, totalTests: 0, submissions: [] });
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchExams = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/syllabus");
+      if (!res.ok) throw new Error("Failed to load exams.");
+      const json = await res.json();
+      setExams(json.data || []);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch exams. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/syllabus').then(res => res.json()),
-      fetch('/api/test-submissions').then(res => res.json())
-    ])
-      .then(([syllabusRes, progressRes]) => {
-        if (syllabusRes.data) setData(syllabusRes.data);
-        if (progressRes.data) setProgress(progressRes.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch dashboard data', err);
-        setLoading(false);
-      });
+    fetchExams();
   }, []);
 
-  const totalSubjects = data.reduce((acc, exam) => acc + (exam.subjects?.length || 0), 0);
-  const totalTopics = data.reduce((acc, exam) => acc + exam.subjects?.reduce((sum: number, s: any) => sum + (s.topics?.length || 0), 0), 0);
-
-  const selectedExam = data.find(e => e.id === selectedExamId);
-
-  const groupedSubjects = React.useMemo(() => {
-    const groups = new Map<string, any[]>();
-    (selectedExam?.subjects ?? []).forEach((subject: any) => {
-      const groupKey = subject.part === 'A'
-        ? 'Part A: General & Aptitude'
-        : subject.part === 'B'
-          ? 'Part B: Technical Subjects'
-          : 'Subjects';
-      groups.set(groupKey, [...(groups.get(groupKey) ?? []), subject]);
-    });
-    return Array.from(groups.entries());
-  }, [selectedExam]);
-
   return (
-    <>
-      <main id="nav-main-wrapper" className="flex-1 flex flex-col h-screen overflow-hidden bg-[var(--bg-primary)]">
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative" style={{"background":"radial-gradient(ellipse 80% 50% at 20% -10%,rgba(99,102,241,0.08) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(139,92,246,0.06) 0%,transparent 50%)"}}>
-          <div className="max-w-7xl mx-auto pb-20">
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
 
-            {/*  Header  */}
-            <div className="mb-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-primary)] text-lg" style={{"background":"linear-gradient(135deg,#6366f1,#8b5cf6)"}}><i className="fa-solid fa-book-open"></i></div>
-                    <div>
-                      <p className="text-xs font-bold text-brand-400 uppercase tracking-widest">WPSI Exam 2025</p>
-                      <h2 className="text-2xl md:text-3xl font-heading font-bold text-[var(--text-primary)]">Complete Curriculum</h2>
-                    </div>
-                  </div>
-                  <p className="text-[var(--text-muted)] text-sm ml-13">Everything you need to crack the exam.</p>
+      
+      <div className="flex items-center mb-6">
+        <div className="w-1.5 h-6 bg-primary-600 rounded-full mr-3"></div>
+        <h3 className="font-display font-bold text-xl text-dark-900">
+          Available Exams <span className="text-xs text-dark-400 font-normal ml-2 block sm:inline">Select an exam series to begin</span>
+        </h3>
+      </div>
+
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="glass-card p-6 flex flex-col justify-between min-h-[300px] bg-white rounded-2xl border-2 border-dark-100 animate-pulse">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-14 h-14 bg-dark-200 rounded-2xl"></div>
+                  <div className="w-20 h-6 bg-dark-200 rounded-full"></div>
                 </div>
+                <div className="w-3/4 h-6 bg-dark-200 rounded-lg mb-4"></div>
+                <div className="w-full h-4 bg-dark-100 rounded mb-2"></div>
+                <div className="w-5/6 h-4 bg-dark-100 rounded mb-6"></div>
               </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(99,102,241,0.08)","border":"1px solid rgba(99,102,241,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-brand-400 shrink-0" style={{"background":"rgba(99,102,241,0.15)"}}><i className="fa-solid fa-layer-group text-sm"></i></div><div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">{loading ? '-' : totalSubjects}</div><div className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Subjects</div></div></div>
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(16,185,129,0.08)","border":"1px solid rgba(16,185,129,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-accent shrink-0" style={{"background":"rgba(16,185,129,0.15)"}}><i className="fa-solid fa-list-check text-sm"></i></div><div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">{loading ? '-' : totalTopics}</div><div className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Topics</div></div></div>
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(245,158,11,0.08)","border":"1px solid rgba(245,158,11,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-warning shrink-0" style={{"background":"rgba(245,158,11,0.15)"}}><i className="fa-solid fa-trophy text-sm"></i></div><div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">{loading ? '-' : progress.totalTests}</div><div className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Tests Taken</div></div></div>
-                <div className="rounded-xl p-4 flex items-center gap-3" style={{"background":"rgba(139,92,246,0.08)","border":"1px solid rgba(139,92,246,0.2)"}}><div className="w-9 h-9 rounded-lg flex items-center justify-center text-secondary shrink-0" style={{"background":"rgba(139,92,246,0.15)"}}><i className="fa-solid fa-chart-line text-sm"></i></div><div><div className="text-lg font-bold text-[var(--text-primary)] font-mono">{loading ? '-' : `${progress.averagePercentage}%`}</div><div className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Avg Score</div></div></div>
+              <div>
+                <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-100 pt-4">
+                  <div className="w-full h-10 bg-dark-100 rounded"></div>
+                  <div className="w-full h-10 bg-dark-100 rounded border-x border-dark-100"></div>
+                  <div className="w-full h-10 bg-dark-100 rounded"></div>
+                </div>
+                <div className="w-full h-10 bg-dark-200 rounded-xl"></div>
               </div>
             </div>
+          ))}
+        </div>
+      )}
 
-            {loading ? (
-              <div className="text-center text-[var(--text-muted)] py-10"><i className="fa-solid fa-circle-notch fa-spin text-2xl mb-3"></i><p>Loading curriculum...</p></div>
-            ) : !selectedExamId ? (
-              /* EXAMS VIEW */
-              <div className="mb-10 animate-on-scroll is-visible">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-1.5 h-8 rounded-full" style={{"background":"linear-gradient(180deg,#f59e0b,#fcd34d)"}}></div>
-                  <h3 className="text-xl font-heading font-bold text-[var(--text-primary)]">Select an Exam</h3>
-                </div>
-                {/* 3 Cards per row grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {data.map((exam, idx) => {
-                    const colors = [
-                      { bg: 'rgba(99,102,241,0.15)', text: '#818cf8', border: 'rgba(99,102,241,0.3)' },
-                      { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
-                      { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
-                    ];
-                    const c = colors[idx % colors.length];
-                    
-                    return (
-                      <button 
-                        key={exam.id} 
-                        onClick={() => setSelectedExamId(exam.id)}
-                        className="group block rounded-3xl p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-2 text-left"
-                        style={{background:"var(--glass-card-bg)", border:`1px solid ${c.border}`, boxShadow:"0 10px 30px -10px rgba(0,0,0,0.5)"}}
-                      >
-                        <div className="absolute -right-10 -top-10 w-32 h-32 blur-3xl rounded-full opacity-20 transition-all duration-700 group-hover:opacity-40" style={{background: c.text}}></div>
-                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-xl" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border:`1px solid ${c.border}`, color: c.text}}>
-                          <i className="fa-solid fa-graduation-cap"></i>
-                        </div>
-                        <h4 className="font-heading font-bold text-[var(--text-primary)] text-lg leading-snug group-hover:text-brand-300 transition-colors mb-2">{exam.name}</h4>
-                        <p className="text-xs text-[var(--text-muted)] mb-4 font-medium">{exam.subjects?.length || 0} Subjects Included</p>
-                        <div className="flex justify-between items-center text-[12px] pt-4 border-t border-[var(--border-subtle)]">
-                          <span className="text-[var(--text-muted)]">View Curriculum</span>
-                          <span className="font-bold transition-transform group-hover:translate-x-1" style={{color: c.text}}>Enter <i className="fa-solid fa-arrow-right ml-1"></i></span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              /* SUBJECTS VIEW */
-              <div className="mb-10 animate-on-scroll is-visible">
-                <button 
-                  onClick={() => setSelectedExamId(null)}
-                  className="mb-6 flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  <i className="fa-solid fa-arrow-left"></i> Back to Exams
-                </button>
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-8 rounded-full" style={{"background":"linear-gradient(180deg,#6366f1,#818cf8)"}}></div>
-                    <div><h3 className="text-lg font-heading font-bold text-[var(--text-primary)]">{selectedExam?.name}</h3><p className="text-xs text-[var(--text-muted)]">{selectedExam?.subjects?.length || 0} Subjects</p></div>
-                  </div>
-                </div>
-                {groupedSubjects.length > 1 ? (
-                  groupedSubjects.map(([groupName, subjects], groupIndex) => (
-                    <div key={groupName} className={groupIndex > 0 ? 'mt-10' : ''}>
-                      <div className="mb-4 flex items-center gap-3">
-                        <div className="w-1.5 h-8 rounded-full bg-brand-400" />
-                        <h3 className="text-xl font-heading font-bold text-[var(--text-primary)]">{groupName}</h3>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {subjects.map((subject: any, idx: number) => {
-                          const colors = [
-                            { bg: 'rgba(129,140,248,0.15)', text: '#818cf8', border: 'rgba(129,140,248,0.3)' },
-                            { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
-                            { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
-                            { bg: 'rgba(139,92,246,0.15)', text: '#8b5cf6', border: 'rgba(139,92,246,0.3)' },
-                            { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
-                          ];
-                          const c = colors[idx % colors.length];
-                          const subjectTests = progress.submissions.filter(s => s.title.includes(subject.name));
-                          const subjectAvg = subjectTests.length > 0 
-                            ? Math.round(subjectTests.reduce((acc, s) => acc + s.percentage, 0) / subjectTests.length) 
-                            : 0;
+      {error && !loading && (
+        <div className="bg-red-50 text-red-600 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+          <svg className="w-12 h-12 mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <h4 className="font-bold text-lg mb-2">Oops! Something went wrong.</h4>
+          <p className="text-sm mb-4">{error}</p>
+          <button onClick={fetchExams} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-colors">Retry</button>
+        </div>
+      )}
 
-                          return (
-                            <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
-                              style={{background:'var(--glass-card-bg)', border:`1px solid ${c.bg}`}}>
-                              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border: `1px solid ${c.border}`, color: c.text}}>
-                                <i className={`fa-solid ${subject.icon || 'fa-book'}`}></i>
-                              </div>
-                              <div className="flex items-center justify-between mb-1">
-                                <h4 className="font-bold text-[var(--text-primary)] text-sm leading-tight group-hover:transition-colors transition-colors">{subject.name}</h4>
-                              </div>
-                              <p className="text-[11px] text-[var(--text-muted)] mb-3">{subject.topics?.length || 0} Chapters</p>
-                              <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:"var(--glass-card-bg)"}}>
-                                <div className="h-1.5 rounded-full transition-all duration-1000 bg-brand-500" style={{width: `${subjectAvg}%`}}></div>
-                              </div>
-                              <div className="flex justify-between items-center text-[11px]">
-                                <span className="text-[var(--text-muted)]">{subjectAvg > 0 ? `${subjectAvg}% Avg Score` : 'Not Started'}</span>
-                                <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
+      {!loading && !error && exams.length === 0 && (
+        <div className="text-center py-12 bg-dark-50 rounded-2xl border border-dark-100">
+          <p className="text-dark-500 font-medium">No exams found. Check back soon!</p>
+        </div>
+      )}
+
+      {!loading && !error && exams.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {exams.map((exam) => {
+            const subjectCount = exam.subjects.length;
+            const topicCount = exam.subjects.reduce((sum, subject) => sum + subject.topics.length, 0);
+            const mcqCount = exam.subjects.reduce((sum, subject) => {
+              return sum + subject.topics.reduce((tSum, topic) => tSum + (topic.mcqCount || 0), 0);
+            }, 0);
+
+            return (
+              <Link key={exam.id} href={`/subjects?examId=${exam.id}&examName=${encodeURIComponent(exam.name)}`} className="glass-card group cursor-pointer relative overflow-hidden border-2 border-primary-100 hover:border-primary-400 hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br from-white via-white to-primary-50/20 p-6 flex flex-col justify-between min-h-[300px] bg-white rounded-2xl">
+                <div className="absolute -right-6 -top-6 w-24 h-24 bg-primary-500/10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-300"></div>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-primary-500/20 group-hover:scale-110 transition-transform">
+                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
-                  ))
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {selectedExam?.subjects?.map((subject: any, idx: number) => {
-                      const colors = [
-                        { bg: 'rgba(129,140,248,0.15)', text: '#818cf8', border: 'rgba(129,140,248,0.3)' },
-                        { bg: 'rgba(16,185,129,0.15)', text: '#10b981', border: 'rgba(16,185,129,0.3)' },
-                        { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', border: 'rgba(245,158,11,0.3)' },
-                        { bg: 'rgba(139,92,246,0.15)', text: '#8b5cf6', border: 'rgba(139,92,246,0.3)' },
-                        { bg: 'rgba(56,189,248,0.15)', text: '#38bdf8', border: 'rgba(56,189,248,0.3)' }
-                      ];
-                      const c = colors[idx % colors.length];
-                      const subjectTests = progress.submissions.filter(s => s.title.includes(subject.name));
-                      const subjectAvg = subjectTests.length > 0 
-                        ? Math.round(subjectTests.reduce((acc, s) => acc + s.percentage, 0) / subjectTests.length) 
-                        : 0;
-
-                      return (
-                        <Link href={`/topics?subjectId=${subject.id}&examName=${encodeURIComponent(selectedExam.name)}&subjectName=${encodeURIComponent(subject.name)}`} key={subject.id} className="group block rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
-                          style={{background:'var(--glass-card-bg)', border:`1px solid ${c.bg}`}}>
-                          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110" style={{background:`linear-gradient(135deg, ${c.bg}, rgba(0,0,0,0.1))`, border: `1px solid ${c.border}`, color: c.text}}>
-                            <i className={`fa-solid ${subject.icon || 'fa-book'}`}></i>
-                          </div>
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-bold text-[var(--text-primary)] text-sm leading-tight group-hover:transition-colors transition-colors">{subject.name}</h4>
-                          </div>
-                          <p className="text-[11px] text-[var(--text-muted)] mb-3">{subject.topics?.length || 0} Chapters</p>
-                          <div className="w-full rounded-full h-1.5 mb-2 overflow-hidden" style={{background:"var(--glass-card-bg)"}}>
-                            <div className="h-1.5 rounded-full transition-all duration-1000 bg-brand-500" style={{width: `${subjectAvg}%`}}></div>
-                          </div>
-                          <div className="flex justify-between items-center text-[11px]">
-                            <span className="text-[var(--text-muted)]">{subjectAvg > 0 ? `${subjectAvg}% Avg Score` : 'Not Started'}</span>
-                            <span className="font-bold transition-colors" style={{color: c.text}}>View Topics ▶</span>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                    <span className="bg-success-100 text-success-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 border border-success-200">
+                      <span className="w-1.5 h-1.5 bg-success-500 rounded-full animate-pulse"></span> Active
+                    </span>
                   </div>
-                )}
+                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2 group-hover:text-primary-600 transition-colors">{exam.name}</h4>
+                  <p className="text-xs text-dark-500 leading-relaxed mb-6 line-clamp-3">{exam.description || "Comprehensive test preparation series for government and technical exams."}</p>
+                </div>
+                <div>
+                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-100 pt-4">
+                    <div className="text-center">
+                      <p className="font-bold text-dark-800 text-base leading-none">{subjectCount}</p>
+                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
+                    </div>
+                    <div className="text-center border-x border-dark-100">
+                      <p className="font-bold text-dark-800 text-base leading-none">{topicCount}</p>
+                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-dark-800 text-base leading-none">
+                        {mcqCount >= 1000 ? `${(mcqCount / 1000).toFixed(1)}k+` : mcqCount}
+                      </p>
+                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-primary-600 text-white font-bold text-center py-3 rounded-xl text-xs transition-all shadow-md group-hover:bg-primary-700 group-hover:shadow-lg shadow-primary-500/10 flex items-center justify-center gap-2">
+                    Prepare Now <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+
+          {/* Locked Card: GPSC Assistant Engineer */}
+          <div className="glass-card group relative overflow-hidden border border-dark-200 bg-dark-50/50 p-6 flex flex-col justify-between min-h-[300px] cursor-not-allowed rounded-2xl">
+              <div className="absolute inset-0 bg-dark-900/5 backdrop-blur-[1px] z-10"></div>
+              <div className="relative z-20 opacity-60">
+                  <div className="flex items-center justify-between mb-6">
+                      <div className="w-14 h-14 bg-dark-200 rounded-2xl flex items-center justify-center text-dark-500 shadow-inner">
+                          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                      </div>
+                      <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-dark-300 flex items-center gap-1">
+                          🔒 Locked
+                      </span>
+                  </div>
+                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2">GPSC Assistant Engineer (AE)</h4>
+                  <p className="text-xs text-dark-500 leading-relaxed mb-6">Complete curriculum for Civil, Electrical, and Mechanical engineering streams for the Gujarat PSC Assistant Engineer examination.</p>
               </div>
-            )}
+              <div className="relative z-20">
+                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-200 pt-4 opacity-50">
+                      <div className="text-center">
+                          <p className="font-bold text-dark-800 text-base leading-none">12</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
+                      </div>
+                      <div className="text-center border-x border-dark-200">
+                          <p className="font-bold text-dark-800 text-base leading-none">42</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
+                      </div>
+                      <div className="text-center">
+                          <p className="font-bold text-dark-800 text-base leading-none">1.8k+</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
+                      </div>
+                  </div>
+                  <div className="w-full bg-dark-200 text-dark-500 font-bold text-center py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                      Premium Package Needed <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  </div>
+              </div>
+          </div>
+
+          {/* Locked Card: GETCO Junior Engineer */}
+          <div className="glass-card group relative overflow-hidden border border-dark-200 bg-dark-50/50 p-6 flex flex-col justify-between min-h-[300px] cursor-not-allowed rounded-2xl">
+              <div className="absolute inset-0 bg-dark-900/5 backdrop-blur-[1px] z-10"></div>
+              <div className="relative z-20 opacity-60">
+                  <div className="flex items-center justify-between mb-6">
+                      <div className="w-14 h-14 bg-dark-200 rounded-2xl flex items-center justify-center text-dark-500 shadow-inner">
+                          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                      </div>
+                      <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-dark-300 flex items-center gap-1">
+                          🔒 Locked
+                      </span>
+                  </div>
+                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2">GETCO Junior Engineer (Electrical)</h4>
+                  <p className="text-xs text-dark-500 leading-relaxed mb-6">Targeted practice questions focusing on power systems, electrical machinery, control systems, and transmission technologies.</p>
+              </div>
+              <div className="relative z-20">
+                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-200 pt-4 opacity-50">
+                      <div className="text-center">
+                          <p className="font-bold text-dark-800 text-base leading-none">10</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
+                      </div>
+                      <div className="text-center border-x border-dark-200">
+                          <p className="font-bold text-dark-800 text-base leading-none">35</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
+                      </div>
+                      <div className="text-center">
+                          <p className="font-bold text-dark-800 text-base leading-none">1.5k+</p>
+                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
+                      </div>
+                  </div>
+                  <div className="w-full bg-dark-200 text-dark-500 font-bold text-center py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                      Coming Soon <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  </div>
+              </div>
           </div>
         </div>
-      </main>
-    </>
+      )}
+    </div>
   );
 }

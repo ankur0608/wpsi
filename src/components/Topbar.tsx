@@ -4,37 +4,49 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
-import ThemeToggle from "@/components/ThemeToggle";
 
 interface TopbarProps {
-  title?: string;
-  showBackButton?: boolean;
   onMenuClick?: () => void;
 }
 
-type PopoverKey = "profile" | "streak" | "coins" | null;
+type PopoverKey = "profile" | "notifications" | null;
 
-const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = false, onMenuClick }) => {
+export default function Topbar({ onMenuClick }: TopbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading, logout } = useUser();
   const displayName = user?.name?.trim() || "Profile";
-  const displayLevel = user?.level;
+  const displayLevel = user?.level || 1;
   const [openPopover, setOpenPopover] = useState<PopoverKey>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
+  const [userRank, setUserRank] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch('/api/leaderboard?timeframe=allTime')
+        .then(res => res.json())
+        .then(data => {
+          if (data.userRank) setUserRank(data.userRank);
+        })
+        .catch(console.error);
+    }
+  }, [user?.id]);
 
   const titles: Record<string, string> = {
     "/dashboard": "Dashboard",
-    "/subjects":  "Subjects & Topics",
-    "/topics":    "Subject Chapters",
-    "/test":      "Mock Tests",
-    "/pricing":   "Pricing & Plans",
-    "/profile":   "My Profile",
-    "/settings":  "Settings",
-    "/rewards":   "Rewards Store",
-    "/streaks":   "Streaks",
-    "/practice":  "MCQ Practice",
-    "/admin":     "Admin Panel",
+    "/exam": "Exam",
+    "/practice": "MCQ Practice",
+    "/test": "Mock Tests",
+    "/results": "Results",
+    "/bookmarks": "Saved MCQs",
+    "/pricing": "Pricing & Plans",
+    "/streaks": "Streaks",
+  };
+
+  const subtitles: Record<string, string> = {
+    "/dashboard": "Your Daily Progress & Overview",
+    "/exam": "Ready For Your Next Challenge?",
+    "/practice": "Sharpen Your Skills",
   };
 
   useEffect(() => {
@@ -49,7 +61,8 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
 
   useEffect(() => { setOpenPopover(null); }, [pathname]);
 
-  const displayTitle = titles[pathname] || title;
+  const displayTitle = titles[pathname] || "WPSI Console";
+  const displaySubtitle = subtitles[pathname] || "";
 
   const handleLogout = async () => {
     setOpenPopover(null);
@@ -62,311 +75,106 @@ const Topbar: React.FC<TopbarProps> = ({ title = "Dashboard", showBackButton = f
     setOpenPopover((current) => (current === key ? null : key));
   };
 
-  const popoverBase =
-    "absolute z-50 right-0 top-full mt-3 rounded-2xl p-5 shadow-[0_28px_80px_rgba(0,0,0,0.35)]";
-  const popoverStyle = {
-    background: "var(--popover-bg)",
-    border: "1px solid var(--popover-border)",
-    backdropFilter: "blur(24px)",
-  };
-
   return (
-    <header
-      id="main-topbar"
-      style={{
-        position: "relative",
-        zIndex: 50,
-        minHeight: "64px",
-        borderBottom: "1px solid var(--border-accent)",
-      }}
-      className="px-4 sm:px-6"
-    >
-      <div className="flex min-h-16 items-center justify-between gap-3">
-        {/* Left: hamburger + title */}
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06] md:hidden"
-            style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
-            onClick={onMenuClick}
-            aria-label="Open navigation"
-          >
-            <i className="fa-solid fa-bars text-base"></i>
-          </button>
-
-          {showBackButton && pathname === "/topics" && (
-            <Link
-              href="/subjects"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
-              style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
-            >
-              <i className="fa-solid fa-arrow-left"></i>
-            </Link>
-          )}
-
-          <div className="min-w-0">
-            <h1
-              className="truncate text-base font-heading font-bold sm:text-lg"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {displayTitle}
-            </h1>
-            <div
-              className="hidden text-[9px] font-medium uppercase tracking-[0.28em] sm:block"
-              style={{ color: "var(--text-muted)" }}
-            >
-              WPSI Exam: June 21, 2026
+    <header className="h-20 bg-primary-50/30 flex items-center justify-between px-4 lg:px-10 shrink-0 sticky top-0 z-30 border-b border-primary-100 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-4">
+            <button className="lg:hidden p-2 text-dark-600 hover:bg-dark-50 rounded-xl transition-colors border border-dark-200" onClick={onMenuClick}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div className="hidden md:flex flex-col justify-center">
+                <h2 className="text-xl font-display font-bold text-dark-900 leading-tight">{displayTitle}</h2>
+                {displaySubtitle && <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mt-0.5">{displaySubtitle}</p>}
             </div>
-          </div>
         </div>
+        
+        <div className="flex items-center gap-2" ref={popoverRef}>
+            {/* Streak Header Badge */}
+            <Link href="/streaks" className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-amber-600 transition-all text-xs font-bold shadow-sm hover:scale-105">
+                <span>🔥</span>
+                <span className="hidden sm:inline">{user?.streak || 0} Days</span>
+            </Link>
+            
+            {/* Leaderboard Header Badge */}
+            <Link href="/leaderboard" className="flex items-center gap-1.5 px-3 py-2 bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 transition-all text-xs font-bold shadow-sm hover:scale-105">
+                <span>🏆</span>
+                <span className="hidden sm:inline">{userRank ? `#${userRank}` : 'Unranked'}</span>
+            </Link>
 
-        {/* Right: badges + profile */}
-        <div className="flex items-center gap-2 sm:gap-3" ref={popoverRef}>
-          {/* Streak
-          <div className="hidden items-center gap-2 sm:flex">
-            <button
-              type="button"
-              className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all hover:scale-105"
-              style={{
-                background: "rgba(212,146,42,0.10)",
-                border: "1px solid rgba(212,146,42,0.22)",
-              }}
-              onClick={() => togglePopover("streak")}
-            >
-              <i className="fa-solid fa-fire text-sm" style={{ color: "#D4922A" }}></i>
-              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                {loading ? "--" : user?.streak ?? "--"}
-              </span>
-            </button>
-
-            {openPopover === "streak" && (
-              <div className={`${popoverBase} w-72`} style={popoverStyle}>
-                <div className="mb-3 flex items-center gap-3">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg"
-                    style={{
-                      background: "rgba(212,146,42,0.12)",
-                      border: "1px solid rgba(212,146,42,0.22)",
-                      color: "#D4922A",
-                    }}
-                  >
-                    <i className="fa-solid fa-fire"></i>
-                  </div>
-                  <div>
-                    <div className="font-bold" style={{ color: "var(--text-primary)" }}>
-                      {loading ? "Loading streak" : `${user?.streak ?? 0} Day Streak`}
-                    </div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-                      Stay consistent to keep your momentum growing.
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="mb-3 rounded-xl p-3"
-                  style={{ background: "rgba(212,146,42,0.06)", border: "1px solid rgba(212,146,42,0.12)" }}
-                >
-                  <div className="flex justify-between text-xs">
-                    <span style={{ color: "var(--text-secondary)" }}>Next milestone reward</span>
-                    <span className="font-bold" style={{ color: "#D4922A" }}>+30 bonus coins</span>
-                  </div>
-                </div>
-                <Link
-                  href="/streaks"
-                  className="text-xs font-bold transition-colors hover:underline"
-                  style={{ color: "#D4922A" }}
-                >
-                  Manage streaks →
-                </Link>
-              </div>
-            )}
-
-            Coins
-            <button
-              type="button"
-              className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all hover:scale-105"
-              style={{
-                background: "rgba(74,158,219,0.10)",
-                border: "1px solid rgba(74,158,219,0.22)",
-              }}
-              onClick={() => togglePopover("coins")}
-            >
-              <i className="fa-solid fa-coins text-sm" style={{ color: "#4A9EDB" }}></i>
-              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                {loading ? "--" : user?.coins?.toLocaleString() ?? "--"}
-              </span>
-            </button>
-
-            {openPopover === "coins" && (
-              <div className={`${popoverBase} w-60`} style={popoverStyle}>
-                <div className="mb-3 flex items-center gap-3">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg"
-                    style={{
-                      background: "rgba(74,158,219,0.12)",
-                      border: "1px solid rgba(74,158,219,0.22)",
-                      color: "#4A9EDB",
-                    }}
-                  >
-                    <i className="fa-solid fa-coins"></i>
-                  </div>
-                  <div>
-                    <div className="font-bold" style={{ color: "var(--text-primary)" }}>
-                      {loading ? "Loading coins" : `${user?.coins?.toLocaleString() ?? 0} Coins`}
-                    </div>
-                    <div
-                      className="text-[10px] font-black uppercase tracking-[0.24em]"
-                      style={{ color: "#D4922A" }}
-                    >
-                      Bronze Tier
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="mb-1 h-1.5 w-full overflow-hidden rounded-full"
-                  style={{ background: "var(--input-bg)" }}
-                >
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: "81.6%", background: "linear-gradient(90deg, #D4922A, #F0B85A)" }}
-                  ></div>
-                </div>
-                <div className="mb-3 text-center text-[10px] leading-tight" style={{ color: "var(--text-muted)" }}>
-                  550 more to{" "}
-                  <span className="font-bold" style={{ color: "var(--text-primary)" }}>
-                    Silver Tier
-                  </span>
-                </div>
-                <Link
-                  href="/rewards"
-                  className="text-xs font-bold transition-colors hover:underline"
-                  style={{ color: "#D4922A" }}
-                >
-                  Open rewards store →
-                </Link>
-              </div>
-            )}
-          </div> */}
-
-          {/* Notification bell */}
-          <button
-            type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl border transition-colors hover:bg-white/[0.06]"
-            style={{ borderColor: "var(--border-accent)", color: "var(--text-secondary)" }}
-          >
-            <i className="fa-solid fa-bell text-base"></i>
-            <span
-              className="absolute right-2 top-2 h-2 w-2 rounded-full"
-              style={{ background: "#D4922A", boxShadow: "0 0 8px rgba(212,146,42,0.8)" }}
-            ></span>
-          </button>
-
-          {/* Dark / Light mode toggle */}
-          <ThemeToggle />
-
-          {/* Profile dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-xl border px-2 py-1.5 transition-colors hover:bg-white/[0.06]"
-              style={{ borderColor: "var(--border-accent)" }}
-              onClick={() => togglePopover("profile")}
-            >
-              <img
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=162436&color=D4922A&bold=true&size=80`}
-                className="h-8 w-8 rounded-lg border"
-                style={{ borderColor: "rgba(212,146,42,0.2)" }}
-                alt="User avatar"
-              />
-              <div className="hidden text-left sm:block">
-                <div className="max-w-28 truncate text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {loading ? "Loading..." : displayName}
-                </div>
-                <div className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
-                  {loading ? "Syncing" : displayLevel !== undefined ? `Level ${displayLevel}` : "Profile"}
-                </div>
-              </div>
-              <i
-                className="fa-solid fa-chevron-down hidden text-[10px] sm:block"
-                style={{ color: "var(--text-muted)" }}
-              ></i>
-            </button>
-
-            {openPopover === "profile" && (
-              <div className={`${popoverBase} w-56 p-2`} style={popoverStyle}>
-                <div
-                  className="mb-1 rounded-xl px-3 py-3"
-                  style={{ background: "var(--input-bg)", border: "1px solid var(--border-accent)" }}
-                >
-                  <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                    {loading ? "Loading profile..." : displayName}
-                  </p>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#D4922A" }}>
-                    {loading
-                      ? "Syncing profile"
-                      : displayLevel !== undefined
-                      ? `Level ${displayLevel}`
-                      : "Profile unavailable"}
-                  </p>
-                </div>
-
-                {[
-                  { href: "/profile",  icon: "fa-user",               label: "My Profile",     iconColor: "var(--text-secondary)" },
-                  { href: "/pricing",  icon: "fa-crown",               label: "Upgrade Store",  iconColor: "#D4922A" },
-                  // { href: "/rewards",  icon: "fa-coins",               label: "Rewards Store",  iconColor: "#4A9EDB" },
-                  { href: "/settings", icon: "fa-gear",                label: "Settings",       iconColor: "var(--text-secondary)" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-white/[0.05]"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    <i className={`fa-solid ${item.icon} w-4 text-xs`} style={{ color: item.iconColor }}></i>
-                    {item.label}
-                  </Link>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-red-500/10"
-                  style={{ borderTop: "1px solid var(--border-subtle)", color: "#E55353" }}
-                >
-                  <i className="fa-solid fa-right-from-bracket w-4 text-xs"></i>
-                  Logout
+            {/* Notification Bell */}
+            <div className="relative">
+                <button onClick={() => togglePopover("notifications")} className="w-10 h-10 rounded-full bg-dark-50 flex items-center justify-center text-dark-600 hover:bg-dark-100 transition-colors relative shadow-sm">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
                 </button>
-              </div>
-            )}
-          </div>
+                
+                {/* Notification Dropdown Menu */}
+                <div className={`absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-dark-100 z-50 overflow-hidden transform origin-top-right transition-all duration-200 ${openPopover === "notifications" ? "scale-100 opacity-100 visible" : "scale-95 opacity-0 invisible"}`}>
+                    <div className="p-4 border-b border-dark-50 bg-dark-50/50 flex items-center justify-between">
+                        <h4 className="font-bold text-dark-800">Notifications</h4>
+                        <button className="text-[10px] text-primary-600 hover:text-primary-800 font-bold transition-colors">Mark all as read</button>
+                    </div>
+                    <div className="max-h-[350px] overflow-y-auto divide-y divide-dark-50">
+                        {/* Sample Notification Items */}
+                        <div className="p-3.5 hover:bg-dark-50/50 transition-colors flex gap-3 text-left">
+                            <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 text-sm">🔥</div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-semibold text-dark-800 leading-normal">Your daily streak is at <span className="font-extrabold text-amber-600">9 days</span>! Keep practicing to maintain it.</p>
+                                <p className="text-[9px] text-dark-400 mt-1 font-medium">10 mins ago</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-3 text-center border-t border-dark-50 bg-dark-50/30">
+                        <span className="text-[10px] text-dark-400 font-bold uppercase tracking-wider">End of Notifications</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="hidden md:block w-px h-6 bg-dark-200 mx-1"></div>
+            
+            <div className="relative">
+                <div className="flex items-center gap-2 pl-2 md:pl-4 md:border-l border-dark-200 cursor-pointer hover:bg-dark-50 p-1.5 rounded-xl transition-colors" onClick={() => togglePopover("profile")}>
+                    <div className="w-9 h-9 bg-primary-600 shadow-sm rounded-lg flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase">
+                        {loading ? "..." : displayName.slice(0, 2)}
+                    </div>
+                    <div className="hidden lg:block text-left">
+                        <p className="text-xs font-bold text-dark-800 leading-tight">{loading ? "Loading..." : displayName}</p>
+                        <p className="text-[10px] text-dark-500 font-medium">🏆 Master (Lvl {displayLevel})</p>
+                    </div>
+                    <svg className="w-4 h-4 text-dark-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                {/* Dropdown Menu */}
+                <div className={`absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-dark-100 z-50 overflow-hidden transform origin-top-right transition-all duration-200 ${openPopover === "profile" ? "scale-100 opacity-100 visible" : "scale-95 opacity-0 invisible"}`}>
+                    <div className="p-4 border-b border-dark-50 bg-dark-50/50">
+                        <p className="text-sm font-bold text-dark-800">{displayName}</p>
+                        <p className="text-xs text-dark-500">{user?.email || "user@example.com"}</p>
+                    </div>
+                    <div className="p-2 space-y-1">
+                        <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            My Profile
+                        </Link>
+                        <Link href="/rewards" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Points & XP
+                        </Link>
+                        <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                            Account Settings
+                        </Link>
+                        <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            Upgrade Plan
+                        </Link>
+                    </div>
+                    <div className="p-2 border-t border-dark-50">
+                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Log out
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      {/* Mobile stats bar */}
-      {/* <div
-        className="flex items-center gap-2 pb-3 pt-2 sm:hidden"
-        style={{ borderTop: "1px solid rgba(212,146,42,0.06)" }}
-      >
-        <div
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs"
-          style={{ background: "rgba(212,146,42,0.08)", border: "1px solid rgba(212,146,42,0.16)" }}
-        >
-          <i className="fa-solid fa-fire" style={{ color: "#D4922A" }}></i>
-          <span style={{ color: "rgba(242,236,217,0.85)" }}>
-            {loading ? "--" : `${user?.streak ?? 0} day streak`}
-          </span>
-        </div>
-        <div
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs"
-          style={{ background: "rgba(74,158,219,0.08)", border: "1px solid rgba(74,158,219,0.16)" }}
-        >
-          <i className="fa-solid fa-coins" style={{ color: "#4A9EDB" }}></i>
-          <span style={{ color: "rgba(242,236,217,0.85)" }}>
-            {loading ? "--" : `${user?.coins?.toLocaleString() ?? 0} coins`}
-          </span>
-        </div>
-      </div> */}
     </header>
   );
-};
-
-export default Topbar;
+}

@@ -76,7 +76,7 @@ const MODE_META: Record<PracticeMode, {
 }> = {
   quick: {
     label: 'Quick Practice',
-    accent: 'from-brand-500 to-brand-400',
+    accent: 'from-primary-500 to-primary-600',
     description: 'Fast revision round with 20 random MCQs.',
     icon: 'fa-bolt',
     timerMinutes: null,
@@ -287,55 +287,55 @@ function MultiSelectDropdown({
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">
+      <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">
         {label}
       </div>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] outline-none transition-colors focus:border-brand-500/60 flex justify-between items-center"
+        className="w-full text-left rounded-2xl border border-dark-100 bg-white px-4 py-3 text-sm font-medium text-dark-900 outline-none transition-colors focus:border-brand-500/60 flex justify-between items-center"
       >
         <span className="truncate">{displayText}</span>
         <i className={`fa-solid fa-chevron-down transition-transform ${isOpen ? 'rotate-180' : ''}`}></i>
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] shadow-2xl overflow-hidden max-h-64 flex flex-col">
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-dark-100 bg-white shadow-2xl overflow-hidden max-h-64 flex flex-col">
           <div className="overflow-y-auto p-2 space-y-1">
-            <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+            <label className="flex items-center gap-3 px-3 py-2 hover:bg-dark-50 rounded-xl cursor-pointer">
               <input
                 type="checkbox"
                 checked={value.includes(allLabel) || value.length === 0}
                 onChange={() => toggleOption(allLabel)}
-                className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
+                className="w-4 h-4 rounded border-dark-100 bg-transparent text-primary-600 focus:ring-brand-500/30"
               />
-              <span className="text-sm text-[var(--text-primary)]">{allLabel}</span>
+              <span className="text-sm text-dark-900">{allLabel}</span>
             </label>
             
             {unGrouped.map((opt) => (
-              <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+              <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-dark-50 rounded-xl cursor-pointer">
                 <input
                   type="checkbox"
                   checked={value.includes(opt.value)}
                   onChange={() => toggleOption(opt.value)}
-                  className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
+                  className="w-4 h-4 rounded border-dark-100 bg-transparent text-primary-600 focus:ring-brand-500/30"
                 />
-                <span className="text-sm text-[var(--text-primary)]">{opt.label}</span>
+                <span className="text-sm text-dark-900">{opt.label}</span>
               </label>
             ))}
 
             {Object.entries(groups).map(([groupName, groupOpts]) => (
               <div key={groupName}>
-                <div className="px-3 py-1 mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{groupName}</div>
+                <div className="px-3 py-1 mt-2 text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">{groupName}</div>
                 {groupOpts.map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-white/5 rounded-xl cursor-pointer">
+                  <label key={opt.value} className="flex items-center gap-3 px-3 py-2 hover:bg-dark-50 rounded-xl cursor-pointer">
                     <input
                       type="checkbox"
                       checked={value.includes(opt.value)}
                       onChange={() => toggleOption(opt.value)}
-                      className="w-4 h-4 rounded border-[var(--border-subtle)] bg-transparent text-brand-500 focus:ring-brand-500/30"
+                      className="w-4 h-4 rounded border-dark-100 bg-transparent text-primary-600 focus:ring-brand-500/30"
                     />
-                    <span className="text-sm text-[var(--text-primary)]">{opt.label}</span>
+                    <span className="text-sm text-dark-900">{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -450,7 +450,14 @@ export default function PracticePage() {
       const filteredMcqs = groupedMcqs.filter(mcq => {
         const hasEnglish = mcq.language === 'English' || mcq.translations?.some(t => t.language === 'English');
         const hasGujarati = mcq.language === 'Gujarati' || mcq.translations?.some(t => t.language === 'Gujarati');
-        return hasEnglish && hasGujarati;
+        
+        if (mcq.part === 'A') {
+          return hasEnglish || hasGujarati;
+        }
+        
+        // For other parts or undefined parts, we also allow single language
+        // so that questions aren't completely hidden if missing a translation.
+        return hasEnglish || hasGujarati;
       });
 
       setMcqBank(filteredMcqs);
@@ -626,7 +633,13 @@ export default function PracticePage() {
           mode: session.mode,
           totalMarks: session.questions.length,
           earnedMarks: finalResult.finalScore,
-          percentage: finalResult.accuracy
+          percentage: finalResult.accuracy,
+          responses: session.questions
+            .filter(q => session.responses[q.id] && session.responses[q.id] !== 'E')
+            .map(q => ({
+              mcqId: q.id,
+              answer: session.responses[q.id]
+            }))
         })
       });
     } catch (e) {
@@ -776,6 +789,20 @@ export default function PracticePage() {
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentQuestion  = session ? session.questions[session.currentIndex] : null;
   let displayedQuestion = currentQuestion;
+
+  useEffect(() => {
+    if (currentQuestion) {
+      const hasEnglish = currentQuestion.language === 'English' || currentQuestion.translations?.some(t => t.language === 'English');
+      const hasGujarati = currentQuestion.language === 'Gujarati' || currentQuestion.translations?.some(t => t.language === 'Gujarati');
+      
+      if (activeLanguage === 'English' && !hasEnglish && hasGujarati) {
+        setActiveLanguage('Gujarati');
+      } else if (activeLanguage === 'Gujarati' && !hasGujarati && hasEnglish) {
+        setActiveLanguage('English');
+      }
+    }
+  }, [currentQuestion, activeLanguage]);
+
   if (currentQuestion && activeLanguage !== (currentQuestion.language || 'English')) {
     const translation = currentQuestion.translations?.find((t) => (t.language || 'English') === activeLanguage);
     if (translation) displayedQuestion = translation;
@@ -823,7 +850,7 @@ export default function PracticePage() {
   };
 
   const paletteStyleMap: Record<string, { background: string; borderColor: string; color: string }> = {
-    's-none':      { background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: "var(--text-muted)" },
+    's-none':      { background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: "#94a3b8" },
     's-unanswered':{ background: 'rgba(239,68,68,0.1)',    borderColor: 'rgba(239,68,68,0.25)',    color: '#fca5a5' },
     's-na':        { background: 'rgba(56,189,248,0.12)',  borderColor: 'rgba(56,189,248,0.28)',   color: '#7dd3fc' },
     's-answered':  { background: 'rgba(16,185,129,0.12)',  borderColor: 'rgba(16,185,129,0.26)',   color: '#86efac' },
@@ -834,8 +861,8 @@ export default function PracticePage() {
   if (bankLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
-        <div className="h-12 w-12 rounded-full border-4 border-brand-500/20 border-t-brand-500 animate-spin" />
-        <p className="text-sm text-[var(--text-muted)]">Loading MCQ bank from database…</p>
+        <div className="h-12 w-12 rounded-full border-4 border-primary-500/20 border-t-primary-500 animate-spin" />
+        <p className="text-sm text-dark-400">Loading MCQ bank from database…</p>
       </div>
     );
   }
@@ -845,11 +872,11 @@ export default function PracticePage() {
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="text-4xl">⚠️</div>
         <p className="text-sm font-bold text-danger">Failed to load MCQs</p>
-        <p className="text-xs text-[var(--text-muted)]">{bankError}</p>
+        <p className="text-xs text-dark-400">{bankError}</p>
         <button
           type="button"
           onClick={() => { fetchedRef.current = false; fetchBank(); }}
-          className="mt-2 rounded-xl bg-brand-500 px-5 py-2 text-sm font-bold text-[var(--text-primary)]"
+          className="mt-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 text-sm font-bold text-dark-900"
         >
           Retry
         </button>
@@ -861,57 +888,16 @@ export default function PracticePage() {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="text-4xl">📭</div>
-        <p className="text-sm font-bold text-[var(--text-primary)]">No MCQs found in the database</p>
-        <p className="text-xs text-[var(--text-muted)]">Upload MCQs from the Admin panel to get started.</p>
+        <p className="text-sm font-bold text-dark-900">No MCQs found in the database</p>
+        <p className="text-xs text-dark-400">Upload MCQs from the Admin panel to get started.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-6">
 
-      {/* Hero banner */}
-      {/* <section
-        className="rounded-[2rem] border p-6 md:p-8 relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.16), var(--bg-surface))',
-          borderColor: 'rgba(99,102,241,0.24)',
-        }}
-      >
-        <div className="absolute -top-16 -right-10 h-52 w-52 rounded-full bg-brand-500/10 blur-3xl" />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-400/25 bg-brand-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-brand-300">
-              Live MCQ Workspace
-            </div>
-            <h2 className="text-2xl font-heading font-black text-[var(--text-primary)] md:text-4xl">
-              Practice exactly like the real exam — powered by live data
-            </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
-              MCQs are fetched live from the database. Setup your filters, pick a mode, and start your session.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">User</div>
-              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.name ?? 'Loading…'}</div>
-            </div>
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Coins</div>
-              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.coins?.toLocaleString() ?? '--'}</div>
-            </div>
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Streak</div>
-              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{user?.streak ?? '--'} days</div>
-            </div>
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 p-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Bank</div>
-              <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{totalInDb.toLocaleString()} MCQs</div>
-            </div>
-          </div>
-        </div>
-      </section> */}
+      
 
       {/* Status message */}
       {statusMessage && (
@@ -925,18 +911,18 @@ export default function PracticePage() {
 
       {view === 'setup' && (
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-dark-100 p-6 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-400">Session Setup</div>
-                <h3 className="mt-2 text-2xl font-heading font-black text-[var(--text-primary)]">Choose your MCQ mode</h3>
-                <p className="mt-2 max-w-xl text-sm text-[var(--text-muted)]">
+                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-500">Session Setup</div>
+                <h3 className="mt-2 text-2xl font-display font-bold text-dark-900">Choose your MCQ mode</h3>
+                <p className="mt-2 max-w-xl text-sm text-dark-400">
                   Setup, instructions, question palette, results, and review — the same flow as the original HTML exam.
                 </p>
               </div>
-              <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)]/60 px-4 py-3 text-right">
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Current preset</div>
-                <div className="mt-1 text-sm font-bold text-[var(--text-primary)]">{MODE_META[selectedMode].label}</div>
+              <div className="rounded-2xl border border-dark-100 bg-white/60 px-4 py-3 text-right">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Current preset</div>
+                <div className="mt-1 text-sm font-bold text-dark-900">{MODE_META[selectedMode].label}</div>
               </div>
             </div>
 
@@ -952,22 +938,22 @@ export default function PracticePage() {
                     onClick={() => setSelectedMode(mode)}
                     className={`rounded-[1.5rem] border p-5 text-left transition-all ${active ? 'scale-[1.01]' : 'hover:-translate-y-1'}`}
                     style={{
-                      background:  active ? 'linear-gradient(145deg, rgba(99,102,241,0.14), var(--bg-surface))' : 'var(--glass-card-bg)',
+                      background:  active ? 'linear-gradient(145deg, rgba(99,102,241,0.14), #f8fafc)' : 'rgba(255, 255, 255, 0.7)',
                       borderColor: active ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)',
                       boxShadow:   active ? '0 18px 40px rgba(99,102,241,0.12)' : 'none',
                     }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${meta.accent} text-[var(--text-primary)] shadow-lg`}>
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${meta.accent} text-dark-900 shadow-lg`}>
                         <i className={`fa-solid ${meta.icon}`} />
                       </div>
-                      {active && <i className="fa-solid fa-circle-check text-brand-400" />}
+                      {active && <i className="fa-solid fa-circle-check text-primary-500" />}
                     </div>
-                    <div className="mt-5 text-lg font-bold text-[var(--text-primary)]">{meta.label}</div>
-                    <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{meta.description}</p>
+                    <div className="mt-5 text-lg font-bold text-dark-900">{meta.label}</div>
+                    <p className="mt-2 text-sm leading-6 text-dark-400">{meta.description}</p>
                     <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
-                      <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-[var(--text-secondary)]">{meta.questionCount} Questions</span>
-                      <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-[var(--text-secondary)]">
+                      <span className="rounded-full border border-dark-100 bg-dark-50 px-3 py-1 text-dark-600">{meta.questionCount} Questions</span>
+                      <span className="rounded-full border border-dark-100 bg-dark-50 px-3 py-1 text-dark-600">
                         {meta.timerMinutes ? `${meta.timerMinutes} Min Timer` : 'Untimed'}
                       </span>
                     </div>
@@ -1003,7 +989,7 @@ export default function PracticePage() {
 
             {/* Difficulty */}
             <div className="mt-8">
-              <div className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Difficulty</div>
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Difficulty</div>
               <div className="flex flex-wrap gap-3">
                 {DEFAULT_DIFFICULTIES.map((diff) => {
                   const active = selectedDifficulties.includes(diff);
@@ -1022,9 +1008,9 @@ export default function PracticePage() {
                       }}
                       className="rounded-full border px-4 py-2 text-sm font-bold transition-all"
                       style={{
-                        background:  active ? 'rgba(99,102,241,0.14)' : "var(--bg-surface)",
-                        borderColor: active ? 'rgba(99,102,241,0.35)' : "var(--border-subtle)",
-                        color:       active ? 'var(--text-primary)' : "var(--text-muted)",
+                        background:  active ? 'rgba(99,102,241,0.14)' : "#f8fafc",
+                        borderColor: active ? 'rgba(99,102,241,0.35)' : "#e2e8f0",
+                        color:       active ? '#0f172a' : "#94a3b8",
                       }}
                     >
                       {diff}
@@ -1039,13 +1025,13 @@ export default function PracticePage() {
               <button
                 type="button"
                 onClick={() => startSession()}
-                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--text-primary)] shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition-transform hover:scale-[1.02]"
+                className="rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-3 text-sm font-bold uppercase tracking-[0.18em] text-dark-900 shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition-transform hover:scale-[1.02]"
               >
                 Continue to Instructions
               </button>
               <Link
                 href="/test"
-                className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-6 py-3 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                className="rounded-2xl border border-dark-100 bg-dark-50 px-6 py-3 text-sm font-bold text-dark-600 transition-colors hover:text-dark-900"
               >
                 View Mock Tests
               </Link>
@@ -1054,44 +1040,44 @@ export default function PracticePage() {
 
           {/* Sidebar preview */}
           <aside className="space-y-6">
-            <div className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6">
-              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-accent">Preview</div>
-              <h3 className="mt-2 text-xl font-heading font-black text-[var(--text-primary)]">{modeMeta.label}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{modeMeta.description}</p>
+            <div className="glass-card rounded-[1.75rem] border border-dark-100 p-6">
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">Preview</div>
+              <h3 className="mt-2 text-xl font-display font-bold text-dark-900">{modeMeta.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-dark-400">{modeMeta.description}</p>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Questions</div>
-                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">{modeMeta.questionCount}</div>
+                <div className="rounded-2xl border border-dark-100 bg-white p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Questions</div>
+                  <div className="mt-1 text-base font-bold text-dark-900">{modeMeta.questionCount}</div>
                 </div>
-                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Timer</div>
-                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">
+                <div className="rounded-2xl border border-dark-100 bg-white p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Timer</div>
+                  <div className="mt-1 text-base font-bold text-dark-900">
                     {modeMeta.timerMinutes ? `${modeMeta.timerMinutes} min` : 'No timer'}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Subject</div>
-                  <div className="mt-1 text-base font-bold text-[var(--text-primary)] truncate" title={selectedSubjects.join(', ')}>
+                <div className="rounded-2xl border border-dark-100 bg-white p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Subject</div>
+                  <div className="mt-1 text-base font-bold text-dark-900 truncate" title={selectedSubjects.join(', ')}>
                     {selectedSubjects.includes('All Subjects') ? 'All Subjects' : selectedSubjects.join(', ')}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Difficulty</div>
-                  <div className="mt-1 text-base font-bold text-[var(--text-primary)]">{selectedDifficulties.join(', ')}</div>
+                <div className="rounded-2xl border border-dark-100 bg-white p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Difficulty</div>
+                  <div className="mt-1 text-base font-bold text-dark-900">{selectedDifficulties.join(', ')}</div>
                 </div>
               </div>
             </div>
 
-            <div className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6">
-              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-warning">Scoring</div>
-              <ul className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
+            <div className="glass-card rounded-[1.75rem] border border-dark-100 p-6">
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-warning">Scoring</div>
+              <ul className="mt-4 space-y-3 text-sm text-dark-600">
                 {[
                   { label: 'Correct answer',   score: '+1.00',  color: 'text-accent'  },
                   { label: 'Wrong answer',     score: '-0.25',  color: 'text-danger'  },
                   { label: 'Option E selected',score: '0.00',   color: 'text-sky-400' },
                   { label: 'Blank question',   score: '-0.25',  color: 'text-warning' },
                 ].map((row) => (
-                  <li key={row.label} className="flex items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-4 py-3">
+                  <li key={row.label} className="flex items-center justify-between rounded-2xl border border-dark-100 bg-dark-50 px-4 py-3">
                     <span>{row.label}</span>
                     <span className={`font-bold ${row.color}`}>{row.score}</span>
                   </li>
@@ -1104,28 +1090,28 @@ export default function PracticePage() {
 
       {view === 'instructions' && session && (
         <div className="mx-auto max-w-4xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-dark-100 p-6 md:p-8">
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={restartSession}
-                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                className="rounded-xl border border-dark-100 bg-dark-50 px-4 py-2 text-sm font-bold text-dark-600 transition-colors hover:text-dark-900"
               >
                 Back
               </button>
-              <span className="rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-warning">
+              <span className="rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-warning">
                 {activeModeMeta.label}
               </span>
             </div>
-            <h3 className="mt-5 text-3xl font-heading font-black text-[var(--text-primary)]">Exam Instructions</h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
+            <h3 className="mt-5 text-3xl font-display font-bold text-dark-900">Exam Instructions</h3>
+            <p className="mt-2 text-sm leading-7 text-dark-400">
               Read these once before starting. The layout mirrors the original HTML flow.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Session Info</div>
-                <div className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
+              <div className="rounded-[1.5rem] border border-dark-100 bg-white p-5">
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Session Info</div>
+                <div className="mt-4 space-y-3 text-sm text-dark-600">
                   {[
                     ['Mode',      activeModeMeta.label],
                     ['Questions', session.questions.length],
@@ -1134,15 +1120,15 @@ export default function PracticePage() {
                   ].map(([k, v]) => (
                     <div key={String(k)} className="flex items-center justify-between">
                       <span>{k}</span>
-                      <span className="font-bold text-[var(--text-primary)]">{v}</span>
+                      <span className="font-bold text-dark-900">{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Rules</div>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
+              <div className="rounded-[1.5rem] border border-dark-100 bg-white p-5">
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Rules</div>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-dark-600">
                   <li>Each correct answer gives 1 mark.</li>
                   <li>Wrong and blank answers both carry a -0.25 penalty.</li>
                   <li>Selecting option E marks the question as intentionally skipped with 0 marks.</li>
@@ -1152,10 +1138,10 @@ export default function PracticePage() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
-              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Palette Legend</div>
-              <div className="mt-4 flex flex-wrap gap-3 text-sm text-[var(--text-secondary)]">
-                <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-2">Not visited</span>
+            <div className="mt-6 rounded-[1.5rem] border border-dark-100 bg-white p-5">
+              <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Palette Legend</div>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-dark-600">
+                <span className="rounded-full border border-dark-100 bg-dark-50 px-3 py-2">Not visited</span>
                 <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-emerald-300">Answered</span>
                 <span className="rounded-full border border-red-400/25 bg-red-500/10 px-3 py-2 text-red-300">Visited, unanswered</span>
                 <span className="rounded-full border border-sky-400/25 bg-sky-500/10 px-3 py-2 text-sky-300">Not attempted (E)</span>
@@ -1167,14 +1153,14 @@ export default function PracticePage() {
               <button
                 type="button"
                 onClick={restartSession}
-                className="rounded-2xl border border-[var(--border-subtle)] bg-white/5 px-5 py-3 text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                className="rounded-2xl border border-dark-100 bg-dark-50 px-5 py-3 text-sm font-bold text-dark-600 transition-colors hover:text-dark-900"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={beginExam}
-                className="rounded-2xl bg-gradient-to-r from-brand-500 to-brand-400 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--text-primary)] shadow-[0_18px_35px_rgba(99,102,241,0.25)]"
+                className="rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-3 text-sm font-bold uppercase tracking-[0.18em] text-dark-900 shadow-[0_18px_35px_rgba(99,102,241,0.25)]"
               >
                 Begin Session
               </button>
@@ -1186,20 +1172,20 @@ export default function PracticePage() {
       {view === 'exam' && session && currentQuestion && (
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <section className="w-full min-w-0">
-            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-[var(--bg-primary)] text-[var(--text-primary)] p-4 md:p-6 shadow-2xl">
+            <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-white text-dark-900 p-4 md:p-6 shadow-2xl">
               {/* Header */}
               <div className="flex justify-between items-center mb-3 md:mb-4">
                 <div className="flex items-center gap-4">
                   <h2 className="text-base md:text-lg font-bold m-0">Question {session.currentIndex + 1} of {session.questions.length}</h2>
                   {currentQuestion.part && (
-                    <span className="bg-[#4A9EDB]/10 border border-[#4A9EDB]/25 text-[#4A9EDB] px-3 py-1 rounded-full text-xs font-semibold">
+                    <span className="bg-[#38bdf8]/10 border border-[#38bdf8]/25 text-[#38bdf8] px-3 py-1 rounded-full text-xs font-semibold">
                       Part {currentQuestion.part}
                     </span>
                   )}
                 </div>
                 <button 
                   onClick={(e) => toggleBookmark(e)}
-                  className="bg-transparent border border-[var(--border-subtle)] text-[#D4922A] px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-white/5 transition-colors"
+                  className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
                 >
                   <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-base`}></i>
                   <span className="hidden md:inline">Save</span>
@@ -1208,43 +1194,43 @@ export default function PracticePage() {
 
               {/* Progress */}
               <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4 md:mb-6">
-                <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                <div className="flex-1 h-1 bg-dark-50 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-[#D4922A] rounded-full transition-all" 
+                    className="h-full bg-primary-600 rounded-full transition-all" 
                     style={{ width: `${((session.currentIndex + 1) / session.questions.length) * 100}%` }}
                   ></div>
                 </div>
-                <span className="text-xs text-[#D4922A] font-semibold text-right md:text-left">
+                <span className="text-xs text-primary-600 font-semibold text-right md:text-left">
                   {Math.round(((session.currentIndex + 1) / session.questions.length) * 100)}% Completed
                 </span>
               </div>
 
               {/* Meta Cards */}
               <div className="flex flex-nowrap gap-3 mb-5 md:mb-6 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-                <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
-                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#8B5CF6]/10 text-[#8B5CF6] shrink-0">
+                <div className="flex-1 min-w-[130px] bg-dark-50 border border-dark-100 rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#8b5cf6]/10 text-[#8b5cf6] shrink-0">
                     <i className="fa-solid fa-book-open"></i>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Subject</span>
+                    <span className="text-[9px] text-dark-400 uppercase tracking-wider">Subject</span>
                     <span className="text-xs font-semibold leading-tight">{currentQuestion.subject || 'N/A'}</span>
                   </div>
                 </div>
-                <div className="flex-1 min-w-[130px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
-                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#10B981]/10 text-[#10B981] shrink-0">
+                <div className="flex-1 min-w-[130px] bg-dark-50 border border-dark-100 rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#10b981]/10 text-[#10b981] shrink-0">
                     <i className="fa-regular fa-file-lines"></i>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Topic</span>
+                    <span className="text-[9px] text-dark-400 uppercase tracking-wider">Topic</span>
                     <span className="text-xs font-semibold leading-tight">{currentQuestion.topic || 'N/A'}</span>
                   </div>
                 </div>
-                <div className="flex-1 min-w-[100px] bg-white/[0.03] border border-[var(--border-subtle)] rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
-                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#3B82F6]/10 text-[#3B82F6] shrink-0">
+                <div className="flex-1 min-w-[100px] bg-dark-50 border border-dark-100 rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-sm bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
                     <i className="fa-solid fa-chart-simple"></i>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Difficulty</span>
+                    <span className="text-[9px] text-dark-400 uppercase tracking-wider">Difficulty</span>
                     <span className="text-xs font-semibold leading-tight">{currentQuestion.difficulty}</span>
                   </div>
                 </div>
@@ -1252,17 +1238,19 @@ export default function PracticePage() {
 
               {/* Controls */}
               <div className="flex flex-row justify-between items-center gap-2 mb-3 md:mb-5">
-                <div className="flex bg-white/5 rounded-lg p-0.5">
-                  <button 
-                    onClick={() => setActiveLanguage('English')}
-                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'English' ? 'bg-[#D4922A] text-[#111]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-                  >
-                    English
-                  </button>
+                <div className="flex bg-dark-50 rounded-lg p-0.5">
+                  {(!currentQuestion.language || currentQuestion.language === 'English' || currentQuestion.translations?.some(t => t.language === 'English')) && (
+                    <button 
+                      onClick={() => setActiveLanguage('English')}
+                      className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'English' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
+                    >
+                      English
+                    </button>
+                  )}
                   {(currentQuestion.language === 'Gujarati' || currentQuestion.translations?.some(t => t.language === 'Gujarati')) && (
                     <button 
                       onClick={() => setActiveLanguage('Gujarati')}
-                      className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'Gujarati' ? 'bg-[#D4922A] text-[#111]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                      className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'Gujarati' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
                     >
                       Gujarati
                     </button>
@@ -1272,8 +1260,8 @@ export default function PracticePage() {
 
               {/* Question Area */}
               <div className="flex gap-3 items-start mb-5 md:mb-6 mt-2">
-                <div className="w-6 h-6 md:w-8 md:h-8 bg-[#D4922A] text-[#111] rounded-md flex items-center justify-center font-black text-sm shrink-0 mt-0.5">Q</div>
-                <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-[var(--text-primary)] font-medium">{displayedQuestion?.question}</div>
+                <div className="w-6 h-6 md:w-8 md:h-8 bg-primary-600 text-[#111] rounded-md flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">Q</div>
+                <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-dark-900 font-medium">{displayedQuestion?.question}</div>
               </div>
 
               {/* Options List */}
@@ -1284,26 +1272,26 @@ export default function PracticePage() {
                   const correct   = key === currentQuestion.correctAnswer;
                   const wrongSel  = selected && key !== currentQuestion.correctAnswer && key !== 'E';
 
-                  let bgClass = "bg-white/[0.03]";
-                  let borderClass = "border-[var(--border-subtle)]";
-                  let radioClass = "border-[var(--border-subtle)]";
+                  let bgClass = "bg-dark-50";
+                  let borderClass = "border-dark-100";
+                  let radioClass = "border-dark-100";
                   let radioFill = false;
 
                   if (showState && correct) {
-                    bgClass = "bg-[#10B981]/10";
-                    borderClass = "border-[#10B981]/30";
+                    bgClass = "bg-[#10b981]/10";
+                    borderClass = "border-[#10b981]/30";
                   } else if (showState && wrongSel) {
-                    bgClass = "bg-[#EF4444]/10";
-                    borderClass = "border-[#EF4444]/30";
+                    bgClass = "bg-[#ef4444]/10";
+                    borderClass = "border-[#ef4444]/30";
                   } else if (selected && key === 'E') {
-                    bgClass = "bg-[#38BDF8]/10";
-                    borderClass = "border-[#38BDF8]/30";
-                    radioClass = "border-[#38BDF8]";
+                    bgClass = "bg-[#0ea5e9]/10";
+                    borderClass = "border-[#0ea5e9]/30";
+                    radioClass = "border-[#0ea5e9]";
                     radioFill = true;
                   } else if (selected) {
-                    bgClass = "bg-[#D4922A]/10";
-                    borderClass = "border-[#D4922A]/40";
-                    radioClass = "border-[#D4922A]";
+                    bgClass = "bg-primary-50";
+                    borderClass = "border-primary-200";
+                    radioClass = "border-primary-600";
                     radioFill = true;
                   }
 
@@ -1312,20 +1300,20 @@ export default function PracticePage() {
                       key={key}
                       type="button"
                       onClick={() => selectOption(key)}
-                      className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-3 md:p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-white/5 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
+                      className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-3 md:p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-dark-50 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
                     >
-                      <div className={`w-5 h-5 md:w-7 md:h-7 rounded md:rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${selected ? 'bg-[#D4922A]/20 text-[#D4922A]' : 'bg-white/5 text-[var(--text-muted)]'}`}>
+                      <div className={`w-5 h-5 md:w-7 md:h-7 rounded md:rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${selected ? 'bg-primary-100 text-primary-600' : 'bg-dark-50 text-dark-400'}`}>
                         {key}
                       </div>
-                      <div className="flex-1 text-xs md:text-sm leading-tight text-[var(--text-primary)]">{label}</div>
+                      <div className="flex-1 text-xs md:text-sm leading-tight text-dark-900">{label}</div>
                       
                       {showState && correct ? (
-                        <i className="fa-solid fa-circle-check text-[#10B981] text-xl"></i>
+                        <i className="fa-solid fa-circle-check text-[#10b981] text-xl"></i>
                       ) : showState && wrongSel ? (
-                        <i className="fa-solid fa-circle-xmark text-[#EF4444] text-xl"></i>
+                        <i className="fa-solid fa-circle-xmark text-[#ef4444] text-xl"></i>
                       ) : (
                         <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border-2 flex items-center justify-center ${radioClass}`}>
-                          {radioFill && <div className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${key === 'E' ? 'bg-[#38BDF8]' : 'bg-[#D4922A]'}`}></div>}
+                          {radioFill && <div className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${key === 'E' ? 'bg-[#0ea5e9]' : 'bg-primary-600'}`}></div>}
                         </div>
                       )}
                     </button>
@@ -1339,21 +1327,21 @@ export default function PracticePage() {
               <div className="grid grid-cols-3 md:flex md:items-stretch gap-2 md:gap-3 mt-4">
                 <button 
                   onClick={() => setIsMobilePaletteOpen(true)}
-                  className="xl:hidden col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0"
+                  className="xl:hidden col-span-1 md:flex-1 bg-dark-50 border border-dark-100 text-dark-600 p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-dark-50 transition-colors min-w-0"
                 >
                   <i className="fa-solid fa-grip text-sm"></i>
                   <span className="truncate">Palette</span>
                 </button>
                 <button 
                   onClick={() => navigateQuestion(-1)} disabled={session.currentIndex === 0}
-                  className="col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors disabled:opacity-40 min-w-0"
+                  className="col-span-1 md:flex-1 bg-dark-50 border border-dark-100 text-dark-600 p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-dark-50 transition-colors disabled:opacity-40 min-w-0"
                 >
                   <i className="fa-solid fa-arrow-left text-sm"></i>
                   <span className="truncate">Prev</span>
                 </button>
                 <button 
                   onClick={toggleReviewMark}
-                  className={`col-span-1 md:flex-1 bg-white/[0.03] border border-[var(--border-subtle)] p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-white/5 transition-colors min-w-0 ${session.markedForReview.includes(currentQuestion.id) ? 'text-[#D4922A]' : 'text-[var(--text-secondary)]'}`}
+                  className={`col-span-1 md:flex-1 bg-dark-50 border border-dark-100 p-1.5 sm:p-2 rounded-xl flex flex-col md:flex-row items-center justify-center gap-1 text-[9px] sm:text-[10px] hover:bg-dark-50 transition-colors min-w-0 ${session.markedForReview.includes(currentQuestion.id) ? 'text-primary-600' : 'text-dark-600'}`}
                 >
                   <i className={`fa-bookmark ${session.markedForReview.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-sm`}></i>
                   <span className="truncate">Review</span>
@@ -1361,15 +1349,15 @@ export default function PracticePage() {
 
                 {/* Timer — only shown for mock/timed mode */}
                 {session.mode === 'mock' && (
-                  <div className="col-span-3 md:col-span-1 md:flex-[1.5] bg-white/[0.03] border border-[var(--border-subtle)] text-[var(--text-secondary)] py-1.5 px-3 rounded-xl flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 md:gap-0 order-first md:order-none mb-2 md:mb-0">
-                    <span className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider">Time Left</span>
-                    <span className="text-sm md:text-base text-[#4A9EDB] font-bold">{formatTime(timeLeft)}</span>
+                  <div className="col-span-3 md:col-span-1 md:flex-[1.5] bg-dark-50 border border-dark-100 text-dark-600 py-1.5 px-3 rounded-xl flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 md:gap-0 order-first md:order-none mb-2 md:mb-0">
+                    <span className="text-[9px] text-dark-400 uppercase tracking-wider">Time Left</span>
+                    <span className="text-sm md:text-base text-[#38bdf8] font-bold">{formatTime(timeLeft)}</span>
                   </div>
                 )}
 
                 <button 
                   onClick={session.currentIndex === session.questions.length - 1 ? confirmSubmit : () => navigateQuestion(1)}
-                  className="col-span-3 md:flex-[2] bg-[#D4922A] text-[#111] p-3 md:p-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base font-bold hover:bg-[#B97A20] transition-colors mt-2 md:mt-0 shadow-lg shadow-[#D4922A]/20"
+                  className="col-span-3 md:flex-[2] bg-primary-600 text-[#111] p-3 md:p-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base font-bold hover:bg-primary-700 transition-colors mt-2 md:mt-0 shadow-lg shadow-[#ea580c]/20"
                 >
                   <i className="fa-regular fa-paper-plane"></i>
                   <span>{session.currentIndex === session.questions.length - 1 ? 'Submit Exam' :'Next'}</span>
@@ -1379,8 +1367,8 @@ export default function PracticePage() {
               {/* Explanation */}
               {session.mode !== 'mock' && currentResponse && (
                 <div className="mt-5 md:mt-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 md:p-5">
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
-                  <p className="mt-2 text-xs md:text-sm leading-6 text-[var(--text-secondary)]">{displayedQuestion?.explanation || 'No explanation available.'}</p>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
+                  <p className="mt-2 text-xs md:text-sm leading-6 text-dark-600">{displayedQuestion?.explanation || 'No explanation available.'}</p>
                 </div>
               )}
             </div>
@@ -1388,32 +1376,32 @@ export default function PracticePage() {
 
           {/* Sidebar: Question Palette (Desktop Only) */}
           <aside className="hidden xl:block">
-            <div className="w-full rounded-[1.5rem] bg-[var(--bg-primary)] p-5 shadow-2xl border border-[var(--border-subtle)] h-fit sticky top-6">
+            <div className="w-full rounded-[1.5rem] bg-white p-5 shadow-2xl border border-dark-100 h-fit sticky top-6">
               <div className="flex justify-between items-center mb-5">
-                <h3 className="text-sm font-semibold text-[var(--text-primary)] m-0">Question Palette</h3>
-                <i className="fa-solid fa-chevron-up text-[var(--text-muted)] text-xs"></i>
+                <h3 className="text-sm font-semibold text-dark-900 m-0">Question Palette</h3>
+                <i className="fa-solid fa-chevron-up text-dark-400 text-xs"></i>
               </div>
               
               <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[#10B981]"></div>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Answered</span>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#10b981]"></div>
+                  <span className="text-[11px] text-dark-600">Answered</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[#D4922A]"></div>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Review</span>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-primary-600"></div>
+                  <span className="text-[11px] text-dark-600">Review</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[#3B82F6]"></div>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Current</span>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-[#3b82f6]"></div>
+                  <span className="text-[11px] text-dark-600">Current</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[var(--bg-surface)]"></div>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Not Answered</span>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-dark-50"></div>
+                  <span className="text-[11px] text-dark-600">Not Answered</span>
                 </div>
                 <div className="flex items-center gap-2 col-span-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center text-[8px] font-bold text-[var(--text-muted)]">E</div>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Not Attempted</span>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-white border border-dark-100 flex items-center justify-center text-[8px] font-bold text-dark-400">E</div>
+                  <span className="text-[11px] text-dark-600">Not Attempted</span>
                 </div>
               </div>
 
@@ -1429,17 +1417,17 @@ export default function PracticePage() {
                       onClick={() => {
                         jumpToQuestion(idx);
                       }}
-                      className="aspect-square rounded-lg border border-[var(--border-subtle)] text-[11px] font-bold transition-transform hover:scale-105"
+                      className="aspect-square rounded-lg border border-dark-100 text-[11px] font-bold transition-transform hover:scale-105"
                       style={{ 
                         ...paletteStyleMap[ps], 
                         boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
-                        ...(active && ps !== 's-review' && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
-                        ...(active && ps === 's-review' && { background: '#D4922A', color: '#fff', borderColor: '#3B82F6' }),
-                        ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
-                        ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
-                        ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
-                        ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
-                        ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" })
+                        ...(active && ps !== 's-review' && { background: '#3b82f6', color: '#fff', borderColor: '#3b82f6' }),
+                        ...(active && ps === 's-review' && { background: '#ea580c', color: '#fff', borderColor: '#3b82f6' }),
+                        ...(ps === 's-answered' && !active && { background: '#10b981', color: '#fff', borderColor: '#10b981' }),
+                        ...(ps === 's-review' && !active && { background: '#ea580c', color: '#fff', borderColor: '#ea580c' }),
+                        ...(ps === 's-unanswered' && !active && { background: "#f8fafc", color: "#0f172a", borderColor: "#e2e8f0" }),
+                        ...(ps === 's-na' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" }),
+                        ...(ps === 's-none' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" })
                       }}
                     >
                       {idx + 1}
@@ -1448,26 +1436,26 @@ export default function PracticePage() {
                 })}
               </div>
 
-              <div className="flex flex-col gap-2 text-[10px] text-[var(--text-muted)] border-t border-[var(--border-subtle)] pt-4">
+              <div className="flex flex-col gap-2 text-[10px] text-dark-400 border-t border-dark-100 pt-4">
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[#10B981] mt-0.5 shrink-0"></div>
-                  <span><span className="text-[var(--text-secondary)]">Answered:</span> You have answered the question</span>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#10b981] mt-0.5 shrink-0"></div>
+                  <span><span className="text-dark-600">Answered:</span> You have answered the question</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[#D4922A] mt-0.5 shrink-0"></div>
-                  <span><span className="text-[var(--text-secondary)]">Review:</span> Marked for review</span>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-primary-600 mt-0.5 shrink-0"></div>
+                  <span><span className="text-dark-600">Review:</span> Marked for review</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[var(--bg-surface)] mt-0.5 shrink-0"></div>
-                  <span><span className="text-[var(--text-secondary)]">Not Answered:</span> You have not answered yet</span>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-dark-50 mt-0.5 shrink-0"></div>
+                  <span><span className="text-dark-600">Not Answered:</span> You have not answered yet</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center text-[6px] font-bold text-[var(--text-muted)] mt-0.5 shrink-0">E</div>
-                  <span><span className="text-[var(--text-secondary)]">Not Attempted:</span> You have not visited yet</span>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-white border border-dark-100 flex items-center justify-center text-[6px] font-bold text-dark-400 mt-0.5 shrink-0">E</div>
+                  <span><span className="text-dark-600">Not Attempted:</span> You have not visited yet</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[#3B82F6] mt-0.5 shrink-0"></div>
-                  <span><span className="text-[var(--text-secondary)]">Current:</span> Question you are on</span>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#3b82f6] mt-0.5 shrink-0"></div>
+                  <span><span className="text-dark-600">Current:</span> Question you are on</span>
                 </div>
               </div>
             </div>
@@ -1480,16 +1468,16 @@ export default function PracticePage() {
               onClick={() => setIsMobilePaletteOpen(false)}
             >
               <div 
-                className="w-full max-w-[800px] max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] p-6 shadow-2xl" 
+                className="w-full max-w-[800px] max-h-[80dvh] overflow-y-auto overscroll-contain touch-pan-y rounded-t-[2rem] border-t border-dark-100 bg-white p-6 shadow-2xl" 
                 onClick={e => e.stopPropagation()}
                 style={{ WebkitOverflowScrolling: 'touch' }}
               >
                 <div className="mb-6 flex items-center justify-between">
-                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Question Palette</div>
+                  <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Question Palette</div>
                   <button
                     type="button"
                     onClick={() => setIsMobilePaletteOpen(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-50 text-dark-400 hover:text-dark-900"
                   >
                     <i className="fa-solid fa-xmark"></i>
                   </button>
@@ -1507,17 +1495,17 @@ export default function PracticePage() {
                           jumpToQuestion(idx);
                           setIsMobilePaletteOpen(false);
                         }}
-                        className="aspect-square rounded-xl border text-xs font-black transition-transform hover:scale-105"
+                        className="aspect-square rounded-xl border text-xs font-bold transition-transform hover:scale-105"
                         style={{ 
                           ...paletteStyleMap[ps], 
                           boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
-                          ...(active && ps !== 's-review' && { background: '#3B82F6', color: '#fff', borderColor: '#3B82F6' }),
-                          ...(active && ps === 's-review' && { background: '#D4922A', color: '#fff', borderColor: '#3B82F6' }),
-                          ...(ps === 's-answered' && !active && { background: '#10B981', color: '#fff', borderColor: '#10B981' }),
-                          ...(ps === 's-review' && !active && { background: '#D4922A', color: '#fff', borderColor: '#D4922A' }),
-                          ...(ps === 's-unanswered' && !active && { background: "var(--bg-surface)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
-                          ...(ps === 's-na' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }),
-                          ...(ps === 's-none' && !active && { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" })
+                          ...(active && ps !== 's-review' && { background: '#3b82f6', color: '#fff', borderColor: '#3b82f6' }),
+                          ...(active && ps === 's-review' && { background: '#ea580c', color: '#fff', borderColor: '#3b82f6' }),
+                          ...(ps === 's-answered' && !active && { background: '#10b981', color: '#fff', borderColor: '#10b981' }),
+                          ...(ps === 's-review' && !active && { background: '#ea580c', color: '#fff', borderColor: '#ea580c' }),
+                          ...(ps === 's-unanswered' && !active && { background: "#f8fafc", color: "#0f172a", borderColor: "#e2e8f0" }),
+                          ...(ps === 's-na' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" }),
+                          ...(ps === 's-none' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" })
                         }}
                       >
                         {idx + 1}
@@ -1534,55 +1522,55 @@ export default function PracticePage() {
 {/* ─── RESULT ────────────────────────────────────────────────────────── */}
       {view === 'result' && session && (
         <div className="mx-auto max-w-5xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-accent">
+          <section className="glass-card rounded-[1.75rem] border border-dark-100 p-6 md:p-8 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
               {activeModeMeta.label} Complete
             </div>
-            <h3 className="mt-5 text-3xl font-heading font-black text-[var(--text-primary)]">Session Results</h3>
-            <p className="mt-3 text-sm text-[var(--text-muted)]">
+            <h3 className="mt-5 text-3xl font-display font-bold text-dark-900">Session Results</h3>
+            <p className="mt-3 text-sm text-dark-400">
               Score {result.finalScore.toFixed(2)} / {session.questions.length} with {result.accuracy}% accuracy.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3 xl:grid-cols-6">
               {[
-                { val: result.finalScore.toFixed(2), label: 'Score',    cls: 'text-[var(--text-primary)]',    border: 'border-[var(--border-subtle)]',        bg: 'bg-white/5' },
+                { val: result.finalScore.toFixed(2), label: 'Score',    cls: 'text-dark-900',    border: 'border-dark-100',        bg: 'bg-dark-50' },
                 { val: result.correct,               label: 'Correct',  cls: 'text-accent',   border: 'border-emerald-500/15',   bg: 'bg-emerald-500/8' },
                 { val: result.wrong,                 label: 'Wrong',    cls: 'text-danger',   border: 'border-red-500/15',       bg: 'bg-red-500/8' },
                 { val: result.notAttempted,          label: 'Option E', cls: 'text-sky-400',  border: 'border-sky-500/15',       bg: 'bg-sky-500/8' },
                 { val: result.unanswered,            label: 'Blank',    cls: 'text-warning',  border: 'border-amber-500/15',     bg: 'bg-amber-500/8' },
-                { val: `${result.accuracy}%`,        label: 'Accuracy', cls: 'text-[var(--text-primary)]',    border: 'border-[var(--border-subtle)]',         bg: 'bg-white/5' },
+                { val: `${result.accuracy}%`,        label: 'Accuracy', cls: 'text-dark-900',    border: 'border-dark-100',         bg: 'bg-dark-50' },
               ].map((card) => (
                 <div key={card.label} className={`rounded-[1.5rem] border ${card.border} ${card.bg} p-4`}>
-                  <div className={`text-2xl font-black ${card.cls}`}>{card.val}</div>
-                  <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{card.label}</div>
+                  <div className={`text-2xl font-bold ${card.cls}`}>{card.val}</div>
+                  <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">{card.label}</div>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-dark-100 p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Topic Analysis</div>
-                <h4 className="mt-2 text-xl font-heading font-black text-[var(--text-primary)]">Performance by topic</h4>
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Topic Analysis</div>
+                <h4 className="mt-2 text-xl font-display font-bold text-dark-900">Performance by topic</h4>
               </div>
               <button type="button" onClick={() => setView('review')}
-                className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 px-5 py-2.5 text-sm font-black uppercase tracking-[0.16em] text-[var(--text-primary)]">
+                className="rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-2.5 text-sm font-bold uppercase tracking-[0.16em] text-dark-900">
                 Review Answers
               </button>
             </div>
 
             <div className="mt-6 space-y-4">
               {result.topicStats.map((item) => (
-                <div key={item.topic} className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-4">
+                <div key={item.topic} className="rounded-[1.5rem] border border-dark-100 bg-white p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <div className="text-base font-bold text-[var(--text-primary)]">{item.topic}</div>
-                      <div className="text-xs text-[var(--text-muted)]">{item.subject}</div>
+                      <div className="text-base font-bold text-dark-900">{item.topic}</div>
+                      <div className="text-xs text-dark-400">{item.subject}</div>
                     </div>
-                    <div className="text-sm font-bold text-[var(--text-primary)]">{item.correct}/{item.total}</div>
+                    <div className="text-sm font-bold text-dark-900">{item.correct}/{item.total}</div>
                   </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/5">
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-dark-50">
                     <div
                       className={`h-full rounded-full ${item.percentage >= 70 ? 'bg-accent' : item.percentage >= 40 ? 'bg-warning' : 'bg-danger'}`}
                       style={{ width: `${item.percentage}%` }}
@@ -1594,11 +1582,11 @@ export default function PracticePage() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button type="button" onClick={restartSession}
-                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-5 py-3 text-sm font-bold text-[var(--text-secondary)]">
+                className="rounded-xl border border-dark-100 bg-dark-50 px-5 py-3 text-sm font-bold text-dark-600">
                 New Session
               </button>
               <button type="button" onClick={() => setView('review')}
-                className="rounded-xl border border-brand-500/20 bg-brand-500/10 px-5 py-3 text-sm font-bold text-brand-300">
+                className="rounded-xl border border-primary-500/20 bg-primary-600 hover:bg-primary-700 text-white/10 px-5 py-3 text-sm font-bold text-primary-400">
                 Open Review
               </button>
             </div>
@@ -1609,14 +1597,14 @@ export default function PracticePage() {
       {/* ─── REVIEW ────────────────────────────────────────────────────────── */}
       {view === 'review' && session && (
         <div className="mx-auto max-w-5xl space-y-6">
-          <section className="glass-card rounded-[1.75rem] border border-[var(--border-subtle)] p-6 md:p-8">
+          <section className="glass-card rounded-[1.75rem] border border-dark-100 p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">Answer Review</div>
-                <h3 className="mt-2 text-2xl font-heading font-black text-[var(--text-primary)]">Review every response</h3>
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Answer Review</div>
+                <h3 className="mt-2 text-2xl font-display font-bold text-dark-900">Review every response</h3>
               </div>
               <button type="button" onClick={() => setView('result')}
-                className="rounded-xl border border-[var(--border-subtle)] bg-white/5 px-4 py-2 text-sm font-bold text-[var(--text-secondary)]">
+                className="rounded-xl border border-dark-100 bg-dark-50 px-4 py-2 text-sm font-bold text-dark-600">
                 Back to Results
               </button>
             </div>
@@ -1633,8 +1621,8 @@ export default function PracticePage() {
                     className="rounded-full border px-4 py-2 text-sm font-bold transition-all"
                     style={{
                       background:  active ? 'rgba(99,102,241,0.14)' : 'rgba(255,255,255,0.04)',
-                      borderColor: active ? 'rgba(99,102,241,0.35)' : "var(--border-subtle)",
-                      color:       active ? '#c7d2fe' : "var(--text-muted)",
+                      borderColor: active ? 'rgba(99,102,241,0.35)' : "#e2e8f0",
+                      color:       active ? '#c7d2fe' : "#94a3b8",
                     }}
                   >
                     {label}
@@ -1653,18 +1641,18 @@ export default function PracticePage() {
                 const isUnanswered = res === undefined;
 
                 return (
-                  <article key={q.id} className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+                  <article key={q.id} className="rounded-[1.5rem] border border-dark-100 bg-white p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="text-sm font-bold text-[var(--text-muted)]">Q{idx + 1}</div>
-                        <div className="mt-2 text-base font-semibold leading-7 text-[var(--text-primary)]">{q.question}</div>
+                        <div className="text-sm font-bold text-dark-400">Q{idx + 1}</div>
+                        <div className="mt-2 text-base font-semibold leading-7 text-dark-900">{q.question}</div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {isCorrect    && <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-accent">Correct</span>}
                         {isWrong      && <span className="rounded-full border border-red-500/20    bg-red-500/10    px-3 py-1 text-xs font-bold text-danger">Wrong</span>}
                         {isNa         && <span className="rounded-full border border-sky-500/20    bg-sky-500/10    px-3 py-1 text-xs font-bold text-sky-400">Not Attempted</span>}
                         {isUnanswered && <span className="rounded-full border border-amber-500/20  bg-amber-500/10  px-3 py-1 text-xs font-bold text-warning">Blank</span>}
-                        {session.bookmarked.includes(q.id) && <span className="rounded-full border border-[var(--border-subtle)] bg-white/5 px-3 py-1 text-xs font-bold text-[var(--text-secondary)]">Bookmarked</span>}
+                        {session.bookmarked.includes(q.id) && <span className="rounded-full border border-dark-100 bg-dark-50 px-3 py-1 text-xs font-bold text-dark-600">Bookmarked</span>}
                       </div>
                     </div>
 
@@ -1677,27 +1665,27 @@ export default function PracticePage() {
                             key={key}
                             className="rounded-xl border px-4 py-3 text-sm"
                             style={{
-                              background:  correct ? 'rgba(16,185,129,0.1)' : selected ? 'rgba(239,68,68,0.1)' : "var(--bg-surface)",
+                              background:  correct ? 'rgba(16,185,129,0.1)' : selected ? 'rgba(239,68,68,0.1)' : "#f8fafc",
                               borderColor: correct ? 'rgba(16,185,129,0.2)' : selected ? 'rgba(239,68,68,0.22)' : 'rgba(255,255,255,0.08)',
                             }}
                           >
-                            <span className="font-black text-[var(--text-muted)]">{key}</span>
-                            <span className="ml-3 text-[var(--text-primary)]">{label}</span>
+                            <span className="font-bold text-dark-400">{key}</span>
+                            <span className="ml-3 text-dark-900">{label}</span>
                           </div>
                         );
                       })}
                     </div>
 
                     <div className="mt-5 rounded-xl border border-emerald-500/15 bg-emerald-500/8 p-4">
-                      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Explanation</div>
-                      <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">{q.explanation || 'No explanation provided.'}</p>
+                      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Explanation</div>
+                      <p className="mt-2 text-sm leading-7 text-dark-600">{q.explanation || 'No explanation provided.'}</p>
                     </div>
                   </article>
                 );
               })}
 
               {filteredReviewQuestions.length === 0 && (
-                <div className="rounded-[1.5rem] border border-dashed border-[var(--border-subtle)] bg-white/3 px-6 py-10 text-center text-sm text-[var(--text-muted)]">
+                <div className="rounded-[1.5rem] border border-dashed border-dark-100 bg-white/3 px-6 py-10 text-center text-sm text-dark-400">
                   No questions match the current review filter.
                 </div>
               )}
@@ -1708,29 +1696,29 @@ export default function PracticePage() {
       {/* ─── MODAL ────────────────────────────────────────────────────────── */}
       {modalConfig?.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : modalConfig.type === 'info' ? 'bg-brand-500' : 'bg-warning'}`}></div>
+          <div className="bg-white border border-dark-100 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : modalConfig.type === 'info' ? 'bg-primary-600 hover:bg-primary-700 text-white' : 'bg-warning'}`}></div>
             <div className="flex items-center gap-4 mb-5">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : modalConfig.type === 'info' ? 'bg-brand-500/10 text-brand-400' : 'bg-warning/10 text-warning'}`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${modalConfig.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : modalConfig.type === 'info' ? 'bg-primary-600 hover:bg-primary-700 text-white/10 text-primary-500' : 'bg-warning/10 text-warning'}`}>
                 <i className={`fa-solid ${modalConfig.type === 'success' ? 'fa-check' : modalConfig.type === 'info' ? 'fa-circle-info' : 'fa-exclamation-triangle'}`}></i>
               </div>
-              <h3 className="text-xl font-heading font-black text-[var(--text-primary)]">{modalConfig.title}</h3>
+              <h3 className="text-xl font-display font-bold text-dark-900">{modalConfig.title}</h3>
             </div>
-            <p className="text-[var(--text-secondary)] text-sm mb-8 leading-relaxed">
+            <p className="text-dark-600 text-sm mb-8 leading-relaxed">
               {modalConfig.message}
             </p>
             <div className="flex justify-end gap-3">
               {modalConfig.type === 'confirm' && (
                 <button 
                   onClick={modalConfig.onCancel}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--text-secondary)] hover:bg-white/5 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-dark-600 hover:bg-dark-50 transition-colors"
                 >
                   Cancel
                 </button>
               )}
               <button 
                 onClick={modalConfig.onConfirm}
-                className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-[var(--text-primary)] transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : modalConfig.type === 'info' ? 'bg-brand-500 shadow-[0_10px_20px_rgba(99,102,241,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider text-dark-900 transition-transform hover:scale-105 ${modalConfig.type === 'success' ? 'bg-emerald-500 shadow-[0_10px_20px_rgba(16,185,129,0.2)]' : modalConfig.type === 'info' ? 'bg-primary-600 hover:bg-primary-700 text-white shadow-[0_10px_20px_rgba(99,102,241,0.2)]' : 'bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)]'}`}
               >
                 {modalConfig.confirmText || (modalConfig.type === 'success' ? 'View Results' : 'Submit Anyway')}
               </button>
