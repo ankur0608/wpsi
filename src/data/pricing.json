@@ -1,0 +1,65 @@
+{
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free Forever",
+      "subtitle": "Perfect for Beginners",
+      "price": "₹0",
+      "period": "",
+      "amount": 0,
+      "features": [
+        "20 Daily MCQs",
+        "Selected Topics",
+        "1 Full Mock Test",
+        "Daily Challenge",
+        "XP, Streak & Leaderboard",
+        "Basic Performance Report"
+      ],
+      "buttonText": "Get Started Free",
+      "isPopular": false
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "subtitle": "Everything You Need to Crack Wireless PSI",
+      "price": "₹299",
+      "period": "(One-Time)",
+      "amount": 299,
+      "tag": "Most Popular",
+      "recommendation": "Recommended for 95% of Aspirants",
+      "features": [
+        "Unlimited Topic-wise MCQs",
+        "Unlimited Full Mock Tests",
+        "AI Weak Topic Analysis",
+        "Detailed Explanations",
+        "Smart Performance Analytics",
+        "Subject-wise Progress Tracking",
+        "Unlimited Reattempts",
+        "Premium PDF Notes",
+        "Ad-Free Experience",
+        "New Questions & Updates"
+      ],
+      "buttonText": "Claim Pro Plan",
+      "isPopular": true
+    },
+    {
+      "id": "elite",
+      "name": "Elite",
+      "subtitle": "Everything in Pro + Premium Advantages",
+      "price": "₹499",
+      "period": "(One-Time)",
+      "amount": 499,
+      "recommendation": "Best for Top Rank Aspirants",
+      "features": [
+        "Personalized AI Study Plan",
+        "Advanced Performance Reports",
+        "Priority Support",
+        "Early Access to New Features",
+        "Exclusive Premium Question Sets",
+        "Lifetime Updates"
+      ],
+      "buttonText": "Upgrade to Elite",
+      "isPopular": false
+    }
+  ]
+}

@@ -634,6 +634,15 @@ export default function PracticePage() {
           totalMarks: session.questions.length,
           earnedMarks: finalResult.finalScore,
           percentage: finalResult.accuracy,
+          details: session.questions.map((q: any) => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            explanation: q.explanation,
+            selectedOption: session.responses[q.id],
+            correctAnswer: q.correctAnswer,
+            correct: session.responses[q.id] === q.correctAnswer
+          })),
           responses: session.questions
             .filter(q => session.responses[q.id] && session.responses[q.id] !== 'E')
             .map(q => ({
@@ -689,7 +698,7 @@ export default function PracticePage() {
   // ── Navigation ─────────────────────────────────────────────────────────────
   const selectOption = (option: AnswerKey) => {
     if (!session || !currentQuestion || session.submitted) return;
-    if (session.responses[currentQuestion.id] !== undefined) return;
+
     updateSession((cur) => ({
       ...cur,
       responses: { ...cur.responses, [currentQuestion.id]: option },

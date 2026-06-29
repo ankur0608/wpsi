@@ -53,7 +53,8 @@ export async function GET(request: NextRequest) {
         }),
         marks: sub.earnedMarks,
         totalMarks: sub.totalMarks,
-        percentage: sub.percentage
+        percentage: sub.percentage,
+        mcqs: (sub as any).details
       };
     });
 

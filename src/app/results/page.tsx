@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/navigation";
 
 export default function ResultsPage() {
+  const router = useRouter();
   const { user } = useUser();
   const displayName = user?.name?.trim() || "Profile";
   
@@ -173,7 +175,7 @@ export default function ResultsPage() {
                 return (
                   <div 
                     key={idx} 
-                    onClick={() => setSelectedSubmission(res)}
+                    onClick={() => router.push(`/results/${res.id}`)}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-dark-200 hover:border-primary-300 hover:shadow-md transition-all group cursor-pointer border-l-4 ${statusMeta.borderL} relative`}
                   >
                     <div className="flex items-center gap-4 mb-3 sm:mb-0">
@@ -217,142 +219,6 @@ export default function ResultsPage() {
       </div>
     </div>
 
-    {/* Detailed Attempt Review Modal */}
-    {selectedSubmission && (
-      <div 
-        className="fixed inset-0 bg-dark-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center transition-all duration-300" 
-        onClick={() => setSelectedSubmission(null)}
-      >
-        <div 
-          className="bg-white rounded-[24px] border border-dark-200 max-w-2xl w-full mx-4 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200" 
-          onClick={e => e.stopPropagation()}
-        >
-          {(() => {
-            const meta = getTestMeta(selectedSubmission.title);
-            const status = getStatusMeta(selectedSubmission.percentage);
-            
-            // The API returns earnedMarks (marks) and totalMarks. 
-            // In our system, 1 correct = 1 mark. Wrong/Blank = -0.25 marks.
-            // earnedMarks = correct - 0.25 * (totalMarks - correct)
-            // earnedMarks = 1.25 * correct - 0.25 * totalMarks
-            // correct = (earnedMarks + 0.25 * totalMarks) / 1.25
-            let derivedCorrect = Math.round((selectedSubmission.marks + 0.25 * selectedSubmission.totalMarks) / 1.25);
-            
-            // Fallback in case of weird data
-            if (derivedCorrect < 0) derivedCorrect = 0;
-            if (derivedCorrect > selectedSubmission.totalMarks) derivedCorrect = selectedSubmission.totalMarks;
-
-            const correct = derivedCorrect;
-            const total = selectedSubmission.totalMarks;
-            const incorrect = total - correct;
-            const unattempted = 0; // Combined with incorrect since both penalize equally and we don't save the split
-            
-            const timeTaken = "Time not tracked";
-            const pace = "Pace not tracked";
-            
-            return (
-              <>
-                {/* Header */}
-                <div className="p-6 border-b border-dark-100 flex items-start justify-between bg-dark-50/50">
-                    <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${meta.iconClass}`}>
-                                {meta.typeLabel}
-                            </span>
-                            <span className="text-[10px] text-dark-500 font-semibold">• Attempted <span id="modal-date">{selectedSubmission.date}</span></span>
-                        </div>
-                        <h3 className="font-display font-black text-lg text-dark-900 leading-tight">{selectedSubmission.title}</h3>
-                    </div>
-                    <button 
-                      className="text-dark-400 hover:text-dark-700 bg-white border border-dark-200 hover:bg-dark-50 p-2 rounded-xl transition-colors shadow-sm cursor-pointer" 
-                      onClick={() => setSelectedSubmission(null)}
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-                
-                {/* Body */}
-                <div className="p-6 overflow-y-auto space-y-6 flex-1 hide-scrollbar">
-                    {/* Summary Metrics Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="bg-dark-50 border border-dark-200/80 p-4 rounded-2xl text-center">
-                            <p className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Attempt Score</p>
-                            <p className="text-2xl font-black text-dark-900 mt-1">{selectedSubmission.marks}<span className="text-xs text-dark-400 font-sans font-bold">/{total}</span></p>
-                            <span className={`text-[8px] border px-2 py-0.5 rounded font-black uppercase tracking-wider mt-1.5 inline-block ${status.cls}`}>
-                              {status.label}
-                            </span>
-                        </div>
-                        <div className="bg-dark-50 border border-dark-200/80 p-4 rounded-2xl text-center flex flex-col items-center justify-center">
-                            <p className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Accuracy Rate</p>
-                            <p className="text-lg font-black text-primary-600 mt-1">{Math.round(selectedSubmission.percentage)}%</p>
-                            <p className="text-[9px] text-dark-400 font-semibold mt-1">Target is {'>'}75%</p>
-                        </div>
-                        <div className="bg-dark-50 border border-dark-200/80 p-4 rounded-2xl text-center flex flex-col items-center justify-center">
-                            <p className="text-[10px] text-dark-500 font-bold uppercase tracking-wider">Duration Pace</p>
-                            <p className="text-sm font-black text-dark-800 mt-1">{timeTaken}</p>
-                            <p className="text-[9px] text-dark-500 font-semibold mt-0.5">{pace}</p>
-                        </div>
-                    </div>
-
-                    {/* Answer Breakdown Row */}
-                    <div className="flex items-center justify-around border border-dark-200 rounded-2xl p-4 bg-white shadow-sm">
-                        <div className="text-center">
-                            <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Correct</span>
-                            <p className="text-lg font-black text-dark-800 mt-1">{correct}</p>
-                        </div>
-                        <div className="w-px bg-dark-200 h-8"></div>
-                        <div className="text-center">
-                            <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Incorrect</span>
-                            <p className="text-lg font-black text-dark-800 mt-1">{incorrect}</p>
-                        </div>
-                        <div className="w-px bg-dark-200 h-8"></div>
-                        <div className="text-center">
-                            <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-dark-300 inline-block"></span> Unattempted</span>
-                            <p className="text-lg font-black text-dark-800 mt-1">{unattempted}</p>
-                        </div>
-                    </div>
-
-                    {/* Topic Analysis (Mocked) */}
-                    <div className="space-y-4">
-                        <h4 className="text-xs font-black text-dark-900 uppercase tracking-widest flex items-center gap-2">
-                            <span>🎯</span> Topic Strength Analysis
-                        </h4>
-                        <div className="space-y-4 bg-dark-50/50 border border-dark-200 p-5 rounded-2xl">
-                            <div className="space-y-1.5">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="font-bold text-dark-800">{selectedSubmission.title}</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-dark-500 font-semibold">{correct}/{total} Qs</span>
-                                        <span className="font-extrabold text-dark-900">{Math.round(selectedSubmission.percentage)}%</span>
-                                    </div>
-                                </div>
-                                <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                                    <div 
-                                      className={`${status.cls.includes('emerald') ? 'bg-emerald-500' : status.cls.includes('success') ? 'bg-emerald-500' : status.cls.includes('amber') ? 'bg-amber-500' : status.cls.includes('rose') ? 'bg-rose-500' : 'bg-primary-500'} h-full rounded-full`} 
-                                      style={{width: `${selectedSubmission.percentage}%`}}
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Footer Actions */}
-                <div className="p-6 border-t border-dark-100 flex items-center gap-3 bg-dark-50/50">
-                    <button 
-                      className="flex-1 bg-dark-900 hover:bg-dark-800 text-white font-bold py-3 px-4 rounded-xl text-xs transition-all cursor-pointer text-center" 
-                      onClick={() => setSelectedSubmission(null)}
-                    >
-                        Close Analysis
-                    </button>
-                </div>
-              </>
-            );
-          })()}
-        </div>
-      </div>
-    )}
-
-    </>
+        </>
   );
 }

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, mode, totalMarks, earnedMarks, percentage, responses } = body;
+    const { title, mode, totalMarks, earnedMarks, percentage, responses, details } = body;
 
     if (!title || !mode || totalMarks === undefined || earnedMarks === undefined || percentage === undefined) {
       return NextResponse.json(

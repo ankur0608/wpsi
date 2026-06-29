@@ -1,22 +1,49 @@
 "use client";
-
-import React from "react";
-import { useUser } from "@/context/UserContext";
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function XPPage() {
-  const { user } = useUser();
-  const displayName = user?.name?.trim() || "Profile";
-  const userXp = user?.xp || 0;
-  
-  // Calculate Level dynamically (every 1000 XP = 1 Level)
-  const currentLevel = Math.max(1, Math.floor(userXp / 1000) + 1);
-  const nextLevelXp = currentLevel * 1000;
-  const prevLevelXp = (currentLevel - 1) * 1000;
-  const progressPercent = Math.min(100, Math.max(0, ((userXp - prevLevelXp) / (nextLevelXp - prevLevelXp)) * 100));
-  const xpNeeded = nextLevelXp - userXp;
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/user/xp')
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          setData(result.data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch XP stats", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8 text-dark-500">
+        <i className="fa-solid fa-circle-notch fa-spin text-3xl mb-4 text-primary-500"></i>
+        <span className="ml-3 font-semibold">Loading XP Dashboard...</span>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-dark-500">
+        <i className="fa-solid fa-triangle-exclamation text-4xl mb-4 text-warning"></i>
+        <h2 className="text-xl font-bold text-dark-900 mb-2">Could not load stats</h2>
+        <p>Please try again later.</p>
+      </div>
+    );
+  }
+
+  const { user, analytics, recentHistory, sources, levels } = data;
 
   return (
-    <div className="bg-dark-50 w-full font-sans text-dark-800 pb-10">
+    <div className="w-full font-sans text-dark-800 animate-in fade-in duration-500">
       <div className="max-w-[1440px] mx-auto p-4 lg:p-6 space-y-6">
         
         {/* Gamification Profile Header */}
@@ -27,31 +54,31 @@ export default function XPPage() {
           <div className="relative z-10 w-24 h-24 shrink-0 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 p-[3px] shadow-sm">
             <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center font-display font-bold">
               <span className="text-[10px] text-purple-600 mb-[-4px]">LVL</span>
-              <span className="text-3xl text-dark-900">{currentLevel}</span>
+              <span className="text-3xl text-dark-900">{user.level}</span>
             </div>
           </div>
           
           <div className="relative z-10 flex-1 w-full text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-4">
               <div>
-                <h2 className="font-display text-3xl font-bold text-dark-900 mb-1">{displayName}</h2>
-                <p className="text-xs text-purple-600 font-extrabold uppercase tracking-widest flex items-center justify-center md:justify-start gap-1">🏆 Scholar Rank</p>
+                <h2 className="font-display text-3xl font-bold text-dark-900 mb-1">{user.name}</h2>
+                <p className="text-xs text-purple-600 font-extrabold uppercase tracking-widest flex items-center gap-1 justify-center md:justify-start">🏆 {user.rank} Rank</p>
               </div>
               <div className="bg-purple-50/50 border border-purple-100 px-6 py-3 rounded-2xl flex items-center gap-4 self-center md:self-auto shadow-sm">
                 <span className="text-3xl">🏆</span>
                 <div className="text-left">
                   <p className="text-[10px] text-purple-600 font-bold uppercase tracking-widest">Total XP Earned</p>
-                  <p className="text-2xl font-black text-purple-900 leading-none mt-1">{userXp.toLocaleString()}</p>
+                  <p className="text-2xl font-black text-purple-900 leading-none mt-1">{user.xp.toLocaleString()}</p>
                 </div>
               </div>
             </div>
             
             <div className="w-full bg-dark-100 h-2.5 rounded-full overflow-hidden border border-dark-200/50 mt-5 shadow-inner">
-              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full relative" style={{ width: `${progressPercent}%` }}></div>
+              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full relative transition-all duration-1000 ease-out" style={{ width: `${user.progressPercentage}%` }}></div>
             </div>
             <div className="flex justify-between text-xs font-bold text-dark-500 mt-2">
-              <span>Level {currentLevel} ({prevLevelXp.toLocaleString()} XP)</span>
-              <span>{xpNeeded.toLocaleString()} XP to Level {currentLevel + 1} ({nextLevelXp.toLocaleString()} XP)</span>
+              <span>Level {user.level}: {user.rank} ({user.levelMin.toLocaleString()} XP)</span>
+              <span>{user.levelMax > 90000 ? 'Max Level Reached!' : `${(user.levelMax - user.xp).toLocaleString()} XP to Next Level (${user.levelMax.toLocaleString()} XP)`}</span>
             </div>
           </div>
         </div>
@@ -64,44 +91,44 @@ export default function XPPage() {
             
             {/* XP Overview Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="glass-card p-5 bg-white flex flex-col justify-between rounded-3xl shadow-sm border border-dark-100">
+              <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-dark-100 flex flex-col justify-between hover:-translate-y-1 transition-transform">
                 <span className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">Total XP</span>
-                <p className="text-2xl font-black text-dark-900 mt-2">{userXp.toLocaleString()}</p>
+                <p className="text-2xl font-black text-dark-900 mt-2">{user.xp.toLocaleString()}</p>
               </div>
-              <div className="glass-card p-5 bg-white flex flex-col justify-between rounded-3xl shadow-sm border border-dark-100">
-                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Today&apos;s XP</span>
-                <p className="text-2xl font-black text-emerald-600 mt-2">0</p>
+              <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-dark-100 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Today's XP</span>
+                <p className="text-2xl font-black text-emerald-600 mt-2">+{analytics.todayXP.toLocaleString()}</p>
               </div>
-              <div className="glass-card p-5 bg-white flex flex-col justify-between rounded-3xl shadow-sm border border-dark-100">
+              <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-dark-100 flex flex-col justify-between hover:-translate-y-1 transition-transform">
                 <span className="text-[10px] text-purple-600 font-bold uppercase tracking-widest">Weekly XP</span>
-                <p className="text-2xl font-black text-purple-600 mt-2">0</p>
+                <p className="text-2xl font-black text-purple-600 mt-2">{analytics.weeklyXP.toLocaleString()}</p>
               </div>
-              <div className="glass-card p-5 bg-white flex flex-col justify-between rounded-3xl shadow-sm border border-dark-100">
-                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Monthly XP</span>
-                <p className="text-2xl font-black text-blue-600 mt-2">0</p>
+              <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-dark-100 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                <span className="text-[10px] text-primary-600 font-bold uppercase tracking-widest">Monthly XP</span>
+                <p className="text-2xl font-black text-primary-600 mt-2">{analytics.monthlyXP.toLocaleString()}</p>
               </div>
             </div>
 
             {/* Daily MCQ Goal Tracker Card */}
             <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-[24px] p-6 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 relative z-10">
                 <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-3xl shrink-0 shadow-inner">🎯</div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-display font-black text-lg">Daily MCQ Goal Completed!</h3>
-                    <span className="bg-white/25 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-white/20">Done</span>
+                    <h3 className="font-display font-black text-lg">Daily MCQ Goal</h3>
+                    {analytics.todayXP >= 200 && <span className="bg-white/25 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-white/20">Done</span>}
                   </div>
-                  <p className="text-emerald-100 text-xs mt-1">Target achieved: Solve 20 questions in a day to claim your daily bonus!</p>
+                  <p className="text-emerald-100 text-xs mt-1">Target: Earn 200 XP in a day to claim your daily bonus!</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 shrink-0 w-full md:w-auto justify-end">
+              <div className="flex items-center gap-4 shrink-0 w-full md:w-auto justify-end relative z-10">
                 <div className="text-right">
-                  <p className="text-2xl font-black">20 / 20</p>
-                  <p className="text-[10px] text-emerald-100 font-bold uppercase tracking-widest mt-0.5">MCQs Completed</p>
+                  <p className="text-2xl font-black">{Math.min(analytics.todayXP, 200)} / 200</p>
+                  <p className="text-[10px] text-emerald-100 font-bold uppercase tracking-widest mt-0.5">XP Earned</p>
                 </div>
                 <div className="bg-white text-emerald-700 font-black px-4 py-2.5 rounded-xl text-xs shadow-md">
-                  +50 XP Bonus Credited
+                  {analytics.todayXP >= 200 ? '+50 XP Bonus Credited' : 'Keep Going!'}
                 </div>
               </div>
             </div>
@@ -112,45 +139,17 @@ export default function XPPage() {
                 📊 XP Earning Sources
               </h3>
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-dark-800">Practice Questions</span>
-                    <span className="text-dark-500 font-bold">2,450 XP (57%)</span>
+                {sources.map((src: any, idx: number) => (
+                  <div key={idx} className="space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-bold text-dark-800">{src.name}</span>
+                      <span className="text-dark-500 font-bold">{src.xp.toLocaleString()} XP ({src.percentage}%)</span>
+                    </div>
+                    <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
+                      <div className={`${src.color} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: `${src.percentage}%` }}></div>
+                    </div>
                   </div>
-                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                    <div className="bg-primary-500 h-full rounded-full" style={{ width: '57%' }}></div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-dark-800">Sectional Mock Tests</span>
-                    <span className="text-dark-500 font-bold">900 XP (21%)</span>
-                  </div>
-                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                    <div className="bg-purple-500 h-full rounded-full" style={{ width: '21%' }}></div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-dark-800">Full-Length Mock Exams</span>
-                    <span className="text-dark-500 font-bold">600 XP (14%)</span>
-                  </div>
-                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                    <div className="bg-indigo-500 h-full rounded-full" style={{ width: '14%' }}></div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-dark-800">Streak Rewards & Milestones</span>
-                    <span className="text-dark-500 font-bold">330 XP (8%)</span>
-                  </div>
-                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                    <div className="bg-orange-500 h-full rounded-full" style={{ width: '8%' }}></div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -160,41 +159,21 @@ export default function XPPage() {
                 🕒 Recent Points History
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-dark-50 pb-2.5">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">Engineering Materials MCQ Practice</p>
-                    <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">Today</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 shrink-0">+80 XP</span>
-                </div>
-                <div className="flex justify-between items-start border-b border-dark-50 pb-2.5">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">Completed Daily 20 MCQ Goal</p>
-                    <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">Today</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 shrink-0">+50 XP</span>
-                </div>
-                <div className="flex justify-between items-start border-b border-dark-50 pb-2.5">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">Digital Electronics Sectional Mock</p>
-                    <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">Yesterday</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 shrink-0">+75 XP</span>
-                </div>
-                <div className="flex justify-between items-start border-b border-dark-50 pb-2.5">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">WPSI Full Length Mock</p>
-                    <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">2026-06-18</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 shrink-0">+150 XP</span>
-                </div>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">1 Week Streak Reward</p>
-                    <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">2026-06-18</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 shrink-0">+100 XP</span>
-                </div>
+                {recentHistory.length > 0 ? (
+                  recentHistory.map((hist: any, idx: number) => (
+                    <div key={idx} className={`flex justify-between items-start ${idx < recentHistory.length - 1 ? 'border-b border-dark-50 pb-2.5' : ''}`}>
+                      <div>
+                        <p className="text-xs font-bold text-dark-900">{hist.title}</p>
+                        <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">
+                          {new Date(hist.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-600 shrink-0">+{hist.xp} XP</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-dark-400 text-sm py-4">No recent activity found.</div>
+                )}
               </div>
             </div>
 
@@ -211,38 +190,34 @@ export default function XPPage() {
               </div>
               
               <div className="grid grid-cols-1 gap-2.5">
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">🌱 Level 1: Beginner</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">0 - 500 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">📚 Level 2: Learner</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">500 - 1000 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">✍️ Level 3: Practitioner</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">1000 - 1750 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">🎯 Level 4: Skilled</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">1750 - 2500 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">⚡ Level 5: Advanced</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">2500 - 3400 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">🏅 Level 6: Expert</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">3400 - 4000 XP</span>
-                </div>
-                <div className="p-3 bg-purple-50/50 rounded-xl border-2 border-purple-300 flex items-center justify-between text-xs shadow-sm">
-                  <span className="font-black text-purple-900 flex items-center gap-1.5">🏆 Level 7: Master <span className="text-[8px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded uppercase">Active</span></span>
-                  <span className="font-black text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">4000 - 5000 XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600 flex items-center gap-1.5">👑 Level 8: Legend</span>
-                  <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">5000+ XP</span>
-                </div>
+                {levels.map((l: any) => {
+                  const isActive = user.level === l.lvl;
+                  const icons = ['🌱', '📚', '✍️', '🎯', '⚡', '🏅', '🏆', '👑'];
+                  const icon = icons[l.lvl - 1] || '⭐';
+
+                  if (isActive) {
+                    return (
+                      <div key={l.lvl} className="p-3 bg-purple-50/50 rounded-xl border-2 border-purple-300 flex items-center justify-between text-xs shadow-sm">
+                        <span className="font-black text-purple-900 flex items-center gap-1.5">
+                          {icon} Level {l.lvl}: {l.name}
+                          <span className="text-[8px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded uppercase">Active</span>
+                        </span>
+                        <span className="font-black text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">
+                          {l.lvl === 8 ? '5000+ XP' : `${l.min} - ${l.max} XP`}
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={l.lvl} className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-dark-600 flex items-center gap-1.5">{icon} Level {l.lvl}: {l.name}</span>
+                      <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">
+                        {l.lvl === 8 ? '5000+ XP' : `${l.min} - ${l.max} XP`}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -254,15 +229,15 @@ export default function XPPage() {
               <div className="space-y-4">
                 <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
                   <span className="font-semibold text-dark-600">Average XP / Day</span>
-                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">77 XP</span>
+                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">{analytics.averageDayXP} XP</span>
                 </div>
                 <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
                   <span className="font-semibold text-dark-600">Average XP / Week</span>
-                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">540 XP</span>
+                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">{analytics.averageWeekXP} XP</span>
                 </div>
                 <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
                   <span className="font-semibold text-dark-600">Highest Single Day XP</span>
-                  <span className="font-bold text-emerald-600 bg-white px-2 py-0.5 rounded border">+320 XP</span>
+                  <span className="font-bold text-emerald-600 bg-white px-2 py-0.5 rounded border">+{analytics.highestDayXP} XP</span>
                 </div>
               </div>
             </div>
@@ -301,34 +276,10 @@ export default function XPPage() {
                     <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+150 XP</span> per exam</p>
                   </div>
                 </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">🎁</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">1 Week Streak Reward</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+100 XP</span> milestone bonus</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">🎁</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">1 Month Streak Reward</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+300 XP</span> milestone bonus</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">🎁</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">100 Day Streak Reward</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+1000 XP</span> milestone bonus</p>
-                  </div>
-                </li>
               </ul>
             </div>
-
           </div>
-
         </div>
-
       </div>
     </div>
   );

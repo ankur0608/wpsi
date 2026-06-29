@@ -62,10 +62,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     Exam
                 </Link>
+                {/* 
                 <Link href="/practice" onClick={onClose} className={`sidebar-item ${isActive('/practice') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     Practice
                 </Link>
+                */}
                 <Link href="/test" onClick={onClose} className={`sidebar-item ${isActive('/test') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     Mock Tests
@@ -86,6 +88,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             <p className="text-[10px] font-bold text-dark-400 mt-6 mb-3 px-3 uppercase tracking-widest">Gamification</p>
             <nav className="space-y-1">
+                <Link href="/xp" onClick={onClose} className={`sidebar-item ${isActive('/xp') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Points & XP
+                </Link>
                 <Link href="/streaks" onClick={onClose} className={`sidebar-item ${isActive('/streaks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
                     Streak
