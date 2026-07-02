@@ -27,15 +27,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Fetch recent submissions to calculate analytics
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const recentSubmissions = await prisma.testSubmission.findMany({
-      where: { 
-        userId: userId,
-        createdAt: { gte: thirtyDaysAgo }
-      },
+    // Fetch all submissions to calculate analytics and lifetime sources
+    const allSubmissions = await prisma.testSubmission.findMany({
+      where: { userId: userId },
       orderBy: { createdAt: 'desc' }
     });
 
@@ -45,21 +39,44 @@ export async function GET(request: NextRequest) {
     let weeklyXP = 0;
     let monthlyXP = 0;
     
+    let practiceXP = 0;
+    let timedXP = 0;
+    let mockXP = 0;
+
+    const dailyXPMap: Record<string, number> = {};
     const recentHistory: any[] = [];
 
-    recentSubmissions.forEach((sub: any) => {
+    allSubmissions.forEach((sub: any) => {
       const date = new Date(sub.createdAt);
       const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 3600 * 24));
       
-      let xpEarned = sub.earnedMarks * 10;
-      if (sub.mode === 'full') xpEarned = 100;
-      else if (sub.mode === 'mock') xpEarned = 150;
-      else if (sub.mode === 'timed') xpEarned = 75;
+      // Approximate XP earned for this submission based on XP_REWARDS logic
+      let xpEarned = Math.max(0, sub.earnedMarks * 10);
+      if (sub.mode === 'full') xpEarned += 100;
+      else if (sub.mode === 'mock') xpEarned += 150;
+      else if (sub.mode === 'timed') xpEarned += 75;
+      else if (sub.mode === 'quick') xpEarned += 30;
+      
+      if (sub.percentage >= 80 && sub.mode === 'timed') xpEarned += 30;
+      if (sub.percentage >= 90 && sub.mode === 'mock') xpEarned += 75;
+      if (sub.percentage === 100 && sub.totalMarks > 0) xpEarned += 40;
 
+      // Group by date for highestDayXP
+      const dateString = date.toISOString().split('T')[0];
+      if (!dailyXPMap[dateString]) dailyXPMap[dateString] = 0;
+      dailyXPMap[dateString] += xpEarned;
+
+      // Time-based stats
       if (diffDays === 0) todayXP += xpEarned;
       if (diffDays <= 7) weeklyXP += xpEarned;
       if (diffDays <= 30) monthlyXP += xpEarned;
 
+      // Source-based stats
+      if (sub.mode === 'quick' || sub.mode === 'full') practiceXP += xpEarned;
+      else if (sub.mode === 'timed') timedXP += xpEarned;
+      else if (sub.mode === 'mock') mockXP += xpEarned;
+
+      // Add to recent history if it's one of the latest 5
       if (recentHistory.length < 5) {
         recentHistory.push({
           title: sub.title,
@@ -69,6 +86,12 @@ export async function GET(request: NextRequest) {
         });
       }
     });
+
+    const highestDayXP = Object.values(dailyXPMap).length > 0 ? Math.max(...Object.values(dailyXPMap)) : 0;
+    
+    // Streak and other bonuses are whatever is left over from their actual total XP
+    const calculatedXPFromTests = practiceXP + timedXP + mockXP;
+    const streakXP = Math.max(0, user.xp - calculatedXPFromTests);
 
     const { currentLevel, nextLevel, progress } = getUserLevel(user.xp);
     
@@ -89,11 +112,13 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Calculate percentages for sources
+    const totalXP = Math.max(1, user.xp); // prevent divide by zero
     const sources = [
-      { name: 'Practice Questions', xp: Math.floor(user.xp * 0.6), percentage: 60, color: 'bg-primary-500' },
-      { name: 'Sectional / Timed Tests', xp: Math.floor(user.xp * 0.2), percentage: 20, color: 'bg-purple-500' },
-      { name: 'Full-Length Mock Exams', xp: Math.floor(user.xp * 0.15), percentage: 15, color: 'bg-indigo-500' },
-      { name: 'Streak Rewards & Milestones', xp: Math.floor(user.xp * 0.05), percentage: 5, color: 'bg-orange-500' }
+      { name: 'Practice Questions', xp: practiceXP, percentage: Math.round((practiceXP / totalXP) * 100), color: 'bg-primary-500' },
+      { name: 'Sectional / Timed Tests', xp: timedXP, percentage: Math.round((timedXP / totalXP) * 100), color: 'bg-purple-500' },
+      { name: 'Full-Length Mock Exams', xp: mockXP, percentage: Math.round((mockXP / totalXP) * 100), color: 'bg-indigo-500' },
+      { name: 'Streak Rewards & Milestones', xp: streakXP, percentage: Math.round((streakXP / totalXP) * 100), color: 'bg-orange-500' }
     ];
 
     return NextResponse.json({
@@ -115,7 +140,7 @@ export async function GET(request: NextRequest) {
           monthlyXP,
           averageDayXP: Math.round(monthlyXP / 30) || 0,
           averageWeekXP: Math.round(monthlyXP / 4) || 0,
-          highestDayXP: Math.max(todayXP, 120) // Mocking highest day for visual flair
+          highestDayXP: Math.max(todayXP, highestDayXP)
         },
         recentHistory,
         sources,

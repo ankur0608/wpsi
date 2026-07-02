@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
             rawXp: u.xp,
             change: "same", // Future enhancement: track historical rank
             score: Math.min(100, Math.floor(u.xp / 100) || 0),
+            streak: u.streak,
             isUser: session?.userId === u.id
         };
     });

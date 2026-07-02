@@ -44,9 +44,9 @@ function SubjectsContent() {
     return s.part || "";
   };
 
-  const partA = subjects.filter(s => getPart(s) === "Part A");
-  const partB = subjects.filter(s => getPart(s) === "Part B");
-  const otherSubjects = subjects.filter(s => getPart(s) !== "Part A" && getPart(s) !== "Part B");
+  const partA = subjects.filter(s => getPart(s) === "Part A").sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const partB = subjects.filter(s => getPart(s) === "Part B").sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const otherSubjects = subjects.filter(s => getPart(s) !== "Part A" && getPart(s) !== "Part B").sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   const totalTopics = subjects.reduce((sum, s) => sum + (s.topics?.length || 0), 0);
 
@@ -67,7 +67,9 @@ function SubjectsContent() {
         <div className={`w-12 h-12 bg-gradient-to-tr ${meta.gradient} rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md shadow-dark-500/10`}>
             {meta.icon}
         </div>
-        <h4 className={`font-bold text-dark-900 text-sm mb-1 line-clamp-2 min-h-[40px] ${hoverTextColor} transition-colors`}>{subject.name}</h4>
+        <h4 className={`font-bold text-dark-900 text-sm mb-1 line-clamp-2 min-h-[40px] ${hoverTextColor} transition-colors`}>
+            {subject.name}
+        </h4>
         <p className="text-[11px] text-dark-400 mb-4">{totalChapters} Chapters • {totalQuestions >= 1000 ? `${(totalQuestions / 1000).toFixed(1)}k+` : totalQuestions} MCQs</p>
         
         {/* Simulated Progress Bar */}

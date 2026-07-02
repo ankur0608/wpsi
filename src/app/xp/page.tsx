@@ -77,7 +77,7 @@ export default function XPPage() {
               <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full relative transition-all duration-1000 ease-out" style={{ width: `${user.progressPercentage}%` }}></div>
             </div>
             <div className="flex justify-between text-xs font-bold text-dark-500 mt-2">
-              <span>Level {user.level}: {user.rank} ({user.levelMin.toLocaleString()} XP)</span>
+              <span>Level {user.level}: {user.rank} ({user.xp.toLocaleString()} XP)</span>
               <span>{user.levelMax > 90000 ? 'Max Level Reached!' : `${(user.levelMax - user.xp).toLocaleString()} XP to Next Level (${user.levelMax.toLocaleString()} XP)`}</span>
             </div>
           </div>

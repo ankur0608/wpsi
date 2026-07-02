@@ -157,8 +157,8 @@ export default function LeaderboardPage() {
                     {item.change === 'same' && <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>}
                     
                     <div className="text-right">
-                      <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none">{item.score}<span className="text-[10px] font-sans font-bold text-dark-400">/100</span></p>
-                      <p className="text-[8px] text-dark-400 font-bold uppercase tracking-wider mt-0.5">Score</p>
+                      <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none">{item.streak || 0}<span className="text-[10px] font-sans font-bold text-dark-400"> Days</span></p>
+                      <p className="text-[8px] text-dark-400 font-bold uppercase tracking-wider mt-0.5">Streak</p>
                     </div>
                   </div>
                 </div>

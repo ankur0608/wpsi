@@ -8,27 +8,27 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    email     String   @unique
-    name      String?
-    mobile    String?  @unique
-    isMobileVerified Boolean @default(false)
-    password  String
-    planType  String   @default("free")
-    level     Int      @default(1)
-    xp        Int      @default(0)
-    coins     Int      @default(0)
-    streak    Int      @default(0)
-    bestStreak         Int       @default(0)
-    totalStudyDays     Int       @default(0)
+    id               String    @id @default(cuid())
+    email            String    @unique
+    name             String?
+    mobile           String?   @unique
+    isMobileVerified Boolean   @default(false)
+    password         String
+    planType         String    @default("free")
+    level            Int       @default(1)
+    xp               Int       @default(0)
+    coins            Int       @default(0)
+    streak           Int       @default(0)
+    bestStreak       Int       @default(0)
+    totalStudyDays   Int       @default(0)
     lastActivityDate DateTime?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
 
     // Relations
-    answers   MCQAnswer[]
-    progress  UserProgress[]
-    bookmarks Bookmark[]
+    answers         MCQAnswer[]
+    progress        UserProgress[]
+    bookmarks       Bookmark[]
     testSubmissions TestSubmission[]
 }
 
@@ -56,25 +56,28 @@ model Exam {
 }
 
 model Subject {
-    id        String    @id @default(cuid())
+    id        String   @id @default(cuid())
     name      String
     icon      String?
-    part      String    @default("A")
+    part      String   @default("A")
+    sortOrder Int      @default(0)
     examId    String
-    exam      Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+    exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
     topics    Topic[]
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@unique([name, examId])
 }
 
 model Topic {
-    id        String   @id @default(cuid())
+    id        String @id @default(cuid())
     name      String
     subtopics String
     weight    String
     subjectId String
+    sortOrder Int    @default(0)
+
     subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
     mcqs      MCQ[]
     createdAt DateTime @default(now())
@@ -155,17 +158,17 @@ model PracticeMcq {
 }
 
 model MockTest {
-    id             String            @id @default(cuid())
-    title          String            @unique
-    description    String?
+    id              String             @id @default(cuid())
+    title           String             @unique
+    description     String?
     durationMinutes Int?
-    csvFilename    String?
-    totalQuestions  Int               @default(0)
-    failedRows      Int               @default(0)
-    uploadStatus    String            @default("draft")
+    csvFilename     String?
+    totalQuestions  Int                @default(0)
+    failedRows      Int                @default(0)
+    uploadStatus    String             @default("draft")
     questions       MockTestQuestion[]
-    createdAt      DateTime          @default(now())
-    updatedAt      DateTime          @updatedAt
+    createdAt       DateTime           @default(now())
+    updatedAt       DateTime           @updatedAt
 }
 
 model MockTestQuestion {
@@ -210,16 +213,16 @@ model Bookmark {
 }
 
 model TestSubmission {
-    id            String   @id @default(cuid())
-    userId        String
-    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    title         String
-    mode          String
-    totalMarks    Int
-    earnedMarks   Float
-    percentage    Float
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    id          String   @id @default(cuid())
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    title       String
+    mode        String
+    totalMarks  Int
+    earnedMarks Float
+    percentage  Float
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }
 
 model ContactMessage {

@@ -4,10 +4,13 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     const exams = await prisma.exam.findMany({
+      orderBy: { createdAt: 'asc' },
       include: {
         subjects: {
+          orderBy: { sortOrder: 'asc' },
           include: {
             topics: {
+              orderBy: { sortOrder: 'asc' },
               include: {
                 _count: {
                   select: { mcqs: true }
@@ -28,8 +31,10 @@ export async function GET() {
         name: subject.name,
         icon: subject.icon,
         part: subject.part,
+        sortOrder: subject.sortOrder,
         topics: subject.topics.map(topic => ({
           ...topic,
+          sortOrder: topic.sortOrder,
           mcqCount: topic._count?.mcqs || 0,
           _count: undefined // Remove internal _count object
         }))
