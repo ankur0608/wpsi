@@ -1150,11 +1150,11 @@ export default function PracticePage() {
             <div className="mt-6 rounded-[1.5rem] border border-dark-100 bg-white p-5">
               <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-dark-400">Palette Legend</div>
               <div className="mt-4 flex flex-wrap gap-3 text-sm text-dark-600">
-                <span className="rounded-full border border-dark-100 bg-dark-50 px-3 py-2">Not visited</span>
-                <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-emerald-300">Answered</span>
-                <span className="rounded-full border border-red-400/25 bg-red-500/10 px-3 py-2 text-red-300">Visited, unanswered</span>
-                <span className="rounded-full border border-sky-400/25 bg-sky-500/10 px-3 py-2 text-sky-300">Not attempted (E)</span>
-                <span className="rounded-full border border-violet-400/25 bg-violet-500/10 px-3 py-2 text-violet-300">Marked for review</span>
+                <span className="rounded-full border border-green-500 bg-green-500 px-3 py-2 text-white">Answered</span>
+                <span className="rounded-full border border-amber-500 bg-amber-500 px-3 py-2 text-white">Review</span>
+                <span className="rounded-full border border-blue-500 bg-blue-500 px-3 py-2 text-white">Current</span>
+                <span className="rounded-full border border-red-500 bg-red-500 px-3 py-2 text-white">Not Answered</span>
+                <span className="rounded-full border border-slate-500 bg-slate-500 px-3 py-2 text-white">Not Attempted</span>
               </div>
             </div>
 
