@@ -115,6 +115,7 @@ export const publicUserSelect = {
   id: true,
   email: true,
   name: true,
+  planType: true,
   level: true,
   xp: true,
   coins: true,

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import { getUserLevel } from "@/lib/xp";
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -16,7 +17,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const pathname = usePathname();
   const { user, loading, logout } = useUser();
   const displayName = user?.name?.trim() || "Profile";
-  const displayLevel = user?.level || 1;
+  const userXP = user?.xp || 0;
+  const { currentLevel } = getUserLevel(userXP);
   const [openPopover, setOpenPopover] = useState<PopoverKey>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [userRank, setUserRank] = useState<number | null>(null);
@@ -137,8 +139,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                         {loading ? "..." : displayName.slice(0, 2)}
                     </div>
                     <div className="hidden lg:block text-left">
-                        <p className="text-xs font-bold text-dark-800 leading-tight">{loading ? "Loading..." : displayName}</p>
-                        <p className="text-[10px] text-dark-500 font-medium">🏆 Master (Lvl {displayLevel})</p>
+                        <p className="text-xs font-bold text-dark-900 leading-tight">{loading ? 'Loading...' : displayName}</p>
+                        <p className="text-[10px] text-dark-500 font-medium">{currentLevel.icon} {currentLevel.name} (Lvl {currentLevel.level})</p>
                     </div>
                     <svg className="w-4 h-4 text-dark-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>

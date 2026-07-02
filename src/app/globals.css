@@ -6,7 +6,7 @@ html {
     color: var(--text-primary);
 }
 
-@theme inline {
+@theme {
   /* ─── HTML Template Palettes ───────────────────────── */
   --color-primary-50: #F0F7FF;
   --color-primary-100: #E0EFFF;
@@ -199,7 +199,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    color: var(--text-primary);
 }
 
 /* ─────────────────────────────────────────────────────────

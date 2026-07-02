@@ -249,31 +249,38 @@ export default function XPPage() {
               </h3>
               <ul className="space-y-3.5 text-xs text-dark-700">
                 <li className="flex items-start gap-2.5">
-                  <span className="text-sm">📝</span>
+                  <span className="text-sm">✅</span>
                   <div className="flex-1">
-                    <p className="font-bold text-dark-900">Correct Practice Answer</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+10 XP</span> per question</p>
+                    <p className="font-bold text-dark-900">Correct Answer</p>
+                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+10 XP</span> (plus +5 XP First Attempt Bonus)</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-sm">⚡</span>
+                  <div className="flex-1">
+                    <p className="font-bold text-dark-900">5 Correct In a Row</p>
+                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+25 XP</span> Streak Bonus</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-sm">🔥</span>
                   <div className="flex-1">
                     <p className="font-bold text-dark-900">Daily Study Streak</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+5 XP</span> per active day</p>
+                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+5 XP</span> awarded after solving 5 questions daily</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-sm">⏱️</span>
                   <div className="flex-1">
-                    <p className="font-bold text-dark-900">Sectional Mock Test</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+75 XP</span> per session</p>
+                    <p className="font-bold text-dark-900">Timed Test Completed</p>
+                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+75 XP</span> (plus +30 XP if 80%+ Score)</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-sm">🏆</span>
                   <div className="flex-1">
                     <p className="font-bold text-dark-900">Full Length Mock Test</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+150 XP</span> per exam</p>
+                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+150 XP</span> (plus +75 XP if 90%+ Score)</p>
                   </div>
                 </li>
               </ul>

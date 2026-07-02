@@ -2,10 +2,84 @@
 import React from 'react';
 import Link from 'next/link';
 import pricingData from '@/data/pricing.json';
+import Script from 'next/script';
 
 export default function DashboardPricing() {
+  const handlePayment = async (amount: number, planId: string) => {
+    try {
+      const res = await fetch('/api/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, planId })
+      });
+      const data = await res.json();
+      
+      if (!data.success) {
+        if (data.error === 'Not authenticated') {
+          alert('Please login to purchase a plan');
+          window.location.href = '/login';
+          return;
+        }
+        alert('Payment initiation failed: ' + data.error);
+        return;
+      }
+      
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_dummy_key_id',
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'WPSI Exam Prep',
+        description: 'Plan Upgrade',
+        order_id: data.order.id,
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: planId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              alert('Payment Successful! Your plan has been upgraded.');
+              window.location.href = '/dashboard';
+            } else {
+              alert('Payment Verification Failed: ' + verifyData.error);
+            }
+          } catch(err) {
+            console.error(err);
+            alert('Verification Error');
+          }
+        },
+        prefill: {
+          name: 'Student',
+          email: 'student@example.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#3b82f6'
+        }
+      };
+      
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.on('payment.failed', function (response: any){
+        alert('Payment Failed! Reason: ' + response.error.description);
+      });
+      rzp1.open();
+    } catch (error) {
+      console.error(error);
+      alert('Payment failed');
+    }
+  };
+
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="inline-block bg-accent-100 text-accent-800 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
               Pricing Plans
@@ -54,7 +128,7 @@ export default function DashboardPricing() {
                             ))}
                         </ul>
                         
-                        <button onClick={() => { if(plan.amount > 0) alert('Handle payment for ' + plan.amount); else alert('Free plan activated!'); }} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
+                        <button onClick={() => { if(plan.amount > 0) handlePayment(plan.amount, plan.id); else { alert('Free plan activated!'); window.location.href='/dashboard'; } }} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
                             {plan.buttonText}
                         </button>
                         

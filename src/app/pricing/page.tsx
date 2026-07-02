@@ -8,17 +8,22 @@ import DynamicNavbar from '@/components/DynamicNavbar';
 export default function Pricing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handlePayment = async (amount: number) => {
+  const handlePayment = async (amount: number, planId: string) => {
     try {
       const res = await fetch('/api/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount })
+        body: JSON.stringify({ amount, planId })
       });
       const data = await res.json();
       
       if (!data.success) {
-        alert('Payment initiation failed');
+        if (data.error === 'Not authenticated') {
+          alert('Please login to purchase a plan');
+          window.location.href = '/login';
+          return;
+        }
+        alert('Payment initiation failed: ' + data.error);
         return;
       }
       
@@ -29,8 +34,30 @@ export default function Pricing() {
         name: 'WPSI Exam Prep',
         description: 'Test Transaction',
         order_id: data.order.id,
-        handler: function (response: any) {
-          alert('Payment Successful! Payment ID: ' + response.razorpay_payment_id);
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: planId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              alert('Payment Successful! Your plan has been upgraded.');
+              window.location.href = '/dashboard'; // Redirect to dashboard or refresh
+            } else {
+              alert('Payment Verification Failed: ' + verifyData.error);
+            }
+          } catch(err) {
+            console.error(err);
+            alert('Verification Error');
+          }
         },
         prefill: {
           name: 'Student Name',
@@ -206,7 +233,7 @@ export default function Pricing() {
                             ))}
                         </ul>
                         
-                        <button onClick={() => plan.amount > 0 ? handlePayment(plan.amount) : alert('Free plan activated!')} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
+                        <button onClick={() => plan.amount > 0 ? handlePayment(plan.amount, plan.id) : alert('Free plan activated!')} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
                             {plan.buttonText}
                         </button>
                         

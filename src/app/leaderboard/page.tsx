@@ -2,12 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
+import { getUserLevel } from "@/lib/xp";
 
 export default function LeaderboardPage() {
   const { user } = useUser();
   const displayName = user?.name?.trim() || "Profile";
   const [timeframe, setTimeframe] = useState("allTime");
   const [category, setCategory] = useState("All");
+
+  const { currentLevel, nextLevel, progress } = getUserLevel(user?.xp || 0);
 
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,18 +78,20 @@ export default function LeaderboardPage() {
                 </div>
                 <div className="bg-primary-50 border border-primary-100 px-5 py-2.5 rounded-2xl text-left">
                   <p className="text-[9px] text-primary-600 font-bold uppercase tracking-widest mb-0.5">Level</p>
-                  <p className="text-lg font-bold text-primary-800">{userStats?.level || user?.level || 1}</p>
-                </div>
-              </div>
-              
-              <div className="w-full bg-dark-100 h-2.5 rounded-full overflow-hidden border border-dark-200/50 shadow-inner">
-                <div className="bg-primary-500 h-full rounded-full relative" style={{ width: "82%" }}></div>
-              </div>
-              <div className="flex justify-between text-xs font-bold text-dark-600 mt-3">
-                <span className="flex items-center gap-1.5"><span className="text-lg leading-none">🏆</span> Master (Level 7)</span>
-                <span className="text-primary-600 flex items-center gap-1">
+                  <div className="flex justify-between text-xs font-bold text-dark-500 mb-1">
+                    <span>{currentLevel.name}</span>
+                    <span className="text-primary-600">{user?.xp?.toLocaleString()} / {nextLevel ? nextLevel.xpRequired.toLocaleString() : 'MAX'} XP</span>
+                  </div>
+                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden">
+                    <div className="bg-primary-500 h-full rounded-full relative" style={{ width: `${progress}%` }}></div>
+                  </div>
+                  <div className="flex justify-between text-xs font-bold text-dark-600 mt-3">
+                    <span className="flex items-center gap-1.5"><span className="text-lg leading-none">{currentLevel.icon}</span> {currentLevel.name} (Level {currentLevel.level})</span>
+                    <span className="text-primary-600 flex items-center gap-1">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7-7m-7-7v18"/></svg> Up 4 spots
                 </span>
+              </div>
+            </div>
               </div>
             </div>
           </div>

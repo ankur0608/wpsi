@@ -14,6 +14,7 @@ model User {
     mobile    String?  @unique
     isMobileVerified Boolean @default(false)
     password  String
+    planType  String   @default("free")
     level     Int      @default(1)
     xp        Int      @default(0)
     coins     Int      @default(0)

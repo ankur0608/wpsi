@@ -448,8 +448,8 @@ export default function PracticePage() {
       });
 
       const filteredMcqs = groupedMcqs.filter(mcq => {
-        const hasEnglish = mcq.language === 'English' || mcq.translations?.some(t => t.language === 'English');
-        const hasGujarati = mcq.language === 'Gujarati' || mcq.translations?.some(t => t.language === 'Gujarati');
+        const hasEnglish = mcq.language === 'English' || mcq.language === 'Both' || mcq.translations?.some(t => t.language === 'English');
+        const hasGujarati = mcq.language === 'Gujarati' || mcq.language === 'Both' || mcq.translations?.some(t => t.language === 'Gujarati');
         
         if (mcq.part === 'A') {
           return hasEnglish || hasGujarati;
@@ -801,8 +801,8 @@ export default function PracticePage() {
 
   useEffect(() => {
     if (currentQuestion) {
-      const hasEnglish = currentQuestion.language === 'English' || currentQuestion.translations?.some(t => t.language === 'English');
-      const hasGujarati = currentQuestion.language === 'Gujarati' || currentQuestion.translations?.some(t => t.language === 'Gujarati');
+      const hasEnglish = currentQuestion.language === 'English' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => t.language === 'English');
+      const hasGujarati = currentQuestion.language === 'Gujarati' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => t.language === 'Gujarati');
       
       if (activeLanguage === 'English' && !hasEnglish && hasGujarati) {
         setActiveLanguage('Gujarati');
@@ -1248,7 +1248,7 @@ export default function PracticePage() {
               {/* Controls */}
               <div className="flex flex-row justify-between items-center gap-2 mb-3 md:mb-5">
                 <div className="flex bg-dark-50 rounded-lg p-0.5">
-                  {(!currentQuestion.language || currentQuestion.language === 'English' || currentQuestion.translations?.some(t => t.language === 'English')) && (
+                  {(!currentQuestion.language || currentQuestion.language === 'English' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => t.language === 'English')) && (
                     <button 
                       onClick={() => setActiveLanguage('English')}
                       className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'English' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
@@ -1256,7 +1256,7 @@ export default function PracticePage() {
                       English
                     </button>
                   )}
-                  {(currentQuestion.language === 'Gujarati' || currentQuestion.translations?.some(t => t.language === 'Gujarati')) && (
+                  {(currentQuestion.language === 'Gujarati' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => t.language === 'Gujarati')) && (
                     <button 
                       onClick={() => setActiveLanguage('Gujarati')}
                       className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'Gujarati' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
@@ -1277,7 +1277,7 @@ export default function PracticePage() {
               <div className="flex flex-col gap-3 mb-6">
                 {displayedQuestion && getOptionEntries(displayedQuestion).map(([key, label]) => {
                   const selected  = currentResponse === key;
-                  const showState = session.submitted || (session.mode !== 'mock' && currentResponse !== undefined);
+                  const showState = session.submitted || (session.mode === 'full' && currentResponse !== undefined);
                   const correct   = key === currentQuestion.correctAnswer;
                   const wrongSel  = selected && key !== currentQuestion.correctAnswer && key !== 'E';
 
@@ -1374,7 +1374,7 @@ export default function PracticePage() {
               </div>
 
               {/* Explanation */}
-              {session.mode !== 'mock' && currentResponse && (
+              {session.mode === 'full' && currentResponse && (
                 <div className="mt-5 md:mt-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 md:p-5">
                   <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400">Explanation</div>
                   <p className="mt-2 text-xs md:text-sm leading-6 text-dark-600">{displayedQuestion?.explanation || 'No explanation available.'}</p>
@@ -1393,23 +1393,23 @@ export default function PracticePage() {
               
               <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[#10b981]"></div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-green-500"></div>
                   <span className="text-[11px] text-dark-600">Answered</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-primary-600"></div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-amber-500"></div>
                   <span className="text-[11px] text-dark-600">Review</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-[#3b82f6]"></div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-blue-500"></div>
                   <span className="text-[11px] text-dark-600">Current</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-dark-50"></div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-red-500"></div>
                   <span className="text-[11px] text-dark-600">Not Answered</span>
                 </div>
                 <div className="flex items-center gap-2 col-span-2">
-                  <div className="w-3.5 h-3.5 rounded-sm bg-white border border-dark-100 flex items-center justify-center text-[8px] font-bold text-dark-400">E</div>
+                  <div className="w-3.5 h-3.5 rounded-sm bg-slate-500 border border-slate-500 flex items-center justify-center text-[8px] font-bold text-white">E</div>
                   <span className="text-[11px] text-dark-600">Not Attempted</span>
                 </div>
               </div>
@@ -1431,12 +1431,12 @@ export default function PracticePage() {
                         ...paletteStyleMap[ps], 
                         boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
                         ...(active && ps !== 's-review' && { background: '#3b82f6', color: '#fff', borderColor: '#3b82f6' }),
-                        ...(active && ps === 's-review' && { background: '#ea580c', color: '#fff', borderColor: '#3b82f6' }),
-                        ...(ps === 's-answered' && !active && { background: '#10b981', color: '#fff', borderColor: '#10b981' }),
-                        ...(ps === 's-review' && !active && { background: '#ea580c', color: '#fff', borderColor: '#ea580c' }),
-                        ...(ps === 's-unanswered' && !active && { background: "#f8fafc", color: "#0f172a", borderColor: "#e2e8f0" }),
-                        ...(ps === 's-na' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" }),
-                        ...(ps === 's-none' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" })
+                        ...(active && ps === 's-review' && { background: '#f59e0b', color: '#fff', borderColor: '#3b82f6' }),
+                        ...(ps === 's-answered' && !active && { background: '#22c55e', color: '#fff', borderColor: '#22c55e' }),
+                        ...(ps === 's-review' && !active && { background: '#f59e0b', color: '#fff', borderColor: '#f59e0b' }),
+                        ...(ps === 's-unanswered' && !active && { background: "#ef4444", color: "#fff", borderColor: "#ef4444" }),
+                        ...(ps === 's-na' && !active && { background: "#64748b", color: "#fff", borderColor: "#64748b" }),
+                        ...(ps === 's-none' && !active && { background: "#64748b", color: "#fff", borderColor: "#64748b" })
                       }}
                     >
                       {idx + 1}
@@ -1447,23 +1447,23 @@ export default function PracticePage() {
 
               <div className="flex flex-col gap-2 text-[10px] text-dark-400 border-t border-dark-100 pt-4">
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[#10b981] mt-0.5 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-green-500 mt-0.5 shrink-0"></div>
                   <span><span className="text-dark-600">Answered:</span> You have answered the question</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-primary-600 mt-0.5 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-amber-500 mt-0.5 shrink-0"></div>
                   <span><span className="text-dark-600">Review:</span> Marked for review</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-dark-50 mt-0.5 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-red-500 mt-0.5 shrink-0"></div>
                   <span><span className="text-dark-600">Not Answered:</span> You have not answered yet</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-white border border-dark-100 flex items-center justify-center text-[6px] font-bold text-dark-400 mt-0.5 shrink-0">E</div>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-slate-500 border border-slate-500 flex items-center justify-center text-[6px] font-bold text-white mt-0.5 shrink-0">E</div>
                   <span><span className="text-dark-600">Not Attempted:</span> You have not visited yet</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-[#3b82f6] mt-0.5 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-sm bg-blue-500 mt-0.5 shrink-0"></div>
                   <span><span className="text-dark-600">Current:</span> Question you are on</span>
                 </div>
               </div>
@@ -1509,12 +1509,12 @@ export default function PracticePage() {
                           ...paletteStyleMap[ps], 
                           boxShadow: active ? '0 0 0 2px rgba(59,130,246,0.5)' : 'none',
                           ...(active && ps !== 's-review' && { background: '#3b82f6', color: '#fff', borderColor: '#3b82f6' }),
-                          ...(active && ps === 's-review' && { background: '#ea580c', color: '#fff', borderColor: '#3b82f6' }),
-                          ...(ps === 's-answered' && !active && { background: '#10b981', color: '#fff', borderColor: '#10b981' }),
-                          ...(ps === 's-review' && !active && { background: '#ea580c', color: '#fff', borderColor: '#ea580c' }),
-                          ...(ps === 's-unanswered' && !active && { background: "#f8fafc", color: "#0f172a", borderColor: "#e2e8f0" }),
-                          ...(ps === 's-na' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" }),
-                          ...(ps === 's-none' && !active && { background: "#ffffff", color: "#0f172a", borderColor: "#e2e8f0" })
+                          ...(active && ps === 's-review' && { background: '#f59e0b', color: '#fff', borderColor: '#3b82f6' }),
+                          ...(ps === 's-answered' && !active && { background: '#22c55e', color: '#fff', borderColor: '#22c55e' }),
+                          ...(ps === 's-review' && !active && { background: '#f59e0b', color: '#fff', borderColor: '#f59e0b' }),
+                          ...(ps === 's-unanswered' && !active && { background: "#ef4444", color: "#fff", borderColor: "#ef4444" }),
+                          ...(ps === 's-na' && !active && { background: "#64748b", color: "#fff", borderColor: "#64748b" }),
+                          ...(ps === 's-none' && !active && { background: "#64748b", color: "#fff", borderColor: "#64748b" })
                         }}
                       >
                         {idx + 1}

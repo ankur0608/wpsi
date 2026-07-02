@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSessionFromRequest } from '@/lib/auth';
+import { XP_LEVELS, getUserLevel } from '@/lib/xp';
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,10 +51,10 @@ export async function GET(request: NextRequest) {
       const date = new Date(sub.createdAt);
       const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 3600 * 24));
       
-      // Estimate XP earned from this submission
       let xpEarned = sub.earnedMarks * 10;
-      if (sub.mode === 'full') xpEarned = 150;
-      else if (sub.mode === 'sectional') xpEarned = 75;
+      if (sub.mode === 'full') xpEarned = 100;
+      else if (sub.mode === 'mock') xpEarned = 150;
+      else if (sub.mode === 'timed') xpEarned = 75;
 
       if (diffDays === 0) todayXP += xpEarned;
       if (diffDays <= 7) weeklyXP += xpEarned;
@@ -69,41 +70,28 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Level Progression Logic
-    const levels = [
-      { lvl: 1, name: 'Beginner', min: 0, max: 500 },
-      { lvl: 2, name: 'Learner', min: 500, max: 1000 },
-      { lvl: 3, name: 'Practitioner', min: 1000, max: 1750 },
-      { lvl: 4, name: 'Skilled', min: 1750, max: 2500 },
-      { lvl: 5, name: 'Advanced', min: 2500, max: 3400 },
-      { lvl: 6, name: 'Expert', min: 3400, max: 4000 },
-      { lvl: 7, name: 'Master', min: 4000, max: 5000 },
-      { lvl: 8, name: 'Legend', min: 5000, max: 100000 }
-    ];
-
-    let currentLevelObj = levels[0];
-    for (let l of levels) {
-      if (user.xp >= l.min && user.xp < l.max) {
-        currentLevelObj = l;
-        break;
-      }
-      if (l.lvl === 8 && user.xp >= l.min) {
-        currentLevelObj = l;
-      }
-    }
+    const { currentLevel, nextLevel, progress } = getUserLevel(user.xp);
     
     // Force sync the user level in DB if it mismatches
-    if (user.level !== currentLevelObj.lvl) {
-       await prisma.user.update({ where: { id: userId }, data: { level: currentLevelObj.lvl } });
-       user.level = currentLevelObj.lvl;
+    if (user.level !== currentLevel.level) {
+       await prisma.user.update({ where: { id: userId }, data: { level: currentLevel.level } });
+       user.level = currentLevel.level;
     }
 
-    const currentLevelProgress = user.xp >= 5000 ? 100 : ((user.xp - currentLevelObj.min) / (currentLevelObj.max - currentLevelObj.min)) * 100;
+    // Format levels for frontend mapping
+    const formattedLevels = XP_LEVELS.map((l, index) => {
+      const next = XP_LEVELS[index + 1];
+      return {
+        lvl: l.level,
+        name: l.name,
+        min: l.xpRequired,
+        max: next ? next.xpRequired : l.xpRequired + 50000
+      };
+    });
 
-    // Dynamic sources mock based on total XP (since we don't have historical logs of ALL time)
     const sources = [
       { name: 'Practice Questions', xp: Math.floor(user.xp * 0.6), percentage: 60, color: 'bg-primary-500' },
-      { name: 'Sectional Mock Tests', xp: Math.floor(user.xp * 0.2), percentage: 20, color: 'bg-purple-500' },
+      { name: 'Sectional / Timed Tests', xp: Math.floor(user.xp * 0.2), percentage: 20, color: 'bg-purple-500' },
       { name: 'Full-Length Mock Exams', xp: Math.floor(user.xp * 0.15), percentage: 15, color: 'bg-indigo-500' },
       { name: 'Streak Rewards & Milestones', xp: Math.floor(user.xp * 0.05), percentage: 5, color: 'bg-orange-500' }
     ];
@@ -116,10 +104,10 @@ export async function GET(request: NextRequest) {
           xp: user.xp,
           level: user.level,
           streak: user.streak,
-          rank: currentLevelObj.name,
-          levelMin: currentLevelObj.min,
-          levelMax: currentLevelObj.max,
-          progressPercentage: currentLevelProgress
+          rank: currentLevel.name,
+          levelMin: currentLevel.xpRequired,
+          levelMax: nextLevel ? nextLevel.xpRequired : currentLevel.xpRequired,
+          progressPercentage: progress
         },
         analytics: {
           todayXP,
@@ -131,7 +119,7 @@ export async function GET(request: NextRequest) {
         },
         recentHistory,
         sources,
-        levels
+        levels: formattedLevels
       }
     });
   } catch (error) {

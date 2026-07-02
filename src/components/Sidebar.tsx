@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import { getUserLevel } from "@/lib/xp";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,7 +15,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, loading } = useUser();
   const displayName = user?.name?.trim() || "Profile";
-  const displayLevel = user?.level || 1;
+  const userXP = user?.xp || 0;
+  const { currentLevel } = getUserLevel(userXP);
 
   const isActive = (path: string) => {
     if (path === '/exam') {
@@ -72,6 +74,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     Mock Tests
                 </Link>
+                <Link href="/analytics" onClick={onClose} className={`sidebar-item ${isActive('/analytics') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                    <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    Analytics
+                </Link>
                 <Link href="/results" onClick={onClose} className={`sidebar-item ${isActive('/results') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Results
@@ -105,16 +111,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         
         {/* Bottom section */}
         <div className="p-4 relative z-10 shrink-0">
-            <div className="bg-gradient-to-br from-dark-800 to-dark-900 border border-dark-700 rounded-2xl p-5 mb-4 shadow-xl relative overflow-hidden group hidden sm:block">
-                <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="flex items-center gap-2 mb-2 relative z-10">
-                    <span className="text-accent-400 text-[10px] font-bold uppercase tracking-widest">👑 WPSI Combo</span>
+            {(!user?.planType || user.planType === 'free') && (
+                <div className="bg-gradient-to-br from-dark-800 to-dark-900 border border-dark-700 rounded-2xl p-5 mb-4 shadow-xl relative overflow-hidden group hidden sm:block">
+                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div className="flex items-center gap-2 mb-2 relative z-10">
+                        <span className="text-accent-400 text-[10px] font-bold uppercase tracking-widest">👑 WPSI Combo</span>
+                    </div>
+                    <p className="text-[11px] text-dark-300 mb-4 leading-relaxed relative z-10">Full access at <b className="text-white">Rs 249</b> with the cleanest prep flow.</p>
+                    <Link href="/dashboard/pricing" className="block w-full bg-accent-500 hover:bg-accent-600 text-dark-800 text-center py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-accent-500/20 relative z-10">
+                        ⚡ Upgrade Now
+                    </Link>
                 </div>
-                <p className="text-[11px] text-dark-300 mb-4 leading-relaxed relative z-10">Full access at <b className="text-white">Rs 249</b> with the cleanest prep flow.</p>
-                <Link href="/dashboard/pricing" className="block w-full bg-accent-500 hover:bg-accent-600 text-dark-800 text-center py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-accent-500/20 relative z-10">
-                    ⚡ Upgrade Now
-                </Link>
-            </div>
+            )}
             
             <Link href="/profile" onClick={onClose} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
                 <div className="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center text-primary-700 font-bold mr-3 text-xs border border-primary-200 group-hover:bg-primary-200 transition-colors uppercase">
@@ -122,7 +130,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </div>
                 <div className="flex-1">
                     <p className="text-[13px] font-bold text-dark-800 leading-tight">{loading ? 'Loading...' : displayName}</p>
-                    <p className="text-[10px] text-dark-500 font-medium">🏆 Master (Level {displayLevel})</p>
+                    <p className="text-[10px] text-dark-500 font-medium">{currentLevel.icon} {currentLevel.name} (Level {currentLevel.level})</p>
                 </div>
                 <svg className="w-4 h-4 text-dark-400 group-hover:text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>

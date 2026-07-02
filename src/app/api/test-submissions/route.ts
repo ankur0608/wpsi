@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSessionFromRequest } from '@/lib/auth';
+import { XP_REWARDS, getUserLevel } from '@/lib/xp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: session.userId },
-      select: { xp: true, streak: true, bestStreak: true, totalStudyDays: true, lastActivityDate: true }
+      select: { xp: true, streak: true, bestStreak: true, totalStudyDays: true, lastActivityDate: true, level: true }
     });
 
     if (!user) {
@@ -37,14 +38,17 @@ export async function POST(request: NextRequest) {
     const lastActivity = user.lastActivityDate ? new Date(user.lastActivityDate) : null;
     let newStreak = user.streak;
     let newTotalStudyDays = user.totalStudyDays || 0;
+    
+    let diffDays = 0;
 
     if (!lastActivity) {
+      diffDays = -1; // special flag for first time
       newStreak = 1;
       newTotalStudyDays += 1;
     } else {
       const lastActivityDay = new Date(lastActivity.getFullYear(), lastActivity.getMonth(), lastActivity.getDate());
       const diffTime = today.getTime() - lastActivityDay.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays === 1) {
         newStreak += 1;
@@ -57,27 +61,62 @@ export async function POST(request: NextRequest) {
     
     const newBestStreak = Math.max(user.bestStreak || 0, newStreak);
 
-    const xpGained = Math.max(0, Math.round(earnedMarks * 10));
-    const newXp = user.xp + xpGained;
+    // --- XP CALCULATION ENGINE ---
+    let totalXPGained = 0;
+    let xpEvents: { reason: string, amount: number }[] = [];
+
+    function addXp(reason: string, amount: number) {
+      if (amount > 0) {
+        totalXPGained += amount;
+        xpEvents.push({ reason, amount });
+      }
+    }
 
     let mcqAnswerUpserts: any[] = [];
     const userProgressUpdates: any[] = [];
 
     if (responses && Array.isArray(responses) && responses.length > 0) {
       const mcqIds = responses.map((r: any) => r.mcqId);
-      const mcqs = await prisma.mCQ.findMany({
-        where: { id: { in: mcqIds } },
-        select: { id: true, correctAnswer: true, topic: { select: { subjectId: true } } }
-      });
+      
+      const [mcqs, existingAnswersList] = await Promise.all([
+        prisma.mCQ.findMany({
+          where: { id: { in: mcqIds } },
+          select: { id: true, correctAnswer: true, topic: { select: { subjectId: true } } }
+        }),
+        prisma.mCQAnswer.findMany({
+          where: { userId: session.userId, mcqId: { in: mcqIds } },
+          select: { mcqId: true }
+        })
+      ]);
 
       const mcqMap = new Map(mcqs.map((m: any) => [m.id, m]));
+      const existingAnswers = new Set(existingAnswersList.map(a => a.mcqId));
       const subjectStats: Record<string, { total: number, correct: number }> = {};
+
+      let correctAnswersCount = 0;
+      let firstAttemptCount = 0;
+      let fiveInARowCount = 0;
+      let currentStreak = 0;
 
       for (const r of responses) {
         const mcq = mcqMap.get(r.mcqId);
         if (!mcq) continue;
 
         const isCorrect = mcq.correctAnswer === r.answer;
+
+        if (isCorrect) {
+          correctAnswersCount++;
+          if (!existingAnswers.has(r.mcqId)) {
+            firstAttemptCount++;
+          }
+          currentStreak++;
+          if (currentStreak === 5) {
+            fiveInARowCount++;
+            currentStreak = 0;
+          }
+        } else {
+          currentStreak = 0; // reset streak
+        }
 
         const subjectId = mcq.topic?.subjectId;
         if (subjectId) {
@@ -93,6 +132,16 @@ export async function POST(request: NextRequest) {
             create: { userId: session.userId, mcqId: r.mcqId, answer: r.answer, isCorrect }
           })
         );
+      }
+
+      // Add XP for questions
+      if (correctAnswersCount > 0) addXp(`Correct Answers (${correctAnswersCount})`, correctAnswersCount * XP_REWARDS.CORRECT_ANSWER);
+      if (firstAttemptCount > 0) addXp(`First Attempt Bonus (${firstAttemptCount})`, firstAttemptCount * XP_REWARDS.FIRST_ATTEMPT_BONUS);
+      if (fiveInARowCount > 0) addXp(`5-in-a-row Streaks (${fiveInARowCount})`, fiveInARowCount * XP_REWARDS.STREAK_5_CORRECT);
+
+      // Add XP for daily study (if they solved at least 5 questions and haven't played today)
+      if (responses.length >= 5 && diffDays !== 0) {
+        addXp('Daily Study Streak', XP_REWARDS.DAILY_STUDY_STREAK);
       }
 
       for (const [subjectId, stats] of Object.entries(subjectStats)) {
@@ -118,6 +167,36 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Apply Mode Completion Bonuses
+    if (mode === 'quick') addXp('Quick Practice Completed', XP_REWARDS.QUICK_PRACTICE);
+    else if (mode === 'full') addXp('Full Practice Completed', XP_REWARDS.FULL_PRACTICE);
+    else if (mode === 'timed') {
+      addXp('Timed Test Completed', XP_REWARDS.TIMED_TEST_COMPLETE);
+      if (percentage >= 80) addXp('Timed Test (80%+ Score)', XP_REWARDS.TIMED_TEST_80_PLUS);
+    }
+    else if (mode === 'mock') {
+      addXp('Full-Length Mock Completed', XP_REWARDS.MOCK_COMPLETE);
+      if (percentage >= 90) addXp('Full-Length Mock (90%+ Score)', XP_REWARDS.MOCK_90_PLUS);
+    }
+    else if (mode === 'quiz' || mode === 'daily') {
+      addXp('Daily Quiz Completed', XP_REWARDS.DAILY_QUIZ_COMPLETE);
+      if (percentage === 100) addXp('Daily Quiz (100% Score)', XP_REWARDS.DAILY_QUIZ_100);
+    }
+
+    // Perfect Score Bonus
+    if (percentage === 100 && totalMarks > 0) {
+      addXp('Perfect Score (100%)', XP_REWARDS.PERFECT_SCORE);
+    }
+
+    // Streak Milestones
+    if (diffDays === 1 || diffDays === -1) { // They increased their streak today
+      if (newStreak % 30 === 0) addXp('30-Day Study Streak Milestone', XP_REWARDS.STREAK_30_DAY);
+      else if (newStreak % 7 === 0) addXp('7-Day Study Streak Milestone', XP_REWARDS.STREAK_7_DAY);
+    }
+
+    const finalXp = user.xp + totalXPGained;
+    const { currentLevel } = getUserLevel(finalXp);
+
     const [submission, updatedUser] = await prisma.$transaction([
       prisma.testSubmission.create({
         data: {
@@ -132,7 +211,8 @@ export async function POST(request: NextRequest) {
       prisma.user.update({
         where: { id: session.userId },
         data: {
-          xp: newXp,
+          xp: finalXp,
+          level: currentLevel.level, // Update level based on new XP
           streak: newStreak,
           bestStreak: newBestStreak,
           totalStudyDays: newTotalStudyDays,
@@ -145,7 +225,12 @@ export async function POST(request: NextRequest) {
       timeout: 20000 // Increase timeout to 20 seconds for bulk upserts
     });
 
-    return NextResponse.json({ data: submission, user: { xp: newXp, streak: newStreak } }, { status: 201 });
+    return NextResponse.json({ 
+      data: submission, 
+      user: { xp: finalXp, streak: newStreak, level: currentLevel.level },
+      xpEvents,
+      totalXPGained
+    }, { status: 201 });
   } catch (error) {
     console.error('Error saving test submission:', error);
     return NextResponse.json(
