@@ -11,6 +11,7 @@ interface User {
   streak: number;
   bestStreak: number;
   totalStudyDays: number;
+  planType?: string;
 }
 
 interface UserContextType {
