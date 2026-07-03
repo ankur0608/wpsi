@@ -100,8 +100,8 @@ export default function DynamicNavbar() {
         >
             <div className="flex justify-between items-center h-16 px-4 sm:px-6">
                 <Link href="/" className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(0,127,255,0.25)] group-hover:shadow-[0_6px_20px_rgba(0,127,255,0.4)] group-hover:-translate-y-0.5 transition-all duration-300">
-                        <span className="text-xl text-white">🎯</span>
+                    <div className="w-10 h-10 relative rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,127,255,0.25)] group-hover:shadow-[0_6px_20px_rgba(0,127,255,0.4)] group-hover:-translate-y-0.5 transition-all duration-300 flex-shrink-0">
+                        <Image src="/logo.jpeg" alt="Logo" fill className="object-cover" />
                     </div>
                     <div>
                         <span className={`font-display font-bold text-xl tracking-tight leading-none block transition-colors ${textColorClass}`}>MCQ Prep Zone</span>

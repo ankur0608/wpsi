@@ -247,42 +247,33 @@ export default function XPPage() {
               <h3 className="font-display text-lg font-bold text-dark-900 mb-4 border-b border-dark-100 pb-3">
                 📜 Point Reward Policy
               </h3>
-              <ul className="space-y-3.5 text-xs text-dark-700">
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">✅</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">Correct Answer</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+10 XP</span> (plus +5 XP First Attempt Bonus)</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">⚡</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">5 Correct In a Row</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+25 XP</span> Streak Bonus</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">🔥</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">Daily Study Streak</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+5 XP</span> awarded after solving 5 questions daily</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">⏱️</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">Timed Test Completed</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+75 XP</span> (plus +30 XP if 80%+ Score)</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-sm">🏆</span>
-                  <div className="flex-1">
-                    <p className="font-bold text-dark-900">Full Length Mock Test</p>
-                    <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">+150 XP</span> (plus +75 XP if 90%+ Score)</p>
-                  </div>
-                </li>
+              <ul className="space-y-3.5 text-xs text-dark-700 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                {[
+                  { icon: '✅', title: 'Correct Answer', xp: '+10 XP', desc: 'Awarded for each correct answer (first attempt only).' },
+                  { icon: '❌', title: 'Incorrect Answer', xp: '0 XP', desc: 'No XP deducted for wrong answers.' },
+                  { icon: '🎯', title: 'First Attempt Bonus', xp: '+5 XP', desc: 'Extra reward for answering correctly on the first attempt.' },
+                  { icon: '⚡', title: '5 Correct Answers in a Row', xp: '+25 XP', desc: 'Streak bonus for consistent accuracy.' },
+                  { icon: '🔥', title: 'Daily Study Streak', xp: '+5 XP', desc: 'Awarded after solving at least 5 questions in a day.' },
+                  { icon: '📚', title: 'Quick Practice Completed', xp: '+30 XP', desc: 'Completion bonus for finishing all 20 MCQs.' },
+                  { icon: '📖', title: 'Full Practice Completed', xp: '+100 XP', desc: 'One-time bonus for completing the full practice set.' },
+                  { icon: '⏱️', title: 'Timed Test Completed', xp: '+75 XP', desc: 'Base reward for completing a timed test.' },
+                  { icon: '🏆', title: 'Timed Test (80%+ Score)', xp: '+30 XP', desc: 'Performance bonus for scoring 80% or higher.' },
+                  { icon: '🎓', title: 'Full-Length Mock Completed', xp: '+150 XP', desc: 'Base reward for completing a full mock exam.' },
+                  { icon: '🥇', title: 'Full-Length Mock (90%+ Score)', xp: '+75 XP', desc: 'Excellence bonus for outstanding performance.' },
+                  { icon: '📅', title: '7-Day Study Streak', xp: '+50 XP', desc: 'Weekly consistency reward.' },
+                  { icon: '📆', title: '30-Day Study Streak', xp: '+300 XP', desc: 'Monthly consistency milestone.' },
+                  { icon: '⭐', title: 'Perfect Score (20/20)', xp: '+40 XP', desc: 'Bonus for achieving a perfect score.' },
+                  { icon: '🏅', title: 'Daily Quiz Completed', xp: '+20 XP', desc: 'Completion reward for the daily quiz.' },
+                  { icon: '🎁', title: 'Daily Quiz (100% Score)', xp: '+20 XP', desc: 'Bonus for a perfect daily quiz score.' },
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5">
+                    <span className="text-sm">{item.icon}</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-dark-900">{item.title}</p>
+                      <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">{item.xp}</span> {item.desc}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

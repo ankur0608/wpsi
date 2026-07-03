@@ -11,6 +11,7 @@ export const XP_LEVELS = [
 
 export const XP_REWARDS = {
   CORRECT_ANSWER: 10,
+  WRONG_ANSWER: -5,
   FIRST_ATTEMPT_BONUS: 5,
   STREAK_5_CORRECT: 25,
   DAILY_STUDY_STREAK: 5, // Awarded on first submission of the day

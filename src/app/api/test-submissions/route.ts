@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     let xpEvents: { reason: string, amount: number }[] = [];
 
     function addXp(reason: string, amount: number) {
-      if (amount > 0) {
+      if (amount !== 0) {
         totalXPGained += amount;
         xpEvents.push({ reason, amount });
       }
@@ -85,15 +85,16 @@ export async function POST(request: NextRequest) {
         }),
         prisma.mCQAnswer.findMany({
           where: { userId: session.userId, mcqId: { in: mcqIds } },
-          select: { mcqId: true }
+          select: { mcqId: true, isCorrect: true }
         })
       ]);
 
       const mcqMap = new Map(mcqs.map((m: any) => [m.id, m]));
-      const existingAnswers = new Set(existingAnswersList.map(a => a.mcqId));
+      const existingAnswersMap = new Map(existingAnswersList.map(a => [a.mcqId, a.isCorrect]));
       const subjectStats: Record<string, { total: number, correct: number }> = {};
 
       let correctAnswersCount = 0;
+      let wrongAnswersCount = 0;
       let firstAttemptCount = 0;
       let fiveInARowCount = 0;
       let currentStreak = 0;
@@ -103,10 +104,14 @@ export async function POST(request: NextRequest) {
         if (!mcq) continue;
 
         const isCorrect = mcq.correctAnswer === r.answer;
+        const previousAnswerExists = existingAnswersMap.has(r.mcqId);
+        const previouslyCorrect = existingAnswersMap.get(r.mcqId) === true;
 
         if (isCorrect) {
-          correctAnswersCount++;
-          if (!existingAnswers.has(r.mcqId)) {
+          if (!previouslyCorrect) {
+            correctAnswersCount++;
+          }
+          if (!previousAnswerExists) {
             firstAttemptCount++;
           }
           currentStreak++;
@@ -115,6 +120,7 @@ export async function POST(request: NextRequest) {
             currentStreak = 0;
           }
         } else {
+          wrongAnswersCount++;
           currentStreak = 0; // reset streak
         }
 
@@ -136,6 +142,7 @@ export async function POST(request: NextRequest) {
 
       // Add XP for questions
       if (correctAnswersCount > 0) addXp(`Correct Answers (${correctAnswersCount})`, correctAnswersCount * XP_REWARDS.CORRECT_ANSWER);
+      if (wrongAnswersCount > 0) addXp(`Wrong Answers Penalty (${wrongAnswersCount})`, wrongAnswersCount * XP_REWARDS.WRONG_ANSWER);
       if (firstAttemptCount > 0) addXp(`First Attempt Bonus (${firstAttemptCount})`, firstAttemptCount * XP_REWARDS.FIRST_ATTEMPT_BONUS);
       if (fiveInARowCount > 0) addXp(`5-in-a-row Streaks (${fiveInARowCount})`, fiveInARowCount * XP_REWARDS.STREAK_5_CORRECT);
 
@@ -194,7 +201,7 @@ export async function POST(request: NextRequest) {
       else if (newStreak % 7 === 0) addXp('7-Day Study Streak Milestone', XP_REWARDS.STREAK_7_DAY);
     }
 
-    const finalXp = user.xp + totalXPGained;
+    const finalXp = Math.max(0, user.xp + totalXPGained);
     const { currentLevel } = getUserLevel(finalXp);
 
     const [submission, updatedUser] = await prisma.$transaction([

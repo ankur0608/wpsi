@@ -96,15 +96,20 @@ export default function LandingNavbar() {
           <div className="flex justify-between items-center h-20">
             <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
               <Link href="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-secondary flex items-center justify-center shadow-lg shadow-brand-500/30">
-                  <i className="fa-solid fa-graduation-cap text-xl text-white"></i>
+                <div className="w-10 h-10 relative rounded-xl overflow-hidden shadow-lg shadow-brand-500/30 flex-shrink-0">
+                  <Image src="/logo.jpeg" alt="Logo" fill className="object-cover" />
                 </div>
-                <span
-                  className="font-heading font-bold text-2xl tracking-tight"
-                  style={{ color: '#1A2A3A' }}
-                >
-                  Mcqprep<span className="text-brand-500">zone</span>
-                </span>
+                <div className="flex flex-col justify-center">
+                  <span
+                    className="font-display font-bold text-xl tracking-tight leading-none"
+                    style={{ color: '#1A2A3A' }}
+                  >
+                    MCQ Prep Zone
+                  </span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase mt-1 text-brand-500">
+                    WPSI Specialised
+                  </span>
+                </div>
               </Link>
             </div>
 
