@@ -97,7 +97,7 @@ export default function LandingNavbar() {
             <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
               <Link href="/" className="flex items-center gap-2">
                 <div className="w-10 h-10 relative rounded-xl overflow-hidden shadow-lg shadow-brand-500/30 flex-shrink-0">
-                  <Image src="/logo.jpeg" alt="Logo" fill className="object-cover" />
+                  <Image src="/logo.jpeg" alt="Logo" fill sizes="40px" className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center">
                   <span

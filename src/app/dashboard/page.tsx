@@ -197,7 +197,19 @@ export default function Dashboard() {
             </div>
 
             {/* COL 2: WEAK TOPICS */}
-            <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm">
+            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm relative ${user?.planType === 'free' ? 'overflow-hidden' : ''}`}>
+                {user?.planType === 'free' && (
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed">
+                        <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-dark-500 mb-3">
+                            🔒
+                        </div>
+                        <h4 className="font-bold text-dark-800 text-sm mb-1">Premium Feature</h4>
+                        <p className="text-xs text-dark-500 mb-4">Upgrade to view your targeted weak areas.</p>
+                        <Link href="/dashboard/pricing" className="bg-primary-600 text-white font-bold text-xs py-2 px-4 rounded-lg shadow-sm hover:bg-primary-700 pointer-events-auto">
+                            Upgrade Now
+                        </Link>
+                    </div>
+                )}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
                     <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
                         <span className="w-6 h-6 bg-rose-50 border border-rose-100 rounded-lg flex items-center justify-center shrink-0">
@@ -219,8 +231,10 @@ export default function Dashboard() {
                         const classSet = bgClasses[idx % 3];
                         const [bg, border, hover, text, textHover, iconHover] = classSet.split(' ');
                         
+                        const destHref = user?.planType === 'pro' ? '/analytics' : '/subjects';
+
                         return (
-                            <Link href="/subjects" key={idx} className={`flex items-center gap-3 p-3 ${bg} ${border} rounded-xl ${hover} transition-colors group`}>
+                            <Link href={destHref} key={idx} className={`flex items-center gap-3 p-3 ${bg} ${border} rounded-xl ${hover} transition-colors group`}>
                                 <div className="w-9 h-9 rounded-xl bg-white border border-dark-100 flex flex-col items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                                     <span className="text-[9px] text-dark-400 font-bold leading-none mb-0.5">Acc</span>
                                     <span className={`${text} font-bold text-[11px] leading-none`}>{Math.round(topic.accuracy)}%</span>
@@ -243,7 +257,19 @@ export default function Dashboard() {
             </div>
 
             {/* COL 3: ACTIVITY / PERFORMANCE */}
-            <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm flex flex-col">
+            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm flex flex-col relative ${user?.planType === 'free' ? 'overflow-hidden' : ''}`}>
+                {user?.planType === 'free' && (
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed">
+                        <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-dark-500 mb-3">
+                            🔒
+                        </div>
+                        <h4 className="font-bold text-dark-800 text-sm mb-1">Premium Feature</h4>
+                        <p className="text-xs text-dark-500 mb-4">Upgrade to unlock activity charts.</p>
+                        <Link href="/dashboard/pricing" className="bg-primary-600 text-white font-bold text-xs py-2 px-4 rounded-lg shadow-sm hover:bg-primary-700 pointer-events-auto">
+                            Upgrade Now
+                        </Link>
+                    </div>
+                )}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
                     <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2">
                         <span className="w-6 h-6 bg-violet-50 border border-violet-100 rounded-lg flex items-center justify-center shrink-0">
@@ -253,7 +279,7 @@ export default function Dashboard() {
                         </span>
                         Weekly Activity
                     </h3>
-                    <Link href="/results" className="text-[10px] text-primary-600 font-bold hover:underline">Full Analytics →</Link>
+                    <Link href="/analytics" className="text-[10px] text-primary-600 font-bold hover:underline">Full Analytics →</Link>
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end min-h-[160px] relative">

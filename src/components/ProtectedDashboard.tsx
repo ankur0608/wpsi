@@ -38,8 +38,8 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="rounded-3xl px-8 py-10 text-center max-w-md w-full" style={{ background: "var(--bg-surface)", border: "1px solid rgba(212,146,42,0.16)" }}>
-          <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(212,146,42,0.12)", border: "1px solid rgba(212,146,42,0.22)", color: "#D4922A" }}>
+        <div className="rounded-3xl px-8 py-10 text-center max-w-md w-full" style={{ background: "var(--bg-surface)", border: "1px solid rgba(59, 130, 246, 0.16)" }}>
+          <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(59, 130, 246, 0.12)", border: "1px solid rgba(59, 130, 246, 0.22)", color: "#3b82f6" }}>
             <i className="fa-solid fa-shield-halved text-xl"></i>
           </div>
           <h2 className="text-xl font-heading font-bold" style={{ color: "var(--text-primary)" }}>Checking your session</h2>

@@ -376,6 +376,9 @@ export default function PracticePage() {
   const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
   const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<string>('English');
+  const [xpEarned, setXpEarned] = useState<number | null>(null);
+  const [showXpToast, setShowXpToast] = useState(false);
+  const [streakEvent, setStreakEvent] = useState<{ reason: string; amount: number } | null>(null);
 
   // ── Derived lists from live bank ───────────────────────────────────────────
   const availableSubjectsWithParts = React.useMemo(() => {
@@ -625,7 +628,7 @@ export default function PracticePage() {
       const modeLabel = MODE_META[session.mode].label;
       const title = `${modeLabel} - ${session.subjects.includes('All Subjects') ? 'Mixed' : session.subjects.join(', ')}`;
       
-      await fetch('/api/test-submissions', {
+      const res = await fetch('/api/test-submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -651,6 +654,24 @@ export default function PracticePage() {
             }))
         })
       });
+      
+      if (res.ok) {
+        const data = await res.json();
+        
+        if (data.xpEvents) {
+          const streak = data.xpEvents.find((e: any) => e.reason === 'Daily Study Streak');
+          if (streak) {
+            setStreakEvent(streak);
+            setTimeout(() => setStreakEvent(null), 6000);
+          }
+        }
+
+        if (data.totalXPGained !== undefined) {
+          setXpEarned(data.totalXPGained);
+          setShowXpToast(true);
+          setTimeout(() => setShowXpToast(false), 5000);
+        }
+      }
     } catch (e) {
       console.error('Failed to save test submission', e);
     }
@@ -1540,6 +1561,18 @@ export default function PracticePage() {
               Score {result.finalScore.toFixed(2)} / {session.questions.length} with {result.accuracy}% accuracy.
             </p>
 
+            {xpEarned !== null && xpEarned > 0 && (
+              <div className="mt-5 inline-flex items-center justify-center gap-3 rounded-[1.25rem] border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-amber-600 shadow-sm animate-[pulse_2s_ease-in-out_infinite]">
+                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-600 text-sm shadow-inner">
+                  <i className="fa-solid fa-star"></i>
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600/70 leading-tight">Reward</p>
+                  <p className="text-lg font-black leading-none">+{xpEarned} XP Earned!</p>
+                </div>
+              </div>
+            )}
+
             <div className="mt-8 grid gap-4 md:grid-cols-3 xl:grid-cols-6">
               {[
                 { val: result.finalScore.toFixed(2), label: 'Score',    cls: 'text-dark-900',    border: 'border-dark-100',        bg: 'bg-dark-50' },
@@ -1564,7 +1597,7 @@ export default function PracticePage() {
                 <h4 className="mt-2 text-xl font-display font-bold text-dark-900">Performance by topic</h4>
               </div>
               <button type="button" onClick={() => setView('review')}
-                className="rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-2.5 text-sm font-bold uppercase tracking-[0.16em] text-dark-900">
+                className="rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-2.5 text-sm font-bold uppercase tracking-[0.16em] text-white">
                 Review Answers
               </button>
             </div>
@@ -1595,7 +1628,7 @@ export default function PracticePage() {
                 New Session
               </button>
               <button type="button" onClick={() => setView('review')}
-                className="rounded-xl border border-primary-500/20 bg-primary-600 hover:bg-primary-700 text-white/10 px-5 py-3 text-sm font-bold text-primary-400">
+                className="rounded-xl border border-primary-500/20 bg-primary-600 hover:bg-primary-700 px-5 py-3 text-sm font-bold text-white transition-colors">
                 Open Review
               </button>
             </div>
@@ -1735,6 +1768,47 @@ export default function PracticePage() {
           </div>
         </div>
       )}
+      {/* XP Toast Notification */}
+      {showXpToast && xpEarned !== null && xpEarned > 0 && (
+        <div className="fixed top-24 right-6 z-[100] animate-[bounce_1s_ease-in-out_infinite]">
+          <div className="flex items-center gap-4 rounded-2xl bg-dark-900 px-6 py-5 text-white shadow-2xl border border-dark-700">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500 shadow-inner">
+              <i className="fa-solid fa-star text-2xl"></i>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Congratulations!</p>
+              <p className="text-xl font-black text-amber-500">+{xpEarned} XP Earned</p>
+            </div>
+            <button 
+              onClick={() => setShowXpToast(false)}
+              className="ml-4 w-8 h-8 flex items-center justify-center rounded-full bg-dark-800 text-dark-400 hover:text-white transition-colors"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Streak Event Toast Notification */}
+      {streakEvent && (
+        <div className="fixed top-[180px] right-6 z-[90] animate-[slide-in-right_0.5s_ease-out]">
+          <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 px-6 py-5 text-white shadow-2xl border border-orange-400/30">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-white shadow-inner">
+              <i className="fa-solid fa-fire text-2xl"></i>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-100">{streakEvent.reason}</p>
+              <p className="text-xl font-black text-white">+{streakEvent.amount} XP Earned</p>
+            </div>
+            <button 
+              onClick={() => setStreakEvent(null)}
+              className="ml-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-colors"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

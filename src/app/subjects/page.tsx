@@ -3,6 +3,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { subjectMeta, defaultMeta } from '@/lib/subjectMeta';
+import { useUser } from '@/context/UserContext';
 
 function SubjectsContent() {
   const searchParams = useSearchParams();
@@ -12,6 +13,7 @@ function SubjectsContent() {
   const router = useRouter();
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
 
   useEffect(() => {
     if (!examId) {
@@ -58,6 +60,34 @@ function SubjectsContent() {
     const textThemeColor = finalPart === "Part A" ? "text-primary-600" : finalPart === "Part B" ? "text-accent-600" : "text-dark-600";
     const hoverTextColor = finalPart === "Part A" ? "group-hover:text-primary-600" : finalPart === "Part B" ? "group-hover:text-accent-600" : "group-hover:text-dark-600";
     const progressGradient = finalPart === "Part A" ? "from-primary-500 to-primary-600" : finalPart === "Part B" ? "from-accent-500 to-orange-500" : "from-dark-500 to-dark-600";
+
+    const isFreePlan = !user?.planType || user.planType === 'free';
+    const isSubjectUnlocked = !isFreePlan || subject.name === 'Computer Networks' || subject.name === 'Essential of Network Security';
+
+    if (!isSubjectUnlocked) {
+      return (
+        <div className="glass-card p-5 group relative overflow-hidden border border-dark-200 bg-dark-50/50 flex flex-col cursor-not-allowed">
+          <div className="absolute inset-0 bg-dark-900/5 backdrop-blur-[1px] z-10"></div>
+          <div className="relative z-20 opacity-60">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`w-12 h-12 bg-gradient-to-tr ${meta.gradient} rounded-xl flex items-center justify-center shadow-md shadow-dark-500/10`}>
+                {meta.icon}
+              </div>
+              <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-dark-300 flex items-center gap-1">
+                🔒 Locked
+              </span>
+            </div>
+            <h4 className="font-bold text-dark-900 text-sm mb-1 line-clamp-2 min-h-[40px]">{subject.name}</h4>
+            <p className="text-[11px] text-dark-400 mb-4">{totalChapters} Chapters • {totalQuestions >= 1000 ? `${(totalQuestions / 1000).toFixed(1)}k+` : totalQuestions} MCQs</p>
+          </div>
+          <div className="relative z-20 mt-auto">
+            <div className="w-full bg-dark-200 text-dark-500 font-bold text-center py-2.5 rounded-xl text-[10px] flex items-center justify-center gap-2">
+              Premium Required
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <Link 

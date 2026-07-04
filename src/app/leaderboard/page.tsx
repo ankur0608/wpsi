@@ -71,27 +71,35 @@ export default function LeaderboardPage() {
 
             {/* Rank Details */}
             <div className="flex-1 border-t md:border-t-0 md:border-l border-dark-100 pt-6 md:pt-0 md:pl-8 flex flex-col justify-center">
-              <div className="flex flex-wrap gap-4 mb-4">
-                <div className="bg-primary-50 border border-primary-100 px-5 py-2.5 rounded-2xl text-left">
-                  <p className="text-[9px] text-primary-600 font-bold uppercase tracking-widest mb-0.5">Overall Rank</p>
-                  <p className="text-lg font-bold text-primary-800">#{userRank || 'N/A'}</p>
+              <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="bg-primary-50 border border-primary-100 px-6 py-4 rounded-2xl text-left flex flex-col justify-center min-w-[140px]">
+                  <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mb-1">Overall Rank</p>
+                  <p className="text-3xl font-black text-primary-800 leading-none">#{userRank || 'N/A'}</p>
                 </div>
-                <div className="bg-primary-50 border border-primary-100 px-5 py-2.5 rounded-2xl text-left">
-                  <p className="text-[9px] text-primary-600 font-bold uppercase tracking-widest mb-0.5">Level</p>
-                  <div className="flex justify-between text-xs font-bold text-dark-500 mb-1">
-                    <span>{currentLevel.name}</span>
-                    <span className="text-primary-600">{user?.xp?.toLocaleString()} / {nextLevel ? nextLevel.xpRequired.toLocaleString() : 'MAX'} XP</span>
+                
+                <div className="bg-primary-50 border border-primary-100 px-6 py-4 rounded-2xl text-left flex-1">
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest">Level Progress</p>
+                    <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded-md">
+                      {user?.xp?.toLocaleString()} / {nextLevel ? nextLevel.xpRequired.toLocaleString() : 'MAX'} XP
+                    </span>
                   </div>
-                  <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden">
+                  
+                  <div className="w-full bg-primary-200/50 h-2.5 rounded-full overflow-hidden mb-3">
                     <div className="bg-primary-500 h-full rounded-full relative" style={{ width: `${progress}%` }}></div>
                   </div>
-                  <div className="flex justify-between text-xs font-bold text-dark-600 mt-3">
-                    <span className="flex items-center gap-1.5"><span className="text-lg leading-none">{currentLevel.icon}</span> {currentLevel.name} (Level {currentLevel.level})</span>
-                    <span className="text-primary-600 flex items-center gap-1">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7-7m-7-7v18"/></svg> Up 4 spots
-                </span>
-              </div>
-            </div>
+                  
+                  <div className="flex justify-between items-center text-xs font-bold text-dark-600">
+                    <span className="flex items-center gap-1.5 text-primary-900">
+                      <span className="text-lg leading-none">{currentLevel.icon}</span> 
+                      {currentLevel.name} (Lvl {currentLevel.level})
+                    </span>
+                    <span className="text-primary-600 flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-primary-100 shadow-sm">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7-7m-7-7v18"/></svg> 
+                      Up 4 spots
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -156,8 +164,11 @@ export default function LeaderboardPage() {
                     {item.change === 'down' && <span className="hidden sm:flex text-[10px] text-rose-600 font-bold bg-rose-50 border border-rose-100 px-2 py-0.5 rounded items-center gap-0.5">↓</span>}
                     {item.change === 'same' && <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>}
                     
-                    <div className="text-right">
-                      <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none">{item.streak || 0}<span className="text-[10px] font-sans font-bold text-dark-400"> Days</span></p>
+                    <div className="text-right flex flex-col items-end">
+                      <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none flex items-center gap-1">
+                        <span className="text-orange-500">🔥</span> 
+                        {item.streak || 0}<span className="text-[10px] font-sans font-bold text-dark-400"> Days</span>
+                      </p>
                       <p className="text-[8px] text-dark-400 font-bold uppercase tracking-wider mt-0.5">Streak</p>
                     </div>
                   </div>

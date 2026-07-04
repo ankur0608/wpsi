@@ -1,8 +1,10 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useUser } from '@/context/UserContext';
 
 export default function Test() {
+  const { user } = useUser();
   const [mockTests, setMockTests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,33 +60,65 @@ export default function Test() {
           <div className="text-center py-12 text-dark-500">No mock tests available at the moment. Check back later!</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockTests.map((test, index) => (
-              <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white">
-                  <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
-                  <div className="relative z-10 flex flex-col h-full">
-                      <div className="flex items-center justify-between mb-5">
-                          <span className="bg-primary-50 text-primary-600 border border-primary-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                            {test.type || 'Full Length'}
-                          </span>
-                          <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
-                            {test.durationMinutes || 120} Mins
-                          </span>
-                      </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
-                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                      </div>
-                      <h3 className="font-display font-bold text-dark-900 text-xl mb-2 group-hover:text-primary-700 transition-colors">{test.title}</h3>
-                      <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">{test.description || 'Complete coverage of Reasoning, Aptitude, Constitution, and Current Affairs.'}</p>
-                      <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
-                          <div className="text-[11px] text-dark-500 font-medium">{test._count?.questions || test.totalQuestions || 100} MCQs • {test.totalMarks || 100} Marks</div>
-                          <Link href={`/practice?mode=mock&testId=${test.id}&auto=true`} className="bg-primary-50 group-hover:bg-primary-600 text-primary-600 group-hover:text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm shadow-sm flex items-center gap-1">
-                            Start <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                          </Link>
+            {mockTests.map((test, index) => {
+              const isFreePlan = !user?.planType || user.planType === 'free';
+              const isProPlan = user?.planType === 'pro';
+              const isLocked = (isFreePlan && index >= 3) || (isProPlan && index >= 10);
+
+              if (isLocked) {
+                return (
+                  <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
+                      <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex items-center justify-between mb-5">
+                              <span className="bg-dark-100 text-dark-600 border border-dark-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{test.type || 'Full Length'}</span>
+                              <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Locked
+                              </span>
+                          </div>
+                          <div className="w-12 h-12 bg-dark-100 rounded-2xl flex items-center justify-center text-dark-400 mb-4">
+                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                          </div>
+                          <h3 className="font-display font-bold text-dark-900 text-xl mb-2">{test.title}</h3>
+                          <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">Upgrade to unlock this mock test and evaluate your complete preparation.</p>
+                          <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
+                              <div className="text-[11px] text-dark-500 font-bold">Premium Required</div>
+                              <button className="bg-dark-100 text-dark-400 font-bold py-2 px-5 rounded-lg text-sm shadow-sm flex items-center gap-1 cursor-not-allowed" disabled>
+                                Upgrade <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                              </button>
+                          </div>
                       </div>
                   </div>
-              </div>
-            ))}
+                );
+              }
+
+              return (
+                <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white">
+                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
+                    <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-5">
+                            <span className="bg-primary-50 text-primary-600 border border-primary-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                              {test.type || 'Full Length'}
+                            </span>
+                            <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5">
+                              <svg className="w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
+                              {test.durationMinutes || 120} Mins
+                            </span>
+                        </div>
+                        <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 className="font-display font-bold text-dark-900 text-xl mb-2 group-hover:text-primary-700 transition-colors">{test.title}</h3>
+                        <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">{test.description || 'Complete coverage of Reasoning, Aptitude, Constitution, and Current Affairs.'}</p>
+                        <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
+                            <div className="text-[11px] text-dark-500 font-medium">{test._count?.questions || test.totalQuestions || 100} MCQs • {test.totalMarks || 100} Marks</div>
+                            <Link href={`/practice?mode=mock&testId=${test.id}&auto=true`} className="bg-primary-50 group-hover:bg-primary-600 text-primary-600 group-hover:text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm shadow-sm flex items-center gap-1">
+                              Start <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+              );
+            })}
             
             {/* Locked Test Example */}
             <div className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">

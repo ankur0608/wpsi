@@ -16,6 +16,16 @@ function TopicsContent() {
   const [selectedTopicName, setSelectedTopicName] = useState('');
   const [selectedMode, setSelectedMode] = useState<'quick' | 'full' | 'mock'>('quick');
   const [selectedDifficulties, setSelectedDifficulties] = useState<('Easy' | 'Medium' | 'Hard')[]>(['Easy', 'Medium', 'Hard']);
+  const [limits, setLimits] = useState<{ mcqsSolvedToday: number, planType: string } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/user/limits')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setLimits(data.data);
+      })
+      .catch(e => console.error(e));
+  }, []);
 
   useEffect(() => {
     if (!subjectId) {
@@ -257,17 +267,23 @@ function TopicsContent() {
 
                   {/* Modal Footer */}
                   <div className="p-6 border-t border-slate-100 shrink-0 flex justify-end">
-                      <button 
-                        onClick={() => {
-                          setIsTopicModalOpen(false);
-                          const mode = selectedMode;
-                          const diff = selectedDifficulties.map(d => d.toLowerCase()).join(',');
-                          router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=${encodeURIComponent(selectedTopicName)}&mode=${mode}&diff=${diff}&auto=true`);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:translate-y-0"
-                      >
-                          Start Session <i className="fa-solid fa-arrow-right ml-1"></i>
-                      </button>
+                      {(() => {
+                        const isLimitReached = limits?.planType === 'free' && (limits.mcqsSolvedToday || 0) >= 20;
+                        return (
+                          <button 
+                            onClick={() => {
+                              if (isLimitReached) return;
+                              setIsTopicModalOpen(false);
+                              const mode = selectedMode;
+                              const diff = selectedDifficulties.map(d => d.toLowerCase()).join(',');
+                              router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=${encodeURIComponent(selectedTopicName)}&mode=${mode}&diff=${diff}&auto=true`);
+                            }}
+                            className={`${isLimitReached ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-blue-500/20'} text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all`}
+                          >
+                              {isLimitReached ? 'Daily Limit Reached (20/20 FREE MCQs)' : <>Start Session <i className="fa-solid fa-arrow-right ml-1"></i></>}
+                          </button>
+                        );
+                      })()}
                   </div>
               </div>
           </div>

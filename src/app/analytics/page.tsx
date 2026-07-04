@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from 'next/link';
+import { useUser } from '@/context/UserContext';
 
 type TopicData = {
   name: string;
@@ -41,6 +43,7 @@ type AnalyticsData = {
 };
 
 export default function AnalyticsPage() {
+  const { user, loading: userLoading } = useUser();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
@@ -65,11 +68,29 @@ export default function AnalyticsPage() {
     fetchAnalytics();
   }, []);
 
-  if (loading) {
+  if (loading || userLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px] text-dark-500 font-bold">
         <span className="w-5 h-5 rounded-full border-2 border-primary-500 border-t-transparent animate-spin mr-3"></span>
         Loading Analytics...
+      </div>
+    );
+  }
+
+  const isFreePlan = !user?.planType || user.planType === 'free';
+  if (isFreePlan) {
+    return (
+      <div className="bg-dark-50 w-full min-h-[80vh] flex flex-col items-center justify-center font-sans text-dark-800 p-6">
+        <div className="w-20 h-20 bg-dark-200 rounded-full flex items-center justify-center text-4xl mb-6 shadow-sm">
+          🔒
+        </div>
+        <h2 className="font-display text-3xl font-bold text-dark-900 mb-3 text-center">Premium Feature</h2>
+        <p className="text-dark-500 max-w-md text-center mb-8">
+          Detailed performance analytics and study hours tracking are only available on PRO and ELITE plans. Upgrade to unlock these insights.
+        </p>
+        <Link href="/dashboard/pricing" className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-transform hover:-translate-y-1">
+          View Upgrade Options
+        </Link>
       </div>
     );
   }
@@ -140,24 +161,36 @@ export default function AnalyticsPage() {
         {/* Weak vs Strong Topics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Weak Topics */}
-          <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
-            <h4 className="font-display font-bold text-rose-600 flex items-center gap-2 mb-4">
-              ⚠️ Area of Focus (Weak Topics)
-            </h4>
-            <div className="space-y-3">
-              {weakTopics.length > 0 ? weakTopics.map((wt, i) => (
-                <div key={i} className="p-3 bg-red-50/50 rounded-xl border border-red-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold text-dark-900">{wt.name}</p>
-                    <p className="text-[9px] text-dark-500">({wt.attempted} attempted)</p>
-                  </div>
-                  <span className="text-xs font-black text-rose-600 bg-white border border-rose-200 px-2 py-0.5 rounded shadow-sm">{wt.accuracy}% Accuracy</span>
-                </div>
-              )) : (
-                <p className="text-sm text-dark-400">Not enough data to identify weak topics.</p>
-              )}
+          {user?.planType === 'pro' ? (
+            <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
+              <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">🔒</div>
+                <h4 className="font-bold text-dark-900 mb-2">Area of Focus Locked</h4>
+                <p className="text-xs text-dark-500 max-w-[200px] mx-auto mb-4">Upgrade to ELITE to identify and target your weakest topics.</p>
+                <Link href="/dashboard/pricing" className="bg-dark-800 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-dark-900">Upgrade to ELITE</Link>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
+              <h4 className="font-display font-bold text-rose-600 flex items-center gap-2 mb-4">
+                ⚠️ Area of Focus (Weak Topics)
+              </h4>
+              <div className="space-y-3">
+                {weakTopics.length > 0 ? weakTopics.map((wt, i) => (
+                  <div key={i} className="p-3 bg-red-50/50 rounded-xl border border-red-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-dark-900">{wt.name}</p>
+                      <p className="text-[9px] text-dark-500">({wt.attempted} attempted)</p>
+                    </div>
+                    <span className="text-xs font-black text-rose-600 bg-white border border-rose-200 px-2 py-0.5 rounded shadow-sm">{wt.accuracy}% Accuracy</span>
+                  </div>
+                )) : (
+                  <p className="text-sm text-dark-400">Not enough data to identify weak topics.</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Strong Topics */}
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
@@ -181,98 +214,110 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Interactive Subject Performance (Full Width) */}
-        <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
-          <div className="pb-3 border-b border-dark-100 mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-display text-lg font-bold text-dark-900">📚 Subject Performance</h3>
-              <p className="text-xs text-dark-500">Click a subject to view topic-level accuracy metrics</p>
+        {user?.planType === 'pro' ? (
+          <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
+            <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
+            <div className="relative z-10">
+              <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">🔒</div>
+              <h4 className="font-bold text-dark-900 mb-2">Subject Performance Locked</h4>
+              <p className="text-sm text-dark-500 max-w-sm mx-auto mb-4">Get the ELITE plan to unlock interactive subject and topic-level analytics.</p>
+              <Link href="/dashboard/pricing" className="bg-dark-800 text-white text-sm font-bold py-2.5 px-6 rounded-lg hover:bg-dark-900 transition-colors">Upgrade to ELITE</Link>
             </div>
           </div>
-
-          <div className="space-y-3">
-            {subjects.length > 0 ? subjects.map((sub) => {
-              const isSelected = selectedSubjectId === sub.id;
-              
-              let labelColorClass = "text-emerald-600 bg-emerald-50 border-emerald-100";
-              if (sub.accuracy < 50) labelColorClass = "text-rose-600 bg-rose-50 border-rose-100";
-              else if (sub.accuracy < 80) labelColorClass = "text-primary-600 bg-primary-50 border-primary-100";
-
-              return (
-                <div 
-                  key={sub.id} 
-                  onClick={() => setSelectedSubjectId(sub.id)}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${isSelected ? 'border-primary-500 bg-primary-50/20' : 'border-dark-200 bg-white hover:border-primary-300'}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{sub.icon}</span>
-                    <div>
-                      <h4 className="font-bold text-dark-900 text-sm">{sub.name}</h4>
-                      <p className="text-[10px] text-dark-500 font-medium">{sub.attempted} attempted • {sub.correct} correct</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right hidden sm:block">
-                      <p className={`text-xs font-bold border px-2 py-0.5 rounded ${labelColorClass}`}>
-                        {sub.label} ({sub.accuracy}%)
-                      </p>
-                    </div>
-                    <span className="text-dark-400">→</span>
-                  </div>
-                </div>
-              );
-            }) : (
-              <p className="text-sm text-dark-400">No subject data available.</p>
-            )}
-          </div>
-
-          {/* Inline Topic Breakdown */}
-          {selectedSubject && (
-            <div className="mt-6 pt-5 border-t border-dark-100">
-              <h4 className="font-display text-sm font-bold text-dark-900 mb-3 flex items-center gap-2">
-                <span>{selectedSubject.name}</span> — Topic Breakdown
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {selectedSubject.topics.map((t, idx) => {
-                  let colorClass = "text-emerald-600";
-                  let bgClass = "bg-emerald-50";
-                  let borderClass = "border-emerald-100";
-                  let barColor = "bg-emerald-500";
-                  let label = "Strong";
-
-                  if (t.accuracy < 50) {
-                    colorClass = "text-rose-600";
-                    bgClass = "bg-rose-50";
-                    borderClass = "border-rose-100";
-                    barColor = "bg-rose-500";
-                    label = "Weak";
-                  } else if (t.accuracy < 80) {
-                    colorClass = "text-primary-600";
-                    bgClass = "bg-primary-50";
-                    borderClass = "border-primary-100";
-                    barColor = "bg-primary-500";
-                    label = "Average";
-                  }
-
-                  return (
-                    <div key={idx} className="p-4 bg-dark-50 border border-dark-100 rounded-2xl hover:border-dark-200 transition-all">
-                      <div className="flex items-start justify-between mb-3">
-                        <p className="text-xs font-bold text-dark-900 leading-snug flex-1">{t.name}</p>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${bgClass} ${colorClass} ${borderClass} shrink-0 ml-2`}>
-                          {label}
-                        </span>
-                      </div>
-                      <p className={`text-2xl font-black ${colorClass} mb-1`}>{t.accuracy}%</p>
-                      <div className="w-full bg-dark-200 h-1.5 rounded-full overflow-hidden mb-2">
-                        <div className={`${barColor} h-full rounded-full transition-all`} style={{ width: `${t.accuracy}%` }}></div>
-                      </div>
-                      <p className="text-[9px] text-dark-400 font-medium">{t.attempted} attempted • {t.correct} correct</p>
-                    </div>
-                  );
-                })}
+        ) : (
+          <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
+            <div className="pb-3 border-b border-dark-100 mb-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-display text-lg font-bold text-dark-900">📚 Subject Performance</h3>
+                <p className="text-xs text-dark-500">Click a subject to view topic-level accuracy metrics</p>
               </div>
             </div>
-          )}
-        </div>
+
+            <div className="space-y-3">
+              {subjects.length > 0 ? subjects.map((sub) => {
+                const isSelected = selectedSubjectId === sub.id;
+                
+                let labelColorClass = "text-emerald-600 bg-emerald-50 border-emerald-100";
+                if (sub.accuracy < 50) labelColorClass = "text-rose-600 bg-rose-50 border-rose-100";
+                else if (sub.accuracy < 80) labelColorClass = "text-primary-600 bg-primary-50 border-primary-100";
+
+                return (
+                  <div 
+                    key={sub.id} 
+                    onClick={() => setSelectedSubjectId(sub.id)}
+                    className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${isSelected ? 'border-primary-500 bg-primary-50/20' : 'border-dark-200 bg-white hover:border-primary-300'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{sub.icon}</span>
+                      <div>
+                        <h4 className="font-bold text-dark-900 text-sm">{sub.name}</h4>
+                        <p className="text-[10px] text-dark-500 font-medium">{sub.attempted} attempted • {sub.correct} correct</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right hidden sm:block">
+                        <p className={`text-xs font-bold border px-2 py-0.5 rounded ${labelColorClass}`}>
+                          {sub.label} ({sub.accuracy}%)
+                        </p>
+                      </div>
+                      <span className="text-dark-400">→</span>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <p className="text-sm text-dark-400">No subject data available.</p>
+              )}
+            </div>
+
+            {/* Inline Topic Breakdown */}
+            {selectedSubject && (
+              <div className="mt-6 pt-5 border-t border-dark-100">
+                <h4 className="font-display text-sm font-bold text-dark-900 mb-3 flex items-center gap-2">
+                  <span>{selectedSubject.name}</span> — Topic Breakdown
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {selectedSubject.topics.map((t, idx) => {
+                    let colorClass = "text-emerald-600";
+                    let bgClass = "bg-emerald-50";
+                    let borderClass = "border-emerald-100";
+                    let barColor = "bg-emerald-500";
+                    let label = "Strong";
+
+                    if (t.accuracy < 50) {
+                      colorClass = "text-rose-600";
+                      bgClass = "bg-rose-50";
+                      borderClass = "border-rose-100";
+                      barColor = "bg-rose-500";
+                      label = "Weak";
+                    } else if (t.accuracy < 80) {
+                      colorClass = "text-primary-600";
+                      bgClass = "bg-primary-50";
+                      borderClass = "border-primary-100";
+                      barColor = "bg-primary-500";
+                      label = "Average";
+                    }
+
+                    return (
+                      <div key={idx} className="p-4 bg-dark-50 border border-dark-100 rounded-2xl hover:border-dark-200 transition-all">
+                        <div className="flex items-start justify-between mb-3">
+                          <p className="text-xs font-bold text-dark-900 leading-snug flex-1">{t.name}</p>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${bgClass} ${colorClass} ${borderClass} shrink-0 ml-2`}>
+                            {label}
+                          </span>
+                        </div>
+                        <p className={`text-2xl font-black ${colorClass} mb-1`}>{t.accuracy}%</p>
+                        <div className="w-full bg-dark-200 h-1.5 rounded-full overflow-hidden mb-2">
+                          <div className={`${barColor} h-full rounded-full transition-all`} style={{ width: `${t.accuracy}%` }}></div>
+                        </div>
+                        <p className="text-[9px] text-dark-400 font-medium">{t.attempted} attempted • {t.correct} correct</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Difficulty & Practice Mode Analysis (2 columns) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

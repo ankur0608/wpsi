@@ -203,7 +203,7 @@ export default function XPPage() {
                           <span className="text-[8px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded uppercase">Active</span>
                         </span>
                         <span className="font-black text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">
-                          {l.lvl === 8 ? '5000+ XP' : `${l.min} - ${l.max} XP`}
+                          {l.lvl === 8 ? '50,000+ XP' : `${l.min.toLocaleString()} - ${l.max.toLocaleString()} XP`}
                         </span>
                       </div>
                     );
@@ -213,7 +213,7 @@ export default function XPPage() {
                     <div key={l.lvl} className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
                       <span className="font-semibold text-dark-600 flex items-center gap-1.5">{icon} Level {l.lvl}: {l.name}</span>
                       <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">
-                        {l.lvl === 8 ? '5000+ XP' : `${l.min} - ${l.max} XP`}
+                        {l.lvl === 8 ? '50,000+ XP' : `${l.min.toLocaleString()} - ${l.max.toLocaleString()} XP`}
                       </span>
                     </div>
                   );
@@ -250,7 +250,7 @@ export default function XPPage() {
               <ul className="space-y-3.5 text-xs text-dark-700 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                 {[
                   { icon: '✅', title: 'Correct Answer', xp: '+10 XP', desc: 'Awarded for each correct answer (first attempt only).' },
-                  { icon: '❌', title: 'Incorrect Answer', xp: '0 XP', desc: 'No XP deducted for wrong answers.' },
+                  { icon: '❌', title: 'Incorrect Answer', xp: '-5 XP', desc: 'Deducted for each incorrect answer.' },
                   { icon: '🎯', title: 'First Attempt Bonus', xp: '+5 XP', desc: 'Extra reward for answering correctly on the first attempt.' },
                   { icon: '⚡', title: '5 Correct Answers in a Row', xp: '+25 XP', desc: 'Streak bonus for consistent accuracy.' },
                   { icon: '🔥', title: 'Daily Study Streak', xp: '+5 XP', desc: 'Awarded after solving at least 5 questions in a day.' },

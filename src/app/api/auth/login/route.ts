@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
           xp: user.xp,
           coins: user.coins,
           streak: user.streak,
+          planType: user.planType,
         },
       },
       { status: 200 }
