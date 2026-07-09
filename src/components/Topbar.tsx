@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
@@ -22,6 +23,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const [openPopover, setOpenPopover] = useState<PopoverKey>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -38,6 +40,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     "/dashboard": "Dashboard",
     "/exam": "Exam",
     "/practice": "MCQ Practice",
+    "/daily-practice": "MCQ Practice",
     "/test": "Mock Tests",
     "/results": "Results",
     "/bookmarks": "Saved MCQs",
@@ -49,6 +52,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     "/dashboard": "Your Daily Progress & Overview",
     "/exam": "Ready For Your Next Challenge?",
     "/practice": "Sharpen Your Skills",
+    "/daily-practice": "Sharpen Your Skills",
   };
 
   useEffect(() => {
@@ -66,7 +70,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const displayTitle = titles[pathname] || "WPSI Console";
   const displaySubtitle = subtitles[pathname] || "";
 
-  const handleLogout = async () => {
+  const confirmLogout = async () => {
+    setShowLogoutConfirm(false);
     setOpenPopover(null);
     await logout();
     router.replace("/login");
@@ -169,7 +174,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                         </Link>
                     </div>
                     <div className="p-2 border-t border-dark-50">
-                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+                        <button onClick={() => { setOpenPopover(null); setShowLogoutConfirm(true); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                             Log out
                         </button>
@@ -177,6 +182,22 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 </div>
             </div>
         </div>
+      {showLogoutConfirm && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-dark-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl">
+            <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Log out of WPSI?</h3>
+            <p className="text-center text-sm text-dark-500 mb-6">Are you sure you want to log out? You will need to log back in to access your dashboard.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-4 py-3 rounded-xl border-2 border-dark-200 text-dark-700 font-bold hover:bg-dark-50 transition-colors">Cancel</button>
+              <button onClick={confirmLogout} className="flex-1 px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-lg shadow-rose-500/30 transition-all">Yes, Log Out</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </header>
   );
 }

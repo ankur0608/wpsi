@@ -221,6 +221,7 @@ model TestSubmission {
     totalMarks  Int
     earnedMarks Float
     percentage  Float
+    details     Json?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 }

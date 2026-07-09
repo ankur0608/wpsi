@@ -76,6 +76,7 @@ export default function SavedMCQsDetailPage({ params }: { params: Promise<{ subj
   const [answeredState, setAnsweredState] = useState<Record<number, number>>({}); // idx -> selectedOption
   const [showExp, setShowExp] = useState<Record<number, boolean>>({});
   const [removed, setRemoved] = useState<Record<number, boolean>>({});
+  const [language, setLanguage] = useState<"EN" | "GU">("EN");
   
   useEffect(() => {
     const subjId = resolvedParams.subject;
@@ -123,6 +124,12 @@ export default function SavedMCQsDetailPage({ params }: { params: Promise<{ subj
                 <p className="text-[10px] text-dark-400 font-semibold uppercase tracking-widest mt-0.5">
                     Saved Questions
                 </p>
+            </div>
+            <div className="ml-auto">
+                <div className="flex bg-white border border-dark-200 p-1 rounded-lg shadow-sm">
+                    <button onClick={() => setLanguage("EN")} className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${language === "EN" ? "bg-primary-50 text-primary-700 shadow-sm" : "text-dark-500 hover:text-dark-700"}`}>EN</button>
+                    <button onClick={() => setLanguage("GU")} className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${language === "GU" ? "bg-primary-50 text-primary-700 shadow-sm" : "text-dark-500 hover:text-dark-700"}`}>GU</button>
+                </div>
             </div>
         </div>
 
@@ -203,9 +210,10 @@ export default function SavedMCQsDetailPage({ params }: { params: Promise<{ subj
                             </button>
                         </div>
                     </div>
-                    <h4 className="font-bold text-dark-900 text-sm md:text-base mb-5 leading-relaxed" dangerouslySetInnerHTML={{ __html: q.q }}></h4>
+                    <h4 className="font-bold text-dark-900 text-sm md:text-base mb-5 leading-relaxed" dangerouslySetInnerHTML={{ __html: language === "GU" && q.qGuj ? q.qGuj : q.q }}></h4>
                     <div className="space-y-2">
                       {q.opts.map((opt: string, i: number) => {
+                        const displayOpt = language === "GU" && q.optsGuj ? q.optsGuj[i] : opt;
                         let btnClass = "w-full text-left p-4 rounded-xl border border-dark-200 text-sm font-semibold text-dark-700 flex items-center justify-between gap-4 transition-all";
                         if (!isAnswered) {
                           btnClass += " cursor-pointer hover:border-dark-300 hover:bg-dark-50";
@@ -220,7 +228,7 @@ export default function SavedMCQsDetailPage({ params }: { params: Promise<{ subj
 
                         return (
                           <button key={i} onClick={() => handleSelectOption(idx, i)} disabled={isAnswered} className={btnClass}>
-                            <span>{labels[i]}. {opt}</span>
+                            <span>{labels[i]}. {displayOpt}</span>
                             <span className="w-5 h-5 shrink-0 flex items-center justify-center">
                               {isAnswered && i === q.ans && (
                                 <svg className="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -240,8 +248,8 @@ export default function SavedMCQsDetailPage({ params }: { params: Promise<{ subj
                         </button>
                         {showExp[idx] && (
                           <div className="mt-3 p-4 bg-success-50/60 border border-success-100 rounded-xl text-xs text-dark-700 leading-relaxed">
-                              <strong className="text-success-700 block mb-1">Correct Answer: {labels[q.ans]}. {q.opts[q.ans]}</strong>
-                              <span dangerouslySetInnerHTML={{ __html: q.exp }}></span>
+                              <strong className="text-success-700 block mb-1">Correct Answer: {labels[q.ans]}. {language === "GU" && q.optsGuj ? q.optsGuj[q.ans] : q.opts[q.ans]}</strong>
+                              <span dangerouslySetInnerHTML={{ __html: language === "GU" && q.expGuj ? q.expGuj : q.exp }}></span>
                           </div>
                         )}
                     </div>

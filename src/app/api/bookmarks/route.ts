@@ -35,7 +35,42 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json({ data: bookmarks }, { status: 200 });
+    // Fetch translations
+    const ids = bookmarks.map(b => b.mcq.id);
+    const translationIds = bookmarks.map(b => b.mcq.translationId).filter(Boolean) as string[];
+    
+    let translations: any[] = [];
+    if (ids.length > 0 || translationIds.length > 0) {
+      translations = await prisma.mCQ.findMany({
+        where: {
+          OR: [
+            ...(translationIds.length > 0 ? [{ id: { in: translationIds } }] : []),
+            ...(ids.length > 0 ? [{ translationId: { in: ids } }] : []),
+            ...(translationIds.length > 0 ? [{ translationId: { in: translationIds } }] : [])
+          ],
+          id: { notIn: ids }
+        }
+      });
+    }
+
+    // Attach translations
+    const data = bookmarks.map(b => {
+      const m = b.mcq;
+      const mcqTranslations = translations.filter(t => 
+        (m.translationId && t.id === m.translationId) || 
+        (t.translationId === m.id) || 
+        (m.translationId && t.translationId === m.translationId)
+      );
+      return {
+        ...b,
+        mcq: {
+          ...m,
+          translations: mcqTranslations
+        }
+      };
+    });
+
+    return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
     console.error('Error fetching bookmarks:', error);
     return NextResponse.json(

@@ -637,15 +637,21 @@ export default function PracticePage() {
           totalMarks: session.questions.length,
           earnedMarks: finalResult.finalScore,
           percentage: finalResult.accuracy,
-          details: session.questions.map((q: any) => ({
-            id: q.id,
-            question: q.question,
-            options: q.options,
-            explanation: q.explanation,
-            selectedOption: session.responses[q.id],
-            correctAnswer: q.correctAnswer,
-            correct: session.responses[q.id] === q.correctAnswer
-          })),
+          details: session.questions.map((q: any) => {
+            const guj = q.translations?.find((t: any) => t.language === 'Gujarati');
+            return {
+              id: q.id,
+              question: q.question,
+              questionGuj: guj?.question,
+              options: q.options || { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD },
+              optionsGuj: guj ? (guj.options || { A: guj.optionA, B: guj.optionB, C: guj.optionC, D: guj.optionD }) : null,
+              explanation: q.explanation,
+              explanationGuj: guj?.explanation,
+              selectedOption: session.responses[q.id],
+              correctAnswer: q.correctAnswer,
+              correct: session.responses[q.id] === q.correctAnswer
+            };
+          }),
           responses: session.questions
             .filter(q => session.responses[q.id] && session.responses[q.id] !== 'E')
             .map(q => ({
@@ -1671,6 +1677,20 @@ export default function PracticePage() {
                   </button>
                 );
               })}
+              <div className="flex bg-dark-50 border border-dark-200 p-1 rounded-lg shadow-sm w-fit">
+                  <button 
+                    onClick={() => setActiveLanguage('English')} 
+                    className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeLanguage === 'English' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
+                  >
+                    EN
+                  </button>
+                  <button 
+                    onClick={() => setActiveLanguage('Gujarati')} 
+                    className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeLanguage === 'Gujarati' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
+                  >
+                    GU
+                  </button>
+              </div>
             </div>
 
             {/* Question list */}
@@ -1682,12 +1702,17 @@ export default function PracticePage() {
                 const isNa         = res === 'E';
                 const isUnanswered = res === undefined;
 
+                const tGuj = q.translations?.find(t => t.language === 'Gujarati');
+                const useGuj = activeLanguage === 'Gujarati' && !!tGuj;
+
                 return (
                   <article key={q.id} className="rounded-[1.5rem] border border-dark-100 bg-white p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <div className="text-sm font-bold text-dark-400">Q{idx + 1}</div>
-                        <div className="mt-2 text-base font-semibold leading-7 text-dark-900">{q.question}</div>
+                        <div className="mt-2 text-base font-semibold leading-7 text-dark-900">
+                          <div>{useGuj ? tGuj.question : q.question}</div>
+                        </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {isCorrect    && <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-accent">Correct</span>}
@@ -1711,8 +1736,10 @@ export default function PracticePage() {
                               borderColor: correct ? 'rgba(16,185,129,0.2)' : selected ? 'rgba(239,68,68,0.22)' : 'rgba(255,255,255,0.08)',
                             }}
                           >
-                            <span className="font-bold text-dark-400">{key}</span>
-                            <span className="ml-3 text-dark-900">{label}</span>
+                            <div className="flex items-center w-full">
+                              <span className="font-bold text-dark-400 w-6 shrink-0">{key}</span>
+                              <span className="text-dark-900">{useGuj ? (tGuj[`option${key}` as keyof typeof tGuj] as string) : label}</span>
+                            </div>
                           </div>
                         );
                       })}
@@ -1720,7 +1747,7 @@ export default function PracticePage() {
 
                     <div className="mt-5 rounded-xl border border-emerald-500/15 bg-emerald-500/8 p-4">
                       <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Explanation</div>
-                      <p className="mt-2 text-sm leading-7 text-dark-600">{q.explanation || 'No explanation provided.'}</p>
+                      <p className="mt-2 text-sm leading-7 text-dark-600">{(useGuj && tGuj.explanation) ? tGuj.explanation : (q.explanation || 'No explanation provided.')}</p>
                     </div>
                   </article>
                 );

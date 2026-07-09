@@ -57,22 +57,49 @@ export async function GET(req: NextRequest) {
   }),
 ]);
 
-const mcqs = rawMcqs.map((m) => ({
-  id: m.id,
-  subject: m.topic?.subject?.name || 'Unknown',
-  part: m.topic?.subject?.part || 'A',
-  topic: m.topic?.name || 'Unknown',
-  difficulty: m.difficulty,
-  question: m.question,
-  optionA: m.optionA,
-  optionB: m.optionB,
-  optionC: m.optionC,
-  optionD: m.optionD,
-  correctAnswer: m.correctAnswer,
-  explanation: m.explanation,
-  language: m.language,
-  translationId: m.translationId,
-}));
+// Fetch translations
+const ids = rawMcqs.map(m => m.id);
+const translationIds = rawMcqs.map(m => m.translationId).filter(Boolean) as string[];
+
+let translations: any[] = [];
+if (ids.length > 0 || translationIds.length > 0) {
+  translations = await prisma.mCQ.findMany({
+    where: {
+      OR: [
+        ...(translationIds.length > 0 ? [{ id: { in: translationIds } }] : []),
+        ...(ids.length > 0 ? [{ translationId: { in: ids } }] : []),
+        ...(translationIds.length > 0 ? [{ translationId: { in: translationIds } }] : [])
+      ],
+      id: { notIn: ids }
+    }
+  });
+}
+
+const mcqs = rawMcqs.map((m) => {
+  const mcqTranslations = translations.filter(t => 
+    (m.translationId && t.id === m.translationId) || 
+    (t.translationId === m.id) || 
+    (m.translationId && t.translationId === m.translationId)
+  );
+
+  return {
+    id: m.id,
+    subject: m.topic?.subject?.name || 'Unknown',
+    part: m.topic?.subject?.part || 'A',
+    topic: m.topic?.name || 'Unknown',
+    difficulty: m.difficulty,
+    question: m.question,
+    optionA: m.optionA,
+    optionB: m.optionB,
+    optionC: m.optionC,
+    optionD: m.optionD,
+    correctAnswer: m.correctAnswer,
+    explanation: m.explanation,
+    language: m.language,
+    translationId: m.translationId,
+    translations: mcqTranslations
+  };
+});
 
     return Response.json({ success: true, data: mcqs, meta: { total, page, limit } });
   } catch (err) {

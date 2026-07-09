@@ -212,7 +212,8 @@ export async function POST(request: NextRequest) {
           mode,
           totalMarks,
           earnedMarks,
-          percentage
+          percentage,
+          details
         },
       }),
       prisma.user.update({

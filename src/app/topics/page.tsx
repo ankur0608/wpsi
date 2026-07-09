@@ -14,6 +14,7 @@ function TopicsContent() {
   const [loading, setLoading] = useState(true);
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
   const [selectedTopicName, setSelectedTopicName] = useState('');
+  const [selectedTopicIndex, setSelectedTopicIndex] = useState(0);
   const [selectedMode, setSelectedMode] = useState<'quick' | 'full' | 'mock'>('quick');
   const [selectedDifficulties, setSelectedDifficulties] = useState<('Easy' | 'Medium' | 'Hard')[]>(['Easy', 'Medium', 'Hard']);
   const [limits, setLimits] = useState<{ mcqsSolvedToday: number, planType: string } | null>(null);
@@ -118,7 +119,7 @@ function TopicsContent() {
                   return (
                     <div
                       key={topic.id}
-                      onClick={() => { setSelectedTopicName(topic.name); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
+                      onClick={() => { setSelectedTopicName(topic.name); setSelectedTopicIndex(idx); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
                       className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${isFree ? 'bg-white border-dark-100 hover:border-primary-300 hover:shadow-md hover:shadow-primary-500/5' : 'bg-dark-50/50 border-dark-100 opacity-80 hover:opacity-100'}`}
                     >
                       <div className="flex items-center gap-4 flex-1">
@@ -268,7 +269,8 @@ function TopicsContent() {
                   {/* Modal Footer */}
                   <div className="p-6 border-t border-slate-100 shrink-0 flex justify-end">
                       {(() => {
-                        const isLimitReached = limits?.planType === 'free' && (limits.mcqsSolvedToday || 0) >= 20;
+                        const isFirstTopic = selectedTopicIndex === 0;
+                        const isLimitReached = !isFirstTopic && limits?.planType === 'free' && (limits.mcqsSolvedToday || 0) >= 20;
                         return (
                           <button 
                             onClick={() => {
@@ -280,7 +282,7 @@ function TopicsContent() {
                             }}
                             className={`${isLimitReached ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-blue-500/20'} text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all`}
                           >
-                              {isLimitReached ? 'Daily Limit Reached (20/20 FREE MCQs)' : <>Start Session <i className="fa-solid fa-arrow-right ml-1"></i></>}
+                              {isLimitReached ? 'Daily Limit Reached (20/20 FREE MCQs)' : <>Start Session {isFirstTopic && <span className="ml-1 text-xs text-blue-200">(Free)</span>} <i className="fa-solid fa-arrow-right ml-1"></i></>}
                           </button>
                         );
                       })()}

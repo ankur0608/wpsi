@@ -164,12 +164,11 @@ export default function LeaderboardPage() {
                     {item.change === 'down' && <span className="hidden sm:flex text-[10px] text-rose-600 font-bold bg-rose-50 border border-rose-100 px-2 py-0.5 rounded items-center gap-0.5">↓</span>}
                     {item.change === 'same' && <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>}
                     
-                    <div className="text-right flex flex-col items-end">
+                    <div className="text-right flex flex-col items-end justify-center">
                       <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none flex items-center gap-1">
                         <span className="text-orange-500">🔥</span> 
-                        {item.streak || 0}<span className="text-[10px] font-sans font-bold text-dark-400"> Days</span>
+                        {item.streak || 0}
                       </p>
-                      <p className="text-[8px] text-dark-400 font-bold uppercase tracking-wider mt-0.5">Streak</p>
                     </div>
                   </div>
                 </div>

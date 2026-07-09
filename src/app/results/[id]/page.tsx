@@ -10,6 +10,7 @@ export default function IndividualResultPage() {
   const router = useRouter();
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mcqLanguages, setMcqLanguages] = useState<Record<string|number, "EN"|"GU">>({});
 
   // Helpers to derive UI classes based on test type or score
   const getTestMeta = (title: string) => {
@@ -219,23 +220,42 @@ export default function IndividualResultPage() {
 
         {/* MCQs Summary Detailed List */}
         <div className="bg-white border border-dark-100 rounded-[24px] p-6 lg:p-8 shadow-sm">
-          <h2 className="text-xl font-bold text-dark-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-            All MCQs Summary
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold text-dark-900 flex items-center gap-2">
+              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+              All MCQs Summary
+            </h2>
+          </div>
           <div className="space-y-4">
             {result.mcqs && result.mcqs.length > 0 ? (
-              result.mcqs.map((mcq: any, index: number) => (
+              result.mcqs.map((mcq: any, index: number) => {
+                const lang = mcqLanguages[mcq.id || index] || "EN";
+                const setLang = (l: "EN"|"GU") => setMcqLanguages(prev => ({ ...prev, [mcq.id || index]: l }));
+                return (
                 <div key={mcq.id || index} className={`p-5 rounded-2xl border-l-4 ${mcq.correct ? 'bg-emerald-50/50 border-l-emerald-500 border-y border-r border-y-emerald-100 border-r-emerald-100' : mcq.selectedOption ? 'bg-rose-50/50 border-l-rose-500 border-y border-r border-y-rose-100 border-r-rose-100' : 'bg-dark-50 border-l-dark-400 border-y border-r border-y-dark-200 border-r-dark-200'}`}>
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
-                    <h3 className="text-sm font-semibold text-dark-900 leading-relaxed"><span className="text-dark-400 mr-1">Q{index + 1}.</span> {mcq.question}</h3>
-                    <span className={`text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wider shrink-0 ${mcq.correct ? 'bg-emerald-100 text-emerald-700' : mcq.selectedOption ? 'bg-rose-100 text-rose-700' : 'bg-dark-200 text-dark-700'}`}>
-                      {mcq.correct ? 'Correct' : mcq.selectedOption ? 'Incorrect' : 'Unattempted'}
-                    </span>
+                    <h3 className="text-sm font-semibold text-dark-900 leading-relaxed"><span className="text-dark-400 mr-1">Q{index + 1}.</span> {lang === "GU" && mcq.questionGuj ? mcq.questionGuj : mcq.question}</h3>
+                    <div className="flex items-center gap-3">
+                      {(mcq.question || mcq.questionGuj) && (
+                        <div className="flex bg-dark-50 border border-dark-200 p-1 rounded-lg shadow-sm">
+                          {mcq.question && (
+                            <button onClick={() => setLang("EN")} className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${lang === "EN" ? "bg-white shadow-sm text-primary-700" : "text-dark-500 hover:text-dark-700"}`}>EN</button>
+                          )}
+                          {mcq.questionGuj && (
+                            <button onClick={() => setLang("GU")} className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${lang === "GU" ? "bg-white shadow-sm text-primary-700" : "text-dark-500 hover:text-dark-700"}`}>GU</button>
+                          )}
+                        </div>
+                      )}
+                      <span className={`text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wider shrink-0 ${mcq.correct ? 'bg-emerald-100 text-emerald-700' : mcq.selectedOption ? 'bg-rose-100 text-rose-700' : 'bg-dark-200 text-dark-700'}`}>
+                        {mcq.correct ? 'Correct' : mcq.selectedOption ? 'Incorrect' : 'Unattempted'}
+                      </span>
+                    </div>
                   </div>
                   {mcq.options && typeof mcq.options === 'object' && (
                     <div className="flex flex-col gap-2 mt-4 mb-4 ml-2 md:ml-6">
-                      {Object.entries(mcq.options).map(([key, val]) => (
+                      {Object.entries(mcq.options).map(([key, val]) => {
+                        const displayVal = lang === "GU" && mcq.optionsGuj ? mcq.optionsGuj[key] : val;
+                        return (
                         <div key={key} className={`flex items-start gap-3 text-sm px-4 py-2.5 rounded-xl border transition-colors ${
                           mcq.correctAnswer === key 
                             ? 'bg-emerald-50/80 border-emerald-200 shadow-sm' 
@@ -253,10 +273,10 @@ export default function IndividualResultPage() {
                             {key}
                           </span>
                           <span className={`pt-0.5 ${mcq.correctAnswer === key ? 'text-emerald-900 font-semibold' : mcq.selectedOption === key ? 'text-rose-900 font-medium' : 'text-dark-600'}`}>
-                            {String(val)}
+                            {String(displayVal)}
                           </span>
                         </div>
-                      ))}
+                      )})}
                     </div>
                   )}
 
@@ -271,11 +291,11 @@ export default function IndividualResultPage() {
                         <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Detailed Explanation
                       </p>
-                      <p className="text-dark-600">{mcq.explanation}</p>
+                      <p className="text-dark-600">{lang === "GU" && mcq.explanationGuj ? mcq.explanationGuj : mcq.explanation}</p>
                     </div>
                   )}
                 </div>
-              ))
+              )})
             ) : (
               <div className="text-center py-12 bg-dark-50 rounded-2xl border border-dark-100 border-dashed">
                 <p className="text-dark-500 font-medium">Detailed MCQ breakdown not available for this test.</p>

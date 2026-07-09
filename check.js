@@ -1,1 +1,0 @@
-const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); async function main() { const subjects = await prisma.subject.findMany(); console.log('Subjects:', subjects.map(s => s.name)); const topics = await prisma.topic.findMany(); console.log('Topics:', topics.map(t => t.name).slice(0, 10)); } main().finally(() => prisma.$disconnect());

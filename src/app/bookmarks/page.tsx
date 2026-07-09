@@ -25,6 +25,8 @@ interface BookmarkRow {
         part: string;
       };
     };
+    language?: string;
+    translations?: any[];
   };
 }
 
@@ -35,6 +37,7 @@ export default function BookmarksPage() {
   
   // Track which explanations are revealed
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [mcqLanguages, setMcqLanguages] = useState<Record<string, "English" | "Gujarati">>({});
 
   // View States
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
@@ -148,15 +151,17 @@ export default function BookmarksPage() {
             Back to Subjects
           </button>
 
-          <div className="bg-white border border-dark-100 rounded-3xl p-7 mb-7 flex items-center gap-5 shadow-sm relative overflow-hidden">
-             <div className="absolute -right-10 -top-10 w-48 h-48 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
-             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${meta.gradient} shadow-lg shrink-0 z-10`}>
-                {meta.icon}
-             </div>
-             <div className="z-10">
-                <h2 className="font-display text-2xl font-black text-dark-900">{activeSubject}</h2>
-                <p className="text-dark-500 text-sm font-medium">{activeBookmarks.length} saved questions</p>
-             </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+            <div className="bg-white border border-dark-100 rounded-3xl p-7 flex items-center gap-5 shadow-sm relative overflow-hidden flex-1">
+               <div className="absolute -right-10 -top-10 w-48 h-48 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
+               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${meta.gradient} shadow-lg shrink-0 z-10`}>
+                  {meta.icon}
+               </div>
+               <div className="z-10">
+                  <h2 className="font-display text-2xl font-black text-dark-900">{activeSubject}</h2>
+                  <p className="text-dark-500 text-sm font-medium">{activeBookmarks.length} saved questions</p>
+               </div>
+            </div>
           </div>
 
           <div className="space-y-5">
@@ -166,19 +171,44 @@ export default function BookmarksPage() {
                 </div>
             ) : activeBookmarks.map((b, idx) => {
               const isRevealed = revealed[b.id];
+              const tGuj = b.mcq.translations?.find(t => t.language === 'Gujarati');
+              
+              const lang = mcqLanguages[b.id] || "English";
+              const setLang = (l: "English" | "Gujarati") => setMcqLanguages(prev => ({ ...prev, [b.id]: l }));
+              
+              const useGuj = lang === 'Gujarati' && !!tGuj;
+              
               const options = [
-                { key: 'A', text: b.mcq.optionA },
-                { key: 'B', text: b.mcq.optionB },
-                { key: 'C', text: b.mcq.optionC },
-                { key: 'D', text: b.mcq.optionD },
+                { key: 'A', text: useGuj ? tGuj.optionA : b.mcq.optionA },
+                { key: 'B', text: useGuj ? tGuj.optionB : b.mcq.optionB },
+                { key: 'C', text: useGuj ? tGuj.optionC : b.mcq.optionC },
+                { key: 'D', text: useGuj ? tGuj.optionD : b.mcq.optionD },
               ];
 
               return (
                 <div key={b.id} className="bg-white rounded-2xl border border-dark-100 p-6 sm:p-8 shadow-sm">
                   <div className="flex items-center justify-between mb-5">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100">
-                      Question {idx + 1}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100">
+                        Question {idx + 1}
+                      </span>
+                      {tGuj && (
+                        <div className="flex bg-dark-50 border border-dark-200 p-1 rounded-lg shadow-sm">
+                          <button 
+                            onClick={() => setLang('English')} 
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'English' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
+                          >
+                            EN
+                          </button>
+                          <button 
+                            onClick={() => setLang('Gujarati')} 
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'Gujarati' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
+                          >
+                            GU
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <button 
                       onClick={() => removeBookmark(b.mcqId)}
                       className="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors"
@@ -187,9 +217,9 @@ export default function BookmarksPage() {
                     </button>
                   </div>
 
-                  <p className="text-base sm:text-lg font-bold text-dark-900 mb-6 leading-relaxed">
-                    {b.mcq.question}
-                  </p>
+                  <div className="text-base sm:text-lg font-bold text-dark-900 mb-6 leading-relaxed">
+                    <div>{useGuj ? tGuj.question : b.mcq.question}</div>
+                  </div>
 
                   <div className="grid sm:grid-cols-2 gap-4 mb-6">
                     {options.map((opt) => {
@@ -201,14 +231,16 @@ export default function BookmarksPage() {
                       }
 
                       return (
-                        <div key={opt.key} className={`flex items-center p-4 rounded-xl border transition-colors ${bgClass}`}>
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold mr-3 shrink-0 ${isRevealed && isCorrect ? 'bg-emerald-500 text-white' : 'bg-white border border-dark-200 text-dark-500'}`}>
-                            {opt.key}
+                        <div key={opt.key} className={`flex flex-col p-4 rounded-xl border transition-colors ${bgClass}`}>
+                          <div className="flex items-center w-full">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold mr-3 shrink-0 ${isRevealed && isCorrect ? 'bg-emerald-500 text-white' : 'bg-white border border-dark-200 text-dark-500'}`}>
+                              {opt.key}
+                            </div>
+                            <span className="text-sm">{opt.text}</span>
+                            {isRevealed && isCorrect && (
+                              <svg className="w-5 h-5 text-emerald-500 ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                            )}
                           </div>
-                          <span className="text-sm">{opt.text}</span>
-                          {isRevealed && isCorrect && (
-                            <svg className="w-5 h-5 text-emerald-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
-                          )}
                         </div>
                       );
                     })}
@@ -224,10 +256,10 @@ export default function BookmarksPage() {
                     </button>
                   </div>
 
-                  {isRevealed && b.mcq.explanation && (
+                  {isRevealed && (b.mcq.explanation || (useGuj && tGuj.explanation)) && (
                     <div className="mt-5 p-5 bg-primary-50 border border-primary-100 rounded-xl">
                       <div className="text-[10px] font-black uppercase tracking-widest text-primary-600 mb-2">Explanation</div>
-                      <div className="text-sm text-dark-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: b.mcq.explanation }} />
+                      <div className="text-sm text-dark-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: (useGuj && tGuj.explanation) ? tGuj.explanation : (b.mcq.explanation || '') }} />
                     </div>
                   )}
                 </div>
