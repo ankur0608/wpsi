@@ -2,103 +2,69 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { setSessionCookie } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { authRateLimiter } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password, mobile, otp, verificationId } = await req.json();
-    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
-    const normalizedName = typeof name === 'string' ? name.trim() : '';
-    const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : '';
-
-    if (!normalizedEmail || !password) {
+    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    if (!authRateLimiter.check(ip)) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       );
     }
 
-    if (!normalizedName) {
+    const { name, email, password } = await req.json();
+
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
-    }
-    
-    if (!normalizedMobile) {
-       return NextResponse.json(
-        { error: 'Mobile number is required' },
+        { error: "Name, email, and password are required" },
         { status: 400 }
       );
     }
 
-    // Verify OTP using the cookie set by /api/auth/verify-otp
-    const cookieStore = await cookies();
-    const verifiedMobile = cookieStore.get('verified_mobile')?.value;
-
-    if (!verifiedMobile || verifiedMobile !== normalizedMobile) {
-       return NextResponse.json(
-        { error: 'Mobile number not verified. Please verify your number first.' },
-        { status: 400 }
-      );
-    }
-
-    const existingUser = await prisma.user.findFirst({
-      where: {
-         OR: [
-            { email: normalizedEmail },
-            { mobile: normalizedMobile }
-         ]
-      },
+    // 1. Check if user with email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email or mobile already exists' },
-        { status: 400 }
+        { error: "User with this email already exists" },
+        { status: 409 }
       );
     }
 
+    // 2. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 3. Create the user
     const user = await prisma.user.create({
       data: {
-        name: normalizedName,
-        email: normalizedEmail,
-        mobile: normalizedMobile,
-        isMobileVerified: true,
+        name,
+        email,
         password: hashedPassword,
       },
     });
 
-    const response = NextResponse.json(
-      {
-        message: 'User created successfully',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          mobile: user.mobile,
-          level: user.level,
-          xp: user.xp,
-          coins: user.coins,
-          streak: user.streak,
-          planType: user.planType,
-        },
+    // 4. Set session cookie for automatic login
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
       },
-      { status: 201 }
-    );
+    });
 
-    setSessionCookie(response, user.id);
-    
-    // Clear the verified_mobile cookie
-    response.cookies.delete('verified_mobile');
+    await setSessionCookie(response, user.id);
 
     return response;
-  } catch (error) {
-    console.error('Registration error:', error);
+  } catch (error: any) {
+    console.error("Registration error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Failed to create account" },
       { status: 500 }
     );
   }

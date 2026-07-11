@@ -2,6 +2,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 
 function TopicsContent() {
   const searchParams = useSearchParams();
@@ -10,6 +11,7 @@ function TopicsContent() {
   const subjectName = searchParams.get('subjectName') || 'Loading...';
 
   const router = useRouter();
+  const { user } = useUser();
   const [topics, setTopics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
@@ -58,6 +60,8 @@ function TopicsContent() {
         setLoading(false);
       });
   }, [subjectId]);
+
+  const isFreePlan = !user?.planType || user.planType === 'free';
 
   return (
     <div className="bg-dark-50 w-full font-sans text-dark-800 h-full overflow-y-auto">
@@ -115,34 +119,39 @@ function TopicsContent() {
                 <div className="text-center text-dark-400 py-10">No topics found for this subject.</div>
               ) : (
                 topics.map((topic, idx) => {
-                  const isFree = idx === 0;
+                  const isTopicUnlocked = !isFreePlan || idx === 0;
+
                   return (
                     <div
                       key={topic.id}
-                      onClick={() => { setSelectedTopicName(topic.name); setSelectedTopicIndex(idx); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); }}
-                      className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${isFree ? 'bg-white border-dark-100 hover:border-primary-300 hover:shadow-md hover:shadow-primary-500/5' : 'bg-dark-50/50 border-dark-100 opacity-80 hover:opacity-100'}`}
+                      onClick={() => { 
+                        if (isTopicUnlocked) {
+                          setSelectedTopicName(topic.name); setSelectedTopicIndex(idx); setSelectedMode('quick'); setSelectedDifficulties(['Easy', 'Medium', 'Hard']); setIsTopicModalOpen(true); 
+                        }
+                      }}
+                      className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${isTopicUnlocked ? 'cursor-pointer bg-white border-dark-100 hover:border-primary-300 hover:shadow-md hover:shadow-primary-500/5' : 'cursor-not-allowed bg-dark-50/50 border-dark-100 opacity-80'}`}
                     >
                       <div className="flex items-center gap-4 flex-1">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isFree ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-colors' : 'bg-dark-100 text-dark-400'}`}>
-                              <span className="text-xl">{isFree ? '🧩' : '🔒'}</span>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isTopicUnlocked ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-colors' : 'bg-dark-100 text-dark-400'}`}>
+                              <span className="text-xl">{isTopicUnlocked ? '🧩' : '🔒'}</span>
                           </div>
                           <div>
-                              <h4 className="font-bold text-dark-900 text-sm group-hover:text-primary-700 transition-colors">{idx + 1}. {topic.name}</h4>
+                              <h4 className={`font-bold text-sm transition-colors ${isTopicUnlocked ? 'text-dark-900 group-hover:text-primary-700' : 'text-dark-500'}`}>{idx + 1}. {topic.name}</h4>
                               <div className="flex items-center gap-3 mt-1">
                                   <span className="text-[10px] text-dark-500 font-medium">{Math.floor(Math.random() * 20) + 40} Questions</span>
                                   <div className="w-1 h-1 bg-dark-200 rounded-full"></div>
-                                  <span className={`text-[10px] font-bold ${isFree ? 'text-success-600' : 'text-amber-600'}`}>
-                                      {isFree ? 'Unlocked' : 'Premium'}
+                                  <span className={`text-[10px] font-bold ${isTopicUnlocked ? 'text-success-600' : 'text-amber-600'}`}>
+                                      {isTopicUnlocked ? 'Unlocked' : 'Premium Required'}
                                   </span>
                               </div>
                           </div>
                       </div>
                       <div className="shrink-0 pl-4 border-l border-dark-100 hidden sm:block">
-                          {isFree ? (
+                          {isTopicUnlocked ? (
                             <button className="bg-primary-50 text-primary-600 font-bold py-1.5 px-4 rounded-lg text-xs group-hover:bg-primary-600 group-hover:text-white transition-colors">Start</button>
                           ) : (
-                            <button className="bg-dark-100 text-dark-500 font-bold py-1.5 px-4 rounded-lg text-xs hover:bg-dark-200 transition-colors flex items-center gap-1.5">
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Try 5 Free
+                            <button className="bg-dark-100 text-dark-500 font-bold py-1.5 px-4 rounded-lg text-xs flex items-center gap-1.5">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Locked
                             </button>
                           )}
                       </div>

@@ -1,86 +1,9 @@
-"use client";
-import { useEffect, useState } from 'react';
+import ClientEffects from '@/components/ClientEffects';
 import Link from 'next/link';
+import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
 
 export default function Blogs() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // Handle FAQ toggles
-    const toggles = document.querySelectorAll('.faq-toggle');
-    toggles.forEach(toggle => {
-        const handler = () => {
-            const content = toggle.nextElementSibling;
-            const icon = toggle.querySelector('.faq-icon');
-            
-            if (!content) return;
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                if(icon) icon.classList.add('rotate-180');
-                toggle.setAttribute('aria-expanded', 'true');
-            } else {
-                content.classList.add('hidden');
-                if(icon) icon.classList.remove('rotate-180');
-                toggle.setAttribute('aria-expanded', 'false');
-            }
-        };
-        toggle.addEventListener('click', handler);
-        return () => toggle.removeEventListener('click', handler);
-    });
-
-    // Testimonials Scroll Controls
-    const track = document.getElementById('testimonial-track');
-    const prevBtn = document.getElementById('prev-testimonial');
-    const nextBtn = document.getElementById('next-testimonial');
-    
-    let autoPlay: ReturnType<typeof setInterval> | undefined;
-    if (track && prevBtn && nextBtn) {
-        const getScrollStep = () => {
-            const card = track.querySelector('div');
-            return card ? card.offsetWidth + 24 : 340; 
-        };
-        
-        const scrollPrev = () => {
-            track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
-        };
-        const scrollNext = () => {
-            track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
-        };
-        
-        prevBtn.addEventListener('click', scrollPrev);
-        nextBtn.addEventListener('click', scrollNext);
-        
-        let autoScrollDirection = 1;
-        autoPlay = setInterval(() => {
-            const step = getScrollStep();
-            const maxScroll = track.scrollWidth - track.clientWidth;
-            if (track.scrollLeft >= maxScroll - 10) {
-                autoScrollDirection = -1;
-            } else if (track.scrollLeft <= 10) {
-                autoScrollDirection = 1;
-            }
-            track.scrollBy({ left: autoScrollDirection * step, behavior: 'smooth' });
-        }, 5000);
-        
-        const stopAutoPlay = () => clearInterval(autoPlay);
-        prevBtn.addEventListener('click', stopAutoPlay);
-        nextBtn.addEventListener('click', stopAutoPlay);
-        track.addEventListener('touchstart', stopAutoPlay, { passive: true });
-        track.addEventListener('mousedown', stopAutoPlay);
-        
-        return () => {
-            clearInterval(autoPlay);
-            prevBtn.removeEventListener('click', scrollPrev);
-            nextBtn.removeEventListener('click', scrollNext);
-            prevBtn.removeEventListener('click', stopAutoPlay);
-            nextBtn.removeEventListener('click', stopAutoPlay);
-            track.removeEventListener('touchstart', stopAutoPlay);
-            track.removeEventListener('mousedown', stopAutoPlay);
-        };
-    }
-  }, []);
-
   return (
     <div className="relative w-full overflow-x-hidden page-transition">
         <DynamicNavbar />
@@ -114,7 +37,7 @@ export default function Blogs() {
                 
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/syllabus-90-days" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="How to Master the Wireless PSI Syllabus in 90 Days" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="How to Master the Wireless PSI Syllabus in 90 Days" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     Exam Strategy
                 </div>
@@ -140,7 +63,7 @@ export default function Blogs() {
         
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/computer-networks" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Top 50 Most Repeated Questions in Computer Networks" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Top 50 Most Repeated Questions in Computer Networks" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     Technical Paper
                 </div>
@@ -166,7 +89,7 @@ export default function Blogs() {
         
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/rahuls-strategy" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="From 45 Marks to Rank #12: Rahul's Strategy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="From 45 Marks to Rank #12: Rahul's Strategy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     Success Story
                 </div>
@@ -192,7 +115,7 @@ export default function Blogs() {
         
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/current-affairs-september-2025" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Current Affairs Roundup: September 2025" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Current Affairs Roundup: September 2025" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     General Knowledge
                 </div>
@@ -218,7 +141,7 @@ export default function Blogs() {
         
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/microprocessors-vs-microcontrollers" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Understanding Microprocessors vs Microcontrollers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Understanding Microprocessors vs Microcontrollers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     Electronics
                 </div>
@@ -244,7 +167,7 @@ export default function Blogs() {
         
         <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
             <a href="/blog/exam-anxiety" className="relative h-64 overflow-hidden block">
-                <img src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dealing with Exam Anxiety During Mock Tests" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image fill src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dealing with Exam Anxiety During Mock Tests" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
                     Mental Prep
                 </div>
@@ -327,6 +250,7 @@ export default function Blogs() {
             </div>
         </div>
     </footer>
+      <ClientEffects />
 
     
 

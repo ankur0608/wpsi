@@ -37,6 +37,7 @@ export default function DailyPracticePage() {
   const [isFinished, setIsFinished] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<string>('English');
   const [finalResult, setFinalResult] = useState<{score: number, total: number} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetch('/api/mcq/daily')
@@ -68,8 +69,8 @@ export default function DailyPracticePage() {
     return (
       <div className="text-center py-20 px-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">No questions available today.</h2>
-        <Link href="/" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-          Go Back Home
+        <Link href="/dashboard" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+          Back to Dashboard
         </Link>
       </div>
     );
@@ -96,7 +97,7 @@ export default function DailyPracticePage() {
             </div>
           </div>
           
-          <Link href="/" className="inline-block w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all transform hover:-translate-y-1">
+          <Link href="/dashboard" className="inline-block w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all transform hover:-translate-y-1">
             Back to Dashboard
           </Link>
         </div>
@@ -190,15 +191,69 @@ export default function DailyPracticePage() {
     );
   };
 
-  const submitPractice = () => {
+  const submitPractice = async () => {
+    setIsSubmitting(true);
     let score = 0;
-    mcqs.forEach(q => {
-      if (responses[q.id] === q.correctAnswer) {
-        score++;
-      }
+    
+    const mcqsDetails = mcqs.map(q => {
+      const ans = responses[q.id];
+      const isCorrect = ans === q.correctAnswer;
+      if (isCorrect) score++;
+      
+      const gujTranslation = q.translations?.find(t => t.language === 'Gujarati');
+      
+      return {
+        id: q.id,
+        question: q.question,
+        questionGuj: gujTranslation?.question || null,
+        options: {
+          A: q.optionA,
+          B: q.optionB,
+          C: q.optionC,
+          D: q.optionD
+        },
+        optionsGuj: gujTranslation ? {
+          A: gujTranslation.optionA,
+          B: gujTranslation.optionB,
+          C: gujTranslation.optionC,
+          D: gujTranslation.optionD
+        } : null,
+        correctAnswer: q.correctAnswer,
+        selectedOption: ans || null,
+        correct: isCorrect,
+        explanation: q.explanation,
+        explanationGuj: gujTranslation?.explanation || null
+      };
     });
+
+    const formattedResponses = mcqsDetails.map(d => ({
+      mcqId: d.id,
+      answer: d.selectedOption || 'E'
+    }));
+
+    const percentage = (score / mcqs.length) * 100;
+    
+    try {
+      await fetch('/api/test-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Daily Challenge - ${new Date().toLocaleDateString('en-GB')}`,
+          mode: 'daily',
+          totalMarks: mcqs.length,
+          earnedMarks: score,
+          percentage: percentage,
+          responses: formattedResponses,
+          details: mcqsDetails
+        })
+      });
+    } catch (error) {
+      console.error('Failed to submit practice', error);
+    }
+    
     setFinalResult({ score, total: mcqs.length });
     setIsFinished(true);
+    setIsSubmitting(false);
   };
 
   const renderPaletteState = (q: MCQ) => {
@@ -391,10 +446,11 @@ export default function DailyPracticePage() {
               </button>
               <button 
                 onClick={currentIndex === mcqs.length - 1 ? submitPractice : () => navigateQuestion(1)}
-                className="col-span-3 md:flex-[2] bg-primary-600 text-[#111] p-3 md:p-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base font-bold hover:bg-primary-700 transition-colors mt-2 md:mt-0 shadow-lg shadow-[#ea580c]/20"
+                disabled={isSubmitting}
+                className="col-span-3 md:flex-[2] bg-primary-600 text-[#111] p-3 md:p-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base font-bold hover:bg-primary-700 transition-colors mt-2 md:mt-0 shadow-lg shadow-[#ea580c]/20 disabled:opacity-50"
               >
                 <i className="fa-regular fa-paper-plane"></i>
-                <span>{currentIndex === mcqs.length - 1 ? 'Submit Practice' : 'Next'}</span>
+                <span>{currentIndex === mcqs.length - 1 ? (isSubmitting ? 'Submitting...' : 'Submit Practice') : 'Next'}</span>
               </button>
             </div>
           </div>

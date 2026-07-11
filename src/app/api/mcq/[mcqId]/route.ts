@@ -35,7 +35,7 @@ export async function POST(
   { params }: { params: Promise<{ mcqId: string }> }
 ) {
   try {
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     if (!session) {
       return NextResponse.json(

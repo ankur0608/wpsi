@@ -1,51 +1,19 @@
-"use client";
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import { blogPosts, BlogPost } from '@/data/blogs';
+import ClientEffects from '@/components/ClientEffects';
 
-export default function BlogSlugPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [post, setPost] = useState<BlogPost | null>(null);
+export async function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
-  useEffect(() => {
-    const foundPost = blogPosts.find(p => p.slug === slug);
-    if (foundPost) {
-      setPost(foundPost);
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    // Handle FAQ toggles
-    const toggles = document.querySelectorAll('.faq-toggle');
-    const handlers: { element: Element; handler: EventListener }[] = [];
-    
-    toggles.forEach(toggle => {
-        const handler = () => {
-            const content = toggle.nextElementSibling;
-            const icon = toggle.querySelector('.faq-icon');
-            
-            if (!content) return;
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                if(icon) icon.classList.add('rotate-180');
-                toggle.setAttribute('aria-expanded', 'true');
-            } else {
-                content.classList.add('hidden');
-                if(icon) icon.classList.remove('rotate-180');
-                toggle.setAttribute('aria-expanded', 'false');
-            }
-        };
-        toggle.addEventListener('click', handler);
-        handlers.push({ element: toggle, handler });
-    });
-
-    return () => {
-        handlers.forEach(({ element, handler }) => element.removeEventListener('click', handler));
-    };
-  }, [post]);
+export default async function BlogSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const post = blogPosts.find(p => p.slug === slug);
 
   if (!post) {
     return (
@@ -110,7 +78,7 @@ export default function BlogSlugPage() {
 
                 {/*  Featured Image  */}
                 <div className="relative h-80 sm:h-96 w-full rounded-3xl overflow-hidden border border-dark-200 shadow-lg mb-12">
-                    <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                    <Image fill src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
                 </div>
 
                 {/*  Article Body  */}
@@ -148,9 +116,9 @@ export default function BlogSlugPage() {
             <div className="relative z-10 max-w-4xl mx-auto">
                 <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Never Miss an Update</h2>
                 <p className="text-xl text-primary-200 mb-12 leading-relaxed">Join 50,000+ aspirants receiving our weekly strategy emails.</p>
-                <form className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto" onSubmit={(e) => e.preventDefault()}>
+                <form className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
                     <input type="email" placeholder="Enter your email" className="flex-1 px-6 py-4 rounded-xl text-dark-900 focus:outline-none focus:ring-4 focus:ring-accent-500/50" />
-                    <button type="submit" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl">Subscribe</button>
+                    <button type="button" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl">Subscribe</button>
                 </form>
             </div>
         </section>
@@ -195,6 +163,7 @@ export default function BlogSlugPage() {
             </div>
         </footer>
 
+    <ClientEffects />
     </div>
   );
 }

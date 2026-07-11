@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic'; // Prevent static generation of this route since it returns random data
+export const revalidate = 86400; // Cache for 24 hours (86400 seconds)
 
 export async function GET() {
   try {

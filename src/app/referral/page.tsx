@@ -1,25 +1,9 @@
 
-"use client";
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Referral() {
-  useEffect(() => {
-    // Basic Intersection Observer for Scroll Animations
-    const animatedElements = document.querySelectorAll('.animate-on-scroll');
-    if (animatedElements.length > 0) {
-      const observer = new IntersectionObserver((entries, obs) => {
-          entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                  entry.target.classList.add('is-visible');
-                  obs.unobserve(entry.target);
-              }
-          });
-      }, { threshold: 0.1 });
-      animatedElements.forEach(el => observer.observe(el));
-    }
-  }, []);
-
   return (
     <>
       
@@ -41,7 +25,7 @@ export default function Referral() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 blur-3xl rounded-full"></div>
             
             <div className="mb-8">
-                <img src="https://ui-avatars.com/api/?name=Rahul+Parmar&background=1e293b&color=818cf8&bold=true&size=100" className="w-20 h-20 rounded-[1.5rem] mx-auto border-4 border-dark-bg shadow-xl mb-4" />
+                <Image width={80} height={80} src="https://ui-avatars.com/api/?name=Rahul+Parmar&background=1e293b&color=818cf8&bold=true&size=100" className="w-20 h-20 rounded-[1.5rem] mx-auto border-4 border-dark-bg shadow-xl mb-4" alt="image" />
                 <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Rahul Parmar invited you!</h2>
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent text-[10px] font-black uppercase rounded-full border border-accent/20">Exclusive Referral Offer</div>
             </div>

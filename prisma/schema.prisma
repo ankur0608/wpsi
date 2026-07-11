@@ -13,6 +13,7 @@ model User {
     name             String?
     mobile           String?   @unique
     isMobileVerified Boolean   @default(false)
+    image            String?
     password         String
     planType         String    @default("free")
     level            Int       @default(1)

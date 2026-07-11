@@ -5,7 +5,7 @@ import { XP_REWARDS, getUserLevel } from '@/lib/xp';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     if (!session) {
       return NextResponse.json(
@@ -46,9 +46,15 @@ export async function POST(request: NextRequest) {
       newStreak = 1;
       newTotalStudyDays += 1;
     } else {
-      const lastActivityDay = new Date(lastActivity.getFullYear(), lastActivity.getMonth(), lastActivity.getDate());
-      const diffTime = today.getTime() - lastActivityDay.getTime();
-      diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      // Convert to IST for accurate calendar day boundaries in India
+      const getISTDate = (date: Date) => new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+      const nowIST = getISTDate(now);
+      const lastActivityIST = getISTDate(lastActivity);
+
+      const todayIST = Date.UTC(nowIST.getUTCFullYear(), nowIST.getUTCMonth(), nowIST.getUTCDate());
+      const lastActivityDayIST = Date.UTC(lastActivityIST.getUTCFullYear(), lastActivityIST.getUTCMonth(), lastActivityIST.getUTCDate());
+
+      diffDays = Math.round((todayIST - lastActivityDayIST) / (1000 * 60 * 60 * 24));
       
       if (diffDays === 1) {
         newStreak += 1;
@@ -250,7 +256,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     if (!session) {
       return NextResponse.json(

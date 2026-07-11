@@ -4,7 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     // Fetch top 50 users based on XP
     const topUsers = await prisma.user.findMany({

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthModal from "../../components/AuthModal";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function LoginPage() {
           router.replace("/dashboard");
         }
       } catch {
-        // Keep the login page open if the session check fails.
+        // Keep the page open if session check fails.
       }
     };
 
@@ -29,7 +29,7 @@ export default function LoginPage() {
   return (
     <AuthModal
       isOpen={true}
-      mode="login"
+      mode="forgot-password"
       onClose={() => router.push("/")}
       onModeChange={(mode) => router.push(mode === "login" ? "/login" : mode === "register" ? "/register" : "/forgot-password")}
     />

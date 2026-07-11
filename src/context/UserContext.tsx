@@ -12,6 +12,7 @@ interface User {
   bestStreak: number;
   totalStudyDays: number;
   planType?: string;
+  image?: string;
 }
 
 interface UserContextType {

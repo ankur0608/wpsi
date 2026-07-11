@@ -95,6 +95,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         </div>
         
         <div className="flex items-center gap-2" ref={popoverRef}>
+            {/* Back to Website */}
+            <Link href="/" className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-dark-50 hover:bg-dark-100 border border-dark-200 rounded-xl text-dark-600 hover:text-dark-900 transition-all text-xs font-bold shadow-sm hover:scale-105">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                <span className="hidden md:inline">Website</span>
+            </Link>
+
             {/* Streak Header Badge */}
             <Link href="/streaks" className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-amber-600 transition-all text-xs font-bold shadow-sm hover:scale-105">
                 <span>🔥</span>

@@ -1,86 +1,9 @@
-"use client";
-import { useEffect, useState } from 'react';
+import ClientEffects from '@/components/ClientEffects';
 import Link from 'next/link';
+import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // Handle FAQ toggles
-    const toggles = document.querySelectorAll('.faq-toggle');
-    toggles.forEach(toggle => {
-        const handler = () => {
-            const content = toggle.nextElementSibling;
-            const icon = toggle.querySelector('.faq-icon');
-            
-            if (!content) return;
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                if(icon) icon.classList.add('rotate-180');
-                toggle.setAttribute('aria-expanded', 'true');
-            } else {
-                content.classList.add('hidden');
-                if(icon) icon.classList.remove('rotate-180');
-                toggle.setAttribute('aria-expanded', 'false');
-            }
-        };
-        toggle.addEventListener('click', handler);
-        return () => toggle.removeEventListener('click', handler);
-    });
-
-    // Testimonials Scroll Controls
-    const track = document.getElementById('testimonial-track');
-    const prevBtn = document.getElementById('prev-testimonial');
-    const nextBtn = document.getElementById('next-testimonial');
-    
-    let autoPlay: ReturnType<typeof setInterval> | undefined;
-    if (track && prevBtn && nextBtn) {
-        const getScrollStep = () => {
-            const card = track.querySelector('div');
-            return card ? card.offsetWidth + 24 : 340; 
-        };
-        
-        const scrollPrev = () => {
-            track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
-        };
-        const scrollNext = () => {
-            track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
-        };
-        
-        prevBtn.addEventListener('click', scrollPrev);
-        nextBtn.addEventListener('click', scrollNext);
-        
-        let autoScrollDirection = 1;
-        autoPlay = setInterval(() => {
-            const step = getScrollStep();
-            const maxScroll = track.scrollWidth - track.clientWidth;
-            if (track.scrollLeft >= maxScroll - 10) {
-                autoScrollDirection = -1;
-            } else if (track.scrollLeft <= 10) {
-                autoScrollDirection = 1;
-            }
-            track.scrollBy({ left: autoScrollDirection * step, behavior: 'smooth' });
-        }, 5000);
-        
-        const stopAutoPlay = () => clearInterval(autoPlay);
-        prevBtn.addEventListener('click', stopAutoPlay);
-        nextBtn.addEventListener('click', stopAutoPlay);
-        track.addEventListener('touchstart', stopAutoPlay, { passive: true });
-        track.addEventListener('mousedown', stopAutoPlay);
-        
-        return () => {
-            clearInterval(autoPlay);
-            prevBtn.removeEventListener('click', scrollPrev);
-            nextBtn.removeEventListener('click', scrollNext);
-            prevBtn.removeEventListener('click', stopAutoPlay);
-            nextBtn.removeEventListener('click', stopAutoPlay);
-            track.removeEventListener('touchstart', stopAutoPlay);
-            track.removeEventListener('mousedown', stopAutoPlay);
-        };
-    }
-  }, []);
-
   return (
     <div className="relative w-full overflow-x-hidden page-transition">
         <DynamicNavbar />
@@ -158,10 +81,10 @@ export default function Home() {
             {/*  Trust Indicators  */}
             <div className="mt-16 pt-8 flex flex-col items-center justify-center gap-4">
                 <div className="flex -space-x-3">
-                    <img src="https://i.pravatar.cc/100?img=11" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
-                    <img src="https://i.pravatar.cc/100?img=12" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
-                    <img src="https://i.pravatar.cc/100?img=13" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
-                    <img src="https://i.pravatar.cc/100?img=14" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
+                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=11" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
+                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=12" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
+                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=13" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
+                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=14" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
                     <div className="w-10 h-10 rounded-full border-2 border-white bg-dark-100 flex items-center justify-center text-xs font-bold text-dark-600 z-10">+5k</div>
                 </div>
                 <div className="text-center">
@@ -189,9 +112,9 @@ export default function Home() {
                         <h4 className="font-bold text-dark-900 text-xl mb-2">Daily Challenge</h4>
                         <div className="flex items-center gap-2 mb-6 text-sm text-dark-500">
                             <div className="flex -space-x-2">
-                                <img src="https://i.pravatar.cc/100?img=1" className="w-6 h-6 rounded-full border-2 border-white"/>
-                                <img src="https://i.pravatar.cc/100?img=2" className="w-6 h-6 rounded-full border-2 border-white"/>
-                                <img src="https://i.pravatar.cc/100?img=3" className="w-6 h-6 rounded-full border-2 border-white"/>
+                                <Image width={100} height={100} src="https://i.pravatar.cc/100?img=1" className="w-6 h-6 rounded-full border-2 border-white"alt="image" />
+                                <Image width={100} height={100} src="https://i.pravatar.cc/100?img=2" className="w-6 h-6 rounded-full border-2 border-white"alt="image" />
+                                <Image width={100} height={100} src="https://i.pravatar.cc/100?img=3" className="w-6 h-6 rounded-full border-2 border-white"alt="image" />
                             </div>
                             <span>+450 playing</span>
                         </div>
@@ -779,6 +702,7 @@ export default function Home() {
             </div>
         </div>
     </footer>
+      <ClientEffects />
 
     
     

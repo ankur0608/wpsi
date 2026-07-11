@@ -31,7 +31,7 @@ export default function RegisterPage() {
       isOpen={true}
       mode="register"
       onClose={() => router.push("/")}
-      onModeChange={(mode) => router.push(mode === "login" ? "/login" : "/register")}
+      onModeChange={(mode) => router.push(mode === "login" ? "/login" : mode === "register" ? "/register" : "/forgot-password")}
     />
   );
 }

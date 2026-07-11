@@ -4,7 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     if (!session) {
       return NextResponse.json(
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     console.log("[POST /api/bookmarks] Handling incoming request...");
-    const session = getSessionFromRequest(request);
+    const session = await getSessionFromRequest(request);
 
     if (!session) {
       console.log("[POST /api/bookmarks] Failed: Not authenticated");

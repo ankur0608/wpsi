@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'crypto';
+import { SignJWT, jwtVerify } from 'jose';
 import type { NextRequest, NextResponse } from 'next/server';
 
 export const SESSION_COOKIE_NAME = 'wpsi_session';
@@ -7,6 +7,7 @@ const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7;
 interface SessionPayload {
   userId: string;
   expiresAt: number;
+  [key: string]: unknown;
 }
 
 function getAuthSecret() {
@@ -23,70 +24,49 @@ function getAuthSecret() {
   throw new Error('AUTH_SESSION_SECRET is required in production.');
 }
 
-function signValue(value: string) {
-  return createHmac('sha256', getAuthSecret()).update(value).digest('base64url');
+// Convert secret string to Uint8Array for jose
+const getEncodedSecret = () => new TextEncoder().encode(getAuthSecret());
+
+export async function createSessionToken(userId: string) {
+  const expiresAt = Date.now() + SESSION_DURATION_MS;
+
+  const jwt = await new SignJWT({ userId, expiresAt })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(new Date(expiresAt))
+    .sign(getEncodedSecret());
+
+  return jwt;
 }
 
-function safeEqual(left: string, right: string) {
-  const leftBuffer = Buffer.from(left);
-  const rightBuffer = Buffer.from(right);
-
-  if (leftBuffer.length !== rightBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(leftBuffer, rightBuffer);
-}
-
-export function createSessionToken(userId: string) {
-  const payload: SessionPayload = {
-    userId,
-    expiresAt: Date.now() + SESSION_DURATION_MS,
-  };
-
-  const encodedPayload = Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url');
-  const signature = signValue(encodedPayload);
-
-  return `${encodedPayload}.${signature}`;
-}
-
-export function verifySessionToken(token?: string | null): SessionPayload | null {
+export async function verifySessionToken(token?: string | null): Promise<SessionPayload | null> {
   if (!token) {
     return null;
   }
 
-  const [encodedPayload, signature] = token.split('.');
-
-  if (!encodedPayload || !signature) {
-    return null;
-  }
-
-  const expectedSignature = signValue(encodedPayload);
-  if (!safeEqual(signature, expectedSignature)) {
-    return null;
-  }
-
   try {
-    const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8')) as SessionPayload;
+    const { payload } = await jwtVerify(token, getEncodedSecret(), {
+      algorithms: ['HS256'],
+    });
 
-    if (!payload.userId || payload.expiresAt <= Date.now()) {
+    if (!payload.userId || typeof payload.expiresAt !== 'number' || payload.expiresAt <= Date.now()) {
       return null;
     }
 
-    return payload;
+    return payload as unknown as SessionPayload;
   } catch {
     return null;
   }
 }
 
-export function getSessionFromRequest(request: NextRequest) {
+export async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  return verifySessionToken(token);
+  return await verifySessionToken(token);
 }
 
-export function setSessionCookie(response: NextResponse, userId: string) {
-  const token = createSessionToken(userId);
-  const payload = verifySessionToken(token);
+export async function setSessionCookie(response: NextResponse, userId: string) {
+  const token = await createSessionToken(userId);
+  const payload = await verifySessionToken(token);
 
   response.cookies.set({
     name: SESSION_COOKIE_NAME,
@@ -115,6 +95,7 @@ export const publicUserSelect = {
   id: true,
   email: true,
   name: true,
+  image: true,
   planType: true,
   level: true,
   xp: true,
@@ -124,3 +105,33 @@ export const publicUserSelect = {
   totalStudyDays: true,
   createdAt: true,
 } as const;
+
+// --- Reset Token Logic ---
+export async function createResetToken(email: string) {
+  const expiresAt = Date.now() + 1000 * 60 * 15; // 15 mins expiration
+  const jwt = await new SignJWT({ email, expiresAt })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(new Date(expiresAt))
+    .sign(getEncodedSecret());
+    
+  return jwt;
+}
+
+export async function verifyResetToken(token: string): Promise<string | null> {
+  if (!token) return null;
+
+  try {
+    const { payload } = await jwtVerify(token, getEncodedSecret(), {
+      algorithms: ['HS256'],
+    });
+
+    if (!payload.email || typeof payload.expiresAt !== 'number' || payload.expiresAt <= Date.now()) {
+      return null;
+    }
+
+    return payload.email as string;
+  } catch {
+    return null;
+  }
+}

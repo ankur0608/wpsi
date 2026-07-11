@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export type AuthMode = "login" | "register";
+export type AuthMode = "login" | "register" | "forgot-password";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,6 +24,40 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [otp, setOtp] = useState("");
   const [verificationId, setVerificationId] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+  const [loginMethod, setLoginMethod] = useState<"email" | "mobile">("email");
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      timerId = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+    }
+    return () => clearTimeout(timerId);
+  }, [resendTimer]);
+
+  const handleResendOtp = async () => {
+    if (resendTimer > 0) return;
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setVerificationId(data.verificationId);
+        setResendTimer(30);
+      } else {
+        setError(data.error || "Failed to resend OTP");
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleClose = useCallback(() => {
     setError("");
@@ -34,10 +68,12 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setOtp("");
     setVerificationId("");
     setStep(1);
+    setResendTimer(0);
+    setLoginMethod("email");
     onClose();
   }, [onClose]);
 
-  const handleModeChange = (nextMode: "login" | "register") => {
+  const handleModeChange = (nextMode: AuthMode) => {
     setError("");
     setName("");
     setEmail("");
@@ -46,6 +82,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setOtp("");
     setVerificationId("");
     setStep(1);
+    setResendTimer(0);
+    setLoginMethod("email");
     onModeChange(nextMode);
   };
 
@@ -73,22 +111,46 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+
+    if (mode === "login") {
+      if (loginMethod === "email") {
+        if (!email) { setError("Email Address is required"); return; }
+        if (!password) { setError("Password is required"); return; }
+      } else {
+        if (step === 1) {
+          if (!mobile) { setError("Mobile Number is required"); return; }
+          if (!/^[0-9]{10}$/.test(mobile)) { setError("Please enter a valid 10-digit mobile number"); return; }
+        }
+        if (step === 2) {
+          if (!otp) { setError("OTP is required"); return; }
+        }
+      }
+    } else if (mode === "forgot-password") {
+        if (step === 1) {
+            if (!email) { setError("Email is required"); return; }
+        }
+    } else {
+        if (step === 1) {
+            if (!name) { setError("Full Name is required"); return; }
+            if (!email) { setError("Email is required"); return; }
+            if (!password) { setError("Password is required"); return; }
+        }
+    }
+
     setLoading(true);
 
     try {
-      if (mode === "register" && step === 1) {
-        // Step 1: Send OTP
+      if (mode === "login" && loginMethod === "mobile" && step === 1) {
         const response = await fetch("/api/auth/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile }),
         });
-
         const data = await response.json().catch(() => ({}));
 
         if (response.ok) {
-          setVerificationId(data.verificationId);
           setStep(2);
+          setResendTimer(30);
           setLoading(false);
           return;
         } else {
@@ -98,20 +160,69 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         }
       }
 
-      if (mode === "register" && step === 2) {
-        // Step 2: Verify OTP
-        const response = await fetch("/api/auth/verify-otp", {
+      if (mode === "forgot-password" && step === 1) {
+        const response = await fetch("/api/auth/forgot-password/send-link", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile, otp, verificationId }),
+          body: JSON.stringify({ email }),
         });
-
         const data = await response.json().catch(() => ({}));
 
         if (response.ok) {
-          setStep(3);
+          setStep(2); // Step 2 will just be a success message for forgot password
           setLoading(false);
           return;
+        } else {
+          setError(data.error || "Failed to send reset link");
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (mode === "register" && step === 1) {
+        const registerRes = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        
+        const registerData = await registerRes.json().catch(() => ({}));
+        
+        if (registerRes.ok) {
+          router.replace("/dashboard");
+          router.refresh();
+          return;
+        } else {
+          setError(registerData.error || "Registration failed");
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (mode === "login" && step === 2) {
+        const response = await fetch("/api/auth/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile, otp }),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+            const loginRes = await fetch("/api/auth/login-mobile", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({ mobile }),
+            });
+            if (loginRes.ok) {
+               router.replace("/dashboard");
+               router.refresh();
+               return;
+            } else {
+               const loginData = await loginRes.json().catch(() => ({}));
+               setError(loginData.error || "Failed to login with mobile");
+               setLoading(false);
+               return;
+            }
         } else {
           setError(data.error || "Failed to verify OTP");
           setLoading(false);
@@ -119,27 +230,24 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         }
       }
 
-      // Login or Step 3 Register
-      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
-      const payload = mode === "login" 
-        ? { email, password } 
-        : { name, email, password, mobile }; // OTP is checked via verified_mobile cookie
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
 
-      if (response.ok) {
-        handleClose();
-        router.replace("/dashboard");
-        router.refresh();
-        return;
+      if (mode === "login" && loginMethod === "email") {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          router.replace("/dashboard");
+          router.refresh();
+        } else {
+          setError(data.error || "Login failed");
+        }
       }
-
-      const data = await response.json().catch(() => ({}));
-      setError(data.error || `Failed to ${mode === "login" ? "login" : "register"}`);
     } catch {
       setError("An error occurred. Please try again.");
     } finally {
@@ -152,6 +260,32 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   }
 
   const isLogin = mode === "login";
+  const isForgot = mode === "forgot-password";
+  const showMobileInput = (isLogin && loginMethod === "mobile" && step === 1);
+  const showOtpInput = (isLogin && loginMethod === "mobile" && step === 2);
+  const showRegisterFields = mode === "register" && step === 1;
+  const showLoginEmailFields = (isLogin && loginMethod === "email") || (isForgot && step === 1);
+
+  if (isForgot && step === 2) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
+        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center">
+          <button type="button" onClick={handleClose} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors">
+            <i className="fa-solid fa-xmark text-xl" />
+          </button>
+          <i className="fa-regular fa-envelope text-5xl text-blue-500 mb-4" />
+          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Check your email</h2>
+          <p className="text-sm text-[var(--text-secondary)] mb-6">
+            We've sent a password reset link to <br/> <strong className="text-white">{email}</strong>
+          </p>
+          <button type="button" onClick={handleClose} className="w-full btn-primary py-3 rounded-xl font-bold">
+            Got it
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -168,7 +302,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl">
+      <div className="glass-card w-full max-w-md p-6 sm:p-7 rounded-3xl border border-white/10 relative shadow-2xl">
         <button
           type="button"
           onClick={handleClose}
@@ -178,27 +312,63 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           <i className="fa-solid fa-xmark text-xl" />
         </button>
 
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6 cursor-pointer hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <i className="fa-solid fa-graduation-cap text-white text-lg" />
+        <div className="text-center mb-5">
+          <Link href="/" className="inline-flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <i className="fa-solid fa-graduation-cap text-white text-sm" />
             </div>
-            <span className="font-heading font-bold text-2xl tracking-tight">
+            <span className="font-heading font-bold text-xl tracking-tight">
               Mcqprep<span className="text-blue-600 dark:text-blue-500">zone</span>
             </span>
           </Link>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{isLogin ? "Welcome Back" : "Create an Account"}</h2>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {isLogin ? "Log in to continue your preparation." : "Start your WPSI preparation journey today."}
+          <h2 className="text-xl sm:text-xl font-bold text-[var(--text-primary)] mb-1">
+            {isLogin ? "Welcome Back" : isForgot ? "Reset Password" : "Create an Account"}
+          </h2>
+          <p className="text-xs text-[var(--text-secondary)]">
+            {isLogin ? "Log in to continue your preparation." : isForgot ? "Enter your details to reset password." : "Start your WPSI preparation journey today."}
           </p>
         </div>
 
-        {error && <div className="mb-4 text-red-500 text-sm text-center">{error}</div>}
+        {error && <div className="mb-3 text-red-500 text-xs text-center">{error}</div>}
 
-        <form onSubmit={handleSubmit} className={isLogin ? "space-y-5" : "space-y-4"}>
-          {!isLogin && step === 1 && (
+        <form onSubmit={handleSubmit} className="space-y-2" noValidate>
+          {showRegisterFields && (
             <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Mobile Number</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Full Name</label>
+              <div className="relative">
+                <i className="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Rahul Parmar"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {(showRegisterFields || showLoginEmailFields) && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Email Address</label>
+              <div className="relative">
+                <i className="fa-solid fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {showMobileInput && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Mobile Number</label>
               <div className="relative">
                 <i className="fa-solid fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
@@ -214,9 +384,35 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             </div>
           )}
 
-          {!isLogin && step === 2 && (
+          {(showRegisterFields || (isLogin && loginMethod === "email")) && (
             <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Enter OTP</label>
+              <div className={isLogin ? "flex justify-between items-center mb-1" : "mb-1"}>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                  Password
+                </label>
+                {isLogin && (
+                  <button type="button" onClick={() => handleModeChange("forgot-password")} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-bold transition-colors">
+                    Forgot Password?
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder={isLogin ? "Enter your password" : "Create a strong password"}
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {showOtpInput && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Enter OTP</label>
               <div className="relative">
                 <i className="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
@@ -228,81 +424,29 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   required
                 />
               </div>
-              <p className="text-xs text-[var(--text-secondary)] mt-2">OTP sent to {mobile}. <button type="button" onClick={() => setStep(1)} className="text-blue-600 dark:text-blue-400 hover:underline">Change number</button></p>
+              <div className="flex justify-between items-center mt-2">
+                <p className="text-xs text-[var(--text-secondary)]">
+                  OTP sent to {mobile}. <button type="button" onClick={() => { setStep(1); setResendTimer(0); }} className="text-blue-600 dark:text-blue-400 hover:underline">Change number</button>
+                </p>
+                {resendTimer > 0 ? (
+                  <span className="text-xs text-[var(--text-secondary)]">Resend in {resendTimer}s</span>
+                ) : (
+                  <button type="button" onClick={handleResendOtp} disabled={loading} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-bold disabled:opacity-50">Resend OTP</button>
+                )}
+              </div>
             </div>
           )}
 
-          {!isLogin && step === 3 && (
-            <>
-              <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Verified Mobile Number</label>
-                <div className="relative">
-                  <i className="fa-solid fa-check-circle absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500" />
-                  <input
-                    type="tel"
-                    value={mobile}
-                    readOnly
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-secondary)] cursor-not-allowed"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Full Name</label>
-                <div className="relative">
-                  <i className="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Rahul Parmar"
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
-                    required
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {(isLogin || (!isLogin && step === 3)) && (
-            <>
-              <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Email Address</label>
-                <div className="relative">
-                  <i className="fa-solid fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="you@example.com"
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className={isLogin ? "flex justify-between items-center mb-2" : "mb-2"}>
-                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Password</label>
-                  {isLogin && (
-                    <a href="#" className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-bold transition-colors">
-                      Forgot Password?
-                    </a>
-                  )}
-                </div>
-                <div className="relative">
-                  <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
-                    required
-                  />
-                </div>
-              </div>
-            </>
+          {isLogin && step === 1 && (
+            <div className="mt-4 text-center">
+              <button 
+                type="button" 
+                onClick={() => setLoginMethod(loginMethod === "email" ? "mobile" : "email")} 
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-bold transition-colors"
+              >
+                {loginMethod === "email" ? "Log in with Mobile OTP" : "Log in with Email"}
+              </button>
+            </div>
           )}
 
           <button
@@ -310,30 +454,32 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             disabled={loading}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? "Please wait..." : isLogin ? "Sign In" : step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Create Account"} <i className="fa-solid fa-arrow-right ml-2" />
+            {loading ? (
+              <i className="fa-solid fa-spinner fa-spin" />
+            ) : (
+              <>
+                {isLogin && step === 1 && loginMethod === "mobile" ? "Send OTP" : 
+                 isForgot && step === 1 ? "Send Reset Link" :
+                 (isLogin && loginMethod === "mobile" && step === 2) ? "Verify OTP" : 
+                 isLogin ? "Log In" : "Create Account"}
+                <i className="fa-solid fa-arrow-right ml-2" />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="mt-8 text-center border-t border-white/5 pt-6">
+        <div className="mt-5 text-center">
           {isLogin ? (
-            <p className="text-sm text-[var(--text-secondary)]">
-              {"Don't have an account? "}
-                <button
-                  type="button"
-                  onClick={() => handleModeChange("register")}
-                  className="text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                >
+            <p className="text-xs text-[var(--text-secondary)]">
+              Don't have an account?{" "}
+              <button type="button" onClick={() => handleModeChange("register")} className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
                 Sign up for free
               </button>
             </p>
           ) : (
-            <p className="text-sm text-[var(--text-secondary)]">
-              {"Already have an account? "}
-                <button
-                  type="button"
-                  onClick={() => handleModeChange("login")}
-                  className="text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                >
+            <p className="text-xs text-[var(--text-secondary)]">
+              {isForgot ? "Remember your password?" : "Already have an account?"}{" "}
+              <button type="button" onClick={() => handleModeChange("login")} className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
                 Sign in
               </button>
             </p>
