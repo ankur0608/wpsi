@@ -107,6 +107,8 @@ model MCQ {
     bookmarks     Bookmark[]
     createdAt     DateTime    @default(now())
     updatedAt     DateTime    @updatedAt
+
+    @@index([difficulty])
 }
 
 model MCQAnswer {
@@ -156,6 +158,9 @@ model PracticeMcq {
     explanation   String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
+
+    @@index([subject, topic, difficulty])
+    @@index([topic])
 }
 
 model MockTest {

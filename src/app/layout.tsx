@@ -27,7 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mcqprepzone.online'),
   title: {
-    default: "Mcqprepzone - Elite Government Exam Preparation",
+    default: "Wireless PSI Mock Test & Exam Prep | Mcqprepzone",
     template: "%s | Mcqprepzone"
   },
   description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Mcqprepzone - Elite Government Exam Preparation",
+    title: "Wireless PSI Mock Test & Exam Prep | Mcqprepzone",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
     url: 'https://mcqprepzone.online',
     siteName: 'Mcqprepzone',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Mcqprepzone - Elite Government Exam Preparation",
+    title: "Wireless PSI Mock Test & Exam Prep | Mcqprepzone",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
   },
   robots: {
