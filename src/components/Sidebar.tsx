@@ -134,7 +134,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </div>
                 <div className="flex-1">
                     <p className="text-[13px] font-bold text-dark-800 leading-tight">{loading ? 'Loading...' : displayName}</p>
-                    <p className="text-[10px] text-dark-500 font-medium">{currentLevel.icon} {currentLevel.name} (Level {currentLevel.level})</p>
+                    <p className="text-[10px] text-dark-500 font-medium mb-1">{currentLevel.icon} {currentLevel.name} (Level {currentLevel.level})</p>
+                    <div className="inline-block bg-primary-100 text-primary-800 text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-primary-200">
+                        {user?.planType || 'Free'} Plan
+                    </div>
                 </div>
                 <svg className="w-4 h-4 text-dark-400 group-hover:text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>

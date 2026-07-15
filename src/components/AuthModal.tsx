@@ -13,6 +13,40 @@ interface AuthModalProps {
   onModeChange: (mode: AuthMode) => void;
 }
 
+const getDeviceInfo = () => {
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+          deviceId = crypto.randomUUID();
+      } else {
+          // Fallback for non-secure contexts (http)
+          deviceId = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
+      }
+      localStorage.setItem('deviceId', deviceId);
+  }
+  
+  const userAgent = navigator.userAgent;
+  let browser = "Unknown";
+  if (userAgent.includes("Chrome")) browser = "Chrome";
+  else if (userAgent.includes("Firefox")) browser = "Firefox";
+  else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browser = "Safari";
+  else if (userAgent.includes("Edge")) browser = "Edge";
+  
+  let os = "Unknown";
+  if (userAgent.includes("Win")) os = "Windows";
+  else if (userAgent.includes("Mac")) os = "MacOS";
+  else if (userAgent.includes("Linux")) os = "Linux";
+  else if (userAgent.includes("Android")) os = "Android";
+  else if (userAgent.includes("like Mac")) os = "iOS";
+  
+  const deviceType = /Mobile|Android|iP(hone|od|ad)/.test(userAgent) ? "Mobile" : "Desktop";
+  const screen = `${window.screen.width}x${window.screen.height}`;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const language = navigator.language;
+  
+  return { deviceId, browser, os, deviceType, screen, timezone, language };
+};
+
 export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthModalProps) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -26,6 +60,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [verificationId, setVerificationId] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const [loginMethod, setLoginMethod] = useState<"email" | "mobile">("email");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -70,6 +105,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setStep(1);
     setResendTimer(0);
     setLoginMethod("email");
+    setShowPassword(false);
     onClose();
   }, [onClose]);
 
@@ -84,6 +120,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setStep(1);
     setResendTimer(0);
     setLoginMethod("email");
+    setShowPassword(false);
     onModeChange(nextMode);
   };
 
@@ -211,7 +248,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             const loginRes = await fetch("/api/auth/login-mobile", {
                method: "POST",
                headers: { "Content-Type": "application/json" },
-               body: JSON.stringify({ mobile }),
+               body: JSON.stringify({ mobile, ...getDeviceInfo() }),
             });
             if (loginRes.ok) {
                router.replace("/dashboard");
@@ -236,7 +273,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const response = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, ...getDeviceInfo() }),
         });
 
         const data = await response.json().catch(() => ({}));
@@ -399,13 +436,21 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
               <div className="relative">
                 <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-12 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`} />
+                </button>
               </div>
             </div>
           )}

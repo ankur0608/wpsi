@@ -6,10 +6,10 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromRequest(request);
 
-    // Fetch top 50 users based on XP
+    // Fetch top 10 users based on XP
     const topUsers = await prisma.user.findMany({
       orderBy: { xp: 'desc' },
-      take: 50,
+      take: 10,
       select: {
         id: true,
         name: true,

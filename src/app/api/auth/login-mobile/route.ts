@@ -4,7 +4,8 @@ import { setSessionCookie, publicUserSelect } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const { mobile } = await req.json();
+    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    const { mobile, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : '';
 
     if (!normalizedMobile) {
@@ -36,6 +37,56 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
+
+    if (deviceId) {
+        const userDevices = await prisma.device.findMany({
+            where: { userId: user.id }
+        });
+        
+        const existingDevice = userDevices.find(d => d.deviceId === deviceId);
+        
+        if (userDevices.length > 0 && !existingDevice) {
+            await prisma.loginHistory.create({
+                data: { userId: user.id, deviceId, ip, status: "BLOCKED_DEVICE", browser, os }
+            });
+            return NextResponse.json(
+                { error: 'Your account is already linked to another device.' },
+                { status: 403 }
+            );
+        }
+        
+        if (existingDevice) {
+            await prisma.device.update({
+                where: { id: existingDevice.id },
+                data: { lastLogin: new Date(), lastIp: ip }
+            });
+        } else {
+            await prisma.device.create({
+                data: {
+                    deviceId,
+                    userId: user.id,
+                    browser,
+                    os,
+                    deviceType,
+                    screen,
+                    timezone,
+                    language,
+                    lastIp: ip
+                }
+            });
+        }
+    }
+
+    await prisma.loginHistory.create({
+        data: {
+            userId: user.id,
+            deviceId: deviceId || null,
+            ip,
+            status: "SUCCESS",
+            browser: browser || null,
+            os: os || null
+        }
+    });
 
     const response = NextResponse.json({
       message: 'Login successful',

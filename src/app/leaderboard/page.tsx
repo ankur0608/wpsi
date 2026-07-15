@@ -173,6 +173,43 @@ export default function LeaderboardPage() {
                   </div>
                 </div>
               ))}
+
+              {/* Show user rank if they are not in the top 10 */}
+              {!leaderboardData.some(item => item.isUser) && userStats && userRank && (
+                <>
+                  <div className="flex items-center justify-center py-2 opacity-50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-dark-300 mx-1"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-dark-300 mx-1"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-dark-300 mx-1"></span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl border bg-primary-50/50 border-primary-200 shadow-sm transition-all">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                      <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{userRank}</span>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm bg-primary-600 text-white">
+                        {displayName.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm text-primary-900">
+                          {displayName} <span className="ml-1.5 text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">You</span>
+                        </p>
+                        <p className="text-[10px] text-dark-500 font-semibold mt-0.5 flex items-center gap-1.5">
+                          <span className="text-primary-600 font-bold">{userStats.xp >= 1000 ? (userStats.xp / 1000).toFixed(1) + 'k' : userStats.xp} XP</span>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>
+                      <div className="text-right flex flex-col items-end justify-center">
+                        <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none flex items-center gap-1">
+                          <span className="text-orange-500">🔥</span> 
+                          {userStats.streak || 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="mt-5 pt-4 border-t border-dark-100 flex justify-center text-xs text-dark-400 font-medium">

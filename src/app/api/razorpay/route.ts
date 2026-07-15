@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { getSessionFromRequest } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 // Initialize razorpay object
 const razorpay = new Razorpay({
@@ -16,11 +17,34 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { amount, currency = 'INR', planId } = body;
+    const { currency = 'INR', planId } = body;
 
-    // Check amount
-    if (!amount || !planId) {
-      return NextResponse.json({ success: false, error: 'Amount and planId are required' }, { status: 400 });
+    // Check planId
+    if (!planId) {
+      return NextResponse.json({ success: false, error: 'planId is required' }, { status: 400 });
+    }
+
+    // Securely look up the amount based on planId
+    let amount = 0;
+    
+    // First try database
+    const dbPlan = await prisma.plan.findUnique({
+      where: { name: planId }
+    });
+    
+    if (dbPlan) {
+      amount = dbPlan.price;
+    } else {
+      // Fallbacks matching api/plans/route.ts
+      if (planId === 'Pro' || planId === 'pro') amount = 249;
+      else if (planId === 'Premium' || planId === 'premium') amount = 499;
+      else {
+        return NextResponse.json({ success: false, error: 'Invalid planId' }, { status: 400 });
+      }
+    }
+
+    if (amount <= 0) {
+      return NextResponse.json({ success: false, error: 'Invalid plan amount' }, { status: 400 });
     }
 
     const options = {

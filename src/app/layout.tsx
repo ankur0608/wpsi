@@ -57,6 +57,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/logo.jpeg',
+    shortcut: '/logo.jpeg',
+    apple: '/logo.jpeg',
+  },
   openGraph: {
     title: "Wireless PSI Mock Test & Exam Prep | Mcqprepzone",
     description: "Prepare for Gujarat Government exams like Wireless PSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",

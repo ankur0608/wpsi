@@ -42,7 +42,10 @@ export async function GET(
     return Response.json({ 
       success: true, 
       data: mcqs, 
-      meta: { total: mcqs.length } 
+      meta: { 
+        total: mcqs.length,
+        durationMinutes: mockTest.durationMinutes || 120
+      } 
     });
   } catch (err) {
     console.error('[GET /api/mock-tests/[id]/questions]', err);

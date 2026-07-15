@@ -24,6 +24,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (user?.id) {
@@ -31,6 +33,16 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         .then(res => res.json())
         .then(data => {
           if (data.userRank) setUserRank(data.userRank);
+        })
+        .catch(console.error);
+
+      fetch('/api/notifications')
+        .then(res => res.json())
+        .then(data => {
+          if (data.data) {
+             setNotifications(data.data);
+             setUnreadCount(data.unreadCount || 0);
+          }
         })
         .catch(console.error);
     }
@@ -78,8 +90,19 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     router.refresh();
   };
 
-  const togglePopover = (key: Exclude<PopoverKey, null>) => {
+  const togglePopover = async (key: Exclude<PopoverKey, null>) => {
     setOpenPopover((current) => (current === key ? null : key));
+    
+    // Mark notifications as read when opening the popover
+    if (key === 'notifications' && unreadCount > 0) {
+       setUnreadCount(0);
+       try {
+         await fetch('/api/notifications', { method: 'PUT' });
+         setNotifications(prev => prev.map(n => ({...n, isRead: true})));
+       } catch (error) {
+         console.error(error);
+       }
+    }
   };
 
   return (
@@ -117,24 +140,31 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             <div className="relative">
                 <button onClick={() => togglePopover("notifications")} className="w-10 h-10 rounded-full bg-dark-50 flex items-center justify-center text-dark-600 hover:bg-dark-100 transition-colors relative shadow-sm">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                    {unreadCount > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>}
                 </button>
                 
                 {/* Notification Dropdown Menu */}
                 <div className={`absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-dark-100 z-50 overflow-hidden transform origin-top-right transition-all duration-200 ${openPopover === "notifications" ? "scale-100 opacity-100 visible" : "scale-95 opacity-0 invisible"}`}>
                     <div className="p-4 border-b border-dark-50 bg-dark-50/50 flex items-center justify-between">
                         <h4 className="font-bold text-dark-800">Notifications</h4>
-                        <button className="text-[10px] text-primary-600 hover:text-primary-800 font-bold transition-colors">Mark all as read</button>
                     </div>
                     <div className="max-h-[350px] overflow-y-auto divide-y divide-dark-50">
-                        {/* Sample Notification Items */}
-                        <div className="p-3.5 hover:bg-dark-50/50 transition-colors flex gap-3 text-left">
-                            <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 text-sm">🔥</div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs font-semibold text-dark-800 leading-normal">Your daily streak is at <span className="font-extrabold text-amber-600">9 days</span>! Keep practicing to maintain it.</p>
-                                <p className="text-[9px] text-dark-400 mt-1 font-medium">10 mins ago</p>
-                            </div>
-                        </div>
+                        {notifications.length === 0 ? (
+                           <div className="p-6 text-center text-dark-400 text-sm">No notifications yet.</div>
+                        ) : (
+                           notifications.map(notification => (
+                              <div key={notification.id} className={`p-3.5 hover:bg-dark-50/50 transition-colors flex gap-3 text-left ${notification.isRead ? '' : 'bg-primary-50/30'}`}>
+                                  <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 text-sm">
+                                      {notification.type === 'LEVEL_UP' ? '🌟' : notification.type === 'STREAK' ? '🔥' : '🚀'}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-semibold text-dark-800 leading-normal">{notification.title}</p>
+                                      <p className="text-[10px] text-dark-600 mt-0.5 leading-normal">{notification.message}</p>
+                                      <p className="text-[9px] text-dark-400 mt-1 font-medium">{new Date(notification.createdAt).toLocaleDateString()}</p>
+                                  </div>
+                              </div>
+                           ))
+                        )}
                     </div>
                     <div className="p-3 text-center border-t border-dark-50 bg-dark-50/30">
                         <span className="text-[10px] text-dark-400 font-bold uppercase tracking-wider">End of Notifications</span>

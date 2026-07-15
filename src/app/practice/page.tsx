@@ -181,7 +181,8 @@ function buildSessionQuestions(
     return subjectOk && topicOk && diffOk;
   });
 
-  const count = mode === 'full'
+  const hasTestId = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('testId');
+  const count = mode === 'full' || hasTestId
     ? matches.length
     : Math.min(MODE_META[mode].questionCount, matches.length);
   return shuffleQuestions(matches).slice(0, count);
@@ -357,6 +358,7 @@ export default function PracticePage() {
   const [bankLoading, setBankLoading] = useState(true);
   const [bankError,   setBankError]   = useState<string | null>(null);
   const [totalInDb,   setTotalInDb]   = useState(0);
+  const [testDuration, setTestDuration] = useState<number | null>(null);
   const [globalBookmarks, setGlobalBookmarks] = useState<string[]>([]);
   const fetchedRef = useRef(false);
   const bookmarksFetchedRef = useRef(false);
@@ -426,10 +428,14 @@ export default function PracticePage() {
       const json = await res.json() as {
         success: boolean;
         data: ApiMcqRow[];
-        meta: { total: number };
+        meta: { total: number; durationMinutes?: number };
         message?: string;
       };
       if (!json.success) throw new Error(json.message ?? 'API error');
+      
+      if (json.meta.durationMinutes) {
+        setTestDuration(json.meta.durationMinutes);
+      }
       
       const allMcqs = json.data.map(toMcq);
       const mcqMap = new Map<string, PracticeMcq>();
@@ -607,7 +613,13 @@ export default function PracticePage() {
       violations: 0,
     };
     setSession(nextSession);
-    setTimeLeft((MODE_META[selectedMode].timerMinutes ?? 0) * 60);
+    
+    let minutes = MODE_META[selectedMode].timerMinutes ?? 0;
+    if (selectedMode === 'mock' && testDuration) {
+      minutes = testDuration;
+    }
+    setTimeLeft(minutes * 60);
+    
     setStatusMessage('');
     setView(skipInstructions ? 'exam' : 'instructions');
   };

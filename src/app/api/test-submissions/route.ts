@@ -15,11 +15,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, mode, totalMarks, earnedMarks, percentage, responses, details } = body;
+    const { title, mode, responses, details } = body;
 
-    if (!title || !mode || totalMarks === undefined || earnedMarks === undefined || percentage === undefined) {
+    // Reject if responses is not an array
+    if (!title || !mode || !responses || !Array.isArray(responses)) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields or invalid format' },
         { status: 400 }
       );
     }
@@ -34,7 +35,6 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const lastActivity = user.lastActivityDate ? new Date(user.lastActivityDate) : null;
     let newStreak = user.streak;
     let newTotalStudyDays = user.totalStudyDays || 0;
@@ -81,7 +81,17 @@ export async function POST(request: NextRequest) {
     let mcqAnswerUpserts: any[] = [];
     const userProgressUpdates: any[] = [];
 
-    if (responses && Array.isArray(responses) && responses.length > 0) {
+    let correctAnswersCount = 0;
+    let wrongAnswersCount = 0;
+    let firstAttemptCount = 0;
+    let fiveInARowCount = 0;
+    let currentStreak = 0;
+    
+    // Server calculated scores
+    let serverTotalMarks = responses.length;
+    let serverEarnedMarks = 0;
+
+    if (responses.length > 0) {
       const mcqIds = responses.map((r: any) => r.mcqId);
       
       const [mcqs, existingAnswersList] = await Promise.all([
@@ -99,15 +109,14 @@ export async function POST(request: NextRequest) {
       const existingAnswersMap = new Map(existingAnswersList.map(a => [a.mcqId, a.isCorrect]));
       const subjectStats: Record<string, { total: number, correct: number }> = {};
 
-      let correctAnswersCount = 0;
-      let wrongAnswersCount = 0;
-      let firstAttemptCount = 0;
-      let fiveInARowCount = 0;
-      let currentStreak = 0;
-
       for (const r of responses) {
         const mcq = mcqMap.get(r.mcqId);
         if (!mcq) continue;
+        
+        // Skip unanswered questions (usually represented as empty string or null)
+        if (r.answer === null || r.answer === '' || r.answer === undefined) {
+           continue;
+        }
 
         const isCorrect = mcq.correctAnswer === r.answer;
         const previousAnswerExists = existingAnswersMap.has(r.mcqId);
@@ -179,25 +188,30 @@ export async function POST(request: NextRequest) {
         }
       }
     }
+    
+    // Secure Score Calculation
+    // Using standard +1 for correct and -0.25 for wrong (assuming WPSI format)
+    serverEarnedMarks = correctAnswersCount - (wrongAnswersCount * 0.25);
+    const serverPercentage = serverTotalMarks > 0 ? (Math.max(0, serverEarnedMarks) / serverTotalMarks) * 100 : 0;
 
-    // Apply Mode Completion Bonuses
+    // Apply Mode Completion Bonuses based on secure percentages
     if (mode === 'quick') addXp('Quick Practice Completed', XP_REWARDS.QUICK_PRACTICE);
     else if (mode === 'full') addXp('Full Practice Completed', XP_REWARDS.FULL_PRACTICE);
     else if (mode === 'timed') {
       addXp('Timed Test Completed', XP_REWARDS.TIMED_TEST_COMPLETE);
-      if (percentage >= 80) addXp('Timed Test (80%+ Score)', XP_REWARDS.TIMED_TEST_80_PLUS);
+      if (serverPercentage >= 80) addXp('Timed Test (80%+ Score)', XP_REWARDS.TIMED_TEST_80_PLUS);
     }
     else if (mode === 'mock') {
       addXp('Full-Length Mock Completed', XP_REWARDS.MOCK_COMPLETE);
-      if (percentage >= 90) addXp('Full-Length Mock (90%+ Score)', XP_REWARDS.MOCK_90_PLUS);
+      if (serverPercentage >= 90) addXp('Full-Length Mock (90%+ Score)', XP_REWARDS.MOCK_90_PLUS);
     }
     else if (mode === 'quiz' || mode === 'daily') {
       addXp('Daily Quiz Completed', XP_REWARDS.DAILY_QUIZ_COMPLETE);
-      if (percentage === 100) addXp('Daily Quiz (100% Score)', XP_REWARDS.DAILY_QUIZ_100);
+      if (serverPercentage === 100) addXp('Daily Quiz (100% Score)', XP_REWARDS.DAILY_QUIZ_100);
     }
 
     // Perfect Score Bonus
-    if (percentage === 100 && totalMarks > 0) {
+    if (serverPercentage === 100 && serverTotalMarks > 0) {
       addXp('Perfect Score (100%)', XP_REWARDS.PERFECT_SCORE);
     }
 
@@ -210,15 +224,50 @@ export async function POST(request: NextRequest) {
     const finalXp = Math.max(0, user.xp + totalXPGained);
     const { currentLevel } = getUserLevel(finalXp);
 
+    const notificationsToCreate = [];
+    if (currentLevel.level > user.level) {
+      notificationsToCreate.push(prisma.notification.create({
+        data: {
+          userId: session.userId,
+          title: "Level Up! 🌟",
+          message: `Congratulations! You've reached ${currentLevel.name} (Level ${currentLevel.level}).`,
+          type: "LEVEL_UP"
+        }
+      }));
+    }
+
+    if (diffDays === 1 || diffDays === -1) {
+      if (newStreak % 30 === 0) {
+        notificationsToCreate.push(prisma.notification.create({
+          data: { userId: session.userId, title: "30-Day Streak! 🔥", message: "Amazing consistency! You earned a massive XP bonus.", type: "STREAK" }
+        }));
+      } else if (newStreak % 7 === 0) {
+        notificationsToCreate.push(prisma.notification.create({
+          data: { userId: session.userId, title: "7-Day Streak! 🔥", message: "You're on fire! You earned a streak bonus.", type: "STREAK" }
+        }));
+      }
+    }
+
+    if (totalXPGained > 0) {
+      notificationsToCreate.push(prisma.notification.create({
+        data: {
+          userId: session.userId,
+          title: "Session Completed 📚",
+          message: `Great job! You earned a total of ${totalXPGained} XP from this session.`,
+          type: "XP"
+        }
+      }));
+    }
+
     const [submission, updatedUser] = await prisma.$transaction([
       prisma.testSubmission.create({
         data: {
           userId: session.userId,
           title,
           mode,
-          totalMarks,
-          earnedMarks,
-          percentage,
+          totalMarks: serverTotalMarks,
+          earnedMarks: serverEarnedMarks,
+          percentage: serverPercentage,
           details
         },
       }),
@@ -234,7 +283,8 @@ export async function POST(request: NextRequest) {
         }
       }),
       ...mcqAnswerUpserts,
-      ...userProgressUpdates
+      ...userProgressUpdates,
+      ...notificationsToCreate
     ], {
       timeout: 20000 // Increase timeout to 20 seconds for bulk upserts
     });
