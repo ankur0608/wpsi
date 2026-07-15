@@ -5,7 +5,7 @@ import { setSessionCookie, publicUserSelect } from '@/lib/auth';
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
-    const { mobile, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
+    const { mobile, deviceId, browser, os, deviceType, screen, timezone, language, force } = await req.json();
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : '';
 
     if (!normalizedMobile) {
@@ -46,13 +46,26 @@ export async function POST(req: NextRequest) {
         const existingDevice = userDevices.find(d => d.deviceId === deviceId);
         
         if (userDevices.length > 0 && !existingDevice) {
-            await prisma.loginHistory.create({
-                data: { userId: user.id, deviceId, ip, status: "BLOCKED_DEVICE", browser, os }
-            });
-            return NextResponse.json(
-                { error: 'Your account is already linked to another device.' },
-                { status: 403 }
-            );
+            if (force) {
+                await prisma.device.deleteMany({ where: { userId: user.id } });
+            } else {
+                const activeDevice = userDevices[0];
+                await prisma.loginHistory.create({
+                    data: { userId: user.id, deviceId, ip, status: "BLOCKED_DEVICE", browser, os }
+                });
+                return NextResponse.json(
+                    { 
+                        error: 'ACTIVE_DEVICE', 
+                        message: 'Your account is already linked to another device.',
+                        activeDevice: {
+                            browser: activeDevice.browser,
+                            os: activeDevice.os,
+                            lastLogin: activeDevice.lastLogin
+                        }
+                    },
+                    { status: 409 }
+                );
+            }
         }
         
         if (existingDevice) {
@@ -94,7 +107,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Create session and set cookie
-    await setSessionCookie(response, user.id);
+    await setSessionCookie(response, user.id, deviceId);
     
     // Clear the verified_mobile cookie as it's no longer needed
     response.cookies.delete('verified_mobile');

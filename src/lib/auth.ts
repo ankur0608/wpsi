@@ -1,11 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose';
 import type { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export const SESSION_COOKIE_NAME = 'wpsi_session';
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7;
 
 interface SessionPayload {
   userId: string;
+  deviceId?: string;
   expiresAt: number;
   [key: string]: unknown;
 }
@@ -27,10 +29,10 @@ function getAuthSecret() {
 // Convert secret string to Uint8Array for jose
 const getEncodedSecret = () => new TextEncoder().encode(getAuthSecret());
 
-export async function createSessionToken(userId: string) {
+export async function createSessionToken(userId: string, deviceId?: string) {
   const expiresAt = Date.now() + SESSION_DURATION_MS;
 
-  const jwt = await new SignJWT({ userId, expiresAt })
+  const jwt = await new SignJWT({ userId, deviceId, expiresAt })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(new Date(expiresAt))
@@ -61,11 +63,30 @@ export async function verifySessionToken(token?: string | null): Promise<Session
 
 export async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  return await verifySessionToken(token);
+  const payload = await verifySessionToken(token);
+
+  if (!payload) return null;
+
+  if (payload.deviceId) {
+    try {
+      const activeDevice = await prisma.device.findFirst({
+        where: { userId: payload.userId }
+      });
+
+      if (!activeDevice || activeDevice.deviceId !== payload.deviceId) {
+        return null;
+      }
+    } catch (error) {
+      console.error('Session validation error:', error);
+      return null;
+    }
+  }
+
+  return payload;
 }
 
-export async function setSessionCookie(response: NextResponse, userId: string) {
-  const token = await createSessionToken(userId);
+export async function setSessionCookie(response: NextResponse, userId: string, deviceId?: string) {
+  const token = await createSessionToken(userId, deviceId);
   const payload = await verifySessionToken(token);
 
   response.cookies.set({

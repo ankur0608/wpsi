@@ -19,12 +19,29 @@ export default function Dashboard() {
     rank: 0,
   });
   const [loadingStats, setLoadingStats] = useState(true);
-  const [timeLeft, setTimeLeft] = useState("04:22:15");
+  const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft("04:22:14"); // Demo countdown
-    }, 1000);
+    const updateTime = () => {
+      const now = new Date();
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      const diff = endOfDay.getTime() - now.getTime();
+      if (diff <= 0) {
+        setTimeLeft("00:00:00");
+        return;
+      }
+      
+      const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+      
+      setTimeLeft(`${h}:${m}:${s}`);
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -78,10 +95,17 @@ export default function Dashboard() {
                         <span className="text-[10px] text-dark-500 font-semibold uppercase tracking-wide">Resets in</span>
                         <span className="countdown text-[11px] font-bold text-dark-800">{timeLeft}</span>
                     </div>
-                    <Link href="/exam" className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
-                        Start Practice
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </Link>
+                    {stats.hasCompletedDaily ? (
+                        <div className="flex items-center gap-2 bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm cursor-not-allowed opacity-90">
+                            Completed
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                    ) : (
+                        <Link href="/daily-practice?autoStart=true" className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
+                            Start Practice
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

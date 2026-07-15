@@ -151,77 +151,7 @@ export default function ExamPage() {
             );
           })}
 
-          {/* Locked Card: GPSC Assistant Engineer */}
-          <div className="glass-card group relative overflow-hidden border border-dark-200 bg-dark-50/50 p-6 flex flex-col justify-between min-h-[300px] cursor-not-allowed rounded-2xl">
-              <div className="absolute inset-0 bg-dark-900/5 backdrop-blur-[1px] z-10"></div>
-              <div className="relative z-20 opacity-60">
-                  <div className="flex items-center justify-between mb-6">
-                      <div className="w-14 h-14 bg-dark-200 rounded-2xl flex items-center justify-center text-dark-500 shadow-inner">
-                          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                      </div>
-                      <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-dark-300 flex items-center gap-1">
-                          🔒 Locked
-                      </span>
-                  </div>
-                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2">GPSC Assistant Engineer (AE)</h4>
-                  <p className="text-xs text-dark-500 leading-relaxed mb-6">Complete curriculum for Civil, Electrical, and Mechanical engineering streams for the Gujarat PSC Assistant Engineer examination.</p>
-              </div>
-              <div className="relative z-20">
-                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-200 pt-4 opacity-50">
-                      <div className="text-center">
-                          <p className="font-bold text-dark-800 text-base leading-none">12</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
-                      </div>
-                      <div className="text-center border-x border-dark-200">
-                          <p className="font-bold text-dark-800 text-base leading-none">42</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
-                      </div>
-                      <div className="text-center">
-                          <p className="font-bold text-dark-800 text-base leading-none">1.8k+</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
-                      </div>
-                  </div>
-                  <div className="w-full bg-dark-200 text-dark-500 font-bold text-center py-3 rounded-xl text-xs flex items-center justify-center gap-2">
-                      Premium Package Needed <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                  </div>
-              </div>
-          </div>
 
-          {/* Locked Card: GETCO Junior Engineer */}
-          <div className="glass-card group relative overflow-hidden border border-dark-200 bg-dark-50/50 p-6 flex flex-col justify-between min-h-[300px] cursor-not-allowed rounded-2xl">
-              <div className="absolute inset-0 bg-dark-900/5 backdrop-blur-[1px] z-10"></div>
-              <div className="relative z-20 opacity-60">
-                  <div className="flex items-center justify-between mb-6">
-                      <div className="w-14 h-14 bg-dark-200 rounded-2xl flex items-center justify-center text-dark-500 shadow-inner">
-                          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                      </div>
-                      <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-dark-300 flex items-center gap-1">
-                          🔒 Locked
-                      </span>
-                  </div>
-                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2">GETCO Junior Engineer (Electrical)</h4>
-                  <p className="text-xs text-dark-500 leading-relaxed mb-6">Targeted practice questions focusing on power systems, electrical machinery, control systems, and transmission technologies.</p>
-              </div>
-              <div className="relative z-20">
-                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-200 pt-4 opacity-50">
-                      <div className="text-center">
-                          <p className="font-bold text-dark-800 text-base leading-none">10</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
-                      </div>
-                      <div className="text-center border-x border-dark-200">
-                          <p className="font-bold text-dark-800 text-base leading-none">35</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
-                      </div>
-                      <div className="text-center">
-                          <p className="font-bold text-dark-800 text-base leading-none">1.5k+</p>
-                          <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
-                      </div>
-                  </div>
-                  <div className="w-full bg-dark-200 text-dark-500 font-bold text-center py-3 rounded-xl text-xs flex items-center justify-center gap-2">
-                      Coming Soon <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-              </div>
-          </div>
         </div>
       )}
     </div>

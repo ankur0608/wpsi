@@ -26,6 +26,7 @@ export default function DailyPracticePage() {
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
   
   // New state
   const [responses, setResponses] = useState<Record<string, string>>({});
@@ -38,29 +39,68 @@ export default function DailyPracticePage() {
   const [activeLanguage, setActiveLanguage] = useState<string>('English');
   const [finalResult, setFinalResult] = useState<{score: number, total: number} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
 
   useEffect(() => {
-    fetch('/api/mcq/daily')
-      .then(res => res.json())
-      .then(data => {
-        if (data.data) {
-          setMcqs(data.data);
-          if (data.data.length > 0) {
-            setVisitedList([data.data[0].id]);
-          }
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('autoStart')) {
+      setStarted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!started || isFinished || timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [started, isFinished, timeLeft]);
+
+  useEffect(() => {
+    if (started && !isFinished && timeLeft === 0 && !isSubmitting) {
+      submitPractice();
+    }
+  }, [timeLeft, started, isFinished, isSubmitting]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/mcq/daily').then(res => res.json()),
+      fetch('/api/user/dashboard-stats').then(res => res.json())
+    ]).then(([dailyData, statsData]) => {
+      if (statsData?.data?.hasCompletedDaily) {
+        setAlreadyCompleted(true);
+      }
+      if (dailyData.data) {
+        setMcqs(dailyData.data);
+        if (dailyData.data.length > 0) {
+          setVisitedList([dailyData.data[0].id]);
         }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch daily MCQs:', err);
-        setLoading(false);
-      });
+      }
+      setLoading(false);
+    }).catch(err => {
+      console.error('Failed to fetch daily practice info:', err);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[70vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (alreadyCompleted) {
+    return (
+      <div className="text-center py-20 px-4 max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-10 border border-gray-100">
+          <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="fa-solid fa-check text-4xl text-emerald-500"></i>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">Practice Complete!</h2>
+          <p className="text-gray-500 mb-8 text-lg">You have already completed today's Daily Practice. Great job staying consistent! Come back tomorrow for a fresh set of questions.</p>
+          <Link href="/dashboard" className="inline-block px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition shadow-md">
+            Back to Dashboard
+          </Link>
+        </div>
       </div>
     );
   }
@@ -283,6 +323,12 @@ export default function DailyPracticePage() {
     { key: 'E', value: 'Not Attempted' },
   ];
 
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-6">
       <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
@@ -290,13 +336,17 @@ export default function DailyPracticePage() {
           <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-white text-dark-900 p-4 md:p-6 shadow-2xl">
             {/* Header */}
             <div className="flex justify-between items-center mb-3 md:mb-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1">
                 <h2 className="text-base md:text-lg font-bold m-0">Question {currentIndex + 1} of {mcqs.length}</h2>
                 {currentQuestion.part && (
                   <span className="bg-[#38bdf8]/10 border border-[#38bdf8]/25 text-[#38bdf8] px-3 py-1 rounded-full text-xs font-semibold">
                     Part {currentQuestion.part}
                   </span>
                 )}
+                <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-100 ml-auto mr-2 md:mr-4">
+                  <i className="fa-solid fa-stopwatch"></i>
+                  {formatTime(timeLeft)}
+                </div>
               </div>
               <button 
                 onClick={toggleBookmark}

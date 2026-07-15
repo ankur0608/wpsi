@@ -152,6 +152,18 @@ export async function GET(request: NextRequest) {
     });
     const rank = usersWithHigherXp + 1;
 
+    // 7. Check if Daily Practice is completed today
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const dailySubmissionsToday = await prisma.testSubmission.count({
+      where: {
+        userId,
+        mode: 'daily',
+        createdAt: { gte: startOfToday }
+      }
+    });
+    const hasCompletedDaily = dailySubmissionsToday > 0;
+
     return NextResponse.json({
       data: {
         mockTestsAttempted,
@@ -163,6 +175,7 @@ export async function GET(request: NextRequest) {
         weeklyActivity,
         dayLabels,
         rank,
+        hasCompletedDaily,
       }
     }, { status: 200 });
   } catch (error) {

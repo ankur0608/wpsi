@@ -61,6 +61,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [resendTimer, setResendTimer] = useState(0);
   const [loginMethod, setLoginMethod] = useState<"email" | "mobile">("email");
   const [showPassword, setShowPassword] = useState(false);
+  const [existingDevice, setExistingDevice] = useState<{ browser?: string, os?: string, lastLogin?: string } | null>(null);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -106,6 +107,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setResendTimer(0);
     setLoginMethod("email");
     setShowPassword(false);
+    setExistingDevice(null);
     onClose();
   }, [onClose]);
 
@@ -121,6 +123,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setResendTimer(0);
     setLoginMethod("email");
     setShowPassword(false);
+    setExistingDevice(null);
     onModeChange(nextMode);
   };
 
@@ -256,7 +259,11 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                return;
             } else {
                const loginData = await loginRes.json().catch(() => ({}));
-               setError(loginData.error || "Failed to login with mobile");
+               if (loginRes.status === 409 && loginData.error === 'ACTIVE_DEVICE') {
+                  setExistingDevice(loginData.activeDevice);
+               } else {
+                  setError(loginData.error || "Failed to login with mobile");
+               }
                setLoading(false);
                return;
             }
@@ -281,6 +288,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         if (response.ok) {
           router.replace("/dashboard");
           router.refresh();
+        } else if (response.status === 409 && data.error === 'ACTIVE_DEVICE') {
+          setExistingDevice(data.activeDevice);
         } else {
           setError(data.error || "Login failed");
         }
@@ -292,8 +301,76 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     }
   };
 
+  const handleForceLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+        const url = loginMethod === "email" ? "/api/auth/login" : "/api/auth/login-mobile";
+        const bodyData = loginMethod === "email" 
+            ? { email, password, ...getDeviceInfo(), force: true }
+            : { mobile, ...getDeviceInfo(), force: true };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          router.replace("/dashboard");
+          router.refresh();
+        } else {
+          setError(data.error || "Login failed");
+          setExistingDevice(null);
+        }
+    } catch {
+        setError("An error occurred. Please try again.");
+    } finally {
+        setLoading(false);
+    }
+  };
+
   if (!isOpen) {
     return null;
+  }
+
+  if (existingDevice) {
+    return (
+      <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
+        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center">
+          <button type="button" onClick={handleClose} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors">
+            <i className="fa-solid fa-xmark text-xl" />
+          </button>
+          <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="fa-solid fa-laptop-medical text-4xl text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Account in Use</h2>
+          <p className="text-sm text-[var(--text-secondary)] mb-4">
+            This account is currently logged in on another device.
+          </p>
+          <div className="bg-dark-50/50 border border-dark-100 rounded-xl p-4 mb-6 text-left">
+            <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold mb-2">Active Session Details</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]"><i className="fa-solid fa-display w-5 text-[var(--text-secondary)]"></i> {existingDevice.browser || "Unknown Browser"} on {existingDevice.os || "Unknown OS"}</p>
+            {existingDevice.lastLogin && (
+                <p className="text-xs text-[var(--text-secondary)] mt-1 ml-5">Since {new Date(existingDevice.lastLogin).toLocaleString()}</p>
+            )}
+          </div>
+          <p className="text-xs text-red-400 mb-6">
+            Logging in here will securely log out the other device.
+          </p>
+          <div className="space-y-3">
+              <button type="button" onClick={handleForceLogin} disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold transition-colors">
+                {loading ? <i className="fa-solid fa-spinner fa-spin" /> : "Log out other device & Login"}
+              </button>
+              <button type="button" onClick={() => setExistingDevice(null)} className="w-full bg-transparent hover:bg-white/5 text-[var(--text-secondary)] py-3 rounded-xl font-bold transition-colors border border-white/10">
+                Cancel
+              </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const isLogin = mode === "login";
