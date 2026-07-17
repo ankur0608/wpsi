@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import OTPInput from "./OTPInput";
 
 export type AuthMode = "login" | "register" | "forgot-password";
 
@@ -62,6 +63,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [loginMethod, setLoginMethod] = useState<"email" | "mobile">("email");
   const [showPassword, setShowPassword] = useState(false);
   const [existingDevice, setExistingDevice] = useState<{ browser?: string, os?: string, lastLogin?: string } | null>(null);
+  const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [showRegisterOtp, setShowRegisterOtp] = useState(false);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -108,6 +111,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setLoginMethod("email");
     setShowPassword(false);
     setExistingDevice(null);
+    setIsMobileVerified(false);
+    setShowRegisterOtp(false);
     onClose();
   }, [onClose]);
 
@@ -124,6 +129,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setLoginMethod("email");
     setShowPassword(false);
     setExistingDevice(null);
+    setIsMobileVerified(false);
+    setShowRegisterOtp(false);
     onModeChange(nextMode);
   };
 
@@ -220,10 +227,15 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
       }
 
       if (mode === "register" && step === 1) {
+        if (!isMobileVerified) {
+          setError("Please verify your mobile number first.");
+          setLoading(false);
+          return;
+        }
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name, email, password, mobile }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));
@@ -293,6 +305,58 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         } else {
           setError(data.error || "Login failed");
         }
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterSendOtp = async () => {
+    if (!mobile || !/^[0-9]{10}$/.test(mobile)) { 
+      setError("Please enter a valid 10-digit mobile number"); 
+      return; 
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setVerificationId(data.verificationId);
+        setResendTimer(30);
+        setShowRegisterOtp(true);
+      } else {
+        setError(data.error || "Failed to send OTP");
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterVerifyOtp = async () => {
+    if (!otp) { setError("OTP is required"); return; }
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, otp, verificationId }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setIsMobileVerified(true);
+        setShowRegisterOtp(false);
+      } else {
+        setError(data.error || "Failed to verify OTP");
       }
     } catch {
       setError("An error occurred. Please try again.");
@@ -463,6 +527,60 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             </div>
           )}
 
+          {showRegisterFields && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Mobile Number</label>
+              <div className="relative flex gap-2">
+                <div className="relative flex-1">
+                  <i className="fa-solid fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                  <input
+                    type="tel"
+                    value={mobile}
+                    onChange={(event) => setMobile(event.target.value)}
+                    placeholder="9999999999"
+                    pattern="[0-9]{10}"
+                    disabled={isMobileVerified || showRegisterOtp}
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors disabled:opacity-50"
+                    required
+                  />
+                </div>
+                {!isMobileVerified ? (
+                  <button 
+                    type="button" 
+                    onClick={handleRegisterSendOtp} 
+                    disabled={loading || showRegisterOtp}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
+                  >
+                    {resendTimer > 0 ? `${resendTimer}s` : 'Verify'}
+                  </button>
+                ) : (
+                  <div className="bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold px-4 rounded-xl text-sm flex items-center justify-center">
+                    <i className="fa-solid fa-check mr-2"></i> Verified
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {showRegisterFields && showRegisterOtp && !isMobileVerified && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Enter OTP</label>
+              <div className="relative flex gap-2 items-center">
+                <div className="flex-1 overflow-x-auto pb-1">
+                  <OTPInput value={otp} onChange={setOtp} />
+                </div>
+                <button 
+                  type="button" 
+                  onClick={handleRegisterVerifyOtp}
+                  disabled={loading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          )}
+
           {(showRegisterFields || showLoginEmailFields) && (
             <div>
               <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Email Address</label>
@@ -535,16 +653,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           {showOtpInput && (
             <div>
               <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Enter OTP</label>
-              <div className="relative">
-                <i className="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={(event) => setOtp(event.target.value)}
-                  placeholder="123456"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
-                  required
-                />
+              <div className="pt-2 pb-2">
+                <OTPInput value={otp} onChange={setOtp} />
               </div>
               <div className="flex justify-between items-center mt-2">
                 <p className="text-xs text-[var(--text-secondary)]">
@@ -559,17 +669,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             </div>
           )}
 
-          {isLogin && step === 1 && (
-            <div className="mt-4 text-center">
-              <button 
-                type="button" 
-                onClick={() => setLoginMethod(loginMethod === "email" ? "mobile" : "email")} 
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-bold transition-colors"
-              >
-                {loginMethod === "email" ? "Log in with Mobile OTP" : "Log in with Email"}
-              </button>
-            </div>
-          )}
+
 
           <button
             type="submit"

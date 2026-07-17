@@ -15,13 +15,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password } = await req.json();
+    const { name, email, password, mobile } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !mobile) {
       return NextResponse.json(
-        { error: "Name, email, and password are required" },
+        { error: "Name, email, password, and mobile number are required" },
         { status: 400 }
       );
+    }
+
+    const cookieStore = await cookies();
+    const verifiedMobile = cookieStore.get('verified_mobile')?.value;
+
+    if (!verifiedMobile || verifiedMobile !== mobile) {
+        return NextResponse.json(
+            { error: "Mobile number must be verified before registration" },
+            { status: 401 }
+        );
     }
 
     // 1. Check if user with email already exists
@@ -36,6 +46,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 1.5 Check if user with mobile already exists
+    const existingMobileUser = await prisma.user.findUnique({
+      where: { mobile },
+    });
+
+    if (existingMobileUser) {
+      return NextResponse.json(
+        { error: "User with this mobile number already exists" },
+        { status: 409 }
+      );
+    }
+
     // 2. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -45,6 +67,8 @@ export async function POST(req: NextRequest) {
         name,
         email,
         password: hashedPassword,
+        mobile,
+        isMobileVerified: true,
       },
     });
 
@@ -58,6 +82,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    response.cookies.delete('verified_mobile');
     await setSessionCookie(response, user.id);
 
     return response;

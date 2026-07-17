@@ -47,9 +47,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, xp, coins, streak, level } = body;
+    const { name, email, mobile, xp, coins, streak, level } = body;
     const normalizedName = typeof name === 'string' ? name.trim() : undefined;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined;
+    const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : undefined;
 
     if (email !== undefined && !normalizedEmail) {
       return NextResponse.json(
@@ -72,11 +73,26 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    if (normalizedMobile) {
+      const existingUserWithMobile = await prisma.user.findUnique({
+        where: { mobile: normalizedMobile },
+        select: { id: true },
+      });
+
+      if (existingUserWithMobile && existingUserWithMobile.id !== session.userId) {
+        return NextResponse.json(
+          { error: 'Mobile number is already in use' },
+          { status: 409 }
+        );
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: session.userId },
       data: {
         ...(name !== undefined ? { name: normalizedName || null } : {}),
         ...(normalizedEmail ? { email: normalizedEmail } : {}),
+        ...(normalizedMobile ? { mobile: normalizedMobile } : {}),
         ...(xp !== undefined && { xp }),
         ...(coins !== undefined && { coins }),
         ...(streak !== undefined && { streak }),

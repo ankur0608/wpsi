@@ -1,13 +1,34 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useUser } from "@/context/UserContext";
 
 export default function ProfilePage() {
-  const { user, refreshUser } = useUser();
-  const displayName = user?.name?.trim() || "Meet Patel";
+  const { user, refreshUser, updateUser } = useUser();
+  const displayName = user?.name?.trim() || "User";
+  const displayEmail = user?.email || "No Email";
+  const displayMobile = user?.mobile || "No Mobile";
+  
   const [uploading, setUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    mobile: ''
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        mobile: user.mobile || ''
+      });
+    }
+  }, [user]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,8 +62,25 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await updateUser({
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile
+      });
+      alert('Profile updated successfully!');
+    } catch (error: any) {
+      alert(error.message || 'Failed to update profile');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="bg-dark-50 w-full font-sans text-dark-800 pb-10">
+    <div className="bg-dark-50 w-full font-sans text-dark-800 pb-10 min-h-screen">
       <div className="max-w-5xl mx-auto p-4 lg:p-6 space-y-8">
         
         {/* Profile Header */}
@@ -70,33 +108,58 @@ export default function ProfilePage() {
           <div className="flex-1">
             <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
               <h2 className="font-display text-4xl font-bold text-dark-900 tracking-tight">{displayName}</h2>
-              <span className="bg-accent-100 text-accent-700 border border-accent-200 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-sm">PRO</span>
+              {user?.planType && user.planType !== 'free' && (
+                <span className="bg-accent-100 text-accent-700 border border-accent-200 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-sm">PRO</span>
+              )}
             </div>
-            <p className="text-dark-500 mb-6 font-medium">meet@example.com <span className="mx-2">•</span> +91 98765 43210</p>
+            <p className="text-dark-500 mb-6 font-medium">{displayEmail} {displayMobile !== "No Mobile" && <><span className="mx-2">•</span> {displayMobile}</>}</p>
             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-              <button className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">Edit Profile</button>
-              <button className="bg-white hover:bg-dark-50 text-dark-700 border border-dark-200 text-sm font-bold py-2.5 px-6 rounded-xl transition-colors shadow-sm">Change Password</button>
+              <button onClick={() => document.getElementById('personal-details')?.scrollIntoView({ behavior: 'smooth' })} className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">Edit Profile</button>
             </div>
           </div>
         </div>
         
         <div className="grid md:grid-cols-2 gap-8">
           {/* Personal Details Form */}
-          <div className="glass-card hover-card p-8 border border-dark-100 bg-white rounded-3xl shadow-sm">
+          <div id="personal-details" className="glass-card hover-card p-8 border border-dark-100 bg-white rounded-3xl shadow-sm">
             <h3 className="font-display font-bold text-dark-900 text-xl mb-6">Personal Details</h3>
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleSaveProfile}>
               <div>
                 <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Full Name</label>
-                <input type="text" className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" defaultValue={displayName} />
+                <input 
+                  type="text" 
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                  required
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Target Exam</label>
-                <input type="text" className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" defaultValue="WPSI 2026" />
+                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Email Address</label>
+                <input 
+                  type="email" 
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                  required
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Location</label>
-                <input type="text" className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" defaultValue="Ahmedabad, Gujarat" />
+                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Mobile Number</label>
+                <input 
+                  type="text" 
+                  value={formData.mobile}
+                  onChange={(e) => setFormData({...formData, mobile: e.target.value})}
+                  className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                />
               </div>
+              <button 
+                type="submit" 
+                disabled={isSaving}
+                className="w-full bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold py-3 px-6 rounded-xl transition-all shadow-md mt-4 disabled:opacity-50"
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
             </form>
           </div>
           
@@ -107,15 +170,22 @@ export default function ProfilePage() {
               <div className="flex items-center gap-4 p-4 bg-primary-50 border border-primary-100 rounded-2xl hover:border-primary-300 transition-colors cursor-default group">
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">🏆</div>
                 <div>
-                  <h4 className="font-bold text-primary-900 text-base mb-0.5">Top 5% Performer</h4>
-                  <p className="text-[11px] text-primary-600 font-medium uppercase tracking-wider">Achieved in May 2026</p>
+                  <h4 className="font-bold text-primary-900 text-base mb-0.5">Current Level</h4>
+                  <p className="text-[11px] text-primary-600 font-medium uppercase tracking-wider">Level {user?.level || 1}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-accent-50 border border-accent-100 rounded-2xl hover:border-accent-300 transition-colors cursor-default group">
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">🔥</div>
                 <div>
-                  <h4 className="font-bold text-accent-900 text-base mb-0.5">7 Day Streak</h4>
-                  <p className="text-[11px] text-accent-600 font-medium uppercase tracking-wider">Unlocked 15 Jun 2026</p>
+                  <h4 className="font-bold text-accent-900 text-base mb-0.5">Best Streak</h4>
+                  <p className="text-[11px] text-accent-600 font-medium uppercase tracking-wider">{user?.bestStreak || 0} Days</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-100 rounded-2xl hover:border-green-300 transition-colors cursor-default group">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">⭐</div>
+                <div>
+                  <h4 className="font-bold text-green-900 text-base mb-0.5">Total XP</h4>
+                  <p className="text-[11px] text-green-600 font-medium uppercase tracking-wider">{user?.xp || 0} XP</p>
                 </div>
               </div>
             </div>

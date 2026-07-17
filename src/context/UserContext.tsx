@@ -13,6 +13,7 @@ interface User {
   totalStudyDays: number;
   planType?: string;
   image?: string;
+  mobile?: string | null;
 }
 
 interface UserContextType {
