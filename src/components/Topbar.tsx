@@ -176,8 +176,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             
             <div className="relative">
                 <div className="flex items-center gap-2 pl-2 md:pl-4 md:border-l border-dark-200 cursor-pointer hover:bg-dark-50 p-1.5 rounded-xl transition-colors" onClick={() => togglePopover("profile")}>
-                    <div className="w-9 h-9 bg-primary-600 shadow-sm rounded-lg flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase">
-                        {loading ? "..." : displayName.slice(0, 2)}
+                    <div className="w-9 h-9 shadow-sm rounded-lg flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600">
+                        {loading ? "..." : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                     </div>
                     <div className="hidden lg:block text-left">
                         <p className="text-xs font-bold text-dark-900 leading-tight">{loading ? 'Loading...' : displayName}</p>

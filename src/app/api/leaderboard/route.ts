@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
         name: true,
         xp: true,
         level: true,
-        streak: true
+        streak: true,
+        image: true
       }
     });
 
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
         // Calculate the user's overall rank
         const currentUser = await prisma.user.findUnique({
             where: { id: session.userId },
-            select: { id: true, name: true, xp: true, level: true, streak: true }
+            select: { id: true, name: true, xp: true, level: true, streak: true, image: true }
         });
         
         if (currentUser) {
@@ -61,7 +62,8 @@ export async function GET(request: NextRequest) {
             change: "same", // Future enhancement: track historical rank
             score: Math.min(100, Math.floor(u.xp / 100) || 0),
             streak: u.streak,
-            isUser: session?.userId === u.id
+            isUser: session?.userId === u.id,
+            image: u.image || null
         };
     });
 

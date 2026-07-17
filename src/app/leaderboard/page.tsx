@@ -10,13 +10,15 @@ export default function LeaderboardPage() {
   const [timeframe, setTimeframe] = useState("allTime");
   const [category, setCategory] = useState("All");
 
-  const { currentLevel, nextLevel, progress } = getUserLevel(user?.xp || 0);
+  const [userStats, setUserStats] = useState<any>(null);
+
+  const currentXp = userStats?.xp ?? user?.xp ?? 0;
+  const { currentLevel, nextLevel, progress } = getUserLevel(currentXp);
 
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [totalUsers, setTotalUsers] = useState<number>(0);
-  const [userStats, setUserStats] = useState<any>(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -81,7 +83,7 @@ export default function LeaderboardPage() {
                   <div className="flex justify-between items-end mb-2">
                     <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest">Level Progress</p>
                     <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded-md">
-                      {user?.xp?.toLocaleString()} / {nextLevel ? nextLevel.xpRequired.toLocaleString() : 'MAX'} XP
+                      {currentXp.toLocaleString()} / {nextLevel ? nextLevel.xpRequired.toLocaleString() : 'MAX'} XP
                     </span>
                   </div>
                   
@@ -146,8 +148,8 @@ export default function LeaderboardPage() {
                 <div key={item.rank} className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl border transition-all ${item.isUser ? 'bg-primary-50/50 border-primary-200 shadow-sm' : 'bg-white border-dark-100 hover:border-dark-200 hover:shadow-sm group'}`}>
                   <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{item.rank}</span>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm ${item.isUser ? 'bg-primary-600 text-white' : 'bg-dark-100 text-dark-600 group-hover:bg-dark-200 transition-colors'}`}>
-                      {item.avatar}
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm overflow-hidden ${item.isUser ? 'bg-primary-600 text-white' : 'bg-dark-100 text-dark-600 group-hover:bg-dark-200 transition-colors'}`}>
+                      {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : item.avatar}
                     </div>
                     <div>
                       <p className={`font-bold text-sm ${item.isUser ? 'text-primary-900' : 'text-dark-800'}`}>
@@ -185,8 +187,8 @@ export default function LeaderboardPage() {
                   <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl border bg-primary-50/50 border-primary-200 shadow-sm transition-all">
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{userRank}</span>
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm bg-primary-600 text-white">
-                        {displayName.substring(0, 2).toUpperCase()}
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm bg-primary-600 text-white overflow-hidden">
+                        {userStats.image ? <img src={userStats.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
                         <p className="font-bold text-sm text-primary-900">
@@ -232,8 +234,8 @@ export default function LeaderboardPage() {
               <div className="flex flex-col items-center w-[30%] group">
                 <div className="relative mb-3 flex flex-col items-center">
                   <div className="absolute -top-4 text-xl">🥈</div>
-                  <div className="w-14 h-14 rounded-full bg-slate-50 border-2 border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm text-sm relative z-10 transition-transform duration-300">
-                    {top2?.avatar || '--'}
+                  <div className="w-14 h-14 rounded-full bg-slate-50 border-2 border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm text-sm relative z-10 transition-transform duration-300 overflow-hidden">
+                    {top2?.image ? <img src={top2.image} alt={top2.name} className="w-full h-full object-cover" /> : top2?.avatar || '--'}
                   </div>
                   <p className="text-xs font-bold text-dark-800 mt-2 truncate w-full text-center">{top2?.name || '---'}</p>
                   <p className="text-[9px] text-slate-500 font-bold mt-0.5">{top2?.xp || '0 XP'}</p>
@@ -248,8 +250,8 @@ export default function LeaderboardPage() {
               <div className="flex flex-col items-center w-[36%] group relative z-20">
                 <div className="relative mb-3 flex flex-col items-center">
                   <div className="absolute -top-7 text-3xl drop-shadow-md">👑</div>
-                  <div className="w-20 h-20 rounded-full bg-amber-50 border-4 border-amber-300 flex items-center justify-center font-bold text-amber-700 shadow-sm text-2xl relative z-10 transition-transform duration-300">
-                    {top1?.avatar || '--'}
+                  <div className="w-20 h-20 rounded-full bg-amber-50 border-4 border-amber-300 flex items-center justify-center font-bold text-amber-700 shadow-sm text-2xl relative z-10 transition-transform duration-300 overflow-hidden">
+                    {top1?.image ? <img src={top1.image} alt={top1.name} className="w-full h-full object-cover" /> : top1?.avatar || '--'}
                   </div>
                   <p className="text-sm font-bold text-amber-600 mt-3 truncate w-full text-center">{top1?.name || '---'}</p>
                   <p className="text-[10px] text-amber-500 font-bold mt-0.5">{top1?.xp || '0 XP'}</p>
@@ -264,8 +266,8 @@ export default function LeaderboardPage() {
               <div className="flex flex-col items-center w-[30%] group">
                 <div className="relative mb-3 flex flex-col items-center">
                   <div className="absolute -top-4 text-xl">🥉</div>
-                  <div className="w-14 h-14 rounded-full bg-orange-50 border-2 border-orange-300 flex items-center justify-center font-bold text-orange-800 shadow-sm text-sm relative z-10 transition-transform duration-300">
-                    {top3?.avatar || '--'}
+                  <div className="w-14 h-14 rounded-full bg-orange-50 border-2 border-orange-300 flex items-center justify-center font-bold text-orange-800 shadow-sm text-sm relative z-10 transition-transform duration-300 overflow-hidden">
+                    {top3?.image ? <img src={top3.image} alt={top3.name} className="w-full h-full object-cover" /> : top3?.avatar || '--'}
                   </div>
                   <p className="text-xs font-bold text-dark-800 mt-2 truncate w-full text-center">{top3?.name || '---'}</p>
                   <p className="text-[9px] text-orange-500 font-bold mt-0.5">{top3?.xp || '0 XP'}</p>

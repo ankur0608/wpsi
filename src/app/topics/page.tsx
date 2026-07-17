@@ -91,7 +91,7 @@ function TopicsContent() {
                                 📚 <span>{loading ? '-' : topics.length} Chapters</span>
                             </span>
                             <span className="bg-white/90 text-primary-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-primary-100/80 flex items-center gap-1.5">
-                                📑 <span>{topics.length * 50}+ Practice MCQs</span>
+                                📑 <span>{loading ? '-' : topics.reduce((acc, curr) => acc + (curr.mcqCount || 0), 0)}+ Practice MCQs</span>
                             </span>
                             <span className="bg-success-50/90 text-success-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-success-200/80 flex items-center gap-1.5">
                                 👑 Combo Access Available
@@ -138,7 +138,7 @@ function TopicsContent() {
                           <div>
                               <h4 className={`font-bold text-sm transition-colors ${isTopicUnlocked ? 'text-dark-900 group-hover:text-primary-700' : 'text-dark-500'}`}>{idx + 1}. {topic.name}</h4>
                               <div className="flex items-center gap-3 mt-1">
-                                  <span className="text-[10px] text-dark-500 font-medium">{Math.floor(Math.random() * 20) + 40} Questions</span>
+                                  <span className="text-[10px] text-dark-500 font-medium">{topic.mcqCount || 0} Questions</span>
                                   <div className="w-1 h-1 bg-dark-200 rounded-full"></div>
                                   <span className={`text-[10px] font-bold ${isTopicUnlocked ? 'text-success-600' : 'text-amber-600'}`}>
                                       {isTopicUnlocked ? 'Unlocked' : 'Premium Required'}

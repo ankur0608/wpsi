@@ -564,18 +564,19 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
           {showRegisterFields && showRegisterOtp && !isMobileVerified && (
             <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Enter OTP</label>
-              <div className="relative flex gap-2 items-center">
-                <div className="flex-1 overflow-x-auto pb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Enter OTP</label>
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                <div className="flex-1 overflow-x-auto pb-2 sm:pb-0">
                   <OTPInput value={otp} onChange={setOtp} />
                 </div>
                 <button 
                   type="button" 
                   onClick={handleRegisterVerifyOtp}
                   disabled={loading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50"
+                  className="h-12 shrink-0 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold px-8 rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Confirm
+                  <i className="fa-solid fa-circle-check mr-2"></i>
+                  Confirm OTP
                 </button>
               </div>
             </div>

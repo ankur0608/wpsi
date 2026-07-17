@@ -13,7 +13,24 @@ function SubjectsContent() {
   const router = useRouter();
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ testsTaken: 0, avgScore: 0 });
   const { user } = useUser();
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch('/api/user/dashboard-stats')
+        .then(res => res.json())
+        .then(json => {
+          if (json.data) {
+            setStats({
+              testsTaken: json.data.mockTestsAttempted || 0,
+              avgScore: Math.round(json.data.averageAccuracy || 0)
+            });
+          }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (!examId) {
@@ -142,14 +159,14 @@ function SubjectsContent() {
                 <div className="bg-white rounded-xl p-4 flex items-center gap-4 shadow-sm border border-accent-100" style={{ backgroundColor: '#fffbeb' }}>
                     <div className="w-10 h-10 bg-accent-100 rounded-lg flex items-center justify-center text-accent-600 text-xl">🏆</div>
                     <div>
-                        <p className="font-bold text-dark-900 text-xl leading-none">7</p>
+                        <p className="font-bold text-dark-900 text-xl leading-none">{stats.testsTaken}</p>
                         <p className="text-[9px] text-dark-400 uppercase tracking-widest font-semibold mt-1">Tests Taken</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-4 flex items-center gap-4 shadow-sm border border-primary-100" style={{ backgroundColor: '#faf5ff' }}>
                     <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 text-xl">📈</div>
                     <div>
-                        <p className="font-bold text-dark-900 text-xl leading-none">30%</p>
+                        <p className="font-bold text-dark-900 text-xl leading-none">{stats.avgScore}%</p>
                         <p className="text-[9px] text-dark-400 uppercase tracking-widest font-semibold mt-1">Avg Score</p>
                     </div>
                 </div>
