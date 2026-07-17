@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
     if (dbPlan) {
       amount = dbPlan.price;
     } else {
-      // Fallbacks matching api/plans/route.ts
-      if (planId === 'Pro' || planId === 'pro') amount = 249;
-      else if (planId === 'Premium' || planId === 'premium') amount = 499;
+      // Fallbacks matching pricing.json
+      if (planId === 'Pro' || planId === 'pro') amount = 299;
+      else if (planId === 'Elite' || planId === 'elite' || planId === 'Premium' || planId === 'premium') amount = 499;
       else {
         return NextResponse.json({ success: false, error: 'Invalid planId' }, { status: 400 });
       }
