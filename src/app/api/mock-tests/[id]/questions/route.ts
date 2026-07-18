@@ -35,8 +35,8 @@ export async function GET(
       optionD: q.optionD,
       correctAnswer: q.correctAnswer,
       explanation: q.explanation,
-      language: 'English',
-      translationId: null,
+      language: q.language,
+      translationId: q.translationId,
     }));
 
     return Response.json({ 

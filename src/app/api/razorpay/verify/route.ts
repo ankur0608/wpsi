@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (paymentHistoryId) {
-      await prisma.paymentHistory.update({
+      const paymentHistory = await prisma.paymentHistory.update({
         where: { id: paymentHistoryId },
         data: {
           status: 'SUCCESS',
@@ -64,6 +64,13 @@ export async function POST(req: NextRequest) {
           razorpayPaymentId: razorpay_payment_id
         }
       });
+
+      if (paymentHistory.couponId) {
+        await prisma.coupon.update({
+          where: { id: paymentHistory.couponId },
+          data: { usedCount: { increment: 1 } }
+        });
+      }
     }
 
     return NextResponse.json({ success: true, message: 'Payment verified successfully', planId: securePlanId });

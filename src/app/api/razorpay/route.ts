@@ -55,7 +55,12 @@ export async function POST(req: NextRequest) {
       const coupon = await prisma.coupon.findUnique({
         where: { code: couponCode.toUpperCase() }
       });
-      if (coupon && coupon.isActive && (!coupon.expiresAt || new Date(coupon.expiresAt) > new Date())) {
+      if (
+          coupon && 
+          coupon.isActive && 
+          (!coupon.expiresAt || new Date(coupon.expiresAt) > new Date()) &&
+          (coupon.maxUses === null || coupon.usedCount < coupon.maxUses)
+      ) {
         const discountAmount = Math.floor((amount * coupon.discountPercent) / 100);
         finalAmount = amount - discountAmount;
         appliedCouponId = coupon.id;

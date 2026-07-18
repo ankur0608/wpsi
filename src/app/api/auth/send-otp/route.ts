@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    
+    if (!authRateLimiter.check(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const { mobile } = await req.json();
 
     if (!mobile) {

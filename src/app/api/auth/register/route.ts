@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, mobile } = await req.json();
+    const { name, email, password, mobile, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
@@ -70,6 +70,33 @@ export async function POST(req: NextRequest) {
         mobile,
         isMobileVerified: true,
       },
+    });
+
+    if (deviceId) {
+        await prisma.device.create({
+            data: {
+                deviceId,
+                userId: user.id,
+                browser,
+                os,
+                deviceType,
+                screen,
+                timezone,
+                language,
+                lastIp: ip
+            }
+        });
+    }
+
+    await prisma.loginHistory.create({
+        data: {
+            userId: user.id,
+            deviceId: deviceId || null,
+            ip,
+            status: "SUCCESS",
+            browser: browser || null,
+            os: os || null
+        }
     });
 
     // 4. Set session cookie for automatic login

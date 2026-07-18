@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import OTPInput from "./OTPInput";
+import { useUser } from '@/context/UserContext';
 
 export type AuthMode = "login" | "register" | "forgot-password";
 
@@ -50,6 +51,7 @@ const getDeviceInfo = () => {
 
 export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthModalProps) {
   const router = useRouter();
+  const { refreshUser } = useUser();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
@@ -235,12 +237,13 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, mobile }),
+          body: JSON.stringify({ name, email, password, mobile, ...getDeviceInfo() }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));
         
         if (registerRes.ok) {
+          await refreshUser();
           router.replace("/dashboard");
           router.refresh();
           return;
@@ -266,6 +269,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                body: JSON.stringify({ mobile, ...getDeviceInfo() }),
             });
             if (loginRes.ok) {
+               await refreshUser();
                router.replace("/dashboard");
                router.refresh();
                return;
@@ -298,6 +302,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const data = await response.json().catch(() => ({}));
 
         if (response.ok) {
+          await refreshUser();
           router.replace("/dashboard");
           router.refresh();
         } else if (response.status === 409 && data.error === 'ACTIVE_DEVICE') {
@@ -382,6 +387,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const data = await response.json().catch(() => ({}));
 
         if (response.ok) {
+          await refreshUser();
           router.replace("/dashboard");
           router.refresh();
         } else {
