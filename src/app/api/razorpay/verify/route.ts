@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     const securePlanId = order.notes.planId as string;
+    const paymentHistoryId = order.notes.paymentHistoryId as string;
 
     // Optional: Double check if the user matches
     if (order.notes.userId !== session.userId) {
@@ -53,6 +54,17 @@ export async function POST(req: NextRequest) {
       where: { id: session.userId },
       data: { planType: securePlanId }
     });
+
+    if (paymentHistoryId) {
+      await prisma.paymentHistory.update({
+        where: { id: paymentHistoryId },
+        data: {
+          status: 'SUCCESS',
+          razorpayOrderId: razorpay_order_id,
+          razorpayPaymentId: razorpay_payment_id
+        }
+      });
+    }
 
     return NextResponse.json({ success: true, message: 'Payment verified successfully', planId: securePlanId });
   } catch (error: any) {

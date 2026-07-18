@@ -34,6 +34,7 @@ model User {
     notifications   Notification[]
     devices         Device[]
     loginHistory    LoginHistory[]
+    paymentHistory  PaymentHistory[]
 }
 
 model Plan {
@@ -285,6 +286,35 @@ model LoginHistory {
     browser   String?
     os        String?
     createdAt DateTime @default(now())
+
+    @@index([userId])
+}
+
+model Coupon {
+    id              String   @id @default(cuid())
+    code            String   @unique
+    discountPercent Int
+    isActive        Boolean  @default(true)
+    expiresAt       DateTime?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    
+    payments        PaymentHistory[]
+}
+
+model PaymentHistory {
+    id                String   @id @default(cuid())
+    userId            String
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    planId            String
+    amount            Int
+    couponId          String?
+    coupon            Coupon?  @relation(fields: [couponId], references: [id], onDelete: SetNull)
+    razorpayOrderId   String?
+    razorpayPaymentId String?
+    status            String   @default("PENDING") // PENDING, SUCCESS, FAILED
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
 
     @@index([userId])
 }

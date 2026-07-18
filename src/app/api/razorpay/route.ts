@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { currency = 'INR', planId } = body;
+    const { currency = 'INR', planId, couponCode } = body;
 
     // Check planId
     if (!planId) {
@@ -47,13 +47,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid plan amount' }, { status: 400 });
     }
 
+    let appliedCouponId = null;
+    let finalAmount = amount;
+
+    // Verify and apply coupon if provided
+    if (couponCode) {
+      const coupon = await prisma.coupon.findUnique({
+        where: { code: couponCode.toUpperCase() }
+      });
+      if (coupon && coupon.isActive && (!coupon.expiresAt || new Date(coupon.expiresAt) > new Date())) {
+        const discountAmount = Math.floor((amount * coupon.discountPercent) / 100);
+        finalAmount = amount - discountAmount;
+        appliedCouponId = coupon.id;
+      }
+    }
+
+    // Ensure final amount is strictly > 0 for Razorpay
+    if (finalAmount <= 0) {
+      return NextResponse.json({ success: false, error: 'Invalid final amount' }, { status: 400 });
+    }
+
+    // Create a PENDING PaymentHistory record
+    const paymentRecord = await prisma.paymentHistory.create({
+      data: {
+        userId: session.userId,
+        planId: planId,
+        amount: finalAmount,
+        couponId: appliedCouponId,
+        status: "PENDING"
+      }
+    });
+
     const options = {
-      amount: amount * 100, // amount in the smallest currency unit (e.g. paise)
+      amount: finalAmount * 100, // amount in the smallest currency unit (e.g. paise)
       currency,
       receipt: 'receipt_' + Date.now(),
       notes: {
         userId: session.userId,
-        planId: planId
+        planId: planId,
+        paymentHistoryId: paymentRecord.id
       }
     };
 

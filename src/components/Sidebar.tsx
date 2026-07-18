@@ -112,18 +112,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         
         {/* Bottom section */}
         <div className="p-4 relative z-10 shrink-0">
-            {(!user?.planType || user.planType === 'free') && (
-                <div className="bg-gradient-to-br from-dark-800 to-dark-900 border border-dark-700 rounded-2xl p-5 mb-4 shadow-xl relative overflow-hidden group hidden sm:block">
-                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                    <div className="flex items-center gap-2 mb-2 relative z-10">
-                        <span className="text-accent-400 text-[10px] font-bold uppercase tracking-widest">👑 WPSI Combo</span>
-                    </div>
-                    <p className="text-[11px] text-dark-300 mb-4 leading-relaxed relative z-10">Full access at <b className="text-white">Rs 249</b> with the cleanest prep flow.</p>
-                    <Link href="/dashboard/pricing" className="block w-full bg-accent-500 hover:bg-accent-600 text-dark-800 text-center py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-accent-500/20 relative z-10">
-                        ⚡ Upgrade Now
-                    </Link>
-                </div>
-            )}
+
             
             <Link href="/profile" onClick={onClose} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
                 <div className="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center text-primary-700 font-bold mr-3 text-xs border border-primary-200 group-hover:bg-primary-200 transition-colors uppercase">

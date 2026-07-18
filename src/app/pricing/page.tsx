@@ -7,76 +7,8 @@ import Script from 'next/script';
 import DynamicNavbar from '@/components/DynamicNavbar';
 
 export default function Pricing() {
-  const handlePayment = async (amount: number, planId: string) => {
-    try {
-      const res = await fetch('/api/razorpay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, planId })
-      });
-      const data = await res.json();
-      
-      if (!data.success) {
-        if (data.error === 'Not authenticated') {
-          alert('Please login to purchase a plan');
-          window.location.href = '/login';
-          return;
-        }
-        alert('Payment initiation failed: ' + data.error);
-        return;
-      }
-      
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_dummy_key_id', // Enter the Key ID generated from the Dashboard
-        amount: data.order.amount,
-        currency: data.order.currency,
-        name: 'WPSI Exam Prep',
-        description: 'Test Transaction',
-        order_id: data.order.id,
-        handler: async function (response: any) {
-          try {
-            const verifyRes = await fetch('/api/razorpay/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                planId: planId
-              })
-            });
-            const verifyData = await verifyRes.json();
-            
-            if (verifyData.success) {
-              alert('Payment Successful! Your plan has been upgraded.');
-              window.location.href = '/dashboard'; // Redirect to dashboard or refresh
-            } else {
-              alert('Payment Verification Failed: ' + verifyData.error);
-            }
-          } catch(err) {
-            console.error(err);
-            alert('Verification Error');
-          }
-        },
-        prefill: {
-          name: 'Student Name',
-          email: 'student@example.com',
-          contact: '9999999999'
-        },
-        theme: {
-          color: '#3b82f6'
-        }
-      };
-      
-      const rzp1 = new (window as any).Razorpay(options);
-      rzp1.on('payment.failed', function (response: any){
-        alert('Payment Failed! Reason: ' + response.error.description);
-      });
-      rzp1.open();
-    } catch (error) {
-      console.error(error);
-      alert('Payment failed');
-    }
+  const handlePayment = (amount: number, planId: string) => {
+    window.location.href = `/checkout?plan=${planId}`;
   };
   return (
     <div className="relative w-full overflow-x-hidden page-transition">
