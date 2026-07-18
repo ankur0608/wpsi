@@ -149,17 +149,17 @@ export default function CheckoutPage() {
     <div className="w-full bg-dark-50 pb-20">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       
-      <div className="max-w-5xl mx-auto p-6 lg:p-10">
-        <div className="mb-10 flex flex-col items-start border-b border-dark-100 pb-8">
+      <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-10">
+        <div className="mb-6 sm:mb-10 flex flex-col items-start border-b border-dark-100 pb-6 sm:pb-8">
             <h1 className="font-display text-4xl font-bold text-dark-900 mb-2">Checkout</h1>
             <p className="text-dark-500">You're one step away from unlocking premium WPSI features.</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-10">
             <div className="lg:col-span-3 space-y-8">
-                <div className="glass-card hover-card bg-white border border-dark-100 rounded-3xl p-8 shadow-sm">
-                    <h2 className="font-display text-xl font-bold text-dark-900 mb-6">Plan Summary</h2>
-                    <div className="flex items-center justify-between bg-dark-50 p-6 rounded-2xl border border-dark-100 mb-6">
+                <div className="glass-card hover-card bg-white border border-dark-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <h2 className="font-display text-lg sm:text-xl font-bold text-dark-900 mb-6">Plan Summary</h2>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-dark-50 p-5 sm:p-6 rounded-2xl border border-dark-100 mb-6 gap-4 sm:gap-0">
                         <div>
                             <div className="flex items-center gap-3 mb-1">
                                 <h3 className="text-xl font-bold text-primary-700">{plan.name}</h3>
@@ -167,9 +167,9 @@ export default function CheckoutPage() {
                             </div>
                             <p className="text-sm text-dark-500 font-medium">{plan.subtitle}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right w-full sm:w-auto border-t sm:border-t-0 border-dark-200 pt-3 sm:pt-0">
                             <div className="text-3xl font-display font-bold text-dark-900">₹{plan.amount}</div>
-                            <div className="text-sm text-dark-400 font-medium uppercase tracking-wider">{plan.period}</div>
+                            <div className="text-xs sm:text-sm text-dark-400 font-medium uppercase tracking-wider">{plan.period}</div>
                         </div>
                     </div>
                     <ul className="space-y-4 mb-2">
@@ -186,12 +186,12 @@ export default function CheckoutPage() {
                     </ul>
                 </div>
 
-                <div className="glass-card bg-white border border-dark-100 rounded-3xl p-8 shadow-sm">
-                    <h2 className="font-display text-xl font-bold text-dark-900 mb-6 flex items-center gap-2">
+                <div className="glass-card bg-white border border-dark-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <h2 className="font-display text-lg sm:text-xl font-bold text-dark-900 mb-6 flex items-center gap-2">
                         <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
                         Have a Coupon?
                     </h2>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <input 
                             type="text" 
                             placeholder="Enter coupon code" 
@@ -203,7 +203,7 @@ export default function CheckoutPage() {
                         <button 
                             onClick={appliedCoupon ? () => { setAppliedCoupon(null); setCouponCode(''); setCouponSuccess(''); } : applyCoupon}
                             disabled={loading || (!couponCode && !appliedCoupon)}
-                            className={`px-8 py-3.5 rounded-xl font-bold transition-all shadow-sm ${appliedCoupon ? 'bg-danger-50 border border-danger-200 text-danger-600 hover:bg-danger-100' : 'bg-dark-900 text-white hover:bg-dark-800'}`}
+                            className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-bold transition-all shadow-sm ${appliedCoupon ? 'bg-danger-50 border border-danger-200 text-danger-600 hover:bg-danger-100' : 'bg-dark-900 text-white hover:bg-dark-800'}`}
                         >
                             {appliedCoupon ? 'Remove' : 'Apply'}
                         </button>
@@ -214,7 +214,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="lg:col-span-2">
-                <div className="bg-primary-900 text-white rounded-3xl p-8 shadow-xl sticky top-28 overflow-hidden relative border border-primary-700">
+                <div className="bg-primary-900 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl lg:sticky lg:top-28 overflow-hidden relative border border-primary-700">
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary-500 rounded-full blur-3xl opacity-30"></div>
                     <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent-500 rounded-full blur-3xl opacity-20"></div>
                     
@@ -236,8 +236,8 @@ export default function CheckoutPage() {
                             <span>₹0</span>
                         </div>
                         <div className="border-t border-primary-700/50 pt-5 mt-5 flex justify-between items-end">
-                            <span className="text-lg">Total</span>
-                            <span className="text-4xl font-display font-bold text-white">₹{finalAmount}</span>
+                            <span className="text-base sm:text-lg">Total</span>
+                            <span className="text-3xl sm:text-4xl font-display font-bold text-white">₹{finalAmount}</span>
                         </div>
                     </div>
 

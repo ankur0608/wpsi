@@ -5,8 +5,18 @@ import Link from 'next/link';
 import pricingData from '@/data/pricing.json';
 import Script from 'next/script';
 import DynamicNavbar from '@/components/DynamicNavbar';
+import { useUser } from '@/context/UserContext';
 
 export default function Pricing() {
+  const { user } = useUser();
+  const currentPlan = user?.planType?.toLowerCase() || 'free';
+  const getPlanLevel = (planId: string) => {
+    if (planId.includes('elite')) return 2;
+    if (planId.includes('pro')) return 1;
+    return 0;
+  };
+  const currentLevel = getPlanLevel(currentPlan);
+
   const handlePayment = (amount: number, planId: string) => {
     window.location.href = `/checkout?plan=${planId}`;
   };
@@ -86,11 +96,28 @@ export default function Pricing() {
                                 </li>
                             ))}
                         </ul>
-                        
-                        <button onClick={() => plan.amount > 0 ? handlePayment(plan.amount, plan.id) : alert('Free plan activated!')} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
-                            {plan.buttonText}
-                        </button>
-                        
+                        {(() => {
+                            const planLevel = getPlanLevel(plan.id.toLowerCase());
+                            if (planLevel === currentLevel && user) {
+                                return (
+                                    <button disabled className={`block w-full text-center font-bold py-3.5 rounded-xl shadow-lg cursor-not-allowed ${plan.isPopular ? 'bg-white/20 text-white border border-white/30' : 'bg-success-100 text-success-800 border border-success-200'}`}>
+                                        Current Plan
+                                    </button>
+                                );
+                            }
+                            if (planLevel < currentLevel && user) {
+                                return (
+                                    <button disabled className={`block w-full text-center font-bold py-3.5 rounded-xl shadow-lg cursor-not-allowed bg-dark-50 text-dark-400 border border-dark-200`}>
+                                        Included
+                                    </button>
+                                );
+                            }
+                            return (
+                                <button onClick={() => plan.amount > 0 ? handlePayment(plan.amount, plan.id) : alert('Free plan activated!')} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
+                                    {plan.buttonText}
+                                </button>
+                            );
+                        })()}
                         {plan.amount > 0 && <p className={`text-center text-xs mt-3 ${plan.isPopular ? 'text-primary-300' : 'text-dark-400'}`}>7-day money-back guarantee</p>}
                     </div>
                 ))}

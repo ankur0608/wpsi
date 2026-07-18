@@ -108,9 +108,17 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   return (
     <header className="h-20 bg-primary-50/30 flex items-center justify-between px-4 lg:px-10 shrink-0 sticky top-0 z-30 border-b border-primary-100 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-4">
-            <button className="lg:hidden p-2 text-dark-600 hover:bg-dark-50 rounded-xl transition-colors border border-dark-200" onClick={onMenuClick}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
+            {/* Mobile Logo */}
+            <div className="flex md:hidden items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 text-white font-bold text-xl tracking-tighter">
+                    W
+                </div>
+                <div>
+                    <h1 className="font-display font-bold text-xl text-dark-800 leading-none tracking-tight">WPSI <span className="text-primary-600">Pro</span></h1>
+                </div>
+            </div>
+            
+            {/* Desktop Page Title */}
             <div className="hidden md:flex flex-col justify-center">
                 <h2 className="text-xl font-display font-bold text-dark-900 leading-tight">{displayTitle}</h2>
                 {displaySubtitle && <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mt-0.5">{displaySubtitle}</p>}
@@ -136,12 +144,6 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 <span className="hidden sm:inline">{userRank ? `#${userRank}` : 'Unranked'}</span>
             </Link>
 
-            {/* Cart Icon */}
-            <Link href="/checkout" className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 hover:bg-primary-100 transition-colors shadow-sm border border-primary-100 mr-1 hover:scale-105">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-            </Link>
 
             {/* Notification Bell */}
             <div className="relative">

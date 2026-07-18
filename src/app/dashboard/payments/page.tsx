@@ -54,7 +54,7 @@ export default function PaymentHistoryPage() {
         <div className="bg-white rounded-2xl border border-dark-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
+              <thead className="hidden md:table-header-group">
                 <tr className="bg-dark-50 border-b border-dark-100 text-sm font-semibold text-dark-600">
                   <th className="p-4 pl-6">Date</th>
                   <th className="p-4">Plan</th>
@@ -64,26 +64,31 @@ export default function PaymentHistoryPage() {
                   <th className="p-4 pr-6 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-dark-100">
+              <tbody className="divide-y divide-dark-100 block md:table-row-group">
                 {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-dark-50/50 transition-colors">
-                    <td className="p-4 pl-6 text-dark-800 text-sm">
-                      {new Date(payment.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  <tr key={payment.id} className="block md:table-row hover:bg-dark-50/50 transition-colors p-4 md:p-0">
+                    <td className="p-2 md:p-4 md:pl-6 text-dark-800 text-sm flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Date</span>
+                      <span>{new Date(payment.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                     </td>
-                    <td className="p-4 text-dark-900 font-medium capitalize">
-                      {payment.planId}
+                    <td className="p-2 md:p-4 text-dark-900 font-medium capitalize flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Plan</span>
+                      <span>{payment.planId}</span>
                     </td>
-                    <td className="p-4 text-dark-800 font-medium">
-                      ₹{payment.amount}
+                    <td className="p-2 md:p-4 text-dark-800 font-medium flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Amount</span>
+                      <span>₹{payment.amount}</span>
                     </td>
-                    <td className="p-4 text-dark-600 text-sm">
+                    <td className="p-2 md:p-4 text-dark-600 text-sm flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Coupon</span>
                       {payment.coupon ? (
                         <span className="bg-dark-100 px-2 py-1 rounded text-xs font-mono uppercase">{payment.coupon.code}</span>
                       ) : (
-                        '-'
+                        <span>-</span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="p-2 md:p-4 flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Status</span>
                       {payment.status === 'SUCCESS' ? (
                         <span className="inline-flex items-center gap-1.5 bg-success-50 text-success-700 px-2.5 py-1 rounded-full text-xs font-bold border border-success-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-success-500"></span>
@@ -101,8 +106,9 @@ export default function PaymentHistoryPage() {
                         </span>
                       )}
                     </td>
-                    <td className="p-4 pr-6 text-right">
-                      {payment.status === 'SUCCESS' && (
+                    <td className="p-2 md:p-4 md:pr-6 text-right flex justify-between md:table-cell items-center mt-2 md:mt-0 pt-3 md:pt-4 border-t border-dark-50 md:border-none">
+                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Action</span>
+                      {payment.status === 'SUCCESS' ? (
                         <Link 
                           href={`/dashboard/payments/receipt/${payment.id}`}
                           target="_blank"
@@ -113,6 +119,8 @@ export default function PaymentHistoryPage() {
                           </svg>
                           Receipt
                         </Link>
+                      ) : (
+                        <span className="text-dark-300">-</span>
                       )}
                     </td>
                   </tr>

@@ -5,6 +5,8 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { UserProvider, useUser } from '@/context/UserContext';
 
+import MobileBottomTab from './MobileBottomTab';
+
 interface ProtectedDashboardProps {
   children: React.ReactNode;
 }
@@ -59,11 +61,12 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
-      <main id="nav-main-wrapper" className="flex-1 overflow-y-auto bg-dark-50 relative flex flex-col hide-scrollbar">
+      <main id="nav-main-wrapper" className="flex-1 overflow-y-auto bg-dark-50 relative flex flex-col hide-scrollbar lg:pb-0 pb-20">
         <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
         <div className="flex-1">
           {children}
         </div>
+        <MobileBottomTab />
       </main>
     </div>
   );
