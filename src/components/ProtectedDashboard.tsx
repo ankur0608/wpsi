@@ -73,9 +73,5 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
 }
 
 export default function ProtectedDashboard({ children }: ProtectedDashboardProps) {
-  return (
-    <UserProvider>
-      <ProtectedShell>{children}</ProtectedShell>
-    </UserProvider>
-  );
+  return <ProtectedShell>{children}</ProtectedShell>;
 }
