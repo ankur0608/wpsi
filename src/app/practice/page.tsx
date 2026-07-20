@@ -1347,7 +1347,10 @@ export default function PracticePage() {
                     <button 
                       key={key}
                       type="button"
-                      onClick={() => selectOption(key)}
+                      onClick={() => {
+                        if (session.mode === 'full' && currentResponse !== undefined) return;
+                        selectOption(key);
+                      }}
                       className={`w-full text-left rounded-xl border ${borderClass} ${bgClass} p-3 md:p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-dark-50 ${selected ? 'scale-[1.01]' : 'hover:-translate-y-0.5'}`}
                     >
                       <div className={`w-5 h-5 md:w-7 md:h-7 rounded md:rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${selected ? 'bg-primary-100 text-primary-600' : 'bg-dark-50 text-dark-400'}`}>

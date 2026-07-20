@@ -63,20 +63,28 @@ export default function MobileBottomTab() {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-dark-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 pb-safe">
-      <div className="flex justify-around items-center h-16">
-        {tabs.map((tab) => (
-          <Link
-            key={tab.name}
-            href={tab.path}
-            className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-              isActive(tab.path) ? 'text-primary-600' : 'text-dark-400 hover:text-dark-600'
-            }`}
-          >
-            {tab.icon}
-            <span className="text-[10px] font-bold uppercase tracking-wider">{tab.name}</span>
-          </Link>
-        ))}
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-dark-100 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] z-50 pb-safe">
+      <div className="flex justify-around items-center h-[68px] px-2 relative">
+        {tabs.map((tab) => {
+          const active = isActive(tab.path);
+          return (
+            <Link
+              key={tab.name}
+              href={tab.path}
+              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all duration-300 relative ${
+                active ? 'text-primary-600 scale-105' : 'text-dark-400 hover:text-dark-600'
+              }`}
+            >
+              {active && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary-600 rounded-b-full shadow-[0_2px_8px_rgba(14,165,233,0.4)]"></div>
+              )}
+              <div className={`mt-1 transition-transform duration-300 ${active ? '-translate-y-1' : ''}`}>
+                 {tab.icon}
+              </div>
+              <span className={`text-[9px] font-bold uppercase tracking-wider transition-all duration-300 ${active ? 'opacity-100 -translate-y-1' : 'opacity-70'}`}>{tab.name}</span>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

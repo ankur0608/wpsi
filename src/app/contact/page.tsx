@@ -46,8 +46,7 @@ export default function Contact() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-dark-900 mb-1">Office Address</h4>
-                                <p className="text-dark-500 text-sm">123, Knowledge Park, Near Gujarat
-                                    University<br />Ahmedabad, Gujarat - 380009, India</p>
+                                <p className="text-dark-500 text-sm">Ahmedabad, Gujarat, India</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4 p-6 bg-dark-50 rounded-2xl border border-dark-200">
@@ -61,48 +60,9 @@ export default function Contact() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-dark-900 mb-1">Email Us</h4>
-                                <p className="text-dark-500 text-sm">General Inquiries: <a
-                                        href="mailto:support@mcqprepzone.online"
-                                        className="text-primary-600 hover:underline">support@mcqprepzone.online</a></p>
-                                <p className="text-dark-500 text-sm">Partnerships: <a
-                                        href="mailto:partners@mcqprepzone.online"
-                                        className="text-primary-600 hover:underline">partners@mcqprepzone.online</a></p>
-                                <p className="text-dark-500 text-sm">Careers: <a href="mailto:careers@mcqprepzone.online"
-                                        className="text-primary-600 hover:underline">careers@mcqprepzone.online</a></p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-4 p-6 bg-dark-50 rounded-2xl border border-dark-200">
-                            <div
-                                className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <svg className="w-6 h-6 text-success-700" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-dark-900 mb-1">Call Us</h4>
-                                <p className="text-dark-500 text-sm">Customer Support: <a href="tel:+918347785879"
-                                        className="text-primary-600 hover:underline">+91 83477 85879</a></p>
-                                <p className="text-dark-500 text-sm">WhatsApp: <a href="https://wa.me/917912345678"
-                                        className="text-primary-600 hover:underline">+91 83477 85879</a></p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-4 p-6 bg-dark-50 rounded-2xl border border-dark-200">
-                            <div
-                                className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <svg className="w-6 h-6 text-primary-700" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-dark-900 mb-1">Business Hours</h4>
-                                <p className="text-dark-500 text-sm">Monday - Saturday: 9:00 AM - 8:00 PM IST</p>
-                                <p className="text-dark-500 text-sm">Sunday: Closed</p>
-                                <p className="text-dark-400 text-xs mt-1">Response time: Within 4 hours during business
-                                    hours</p>
+                                <p className="text-dark-500 text-sm">Email: <a
+                                        href="mailto:Mcqprepzone@gmail.com"
+                                        className="text-primary-600 hover:underline">Mcqprepzone@gmail.com</a></p>
                             </div>
                         </div>
                     </div>
@@ -252,9 +212,8 @@ export default function Contact() {
                 <div>
                     <h4 className="text-white font-bold mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm">
-                        <li>Email: support@mcqprepzone.online</li>
-                        <li>Phone: +91 83477 85879</li>
-                        <li>Location: Ahmedabad, Gujarat</li>
+                        <li>Email: Mcqprepzone@gmail.com</li>
+                        <li>Location: Ahmedabad, Gujarat, India</li>
                     </ul>
                 </div>
             </div>

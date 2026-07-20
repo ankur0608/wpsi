@@ -204,7 +204,7 @@ export default function ResultsPage() {
                             {statusMeta.label}
                           </span>
                         </div>
-                        <span className="text-xs font-bold text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity items-center gap-1 shrink-0 ml-2 hidden sm:flex">
+                        <span className="text-xs font-bold text-primary-600 flex items-center gap-1 shrink-0 ml-2 sm:ml-4">
                           Review <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
                         </span>
                       </div>

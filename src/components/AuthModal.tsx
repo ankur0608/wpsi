@@ -36,10 +36,10 @@ const getDeviceInfo = () => {
   
   let os = "Unknown";
   if (userAgent.includes("Win")) os = "Windows";
+  else if (userAgent.includes("Android")) os = "Android";
+  else if (userAgent.includes("like Mac") || userAgent.includes("iPhone") || userAgent.includes("iPad")) os = "iOS";
   else if (userAgent.includes("Mac")) os = "MacOS";
   else if (userAgent.includes("Linux")) os = "Linux";
-  else if (userAgent.includes("Android")) os = "Android";
-  else if (userAgent.includes("like Mac")) os = "iOS";
   
   const deviceType = /Mobile|Android|iP(hone|od|ad)/.test(userAgent) ? "Mobile" : "Desktop";
   const screen = `${window.screen.width}x${window.screen.height}`;
