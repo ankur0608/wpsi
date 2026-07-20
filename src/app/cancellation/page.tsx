@@ -27,112 +27,70 @@ export default function Cancellation() {
     </div>
 </section>
     <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="prose max-w-none">
-                <div className="bg-primary-50 border border-primary-200 rounded-2xl p-6 mb-8">
-                    <div className="flex items-center gap-3">
-                        <svg className="w-8 h-8 text-primary-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clipRule="evenodd" />
-                        </svg>
-                        <div>
-                            <h3 className="font-bold text-primary-900 text-lg m-0">Cancel Anytime</h3>
-                            <p className="text-primary-700 text-sm m-0">You can cancel your subscription at any time with no
-                                penalties or hidden fees.</p>
-                        </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+            <div className="bg-white rounded-3xl shadow-xl shadow-primary-900/5 border border-dark-100 p-8 md:p-12">
+                <p className="text-lg text-dark-600 mb-6 leading-relaxed">Welcome to MCQPrepZone. This Cancellation & Refund Policy explains the terms applicable to subscription cancellations and refunds for our Services.</p>
+                <p className="text-dark-600 leading-relaxed mb-10">By purchasing a subscription, you acknowledge that you have read, understood, and agreed to this policy.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span> 
+                    Cancellation
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">You may cancel your subscription at any time through your account settings (if available) or by contacting our support team.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">Cancellation will stop future renewals, if applicable. Your subscription will remain active until the end of the current subscription period, after which your access to premium features will expire.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span> 
+                    Refund Policy
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">All payments made to MCQPrepZone are <strong>final and non-refundable</strong>, except where a refund is required under applicable law.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">No refunds, credits, or partial refunds will be provided for:</p>
+                <ul className="list-disc text-dark-600 space-y-2 mb-6 ml-6">
+                    <li>Change of mind.</li>
+                    <li>Failure to use the Services.</li>
+                    <li>Accidental purchases.</li>
+                    <li>Partial use of a subscription.</li>
+                    <li>Early cancellation of a subscription.</li>
+                    <li>Dissatisfaction after accessing premium content.</li>
+                </ul>
+                <p className="text-dark-600 leading-relaxed mb-4">Please review the subscription details carefully before making a purchase.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span> 
+                    Billing Issues
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">If you believe you have been charged incorrectly due to a technical or billing error, please contact us promptly. Genuine billing errors will be reviewed and resolved where appropriate.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">4</span> 
+                    Changes to This Policy
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">We may update this Cancellation & Refund Policy from time to time. Any changes will become effective upon publication on our website.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">5</span> 
+                    Contact Us
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">If you have any questions regarding this Policy, please contact us:</p>
+                
+                <div className="bg-primary-50 p-6 rounded-xl border border-primary-100 mt-6 shadow-sm">
+                    <p className="font-bold text-primary-900 mb-3 text-lg">MCQPrepZone</p>
+                    <div className="space-y-2">
+                        <p className="text-dark-700 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <span className="font-medium">Email:</span> 
+                            <a href="mailto:mcqprepzone@gmail.com" className="text-accent-600 hover:text-accent-700 transition-colors">mcqprepzone@gmail.com</a>
+                        </p>
+                        <p className="text-dark-700 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            <span className="font-medium">Website:</span> 
+                            <a href="https://mcqprepzone.online" className="text-accent-600 hover:text-accent-700 transition-colors" target="_blank" rel="noopener noreferrer">https://mcqprepzone.online</a>
+                        </p>
                     </div>
                 </div>
-                <h2>1. Overview</h2>
-                <p>This Cancellation Policy explains how you can cancel your WPSI Prep Zone subscription, what happens
-                    after cancellation, and how to reactivate your account. We believe in giving you full control over
-                    your subscription.</p>
-                <h2>2. How to Cancel Your Subscription</h2>
-                <p>You can cancel your subscription using any of the following methods:</p>
-                <ul>
-                    <li><strong>Online:</strong> Log in to your WPSI Prep Zone account, go to "Account Settings" &gt;
-                        "Billing" &gt; "Cancel Subscription," and follow the prompts;</li>
-                    <li><strong>Email:</strong> Send an email to <a
-                            href="mailto:support@mcqprepzone.online">support@mcqprepzone.online</a> with the subject
-                        line "Subscription Cancellation - [Your Registered Email]";</li>
-                    <li><strong>Phone:</strong> Call our customer support at <strong>+91 83477 85879</strong>
-                        (Monday-Saturday, 9:00 AM - 8:00 PM IST);</li>
-                    <li><strong>WhatsApp:</strong> Send a cancellation request to our WhatsApp number +91 83477 85879.
-                    </li>
-                </ul>
-                <p>We recommend canceling at least 24 hours before your next billing date to avoid being charged for the
-                    next billing cycle.</p>
-                <h2>3. What Happens After Cancellation</h2>
-                <p>When you cancel your subscription:</p>
-                <ul>
-                    <li><strong>Access Continues:</strong> You will continue to have access to all premium features
-                        until the end of your current billing period;</li>
-                    <li><strong>No Further Charges:</strong> You will not be charged for any subsequent billing periods;
-                    </li>
-                    <li><strong>Account Reverts to Basic:</strong> At the end of your current billing period, your
-                        account will automatically revert to the Basic (Free) plan;</li>
-                    <li><strong>Data Retention:</strong> Your quiz history, progress data, and achievements will be
-                        retained for 2 years in case you decide to reactivate;</li>
-                    <li><strong>Leaderboard Removal:</strong> Your name will be removed from premium leaderboards but
-                        your historical data will be preserved.</li>
-                </ul>
-                <h2>4. Cancellation During the Trial/Refund Period</h2>
-                <p>If you cancel within the first 7 days of your subscription:</p>
-                <ul>
-                    <li>You are eligible for a full refund under our <a href="/refund">Refund Policy</a>;</li>
-                    <li>Your access to premium features will be revoked immediately upon refund processing;</li>
-                    <li>To request a refund, please visit our <a href="/refund">Refund Policy</a> page or contact
-                        support.</li>
-                </ul>
-                <h2>5. Reactivating Your Subscription</h2>
-                <p>You can reactivate your subscription at any time:</p>
-                <ul>
-                    <li>Log in to your account and select a new subscription plan;</li>
-                    <li>Your previous progress, quiz history, and achievements will be restored;</li>
-                    <li>Any promotional pricing you previously had may not be available upon reactivation;</li>
-                    <li>Reactivation is immediate upon successful payment.</li>
-                </ul>
-                <h2>6. Automatic Cancellation</h2>
-                <p>Your subscription may be automatically cancelled if:</p>
-                <ul>
-                    <li>We are unable to process your payment after multiple retry attempts;</li>
-                    <li>You violate our <a href="/terms">Terms of Service</a>;</li>
-                    <li>You request account deletion.</li>
-                </ul>
-                <p>In case of payment failure, we will notify you via email and SMS before attempting to charge your
-                    payment method again. If payment continues to fail, your subscription will be downgraded to the
-                    Basic plan.</p>
-                <h2>7. Account Deletion</h2>
-                <p>If you wish to permanently delete your account:</p>
-                <ul>
-                    <li>Contact us at <a href="mailto:support@mcqprepzone.online">support@mcqprepzone.online</a> with
-                        the subject "Account Deletion Request";</li>
-                    <li>Include your registered email address and reason for deletion;</li>
-                    <li>Account deletion requests are processed within 7 business days;</li>
-                    <li>All personal data will be deleted in accordance with our <a href="/privacy">Privacy Policy</a>,
-                        except where retention is required by law;</li>
-                    <li>Deleted accounts cannot be recovered.</li>
-                </ul>
-                <h2>8. Changes to This Policy</h2>
-                <p>We reserve the right to modify this Cancellation Policy at any time. Any changes will be effective
-                    immediately upon posting on our website. We encourage you to review this policy periodically.</p>
-                <h2>9. Contact Us</h2>
-                <p>If you have any questions about this Cancellation Policy or need assistance with cancelling your
-                    subscription, please contact us:</p>
-                <ul>
-                    <li><strong>Email:</strong> <a
-                            href="mailto:support@mcqprepzone.online">support@mcqprepzone.online</a></li>
-                    <li><strong>Phone:</strong> +91 83477 85879 (Mon-Sat, 9AM-8PM IST)</li>
-                    <li><strong>Address:</strong> 123, Knowledge Park, Near Gujarat University, Ahmedabad, Gujarat -
-                        380009, India</li>
-                </ul>
-                <p className="mt-8 text-sm text-dark-400">This Cancellation Policy was last updated on June 20, 2026.</p>
             </div>
         </div>
     </section>
-    
-    {/*  Common Footer  */}
-    
     {/*  Common Footer  */}
     
     {/*  Common Footer  */}

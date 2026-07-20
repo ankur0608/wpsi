@@ -27,171 +27,117 @@ export default function Terms() {
     </div>
 </section>
     <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="prose max-w-none">
-                <p className="text-lg text-dark-600 mb-8">Welcome to WPSI Prep Zone. These Terms of Service ("Terms") govern
-                    your access to and use of the WPSI Prep Zone website, mobile applications, and services
-                    (collectively, the "Services"). Please read these Terms carefully before using our Services.</p>
-                <p>By accessing or using our Services, you agree to be bound by these Terms and our <a
-                        href="/privacy">Privacy Policy</a>. If you do not agree to these Terms, you may not access or
-                    use our Services.</p>
-                <h2>1. Definitions</h2>
-                <ul>
-                    <li><strong>"Company"</strong>, <strong>"we"</strong>, <strong>"us"</strong>, or
-                        <strong>"our"</strong> refers to WPSI Prep Zone Pvt Ltd, a company registered in India with CIN:
-                        U80904GJ2023PTC123456.</li>
-                    <li><strong>"User"</strong>, <strong>"you"</strong>, or <strong>"your"</strong> refers to any
-                        individual or entity that accesses or uses our Services.</li>
-                    <li><strong>"Content"</strong> refers to all text, images, videos, audio, software, data, and other
-                        materials available through our Services.</li>
-                    <li><strong>"Subscription"</strong> refers to the paid plans (Pro Scholar, Elite Master) that
-                        provide access to premium features.</li>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+            <div className="bg-white rounded-3xl shadow-xl shadow-primary-900/5 border border-dark-100 p-8 md:p-12">
+                <p className="text-lg text-dark-600 mb-6 leading-relaxed">Welcome to MCQPrepZone. These Terms & Conditions govern your access to and use of our website, mobile application, and related services.</p>
+                <p className="text-dark-600 leading-relaxed mb-10">By accessing or using our Services, creating an account, or purchasing a subscription, you agree to be bound by these Terms. If you do not agree, please do not use our Services.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span> 
+                    Eligibility
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">You must be at least 18 years of age or have the consent of a parent or legal guardian to use our Services. By using the Services, you confirm that the information you provide is accurate and that you will comply with all applicable laws.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span> 
+                    User Account
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">Certain features require you to create an account.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">You are responsible for maintaining the confidentiality of your login credentials and for all activities carried out under your account. You agree to keep your account information accurate and up to date.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">You must not share, transfer, sell, or allow others to use your account.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span> 
+                    Subscriptions & Payments
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">Some features of the Services may require a paid subscription.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">By purchasing a subscription, you agree to pay the applicable fees displayed at the time of purchase. Subscription fees may be revised from time to time, and any changes will apply only to future purchases or renewals.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">4</span> 
+                    No Refund Policy
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">All payments made to MCQPrepZone are final and non-refundable, except where a refund is required under applicable law.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">Please review all subscription details carefully before making a purchase.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">5</span> 
+                    Intellectual Property
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">All content available on MCQPrepZone, including but not limited to questions, mock tests, study materials, PDFs, graphics, logos, videos, software, and website content, is owned by or licensed to MCQPrepZone and is protected by applicable intellectual property laws.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">You may not copy, reproduce, distribute, modify, publish, sell, or commercially exploit any content without our prior written permission.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">6</span> 
+                    Acceptable Use
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">You agree not to:</p>
+                <ul className="list-disc text-dark-600 space-y-2 mb-6 ml-6">
+                    <li>Use the Services for any unlawful purpose.</li>
+                    <li>Share your account with others.</li>
+                    <li>Copy or distribute premium content without authorization.</li>
+                    <li>Attempt unauthorized access to our systems.</li>
+                    <li>Interfere with the operation or security of the Services.</li>
+                    <li>Use automated tools, bots, or scripts to access the Services.</li>
                 </ul>
-                <h2>2. Eligibility</h2>
-                <p>You must be at least 18 years of age or the age of legal majority in your jurisdiction to use our
-                    Services. By using our Services, you represent and warrant that:</p>
-                <ul>
-                    <li>You are at least 18 years old;</li>
-                    <li>You have the legal capacity to enter into a binding contract;</li>
-                    <li>You are not barred from using the Services under applicable laws;</li>
-                    <li>The information you provide to us is accurate, complete, and current.</li>
-                </ul>
-                <p>If you are using our Services on behalf of an organization, you represent and warrant that you have
-                    the authority to bind that organization to these Terms.</p>
-                <h2>3. Account Registration</h2>
-                <p>To access certain features of our Services, you must register for an account. When you register, you
-                    agree to:</p>
-                <ul>
-                    <li>Provide accurate, current, and complete information;</li>
-                    <li>Maintain and promptly update your account information;</li>
-                    <li>Maintain the security of your password and accept all risks of unauthorized access;</li>
-                    <li>Notify us immediately of any unauthorized use of your account;</li>
-                    <li>Not share your account credentials with any third party.</li>
-                </ul>
-                <p>We reserve the right to suspend or terminate your account if any information provided during
-                    registration or thereafter proves to be inaccurate, false, or misleading.</p>
-                <h2>4. Subscription Plans and Payments</h2>
-                <h3>4.1 Plans</h3>
-                <p>We offer the following subscription plans:</p>
-                <ul>
-                    <li><strong>Basic (Free):</strong> Limited access to daily quizzes and basic analytics. No payment
-                        required.</li>
-                    <li><strong>Pro Scholar:</strong> Full access to all MCQs, 50+ mock tests, AI analysis, ad-free
-                        experience, and PDF notes. Priced at INR 299 per month (discounted from INR 799).</li>
-                    <li><strong>Elite Master:</strong> All Pro features plus 1-on-1 mentorship, mains answer evaluation,
-                        and private Telegram group. Priced at INR 999 per month.</li>
-                </ul>
-                <h3>4.2 Payment Terms</h3>
-                <ul>
-                    <li>All prices are in Indian Rupees (INR) and inclusive of applicable GST.</li>
-                    <li>Payments are processed through Razorpay, a PCI DSS Level 1 certified payment gateway.</li>
-                    <li>We accept UPI, Credit/Debit Cards (Visa, Mastercard, RuPay), Net Banking, and Wallets.</li>
-                    <li>Subscription fees are charged in advance on a monthly basis.</li>
-                    <li>All transactions are secured with 256-bit SSL encryption.</li>
-                </ul>
-                <h3>4.3 Auto-Renewal</h3>
-                <p>Unless you cancel your subscription before the end of the current billing period, your subscription
-                    will automatically renew for the same duration. You authorize us to charge the applicable
-                    subscription fee to your chosen payment method.</p>
-                <h2>5. Refund Policy</h2>
-                <p>We offer a <strong>7-day money-back guarantee</strong> for all paid subscription plans. If you are
-                    not satisfied with our Services, you may request a full refund within 7 days of your initial
-                    purchase or renewal.</p>
-                <p>Refund conditions:</p>
-                <ul>
-                    <li>Refunds must be requested within 7 days of the transaction date;</li>
-                    <li>Refunds are processed within 5-7 business days to the original payment method;</li>
-                    <li>No refunds will be issued after the 7-day period;</li>
-                    <li>Refunds for partial months are not provided;</li>
-                    <li>To request a refund, contact us at <a
-                            href="mailto:support@mcqprepzone.online">support@mcqprepzone.online</a> or call
-                        +91 83477 85879.</li>
-                </ul>
-                <h2>6. Cancellation Policy</h2>
-                <p>You may cancel your subscription at any time through your account settings or by contacting our
-                    support team. Upon cancellation:</p>
-                <ul>
-                    <li>Your subscription will remain active until the end of the current billing period;</li>
-                    <li>You will not be charged for subsequent billing periods;</li>
-                    <li>No partial refunds will be provided for unused days in the current billing period;</li>
-                    <li>Your account will revert to the Basic (Free) plan after the current period ends.</li>
-                </ul>
-                <h2>7. Intellectual Property</h2>
-                <p>All Content on our Services, including but not limited to text, graphics, logos, icons, images, audio
-                    clips, digital downloads, data compilations, and software, is the property of WPSI Prep Zone Pvt Ltd
-                    or its content suppliers and is protected by Indian and international copyright laws.</p>
-                <p>You are granted a limited, non-exclusive, non-transferable license to access and use the Content for
-                    your personal, non-commercial use. You may not:</p>
-                <ul>
-                    <li>Reproduce, distribute, modify, create derivative works from, or publicly display any Content
-                        without our prior written consent;</li>
-                    <li>Use any data mining, robots, or similar data gathering and extraction tools;</li>
-                    <li>Frame or utilize framing techniques to enclose any trademark, logo, or other proprietary
-                        information;</li>
-                    <li>Remove any copyright, trademark, or other proprietary notices from the Content.</li>
-                </ul>
-                <h2>8. User Conduct</h2>
-                <p>You agree not to use our Services for any unlawful purpose or in any way that could damage, disable,
-                    overburden, or impair our Services. Specifically, you agree not to:</p>
-                <ul>
-                    <li>Violate any applicable local, state, national, or international law or regulation;</li>
-                    <li>Impersonate any person or entity or falsely state your affiliation with any person or entity;
-                    </li>
-                    <li>Engage in any activity that interferes with or disrupts the Services;</li>
-                    <li>Attempt to gain unauthorized access to any portion of the Services;</li>
-                    <li>Use the Services to transmit any viruses, worms, defects, Trojan horses, or other items of a
-                        destructive nature;</li>
-                    <li>Share account credentials or allow others to use your account.</li>
-                </ul>
-                <h2>9. Limitation of Liability</h2>
-                <p>To the maximum extent permitted by applicable law, WPSI Prep Zone Pvt Ltd and its directors,
-                    employees, partners, agents, suppliers, or affiliates shall not be liable for any indirect,
-                    incidental, special, consequential, or punitive damages, including without limitation, loss of
-                    profits, data, use, goodwill, or other intangible losses, resulting from:</p>
-                <ul>
-                    <li>Your access to or use of or inability to access or use the Services;</li>
-                    <li>Any conduct or content of any third party on the Services;</li>
-                    <li>Any content obtained from the Services;</li>
-                    <li>Unauthorized access, use, or alteration of your transmissions or content.</li>
-                </ul>
-                <p>In no event shall our total liability to you for all claims exceed the amount you have paid to us in
-                    the last 12 months.</p>
-                <h2>10. Disclaimer of Warranties</h2>
-                <p>Our Services are provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, express or
-                    implied, including but not limited to implied warranties of merchantability, fitness for a
-                    particular purpose, and non-infringement.</p>
-                <p>We do not warrant that:</p>
-                <ul>
-                    <li>The Services will be uninterrupted, timely, secure, or error-free;</li>
-                    <li>The results obtained from using the Services will be accurate or reliable;</li>
-                    <li>Any errors in the Services will be corrected.</li>
-                </ul>
-                <h2>11. Governing Law and Jurisdiction</h2>
-                <p>These Terms shall be governed by and construed in accordance with the laws of India. Any dispute
-                    arising out of or in connection with these Terms shall be subject to the exclusive jurisdiction of
-                    the courts in Ahmedabad, Gujarat, India.</p>
-                <h2>12. Changes to Terms</h2>
-                <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will
-                    provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material
-                    change will be determined at our sole discretion.</p>
-                <p>By continuing to access or use our Services after any revisions become effective, you agree to be
-                    bound by the revised Terms.</p>
-                <h2>13. Contact Information</h2>
-                <p>If you have any questions about these Terms, please contact us:</p>
-                <ul>
-                    <li><strong>Email:</strong> <a
-                            href="mailto:support@mcqprepzone.online">support@mcqprepzone.online</a></li>
-                    <li><strong>Phone:</strong> +91 83477 85879</li>
-                    <li><strong>Address:</strong> 123, Knowledge Park, Near Gujarat University, Ahmedabad, Gujarat -
-                        380009, India</li>
-                </ul>
-                <p className="mt-8 text-sm text-dark-400">These Terms of Service were last updated on June 20, 2026.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">7</span> 
+                    Educational Disclaimer
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">MCQPrepZone provides educational content to support exam preparation.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">We do not guarantee examination success, employment, admission, or any specific result. While we strive to keep our content accurate and updated, we do not guarantee that all content is complete, error-free, or suitable for every purpose.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">8</span> 
+                    Limitation of Liability
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">To the fullest extent permitted by law, MCQPrepZone shall not be liable for any indirect, incidental, consequential, or special damages arising from your use of or inability to use the Services.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">Our total liability for any claim relating to the Services shall not exceed the amount paid by you for the applicable subscription during the preceding twelve (12) months.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">9</span> 
+                    Suspension & Termination
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">We reserve the right to suspend or terminate your account without prior notice if you violate these Terms, misuse the Services, engage in fraudulent or unlawful activities, share your account, or infringe our intellectual property rights.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">10</span> 
+                    Changes to These Terms
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">We may update these Terms from time to time. The revised Terms will become effective upon publication on our website. Your continued use of the Services after any update constitutes your acceptance of the revised Terms.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">11</span> 
+                    Governing Law
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">These Terms shall be governed by and construed in accordance with the laws of India.</p>
+                <p className="text-dark-600 leading-relaxed mb-4">Any dispute arising out of or relating to these Terms shall be subject to the exclusive jurisdiction of the courts located in Ahmedabad, Gujarat, India.</p>
+
+                <h2 className="text-2xl font-bold text-primary-900 mt-10 mb-4 border-b border-primary-100 pb-2 flex items-center gap-3">
+                    <span className="bg-primary-100 text-primary-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">12</span> 
+                    Contact Us
+                </h2>
+                <p className="text-dark-600 leading-relaxed mb-4">If you have any questions regarding these Terms or our Services, please contact us:</p>
+                <div className="bg-primary-50 p-6 rounded-xl border border-primary-100 mt-6 shadow-sm">
+                    <p className="font-bold text-primary-900 mb-3 text-lg">MCQPrepZone</p>
+                    <div className="space-y-2">
+                        <p className="text-dark-700 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <span className="font-medium">Email:</span> 
+                            <a href="mailto:mcqprepzone@gmail.com" className="text-accent-600 hover:text-accent-700 transition-colors">mcqprepzone@gmail.com</a>
+                        </p>
+                        <p className="text-dark-700 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            <span className="font-medium">Website:</span> 
+                            <a href="https://mcqprepzone.online" className="text-accent-600 hover:text-accent-700 transition-colors" target="_blank" rel="noopener noreferrer">https://mcqprepzone.online</a>
+                        </p>
+                    </div>
+                </div>
+                <p className="mt-10 text-sm text-dark-400 border-t border-dark-100 pt-6">These Terms of Service were last updated on {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.</p>
             </div>
         </div>
     </section>
-    
-    {/*  Common Footer  */}
-    
     {/*  Common Footer  */}
     
     {/*  Common Footer  */}
