@@ -22,6 +22,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     if (path === '/exam') {
       return pathname === '/exam' || pathname.startsWith('/subjects') || pathname.startsWith('/topics');
     }
+    if (path === '/dashboard') {
+      return pathname === '/dashboard';
+    }
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 

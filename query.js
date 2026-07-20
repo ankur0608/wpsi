@@ -1,0 +1,1 @@
+const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.subject.findFirst({ where: { name: 'Indian Constitution' } }).then(res => { console.log(JSON.stringify(res)); return prisma.$disconnect(); });

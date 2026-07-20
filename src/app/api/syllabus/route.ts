@@ -9,6 +9,7 @@ export async function GET() {
       orderBy: { createdAt: 'asc' },
       include: {
         subjects: {
+          where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
           include: {
             topics: {
@@ -34,6 +35,9 @@ export async function GET() {
         icon: subject.icon,
         part: subject.part,
         sortOrder: subject.sortOrder,
+        isFree: subject.isFree,
+        isActive: subject.isActive,
+        isComingSoon: subject.isComingSoon,
         topics: subject.topics.map(topic => ({
           ...topic,
           sortOrder: topic.sortOrder,

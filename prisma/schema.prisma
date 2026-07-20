@@ -66,7 +66,10 @@ model Subject {
     icon      String?
     part      String   @default("A")
     sortOrder Int      @default(0)
-    examId    String
+    isFree       Boolean  @default(false)
+    isActive     Boolean  @default(true)
+    isComingSoon Boolean  @default(false)
+    examId       String
     exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
     topics    Topic[]
     createdAt DateTime @default(now())

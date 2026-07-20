@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     });
 
     response.cookies.delete('verified_mobile');
-    await setSessionCookie(response, user.id);
+    await setSessionCookie(response, user.id, deviceId || undefined);
 
     return response;
   } catch (error: any) {

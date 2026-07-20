@@ -15,6 +15,10 @@ function SubjectsContent() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ testsTaken: 0, avgScore: 0 });
   const { user } = useUser();
+  
+  const [comingSoonModalOpen, setComingSoonModalOpen] = useState(false);
+  const [lockedModalOpen, setLockedModalOpen] = useState(false);
+  const [selectedSubjectName, setSelectedSubjectName] = useState("");
 
   useEffect(() => {
     if (user?.id) {
@@ -58,8 +62,10 @@ function SubjectsContent() {
   const getPart = (s: any) => {
     const metaPart = subjectMeta[s.name]?.part;
     if (metaPart) return metaPart;
-    if (s.part && s.part.includes("Part A")) return "Part A";
-    if (s.part && s.part.includes("Part B")) return "Part B";
+    if (s.part) {
+        if (s.part === "A" || s.part === "Part A" || s.part.includes("Part A")) return "Part A";
+        if (s.part === "B" || s.part === "Part B" || s.part.includes("Part B")) return "Part B";
+    }
     return s.part || "";
   };
 
@@ -79,14 +85,36 @@ function SubjectsContent() {
     const progressGradient = finalPart === "Part A" ? "from-primary-500 to-primary-600" : finalPart === "Part B" ? "from-accent-500 to-orange-500" : "from-dark-500 to-dark-600";
 
     const isFreePlan = !user?.planType || user.planType === 'free';
-    // All subjects are unlocked, locking is now at the topic level.
-    const isSubjectUnlocked = true;
+    const isSubjectUnlocked = subject.isFree || !isFreePlan;
+
+    const handleClick = (e: React.MouseEvent) => {
+      if (subject.isComingSoon) {
+        e.preventDefault();
+        setSelectedSubjectName(subject.name);
+        setComingSoonModalOpen(true);
+      } else if (!isSubjectUnlocked) {
+        e.preventDefault();
+        setSelectedSubjectName(subject.name);
+        setLockedModalOpen(true);
+      }
+    };
 
     return (
       <Link 
         href={`/topics?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&examName=${encodeURIComponent(examName)}`}
-        className="glass-card p-5 group hover:shadow-lg transition-all flex flex-col cursor-pointer transform hover:-translate-y-1.5 duration-300 border border-dark-200 bg-white"
+        onClick={handleClick}
+        className="glass-card p-5 group hover:shadow-lg transition-all flex flex-col cursor-pointer transform hover:-translate-y-1.5 duration-300 border border-dark-200 bg-white relative overflow-hidden"
       >
+        {subject.isComingSoon && (
+          <div className="absolute top-2 right-2 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+            Coming Soon
+          </div>
+        )}
+        {!subject.isComingSoon && !isSubjectUnlocked && (
+          <div className="absolute top-2 right-2 text-dark-400 z-10">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          </div>
+        )}
         <div className={`w-12 h-12 bg-gradient-to-tr ${meta.gradient} rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md shadow-dark-500/10`}>
             {meta.icon}
         </div>
@@ -220,6 +248,59 @@ function SubjectsContent() {
           </>
         )}
       </div>
+
+      {/* Coming Soon Modal */}
+      {comingSoonModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Coming Soon</h3>
+            <p className="text-center text-dark-500 mb-6 text-sm">
+              We are working hard to bring you the best content for <span className="font-bold text-dark-700">{selectedSubjectName}</span>. Stay tuned!
+            </p>
+            <button 
+              onClick={() => setComingSoonModalOpen(false)}
+              className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Locked Subject Modal */}
+      {lockedModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Premium Subject</h3>
+            <p className="text-center text-dark-500 mb-6 text-sm">
+              <span className="font-bold text-dark-700">{selectedSubjectName}</span> is a premium subject. Please upgrade your plan to access this content.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setLockedModalOpen(false)}
+                className="flex-1 py-2.5 bg-dark-100 hover:bg-dark-200 text-dark-700 rounded-xl font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  setLockedModalOpen(false);
+                  router.push('/pricing');
+                }}
+                className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold transition-colors"
+              >
+                Upgrade
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
