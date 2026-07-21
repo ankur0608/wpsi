@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import pricingData from '@/data/pricing.json';
 import Script from 'next/script';
@@ -8,6 +8,12 @@ import { useUser } from '@/context/UserContext';
 export default function DashboardPricing() {
   const { user } = useUser();
   const currentPlan = user?.planType?.toLowerCase() || 'free';
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const getPlanLevel = (planId: string) => {
     if (planId.includes('elite')) return 2;
@@ -88,7 +94,7 @@ export default function DashboardPricing() {
                                 );
                             }
                             return (
-                                <button onClick={() => { if(plan.amount > 0) handlePayment(plan.amount, plan.id); else { alert('Free plan activated!'); window.location.href='/dashboard'; } }} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
+                                <button onClick={() => { if(plan.amount > 0) handlePayment(plan.amount, plan.id); else { showToast('Free plan activated!', 'success'); window.location.href='/dashboard'; } }} className={`block w-full text-center font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl ${plan.isPopular ? 'bg-white hover:bg-dark-50 text-primary-900' : plan.amount > 0 ? 'bg-primary-800 hover:bg-primary-900 text-white' : 'bg-dark-100 hover:bg-dark-200 text-dark-700'}`}>
                                     {plan.buttonText}
                                 </button>
                             );
@@ -126,6 +132,18 @@ export default function DashboardPricing() {
               <span className="text-sm">GST Invoice</span>
           </div>
       </div>
+
+      {toast && (
+        <div className="fixed top-20 right-6 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-xl">
+          <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
+            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${toast.type === 'success' ? 'bg-emerald-500 text-white' : toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-primary-500 text-white'}`}>
+              <i className={`fa-solid ${toast.type === 'success' ? 'fa-check' : toast.type === 'error' ? 'fa-xmark' : 'fa-info'}`}></i>
+            </div>
+            <p className="text-sm font-bold text-white whitespace-nowrap">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

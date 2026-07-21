@@ -166,6 +166,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     if (mode === "login") {
       if (loginMethod === "email") {
         if (!email) { setError("Email Address is required"); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address"); return; }
         if (!password) { setError("Password is required"); return; }
       } else {
         if (step === 1) {
@@ -179,11 +180,13 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     } else if (mode === "forgot-password") {
         if (step === 1) {
             if (!email) { setError("Email is required"); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address"); return; }
         }
     } else {
         if (step === 1) {
             if (!name) { setError("Full Name is required"); return; }
             if (!email) { setError("Email is required"); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address"); return; }
             if (!password) { setError("Password is required"); return; }
             if (!acceptedTerms) { setError("Please accept Terms & Conditions and Privacy Policy"); return; }
         }

@@ -956,11 +956,16 @@ export default function PracticePage() {
   }, [forceSubmit, session]);
 
   useEffect(() => {
-    if (view !== 'exam' || !session || modalConfig || showShortcuts) return;
+    if (view !== 'exam' || !session || modalConfig) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger if user is typing in an input
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) return;
+
+      if (showShortcuts) {
+        if (e.key === 'Escape') setShowShortcuts(false);
+        return;
+      }
 
       switch (e.key) {
         case '1': selectOption('A'); break;
@@ -1957,7 +1962,7 @@ export default function PracticePage() {
       )}
       {/* ─── KEYBOARD SHORTCUTS MODAL ─────────────────────────────────────── */}
       {showShortcuts && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[10010] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white border border-dark-100 rounded-3xl p-7 max-w-md w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary-600"></div>
             <div className="flex items-center justify-between mb-6">
@@ -1999,7 +2004,7 @@ export default function PracticePage() {
 
       {/* ─── MODAL ────────────────────────────────────────────────────────── */}
       {modalConfig?.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[10020] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white border border-dark-100 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
             <div className={`absolute top-0 left-0 w-full h-1.5 ${modalConfig.type === 'success' ? 'bg-emerald-500' : modalConfig.type === 'info' ? 'bg-primary-600 hover:bg-primary-700 text-white' : 'bg-warning'}`}></div>
             <div className="flex items-center gap-4 mb-5">
@@ -2032,7 +2037,7 @@ export default function PracticePage() {
       )}
       {/* XP Toast Notification */}
       {showXpToast && xpEarned !== null && xpEarned !== 0 && (
-        <div className="fixed top-20 left-4 right-4 md:left-auto md:w-auto md:right-6 md:top-24 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+        <div className="fixed top-20 left-4 right-4 md:left-auto md:w-auto md:right-6 md:top-24 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
           <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
             <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${xpEarned > 0 ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white' : 'bg-gradient-to-br from-red-500 to-rose-600 text-white'}`}>
               <i className={`fa-solid ${xpEarned > 0 ? 'fa-star' : 'fa-arrow-trend-down'} text-lg drop-shadow-md`}></i>
@@ -2056,7 +2061,7 @@ export default function PracticePage() {
       )}
       {/* Streak Event Toast Notification */}
       {streakEvent && (
-        <div className="fixed top-[180px] right-6 z-[90] animate-[slide-in-right_0.5s_ease-out]">
+        <div className="fixed top-[180px] right-6 z-[10030] animate-[slide-in-right_0.5s_ease-out]">
           <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 px-6 py-5 text-white shadow-2xl border border-orange-400/30">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-white shadow-inner">
               <i className="fa-solid fa-fire text-2xl"></i>

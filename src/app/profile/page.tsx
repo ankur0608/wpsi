@@ -13,6 +13,12 @@ export default function ProfilePage() {
   
   const [uploading, setUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   
   const [formData, setFormData] = useState({
     name: '',
@@ -36,10 +42,58 @@ export default function ProfilePage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 2 * 1024 * 1024) {
+      showToast("Image size exceeds 2MB limit. Please choose a smaller image.", 'error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     setUploading(true);
     try {
+      const compressedFile = await new Promise<File>((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new window.Image();
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            
+            canvas.toBlob((blob) => {
+              if (blob) {
+                resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+              } else {
+                resolve(file); // fallback
+              }
+            }, 'image/jpeg', 0.7); // 70% quality
+          };
+          img.onerror = () => resolve(file); // fallback
+        };
+        reader.onerror = () => resolve(file); // fallback
+      });
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
 
       const response = await fetch('/api/user/profile-image', {
         method: 'POST',
@@ -48,13 +102,14 @@ export default function ProfilePage() {
 
       if (response.ok) {
         await refreshUser();
+        showToast('Profile image updated successfully!', 'success');
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to upload image');
+        showToast(data.error || 'Failed to upload image', 'error');
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('An error occurred during upload.');
+      showToast('An error occurred during upload.', 'error');
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -72,9 +127,9 @@ export default function ProfilePage() {
         email: formData.email,
         mobile: formData.mobile
       });
-      alert('Profile updated successfully!');
+      showToast('Profile updated successfully!', 'success');
     } catch (error: any) {
-      alert(error.message || 'Failed to update profile');
+      showToast(error.message || 'Failed to update profile', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -250,6 +305,18 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {toast && (
+        <div className="fixed top-20 right-6 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-xl">
+          <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
+            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${toast.type === 'success' ? 'bg-emerald-500 text-white' : toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-primary-500 text-white'}`}>
+              <i className={`fa-solid ${toast.type === 'success' ? 'fa-check' : toast.type === 'error' ? 'fa-xmark' : 'fa-info'}`}></i>
+            </div>
+            <p className="text-sm font-bold text-white whitespace-nowrap">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

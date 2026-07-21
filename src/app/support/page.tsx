@@ -11,6 +11,12 @@ export default function SupportPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +37,11 @@ export default function SupportPage() {
         setSubmitSuccess(true);
         setFormData({ subject: '', message: '' });
       } else {
-        alert('Failed to send message. Please try again later.');
+        showToast('Failed to send message. Please try again later.', 'error');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('An error occurred. Please try again later.');
+      showToast('An error occurred. Please try again later.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -168,6 +174,18 @@ export default function SupportPage() {
           </div>
         </div>
       </div>
+
+      {toast && (
+        <div className="fixed top-20 right-6 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-xl">
+          <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
+            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${toast.type === 'success' ? 'bg-emerald-500 text-white' : toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-primary-500 text-white'}`}>
+              <i className={`fa-solid ${toast.type === 'success' ? 'fa-check' : toast.type === 'error' ? 'fa-xmark' : 'fa-info'}`}></i>
+            </div>
+            <p className="text-sm font-bold text-white whitespace-nowrap">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

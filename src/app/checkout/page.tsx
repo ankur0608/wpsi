@@ -16,6 +16,12 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     if (planId) {
@@ -75,11 +81,11 @@ export default function CheckoutPage() {
       
       if (!data.success) {
         if (data.error === 'Not authenticated') {
-          alert('Please login to purchase a plan');
-          window.location.href = '/login';
+          showToast('Please login to purchase a plan', 'error');
+          setTimeout(() => { window.location.href = '/login'; }, 1500);
           return;
         }
-        alert('Payment initiation failed: ' + data.error);
+        showToast('Payment initiation failed: ' + data.error, 'error');
         setLoading(false);
         return;
       }
@@ -106,14 +112,14 @@ export default function CheckoutPage() {
             const verifyData = await verifyRes.json();
             
             if (verifyData.success) {
-              alert('Payment Successful! Your plan has been upgraded.');
-              window.location.href = '/dashboard/payments';
+              showToast('Payment Successful! Your plan has been upgraded.', 'success');
+              setTimeout(() => { window.location.href = '/dashboard/payments'; }, 2000);
             } else {
-              alert('Payment Verification Failed: ' + verifyData.error);
+              showToast('Payment Verification Failed: ' + verifyData.error, 'error');
             }
           } catch(err) {
             console.error(err);
-            alert('Verification Error');
+            showToast('Verification Error', 'error');
           }
         },
         prefill: {
@@ -128,12 +134,12 @@ export default function CheckoutPage() {
       
       const rzp1 = new (window as any).Razorpay(options);
       rzp1.on('payment.failed', function (response: any){
-        alert('Payment Failed! Reason: ' + response.error.description);
+        showToast('Payment Failed! Reason: ' + response.error.description, 'error');
       });
       rzp1.open();
     } catch (error) {
       console.error(error);
-      alert('Payment failed');
+      showToast('Payment failed', 'error');
     } finally {
       setLoading(false);
     }
@@ -264,6 +270,18 @@ export default function CheckoutPage() {
             </div>
         </div>
       </div>
+
+      {toast && (
+        <div className="fixed top-20 right-6 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-xl">
+          <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
+            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${toast.type === 'success' ? 'bg-emerald-500 text-white' : toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-primary-500 text-white'}`}>
+              <i className={`fa-solid ${toast.type === 'success' ? 'fa-check' : toast.type === 'error' ? 'fa-xmark' : 'fa-info'}`}></i>
+            </div>
+            <p className="text-sm font-bold text-white whitespace-nowrap">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
