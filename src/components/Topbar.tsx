@@ -58,6 +58,15 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     "/bookmarks": "Saved MCQs",
     "/pricing": "Pricing & Plans",
     "/streaks": "Streaks",
+    "/leaderboard": "Leaderboard",
+    "/xp": "Points & XP",
+    "/profile": "My Profile",
+    "/settings": "Account Settings",
+    "/dashboard/payments": "Payment History",
+    "/notifications": "Notifications",
+    "/xp/history": "XP History",
+    "/subjects": "Exam",
+    "/topics": "Exam",
   };
 
   const subtitles: Record<string, string> = {
@@ -65,6 +74,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     "/exam": "Ready For Your Next Challenge?",
     "/practice": "Sharpen Your Skills",
     "/daily-practice": "Sharpen Your Skills",
+    "/leaderboard": "Top Performers & Rankings",
+    "/xp": "Your Gamification Journey",
+    "/profile": "Manage Your Personal Details",
+    "/notifications": "Stay up to date",
+    "/xp/history": "All Time Points Log",
   };
 
   useEffect(() => {
@@ -110,11 +124,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         <div className="flex items-center gap-4">
             {/* Mobile Logo */}
             <div className="flex md:hidden items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-800 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30 text-white font-bold text-base tracking-tighter">
-                    W
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30 overflow-hidden shrink-0">
+                    <img src="/logo.jpeg" alt="McqPrepZone Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                    <h1 className="font-display font-bold text-lg text-dark-800 leading-none tracking-tight">WPSI <span className="text-primary-600">Pro</span></h1>
+                    <h1 className="font-display font-bold text-lg text-dark-800 leading-none tracking-tight">McqPrep<span className="text-primary-600">Zone</span></h1>
                 </div>
             </div>
             
@@ -162,21 +176,35 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                            <div className="p-6 text-center text-dark-400 text-sm">No notifications yet.</div>
                         ) : (
                            notifications.map(notification => (
-                              <div key={notification.id} className={`p-3.5 hover:bg-dark-50/50 transition-colors flex gap-3 text-left ${notification.isRead ? '' : 'bg-primary-50/30'}`}>
-                                  <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 text-sm">
-                                      {notification.type === 'LEVEL_UP' ? '🌟' : notification.type === 'STREAK' ? '🔥' : '🚀'}
+                               <div key={notification.id} className={`group p-3.5 hover:bg-dark-50/50 transition-colors flex gap-3 text-left ${notification.isRead ? '' : 'bg-primary-50/30'}`}>
+                                  <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm shadow-sm border ${
+                                    notification.type === 'LEVEL_UP' ? 'bg-amber-50 text-amber-500 border-amber-200' : 
+                                    notification.type === 'STREAK' ? 'bg-orange-50 text-orange-500 border-orange-200' : 
+                                    'bg-primary-50 text-primary-500 border-primary-200'
+                                  }`}>
+                                      <i className={`fa-solid ${
+                                        notification.type === 'LEVEL_UP' ? 'fa-star' : 
+                                        notification.type === 'STREAK' ? 'fa-fire' : 
+                                        'fa-bullhorn'
+                                      }`}></i>
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                      <p className="text-xs font-semibold text-dark-800 leading-normal">{notification.title}</p>
+                                      <p className="text-xs font-semibold text-dark-800 leading-normal group-hover:text-primary-700 transition-colors">{notification.title}</p>
                                       <p className="text-[10px] text-dark-600 mt-0.5 leading-normal">{notification.message}</p>
-                                      <p className="text-[9px] text-dark-400 mt-1 font-medium">{new Date(notification.createdAt).toLocaleDateString()}</p>
+                                      <p className="text-[9px] text-dark-400 mt-1 font-medium">
+                                        {new Date(notification.createdAt).toLocaleString(undefined, {
+                                          month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                                        })}
+                                      </p>
                                   </div>
-                              </div>
+                               </div>
                            ))
                         )}
                     </div>
-                    <div className="p-3 text-center border-t border-dark-50 bg-dark-50/30">
-                        <span className="text-[10px] text-dark-400 font-bold uppercase tracking-wider">End of Notifications</span>
+                    <div className="p-3 text-center border-t border-dark-50 bg-dark-50/30 hover:bg-dark-50 transition-colors">
+                        <Link href="/notifications" onClick={() => setOpenPopover(null)} className="block w-full text-[10px] text-primary-600 hover:text-primary-700 font-bold uppercase tracking-wider">
+                            View All Notifications
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -185,7 +213,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             
             <div className="relative">
                 <div className="flex items-center gap-2 pl-2 md:pl-4 md:border-l border-dark-200 cursor-pointer hover:bg-dark-50 p-1.5 rounded-xl transition-colors" onClick={() => togglePopover("profile")}>
-                    <div className="w-9 h-9 shadow-sm rounded-lg flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600">
+                    <div className="w-9 h-9 shadow-sm rounded-full flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600">
                         {loading ? "..." : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                     </div>
                     <div className="hidden lg:block text-left">

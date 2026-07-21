@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 3600 * 24));
       
       // Approximate XP earned for this submission based on XP_REWARDS logic
-      let xpEarned = Math.max(0, sub.earnedMarks * 10);
+      let xpEarned = sub.earnedMarks * 10;
       if (sub.mode === 'full') xpEarned += 100;
       else if (sub.mode === 'mock') xpEarned += 150;
       else if (sub.mode === 'timed') xpEarned += 75;

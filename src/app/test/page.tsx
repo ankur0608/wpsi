@@ -7,6 +7,29 @@ export default function Test() {
   const { user } = useUser();
   const [mockTests, setMockTests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [planFilter, setPlanFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+
+  const filteredTests = mockTests.filter(test => {
+    const matchPlan = planFilter === 'all' || (test.planType && test.planType.toLowerCase() === planFilter.toLowerCase());
+    
+    const testTypeLabel = test.type || (
+      test.title?.includes('Part A') ? 'Part A' :
+      test.title?.includes('Part B') ? 'Part B' :
+      test.title?.includes('Mix') ? 'Mix' : 'Full Length'
+    );
+    
+    let matchType = true;
+    if (typeFilter !== 'all') {
+      if (typeFilter === 'Full') {
+         matchType = testTypeLabel.includes('Full');
+      } else {
+         matchType = testTypeLabel.includes(typeFilter);
+      }
+    }
+
+    return matchPlan && matchType;
+  });
 
   useEffect(() => {
     const fetchMockTests = async () => {
@@ -48,9 +71,31 @@ export default function Test() {
                 <h2 className="font-display text-3xl font-bold text-dark-900 mb-1">Available Mock Tests</h2>
                 <p className="text-dark-500 text-sm">Challenge yourself with exam-simulated environments.</p>
             </div>
-            <div className="flex gap-2">
-                <button className="bg-white border border-dark-200 text-dark-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-dark-50 transition-colors">Filter</button>
-                <button className="bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 hover:bg-primary-700 transition-all hover:-translate-y-0.5">All Tests</button>
+            <div className="flex flex-wrap gap-2 md:gap-3">
+                <select 
+                  value={planFilter} 
+                  onChange={(e) => setPlanFilter(e.target.value)}
+                  className="bg-white border border-dark-200 text-dark-700 px-3 py-2 rounded-xl text-sm font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors cursor-pointer appearance-none outline-none"
+                  style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto', paddingRight: '2.5rem' }}
+                >
+                  <option value="all">All Plans</option>
+                  <option value="free">Free Tests</option>
+                  <option value="pro">Pro Tests</option>
+                  <option value="elite">Elite Tests</option>
+                </select>
+
+                <select 
+                  value={typeFilter} 
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="bg-white border border-dark-200 text-dark-700 px-3 py-2 rounded-xl text-sm font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors cursor-pointer appearance-none outline-none"
+                  style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto', paddingRight: '2.5rem' }}
+                >
+                  <option value="all">All Types</option>
+                  <option value="Full">Full Length</option>
+                  <option value="Part A">Part A</option>
+                  <option value="Part B">Part B</option>
+                  <option value="Mix">Mix</option>
+                </select>
             </div>
         </div>
         
@@ -58,9 +103,11 @@ export default function Test() {
           <div className="text-center py-12 text-dark-500">Loading mock tests...</div>
         ) : mockTests.length === 0 ? (
           <div className="text-center py-12 text-dark-500">No mock tests available at the moment. Check back later!</div>
+        ) : filteredTests.length === 0 ? (
+          <div className="text-center py-12 text-dark-500">No mock tests found matching your filters.</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockTests.map((test, index) => {
+            {filteredTests.map((test, index) => {
               const isFreePlan = !user?.planType || user.planType === 'free';
               const isProPlan = user?.planType === 'pro';
               const isLocked = (isFreePlan && index >= 3) || (isProPlan && index >= 10);

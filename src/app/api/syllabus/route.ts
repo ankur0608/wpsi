@@ -6,6 +6,7 @@ export const revalidate = 86400; // Cache for 24 hours
 export async function GET() {
   try {
     const exams = await prisma.exam.findMany({
+      where: { isActive: true },
       orderBy: { createdAt: 'asc' },
       include: {
         subjects: {
@@ -13,6 +14,7 @@ export async function GET() {
           orderBy: { sortOrder: 'asc' },
           include: {
             topics: {
+              where: { isActive: true },
               orderBy: { sortOrder: 'asc' },
               include: {
                 _count: {

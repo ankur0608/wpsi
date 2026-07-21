@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const mockTests = await prisma.mockTest.findMany({
+      where: { isActive: true },
       orderBy: {
         createdAt: 'asc',
       },

@@ -641,7 +641,7 @@ export default function Home() {
             </div>
             
             <div className="mt-12 text-center">
-                <p className="text-dark-600">Still have questions? <a href="mailto:support@mcqprepzone.online" className="font-bold text-primary-600 hover:text-primary-800 underline">Contact Support</a></p>
+                <p className="text-dark-600">Still have questions? <a href="mailto:Mcqprepzone@gmail.com" className="font-bold text-primary-600 hover:text-primary-800 underline">Contact Support</a></p>
             </div>
         </div>
         </div>
@@ -691,10 +691,14 @@ export default function Home() {
                 <div>
                     <h4 className="text-white font-bold mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm">
-                        <li>Email: support@mcqprepzone.online</li>
-                        <li>Phone: +91 83477 85879</li>
+                        <li>Email: Mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
+                    <div className="mt-4 flex gap-4">
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                    </div>
                 </div>
             </div>
             <div className="text-center text-xs border-t border-dark-800 pt-8">

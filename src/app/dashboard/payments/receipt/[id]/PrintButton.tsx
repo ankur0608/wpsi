@@ -1,7 +1,14 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export default function PrintButton() {
+  useEffect(() => {
+    // Automatically trigger print when the receipt opens
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  }, []);
+
   return (
     <button 
       onClick={() => window.print()} 

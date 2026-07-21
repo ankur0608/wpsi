@@ -99,6 +99,28 @@ function SubjectsContent() {
       }
     };
 
+    const handleShareSubject = async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const subjectUrl = `${window.location.origin}/topics?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&examName=${encodeURIComponent(examName)}`;
+      const shareData = {
+        title: `${subject.name} - ${examName} | WPSI Pro`,
+        text: `Check out the ${subject.name} subject for ${examName} on WPSI Pro!`,
+        url: subjectUrl,
+      };
+      
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          await navigator.clipboard.writeText(subjectUrl);
+          alert('Link copied to clipboard!');
+        }
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    };
+
     return (
       <Link 
         href={`/topics?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&examName=${encodeURIComponent(examName)}`}
@@ -134,26 +156,67 @@ function SubjectsContent() {
             </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-dark-50">
+        <div className="flex items-center justify-between pt-3 border-t border-dark-50 mt-1">
             <span className="text-[10px] text-dark-400 font-bold uppercase">Ready</span>
-            <span className={`text-[11px] font-bold ${textThemeColor} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
-                View Topics 
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-            </span>
+            
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={handleShareSubject}
+                className={`flex items-center gap-1.5 text-[10px] font-bold text-dark-500 hover:${textThemeColor} bg-dark-50/80 hover:bg-white border border-dark-100 hover:border-dark-200 hover:shadow-sm px-2.5 py-1.5 rounded-lg transition-all active:scale-95 group/share`}
+                title="Share Subject"
+              >
+                <i className="fa-solid fa-share-nodes text-[12px] group-hover/share:-translate-y-0.5 transition-transform"></i>
+                SHARE
+              </button>
+              
+              <span className={`text-[11px] font-bold ${textThemeColor} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
+                  View Topics 
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
+              </span>
+            </div>
         </div>
       </Link>
     );
   };
 
+  const handleShareCurriculum = async () => {
+    const shareData = {
+      title: `${examName} Curriculum - WPSI Pro`,
+      text: `Check out the complete curriculum for ${examName} on WPSI Pro!`,
+      url: window.location.href,
+    };
+    
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  };
+
   return (
     <div className="bg-dark-50 w-full font-sans text-dark-800 h-full overflow-y-auto">
       <div className="p-6 lg:p-10 max-w-6xl mx-auto">
-        <button 
-          onClick={() => router.push('/exam')}
-          className="inline-flex items-center text-sm font-semibold text-dark-400 hover:text-dark-800 transition-colors mb-6"
-        >
-            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Back to Exams
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <button 
+            onClick={() => router.push('/exam')}
+            className="inline-flex items-center text-sm font-semibold text-dark-400 hover:text-dark-800 transition-colors"
+          >
+              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Back to Exams
+          </button>
+          
+          <button 
+            onClick={handleShareCurriculum}
+            className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl text-sm font-bold text-dark-700 shadow-sm border border-dark-200 hover:border-primary-300 hover:text-primary-600 transition-all active:scale-95"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+            Share Curriculum
+          </button>
+        </div>
 
         {/* Main Banner */}
         <div className="bg-primary-50 rounded-3xl p-8 mb-8 relative overflow-hidden border border-primary-100">
@@ -162,7 +225,7 @@ function SubjectsContent() {
                 <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
                     <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3z"/></svg>
                 </div>
-                <div>
+                <div className="flex-1">
                     <p className="text-[11px] text-accent-500 font-bold uppercase tracking-widest mb-1.5">{examName}</p>
                     <h2 className="font-display text-4xl font-bold text-dark-900 mb-2">Complete Curriculum</h2>
                     <p className="text-sm text-dark-400">Everything you need to crack the exam.</p>

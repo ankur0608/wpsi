@@ -83,11 +83,8 @@ export default function XPPage() {
           </div>
         </div>
 
-        {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* LEFT COLUMN (Span 2) */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Main Layout Stack */}
+        <div className="flex flex-col gap-6">
             
             {/* XP Overview Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -135,18 +132,21 @@ export default function XPPage() {
 
             {/* XP Earning Sources Card */}
             <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
-              <h3 className="font-display text-lg font-bold text-dark-900 mb-6 border-b border-dark-100 pb-3 flex items-center gap-2">
-                📊 XP Earning Sources
+              <h3 className="font-display text-lg font-bold text-dark-900 mb-6 border-b border-dark-100 pb-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center border border-blue-100 shadow-sm">
+                  <i className="fa-solid fa-chart-pie text-sm"></i>
+                </div>
+                XP Earning Sources
               </h3>
               <div className="space-y-4">
                 {sources.map((src: any, idx: number) => (
                   <div key={idx} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
-                      <span className="font-bold text-dark-800">{src.name}</span>
-                      <span className="text-dark-500 font-bold">{src.xp.toLocaleString()} XP ({src.percentage}%)</span>
+                       <span className="font-bold text-dark-800">{src.name}</span>
+                       <span className="text-dark-500 font-bold">{src.xp.toLocaleString()} XP ({src.percentage}%)</span>
                     </div>
                     <div className="w-full bg-dark-100 h-2 rounded-full overflow-hidden border border-dark-200/50">
-                      <div className={`${src.color} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: `${src.percentage}%` }}></div>
+                       <div className={`${src.color} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: `${src.percentage}%` }}></div>
                     </div>
                   </div>
                 ))}
@@ -155,128 +155,200 @@ export default function XPPage() {
 
             {/* Recent Transactions */}
             <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
-              <h3 className="font-display text-lg font-bold text-dark-900 mb-6 border-b border-dark-100 pb-3">
-                🕒 Recent Points History
+              <h3 className="font-display text-lg font-bold text-dark-900 mb-6 border-b border-dark-100 pb-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center border border-indigo-100 shadow-sm">
+                  <i className="fa-solid fa-clock-rotate-left text-sm"></i>
+                </div>
+                Recent Points History
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-0 divide-y divide-dark-50">
                 {recentHistory.length > 0 ? (
                   recentHistory.map((hist: any, idx: number) => (
-                    <div key={idx} className={`flex justify-between items-start ${idx < recentHistory.length - 1 ? 'border-b border-dark-50 pb-2.5' : ''}`}>
-                      <div>
-                        <p className="text-xs font-bold text-dark-900">{hist.title}</p>
-                        <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">
-                          {new Date(hist.date).toLocaleDateString()}
-                        </span>
+                    <div key={idx} className="flex justify-between items-start py-3 group hover:bg-dark-50/30 px-2 rounded-xl transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
+                          hist.mode === 'full' || hist.mode === 'mock' ? 'bg-indigo-50 text-indigo-500 border-indigo-100' :
+                          hist.mode === 'timed' ? 'bg-purple-50 text-purple-500 border-purple-100' :
+                          'bg-primary-50 text-primary-500 border-primary-100'
+                        }`}>
+                          <i className={`fa-solid ${
+                            hist.mode === 'full' || hist.mode === 'mock' ? 'fa-star' :
+                            hist.mode === 'timed' ? 'fa-clock' :
+                            'fa-bolt'
+                          } text-xs`}></i>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-dark-900 group-hover:text-primary-700 transition-colors">{hist.title}</p>
+                          <span className="text-[9px] text-dark-400 font-bold uppercase tracking-wider">
+                            {new Date(hist.date).toLocaleDateString()}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-xs font-bold text-emerald-600 shrink-0">+{hist.xp} XP</span>
+                      <span className={`text-xs font-bold shrink-0 mt-1 ${hist.xp < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {hist.xp > 0 ? `+${hist.xp}` : hist.xp} XP
+                      </span>
                     </div>
                   ))
                 ) : (
                   <div className="text-center text-dark-400 text-sm py-4">No recent activity found.</div>
                 )}
               </div>
+              <div className="mt-4 pt-4 border-t border-dark-100 text-center">
+                <Link href="/xp/history" className="text-[10px] text-primary-600 hover:text-primary-700 font-bold uppercase tracking-wider block w-full py-1">
+                  View All History
+                </Link>
+              </div>
             </div>
 
-          </div>
+            {/* Level Milestones & Analytics Side by Side Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Level Milestones */}
+              <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
+                <div className="pb-4 border-b border-dark-100 mb-5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-100 shadow-sm">
+                    <i className="fa-solid fa-star"></i>
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-dark-900">Level Milestones</h3>
+                    <p className="text-[10px] text-dark-500 uppercase tracking-widest font-bold">Progression & Titles</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-3">
+                  {levels.map((l: any) => {
+                    const isActive = user.level === l.lvl;
+                    const icons = ['fa-seedling', 'fa-book-open', 'fa-pen-nib', 'fa-bullseye', 'fa-bolt', 'fa-medal', 'fa-trophy', 'fa-crown'];
+                    const icon = icons[l.lvl - 1] || 'fa-star';
+                    const isPast = user.level > l.lvl;
 
-          {/* RIGHT COLUMN (Span 1) */}
-          <div className="space-y-6">
-            
-            {/* Level Milestones */}
-            <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
-              <div className="pb-4 border-b border-dark-100 mb-4">
-                <h3 className="font-display text-lg font-bold text-dark-900">⭐ Level Milestones</h3>
-                <p className="text-xs text-dark-500">Progression thresholds & titles for WPSI console</p>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-2.5">
-                {levels.map((l: any) => {
-                  const isActive = user.level === l.lvl;
-                  const icons = ['🌱', '📚', '✍️', '🎯', '⚡', '🏅', '🏆', '👑'];
-                  const icon = icons[l.lvl - 1] || '⭐';
+                    if (isActive) {
+                      return (
+                        <div key={l.lvl} className="p-3.5 bg-gradient-to-r from-purple-50 to-white rounded-2xl border-2 border-purple-300 flex items-center justify-between text-xs shadow-md shadow-purple-500/10 relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-purple-100/50 to-transparent pointer-events-none"></div>
+                          <div className="flex items-center gap-3 relative z-10">
+                            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shadow-inner">
+                              <i className={`fa-solid ${icon}`}></i>
+                            </div>
+                            <div>
+                              <span className="font-black text-purple-900 block text-sm">Level {l.lvl}: {l.name}</span>
+                              <span className="text-[9px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded uppercase mt-1 inline-block shadow-sm">Active Now</span>
+                            </div>
+                          </div>
+                          <span className="font-black text-purple-700 bg-white px-3 py-1 rounded-lg border border-purple-200 shadow-sm relative z-10">
+                            {l.lvl === 8 ? '50,000+ XP' : `${l.min.toLocaleString()} - ${l.max.toLocaleString()} XP`}
+                          </span>
+                        </div>
+                      );
+                    }
 
-                  if (isActive) {
                     return (
-                      <div key={l.lvl} className="p-3 bg-purple-50/50 rounded-xl border-2 border-purple-300 flex items-center justify-between text-xs shadow-sm">
-                        <span className="font-black text-purple-900 flex items-center gap-1.5">
-                          {icon} Level {l.lvl}: {l.name}
-                          <span className="text-[8px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded uppercase">Active</span>
-                        </span>
-                        <span className="font-black text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">
+                      <div key={l.lvl} className={`p-3.5 rounded-2xl border flex items-center justify-between text-xs transition-colors ${isPast ? 'bg-dark-50/50 border-dark-100 opacity-70' : 'bg-white border-dark-100 hover:border-dark-300'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isPast ? 'bg-dark-100 text-dark-400' : 'bg-dark-50 text-dark-500 border border-dark-100'}`}>
+                            <i className={`fa-solid ${icon}`}></i>
+                          </div>
+                          <span className={`font-bold ${isPast ? 'text-dark-500' : 'text-dark-700'} text-sm`}>Level {l.lvl}: {l.name}</span>
+                        </div>
+                        <span className={`font-bold px-2 py-1 rounded-md ${isPast ? 'text-dark-400' : 'text-dark-800 bg-dark-50 border border-dark-100'}`}>
                           {l.lvl === 8 ? '50,000+ XP' : `${l.min.toLocaleString()} - ${l.max.toLocaleString()} XP`}
                         </span>
                       </div>
                     );
-                  }
-
-                  return (
-                    <div key={l.lvl} className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                      <span className="font-semibold text-dark-600 flex items-center gap-1.5">{icon} Level {l.lvl}: {l.name}</span>
-                      <span className="font-bold text-dark-800 bg-white px-2 py-0.5 rounded border">
-                        {l.lvl === 8 ? '50,000+ XP' : `${l.min.toLocaleString()} - ${l.max.toLocaleString()} XP`}
-                      </span>
-                    </div>
-                  );
-                })}
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Earning Analytics */}
-            <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
-              <h3 className="font-display text-lg font-bold text-dark-900 mb-4 border-b border-dark-100 pb-3">
-                📈 Earning Analytics
-              </h3>
-              <div className="space-y-4">
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600">Average XP / Day</span>
-                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">{analytics.averageDayXP} XP</span>
+              {/* Earning Analytics */}
+              <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
+                <div className="pb-4 border-b border-dark-100 mb-5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center border border-emerald-100 shadow-sm">
+                    <i className="fa-solid fa-chart-line"></i>
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-dark-900">Earning Analytics</h3>
+                    <p className="text-[10px] text-dark-500 uppercase tracking-widest font-bold">Your Performance Stats</p>
+                  </div>
                 </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600">Average XP / Week</span>
-                  <span className="font-bold text-dark-900 bg-white px-2 py-0.5 rounded border">{analytics.averageWeekXP} XP</span>
-                </div>
-                <div className="p-3 bg-dark-50 rounded-xl border border-dark-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-dark-600">Highest Single Day XP</span>
-                  <span className="font-bold text-emerald-600 bg-white px-2 py-0.5 rounded border">+{analytics.highestDayXP} XP</span>
+                <div className="space-y-3">
+                  <div className="p-4 bg-gradient-to-r from-dark-50 to-white rounded-2xl border border-dark-100 flex items-center justify-between shadow-sm group hover:-translate-y-0.5 transition-transform">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white text-dark-600 flex items-center justify-center border border-dark-200 shadow-sm group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-calendar-day text-lg"></i>
+                      </div>
+                      <div>
+                        <span className="block font-bold text-dark-900 text-sm">Average / Day</span>
+                        <span className="block text-[10px] text-dark-500 font-bold uppercase tracking-wider mt-0.5">Daily XP Average</span>
+                      </div>
+                    </div>
+                    <span className="font-black text-dark-800 bg-white px-3 py-1.5 rounded-xl border border-dark-200 shadow-sm">{analytics.averageDayXP} XP</span>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-dark-50 to-white rounded-2xl border border-dark-100 flex items-center justify-between shadow-sm group hover:-translate-y-0.5 transition-transform">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white text-dark-600 flex items-center justify-center border border-dark-200 shadow-sm group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-calendar-week text-lg"></i>
+                      </div>
+                      <div>
+                        <span className="block font-bold text-dark-900 text-sm">Average / Week</span>
+                        <span className="block text-[10px] text-dark-500 font-bold uppercase tracking-wider mt-0.5">Weekly XP Average</span>
+                      </div>
+                    </div>
+                    <span className="font-black text-dark-800 bg-white px-3 py-1.5 rounded-xl border border-dark-200 shadow-sm">{analytics.averageWeekXP} XP</span>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-emerald-50 to-white rounded-2xl border border-emerald-100 flex items-center justify-between shadow-sm group hover:-translate-y-0.5 transition-transform">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center border border-emerald-200 shadow-sm group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-arrow-trend-up text-lg"></i>
+                      </div>
+                      <div>
+                        <span className="block font-bold text-dark-900 text-sm">Highest Day</span>
+                        <span className="block text-[10px] text-emerald-600 font-bold uppercase tracking-wider mt-0.5">Personal Best</span>
+                      </div>
+                    </div>
+                    <span className="font-black text-emerald-700 bg-emerald-100/50 px-3 py-1.5 rounded-xl border border-emerald-200 shadow-sm">+{analytics.highestDayXP} XP</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Point Reward Policy */}
             <div className="bg-white border border-dark-200 rounded-[24px] p-6 lg:p-8 shadow-sm">
-              <h3 className="font-display text-lg font-bold text-dark-900 mb-4 border-b border-dark-100 pb-3">
-                📜 Point Reward Policy
-              </h3>
-              <ul className="space-y-3.5 text-xs text-dark-700 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="pb-4 border-b border-dark-100 mb-5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center border border-rose-100 shadow-sm">
+                  <i className="fa-solid fa-scroll"></i>
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-dark-900">Point Reward Policy</h3>
+                  <p className="text-[10px] text-dark-500 uppercase tracking-widest font-bold">Rules & Mechanics</p>
+                </div>
+              </div>
+              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs text-dark-700">
                 {[
-                  { icon: '✅', title: 'Correct Answer', xp: '+10 XP', desc: 'Awarded for each correct answer (first attempt only).' },
-                  { icon: '❌', title: 'Incorrect Answer', xp: '-5 XP', desc: 'Deducted for each incorrect answer.' },
-                  { icon: '🎯', title: 'First Attempt Bonus', xp: '+5 XP', desc: 'Extra reward for answering correctly on the first attempt.' },
-                  { icon: '⚡', title: '5 Correct Answers in a Row', xp: '+25 XP', desc: 'Streak bonus for consistent accuracy.' },
-                  { icon: '🔥', title: 'Daily Study Streak', xp: '+5 XP', desc: 'Awarded after solving at least 5 questions in a day.' },
-                  { icon: '📚', title: 'Quick Practice Completed', xp: '+30 XP', desc: 'Completion bonus for finishing all 20 MCQs.' },
-                  { icon: '📖', title: 'Full Practice Completed', xp: '+100 XP', desc: 'One-time bonus for completing the full practice set.' },
-                  { icon: '⏱️', title: 'Timed Test Completed', xp: '+75 XP', desc: 'Base reward for completing a timed test.' },
-                  { icon: '🏆', title: 'Timed Test (80%+ Score)', xp: '+30 XP', desc: 'Performance bonus for scoring 80% or higher.' },
-                  { icon: '🎓', title: 'Full-Length Mock Completed', xp: '+150 XP', desc: 'Base reward for completing a full mock exam.' },
-                  { icon: '🥇', title: 'Full-Length Mock (90%+ Score)', xp: '+75 XP', desc: 'Excellence bonus for outstanding performance.' },
-                  { icon: '📅', title: '7-Day Study Streak', xp: '+50 XP', desc: 'Weekly consistency reward.' },
-                  { icon: '📆', title: '30-Day Study Streak', xp: '+300 XP', desc: 'Monthly consistency milestone.' },
-                  { icon: '⭐', title: 'Perfect Score (20/20)', xp: '+40 XP', desc: 'Bonus for achieving a perfect score.' },
-                  { icon: '🏅', title: 'Daily Quiz Completed', xp: '+20 XP', desc: 'Completion reward for the daily quiz.' },
-                  { icon: '🎁', title: 'Daily Quiz (100% Score)', xp: '+20 XP', desc: 'Bonus for a perfect daily quiz score.' },
+                  { icon: 'fa-check text-emerald-500 bg-emerald-50', title: 'Correct Answer', xp: '+10 XP', desc: 'Awarded for each correct answer (first attempt only).' },
+                  { icon: 'fa-xmark text-rose-500 bg-rose-50', title: 'Incorrect Answer', xp: '-5 XP', desc: 'Deducted for each incorrect answer.' },
+                  { icon: 'fa-bullseye text-blue-500 bg-blue-50', title: 'First Attempt Bonus', xp: '+5 XP', desc: 'Extra reward for answering correctly on the first attempt.' },
+                  { icon: 'fa-bolt text-amber-500 bg-amber-50', title: '5 Correct Answers in a Row', xp: '+25 XP', desc: 'Streak bonus for consistent accuracy.' },
+                  { icon: 'fa-fire text-orange-500 bg-orange-50', title: 'Daily Study Streak', xp: '+5 XP', desc: 'Awarded after solving at least 5 questions in a day.' },
+                  { icon: 'fa-clock text-purple-500 bg-purple-50', title: 'Timed Test (80%+ Score)', xp: '+30 XP', desc: 'Performance bonus for scoring 80% or higher.' },
+                  { icon: 'fa-medal text-indigo-500 bg-indigo-50', title: 'Full-Length Mock (90%+ Score)', xp: '+75 XP', desc: 'Excellence bonus for outstanding performance.' },
+                  { icon: 'fa-calendar-days text-teal-500 bg-teal-50', title: '7-Day Study Streak', xp: '+50 XP', desc: 'Weekly consistency reward.' },
+                  { icon: 'fa-calendar-check text-cyan-500 bg-cyan-50', title: '30-Day Study Streak', xp: '+300 XP', desc: 'Monthly consistency milestone.' },
+                  { icon: 'fa-star text-yellow-500 bg-yellow-50', title: 'Perfect Score (20/20)', xp: '+40 XP', desc: 'Bonus for achieving a perfect score.' },
+                  { icon: 'fa-list-check text-primary-500 bg-primary-50', title: 'Daily Quiz Completed', xp: '+20 XP', desc: 'Completion reward for the daily quiz.' },
+                  { icon: 'fa-gift text-pink-500 bg-pink-50', title: 'Daily Quiz (100% Score)', xp: '+20 XP', desc: 'Bonus for a perfect daily quiz score.' },
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5">
-                    <span className="text-sm">{item.icon}</span>
+                  <li key={idx} className="flex flex-col items-start gap-3 p-4 rounded-2xl bg-dark-50/30 hover:bg-dark-50 transition-colors border border-transparent hover:border-dark-100">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border border-white shadow-sm ${item.icon.split(' ').slice(1).join(' ')}`}>
+                      <i className={`fa-solid ${item.icon.split(' ')[0]} text-xl`}></i>
+                    </div>
                     <div className="flex-1">
-                      <p className="font-bold text-dark-900">{item.title}</p>
-                      <p className="text-dark-500 text-[11px] mt-0.5">Payout: <span className="text-emerald-600 font-bold">{item.xp}</span> {item.desc}</p>
+                      <p className="font-bold text-dark-900 text-sm">{item.title}</p>
+                      <p className="text-dark-500 text-[11px] mt-1 leading-relaxed"><span className="text-emerald-600 font-bold">{item.xp}</span> • {item.desc}</p>
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+
         </div>
       </div>
     </div>

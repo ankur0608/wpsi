@@ -3,18 +3,20 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import Link from 'next/link';
+import ReceiptTemplate from '@/components/ReceiptTemplate';
 
 export default function PaymentHistoryPage() {
   const { user } = useUser();
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [printPayment, setPrintPayment] = useState<any>(null);
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         const res = await fetch('/api/payments');
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.payments) {
           setPayments(data.payments);
         }
       } catch (err) {
@@ -27,11 +29,27 @@ export default function PaymentHistoryPage() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 lg:p-10 text-dark-500">Loading payment history...</div>;
+    return (
+      <div className="flex items-center justify-center h-[60vh] w-full text-dark-500">
+        <div className="flex flex-col items-center gap-3">
+          <i className="fa-solid fa-spinner fa-spin text-2xl text-primary-500" />
+          <p className="font-semibold text-sm">Loading payment history...</p>
+        </div>
+      </div>
+    );
   }
 
+  const handlePrintReceipt = (e: React.MouseEvent, payment: any) => {
+    e.preventDefault();
+    setPrintPayment(payment);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
   return (
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
+    <>
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full print:hidden">
       <div className="mb-8">
         <h1 className="text-3xl font-display font-bold text-dark-900 mb-2">Payment History</h1>
         <p className="text-dark-500">View your past transactions and download receipts.</p>
@@ -109,16 +127,15 @@ export default function PaymentHistoryPage() {
                     <td className="p-2 md:p-4 md:pr-6 text-right flex justify-between md:table-cell items-center mt-2 md:mt-0 pt-3 md:pt-4 border-t border-dark-50 md:border-none">
                       <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Action</span>
                       {payment.status === 'SUCCESS' ? (
-                        <Link 
-                          href={`/dashboard/payments/receipt/${payment.id}`}
-                          target="_blank"
+                        <button 
+                          onClick={(e) => handlePrintReceipt(e, payment)}
                           className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-semibold"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                           </svg>
                           Receipt
-                        </Link>
+                        </button>
                       ) : (
                         <span className="text-dark-300">-</span>
                       )}
@@ -131,5 +148,13 @@ export default function PaymentHistoryPage() {
         </div>
       )}
     </div>
+    
+    {/* Hidden element that only shows when printing */}
+    {printPayment && (
+      <div className="hidden print:block absolute inset-0 bg-white z-[9999] p-8 w-full">
+        <ReceiptTemplate payment={printPayment} user={user} />
+      </div>
+    )}
+    </>
   );
 }

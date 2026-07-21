@@ -67,6 +67,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [existingDevice, setExistingDevice] = useState<{ browser?: string, os?: string, lastLogin?: string } | null>(null);
   const [isMobileVerified, setIsMobileVerified] = useState(false);
   const [showRegisterOtp, setShowRegisterOtp] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -133,6 +134,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setExistingDevice(null);
     setIsMobileVerified(false);
     setShowRegisterOtp(false);
+    setAcceptedTerms(false);
     onModeChange(nextMode);
   };
 
@@ -183,6 +185,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             if (!name) { setError("Full Name is required"); return; }
             if (!email) { setError("Email is required"); return; }
             if (!password) { setError("Password is required"); return; }
+            if (!acceptedTerms) { setError("Please accept Terms & Conditions and Privacy Policy"); return; }
         }
     }
 
@@ -237,7 +240,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, mobile, ...getDeviceInfo() }),
+          body: JSON.stringify({ name, email, password, mobile, acceptedTerms, ...getDeviceInfo() }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));
@@ -498,8 +501,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
         <div className="text-center mb-5">
           <Link href="/" className="inline-flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <i className="fa-solid fa-graduation-cap text-white text-sm" />
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden shrink-0 border border-dark-200">
+              <img src="/logo.jpeg" alt="WPSI Logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-bold text-xl tracking-tight">
               Mcqprep<span className="text-blue-600 dark:text-blue-500">zone</span>
@@ -653,6 +656,32 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                 >
                   <i className={`fa-solid ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`} />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {showRegisterFields && (
+            <div className="flex items-start mt-2">
+              <div className="flex items-center h-5">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="w-4 h-4 bg-dark-bg border border-white/20 rounded focus:ring-blue-500 focus:ring-2 accent-blue-600"
+                />
+              </div>
+              <div className="ml-2 text-xs">
+                <label htmlFor="terms" className="font-medium text-[var(--text-secondary)]">
+                  I agree to the{" "}
+                  <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
+                    Terms & Conditions
+                  </Link>
+                  {" "}and{" "}
+                  <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
+                    Privacy Policy
+                  </Link>
+                </label>
               </div>
             </div>
           )}

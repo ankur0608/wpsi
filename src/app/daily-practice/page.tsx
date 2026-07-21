@@ -259,7 +259,7 @@ export default function DailyPracticePage() {
           D: gujTranslation.optionD
         } : null,
         correctAnswer: q.correctAnswer,
-        selectedOption: ans || null,
+        selectedOption: ans || '',
         correct: isCorrect,
         explanation: q.explanation,
         explanationGuj: gujTranslation?.explanation || null
@@ -268,7 +268,7 @@ export default function DailyPracticePage() {
 
     const formattedResponses = mcqsDetails.map(d => ({
       mcqId: d.id,
-      answer: d.selectedOption || 'E'
+      answer: d.selectedOption || ''
     }));
 
     const percentage = (score / mcqs.length) * 100;

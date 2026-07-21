@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, mode, responses, details } = body;
+    const { title, mode, responses, details, totalMarks, earnedMarks, percentage } = body;
 
     // Reject if responses is not an array
     if (!title || !mode || !responses || !Array.isArray(responses)) {
@@ -113,12 +113,10 @@ export async function POST(request: NextRequest) {
         const mcq = mcqMap.get(r.mcqId);
         if (!mcq) continue;
         
-        // Skip unanswered questions (usually represented as empty string or null)
-        if (r.answer === null || r.answer === '' || r.answer === undefined) {
-           continue;
-        }
+        const isExplicitNotAttempted = r.answer === 'E';
+        const isUnanswered = r.answer === '' || r.answer === null || r.answer === undefined;
 
-        const isCorrect = mcq.correctAnswer === r.answer;
+        const isCorrect = !isExplicitNotAttempted && !isUnanswered && mcq.correctAnswer === r.answer;
         const previousAnswerExists = existingAnswersMap.has(r.mcqId);
         const previouslyCorrect = existingAnswersMap.get(r.mcqId) === true;
 
@@ -134,8 +132,10 @@ export async function POST(request: NextRequest) {
             fiveInARowCount++;
             currentStreak = 0;
           }
+        } else if (isExplicitNotAttempted) {
+          currentStreak = 0; // reset streak but no penalty
         } else {
-          wrongAnswersCount++;
+          wrongAnswersCount++; // penalty for wrong and unanswered
           currentStreak = 0; // reset streak
         }
 
@@ -149,8 +149,8 @@ export async function POST(request: NextRequest) {
         mcqAnswerUpserts.push(
           prisma.mCQAnswer.upsert({
             where: { userId_mcqId: { userId: session.userId, mcqId: r.mcqId } },
-            update: { answer: r.answer, isCorrect },
-            create: { userId: session.userId, mcqId: r.mcqId, answer: r.answer, isCorrect }
+            update: { answer: r.answer || '', isCorrect },
+            create: { userId: session.userId, mcqId: r.mcqId, answer: r.answer || '', isCorrect }
           })
         );
       }
@@ -190,19 +190,23 @@ export async function POST(request: NextRequest) {
     }
     
     // Secure Score Calculation
-    // Using standard +1 for correct and -0.25 for wrong (assuming WPSI format)
-    serverEarnedMarks = correctAnswersCount - (wrongAnswersCount * 0.25);
-    const serverPercentage = serverTotalMarks > 0 ? (Math.max(0, serverEarnedMarks) / serverTotalMarks) * 100 : 0;
+    let serverPercentage = 0;
+    if (mode === 'mock') {
+      // For mock tests, use client calculations as backend mcqMap skips MockTestQuestion IDs
+      serverTotalMarks = totalMarks ?? responses.length;
+      serverEarnedMarks = earnedMarks ?? 0;
+      serverPercentage = percentage ?? 0;
+    } else {
+      // Using standard +1 for correct and -0.25 for wrong (assuming WPSI format)
+      serverEarnedMarks = correctAnswersCount - (wrongAnswersCount * 0.25);
+      serverPercentage = serverTotalMarks > 0 ? (Math.max(0, serverEarnedMarks) / serverTotalMarks) * 100 : 0;
+    }
 
     // Apply Mode Completion Bonuses based on secure percentages
-    if (mode === 'quick') addXp('Quick Practice Completed', XP_REWARDS.QUICK_PRACTICE);
-    else if (mode === 'full') addXp('Full Practice Completed', XP_REWARDS.FULL_PRACTICE);
-    else if (mode === 'timed') {
-      addXp('Timed Test Completed', XP_REWARDS.TIMED_TEST_COMPLETE);
+    if (mode === 'timed') {
       if (serverPercentage >= 80) addXp('Timed Test (80%+ Score)', XP_REWARDS.TIMED_TEST_80_PLUS);
     }
     else if (mode === 'mock') {
-      addXp('Full-Length Mock Completed', XP_REWARDS.MOCK_COMPLETE);
       if (serverPercentage >= 90) addXp('Full-Length Mock (90%+ Score)', XP_REWARDS.MOCK_90_PLUS);
     }
     else if (mode === 'quiz' || mode === 'daily') {
@@ -252,9 +256,27 @@ export async function POST(request: NextRequest) {
       notificationsToCreate.push(prisma.notification.create({
         data: {
           userId: session.userId,
-          title: "Session Completed 📚",
-          message: `Great job! You earned a total of ${totalXPGained} XP from this session.`,
-          type: "XP"
+          title: `Completed: ${title}`,
+          message: `You earned ${totalXPGained} XP from this session!`,
+          type: "XP_GAIN"
+        }
+      }));
+    } else if (totalXPGained < 0) {
+      notificationsToCreate.push(prisma.notification.create({
+        data: {
+          userId: session.userId,
+          title: `Completed: ${title}`,
+          message: `You lost ${Math.abs(totalXPGained)} XP due to penalties in this session.`,
+          type: "XP_LOSS"
+        }
+      }));
+    } else {
+      notificationsToCreate.push(prisma.notification.create({
+        data: {
+          userId: session.userId,
+          title: `Completed: ${title}`,
+          message: `You completed the session! Keep practicing to earn more XP.`,
+          type: "XP_GAIN"
         }
       }));
     }
@@ -286,7 +308,7 @@ export async function POST(request: NextRequest) {
       ...userProgressUpdates,
       ...notificationsToCreate
     ], {
-      timeout: 20000 // Increase timeout to 20 seconds for bulk upserts
+      timeout: 100000 // Increase timeout to 100 seconds for bulk upserts
     });
 
     return NextResponse.json({ 

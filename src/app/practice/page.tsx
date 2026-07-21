@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type Difficulty   = 'Easy' | 'Medium' | 'Hard';
-export type PracticeMode = 'quick' | 'full' | 'mock';
+export type PracticeMode = 'quick' | 'full' | 'mock' | 'random50';
 export type AnswerKey    = 'A' | 'B' | 'C' | 'D' | 'E';
 
 export interface PracticeMcq {
@@ -98,6 +98,14 @@ const MODE_META: Record<PracticeMode, {
     timerMinutes: 15,
     questionCount: 20,
   },
+  random50: {
+    label: 'Random 50 Practice',
+    accent: 'from-purple-500 to-fuchsia-600',
+    description: '50 random MCQs from all topics across the subject.',
+    icon: 'fa-shuffle',
+    timerMinutes: null,
+    questionCount: 50,
+  },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -125,7 +133,7 @@ function shuffleQuestions(items: PracticeMcq[]) {
 }
 
 function formatMode(raw: string | null): PracticeMode {
-  if (raw === 'full' || raw === 'mock') return raw;
+  if (raw === 'full' || raw === 'mock' || raw === 'random50') return raw;
   return 'quick';
 }
 
@@ -374,13 +382,22 @@ export default function PracticePage() {
   const [session,       setSession]       = useState<SessionState | null>(null);
   const [timeLeft,      setTimeLeft]      = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>('');
-  const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success' | 'info'; confirmText?: string; onConfirm?: () => void; onCancel?: () => void } | null>(null);
+  const [modalConfig,   setModalConfig]   = useState<{ isOpen: boolean; title: string; message: string; type: 'confirm' | 'success' | 'info' | 'warning'; confirmText?: string; onConfirm?: () => void; onCancel?: () => void } | null>(null);
   const [autoStartRequested, setAutoStartRequested] = useState<boolean>(false);
   const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<string>('English');
+  const [reviewMcqLanguages, setReviewMcqLanguages] = useState<Record<string|number, 'English'|'Gujarati'>>({});
   const [xpEarned, setXpEarned] = useState<number | null>(null);
   const [showXpToast, setShowXpToast] = useState(false);
   const [streakEvent, setStreakEvent] = useState<{ reason: string; amount: number } | null>(null);
+
+  // ── Fullscreen state ───────────────────────────────────────────────────────
+  const [isFullScreenMode, setIsFullScreenMode] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  const toggleFullScreen = () => {
+    setIsFullScreenMode(!isFullScreenMode);
+  };
 
   // ── Derived lists from live bank ───────────────────────────────────────────
   const availableSubjectsWithParts = React.useMemo(() => {
@@ -551,17 +568,33 @@ export default function PracticePage() {
         }, 10 * 60 * 1000);
 
         if (session.mode === 'mock') {
-          setSession((cur) => {
-            if (!cur || cur.submitted || cur.mode !== 'mock') return cur;
-            const violations = cur.violations + 1;
-            if (violations >= 3) {
-              setStatusMessage('3 tab-switch violations detected. Your mock test was auto-submitted.');
-              setForceSubmit(true);
-            } else {
-              setStatusMessage(`Tab switch warning ${violations}/3. One more violation can end your mock test.`);
-            }
-            return { ...cur, violations };
-          });
+          const violations = session.violations + 1;
+          setSession((cur) => cur ? { ...cur, violations } : cur);
+
+          if (violations > 3) {
+            setStatusMessage('More than 3 tab-switch violations detected. Your mock test was auto-submitted.');
+            setModalConfig({
+              isOpen: true,
+              type: 'warning',
+              title: 'Test Terminated',
+              message: 'More than 3 tab-switch violations detected. Your mock test was auto-submitted.',
+              confirmText: 'Okay',
+              onConfirm: () => setModalConfig(null)
+            });
+            setForceSubmit(true);
+          } else {
+            const remaining = 3 - violations;
+            const remainingMsg = remaining === 0 ? "The next violation will end your mock test!" : `${remaining} more violation(s) can end your mock test.`;
+            setStatusMessage(`Tab switch warning ${violations}/3. ${remainingMsg}`);
+            setModalConfig({
+              isOpen: true,
+              type: 'warning',
+              title: 'Tab Switch Warning',
+              message: `Warning ${violations}/3: You have switched tabs or minimized the window. Please do not leave the exam screen. Repeated violations will result in automatic submission.`,
+              confirmText: 'I Understand',
+              onConfirm: () => setModalConfig(null)
+            });
+          }
         }
       } else {
         if (awayTimerRef.current !== null) {
@@ -578,6 +611,70 @@ export default function PracticePage() {
       }
     };
   }, [session?.mode, session?.submitted, view]);
+
+  // ── Exam Rules & LocalStorage Sync ────────────────────────────────────────
+  // Auto-save session
+  useEffect(() => {
+    if (view === 'exam' && session && !session.submitted) {
+      localStorage.setItem('activeExamSession', JSON.stringify({ session, timeLeft }));
+    }
+  }, [session, timeLeft, view]);
+
+  // Restore session on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('activeExamSession');
+    if (saved) {
+      try {
+        const { session: savedSession, timeLeft: savedTimeLeft } = JSON.parse(saved);
+        if (savedSession && !savedSession.submitted) {
+          setSession(savedSession);
+          setTimeLeft(savedTimeLeft);
+          setView('exam');
+          setStatusMessage('Your previous exam session was restored.');
+        } else {
+          localStorage.removeItem('activeExamSession');
+        }
+      } catch (e) {
+        localStorage.removeItem('activeExamSession');
+      }
+    }
+  }, []);
+
+  // Exam Rules (No right click, no copy, no back/forward, beforeunload, devtools check)
+  useEffect(() => {
+    if (view !== 'exam' || !session || session.submitted) return;
+
+    // 1. Disable Copy, Paste, Right-Click, Text Selection
+    const disableContextMenu = (e: MouseEvent) => e.preventDefault();
+    const disableCopyPaste = (e: ClipboardEvent) => e.preventDefault();
+    
+    document.addEventListener('contextmenu', disableContextMenu);
+    document.addEventListener('copy', disableCopyPaste);
+    document.addEventListener('paste', disableCopyPaste);
+    document.addEventListener('cut', disableCopyPaste);
+    document.body.style.userSelect = 'none';
+
+    // 2. Prevent Back/Forward
+    window.history.pushState(null, '', window.location.href);
+    const preventNav = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+    window.addEventListener('popstate', preventNav);
+
+    // 3. (Removed block refresh warning to allow seamless session restore)
+
+    // 4. (DevTools warning removed)
+
+    return () => {
+      document.removeEventListener('contextmenu', disableContextMenu);
+      document.removeEventListener('copy', disableCopyPaste);
+      document.removeEventListener('paste', disableCopyPaste);
+      document.removeEventListener('cut', disableCopyPaste);
+      document.body.style.userSelect = 'auto';
+      window.removeEventListener('popstate', preventNav);
+      // beforeunload listener removed
+    };
+  }, [view, session?.submitted]);
 
   // ─── Actions ───────────────────────────────────────────────────────────────
   const startSession = (skipInstructions = false) => {
@@ -624,10 +721,23 @@ export default function PracticePage() {
     setView(skipInstructions ? 'exam' : 'instructions');
   };
 
-  const beginExam = () => { if (!session) return; setStatusMessage(''); setView('exam'); };
+  const beginExam = () => {
+    if (!session) return;
+    setStatusMessage('');
+    setView('exam');
+    if (session.mode === 'mock') {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+    }
+  };
 
   const submitSession = async (auto = false) => {
     if (!session || session.submitted) return;
+    
+    localStorage.removeItem('activeExamSession');
     
     const submittedSession = { ...session, submitted: true };
     const finalResult = calculateResult(submittedSession);
@@ -638,7 +748,10 @@ export default function PracticePage() {
 
     try {
       const modeLabel = MODE_META[session.mode].label;
-      const title = `${modeLabel} - ${session.subjects.includes('All Subjects') ? 'Mixed' : session.subjects.join(', ')}`;
+      const testId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('testId') : null;
+      const title = testId && session.questions.length > 0 
+        ? session.questions[0].subject 
+        : `${modeLabel} - ${session.subjects.includes('All Subjects') ? 'Mixed' : session.subjects.join(', ')}`;
       
       const res = await fetch('/api/test-submissions', {
         method: 'POST',
@@ -659,16 +772,15 @@ export default function PracticePage() {
               optionsGuj: guj ? (guj.options || { A: guj.optionA, B: guj.optionB, C: guj.optionC, D: guj.optionD }) : null,
               explanation: q.explanation,
               explanationGuj: guj?.explanation,
-              selectedOption: session.responses[q.id],
+              selectedOption: session.responses[q.id] || '',
               correctAnswer: q.correctAnswer,
               correct: session.responses[q.id] === q.correctAnswer
             };
           }),
           responses: session.questions
-            .filter(q => session.responses[q.id] && session.responses[q.id] !== 'E')
             .map(q => ({
               mcqId: q.id,
-              answer: session.responses[q.id]
+              answer: session.responses[q.id] || ''
             }))
         })
       });
@@ -728,7 +840,7 @@ export default function PracticePage() {
     }
   };
 
-  const restartSession = () => { setSession(null); setStatusMessage(''); setTimeLeft(0); setView('setup'); };
+  const restartSession = () => { localStorage.removeItem('activeExamSession'); setSession(null); setStatusMessage(''); setTimeLeft(0); setView('setup'); };
 
   const updateSession = (fn: (cur: SessionState) => SessionState) => {
     setSession((cur) => { if (!cur) return cur; return fn(cur); });
@@ -774,6 +886,15 @@ export default function PracticePage() {
   const toggleReviewMark = () => {
     if (!session || !currentQuestion || session.submitted) return;
     updateSession((cur) => ({ ...cur, markedForReview: toggleId(cur.markedForReview, currentQuestion.id) }));
+  };
+
+  const clearAnswer = () => {
+    if (!session || !currentQuestion || session.submitted) return;
+    updateSession((cur) => {
+      const newResponses = { ...cur.responses };
+      delete newResponses[currentQuestion.id];
+      return { ...cur, responses: newResponses };
+    });
   };
 
   const toggleBookmark = async (e?: React.MouseEvent) => {
@@ -833,6 +954,39 @@ export default function PracticePage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceSubmit, session]);
+
+  useEffect(() => {
+    if (view !== 'exam' || !session || modalConfig || showShortcuts) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) return;
+
+      switch (e.key) {
+        case '1': selectOption('A'); break;
+        case '2': selectOption('B'); break;
+        case '3': selectOption('C'); break;
+        case '4': selectOption('D'); break;
+        case '5': selectOption('E'); break; // E -> Not Attempted
+        case 'ArrowLeft': navigateQuestion(-1); break;
+        case 'ArrowRight': navigateQuestion(1); break;
+        case 'r':
+        case 'R': toggleReviewMark(); break;
+        case 'c':
+        case 'C': clearAnswer(); break;
+        case 'Enter':
+          if (e.ctrlKey) confirmSubmit();
+          else navigateQuestion(1);
+          break;
+        case '?': setShowShortcuts(true); break;
+        case 'f':
+        case 'F': toggleFullScreen(); break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [view, session, modalConfig, showShortcuts, isFullScreenMode]);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentQuestion  = session ? session.questions[session.currentIndex] : null;
@@ -1218,7 +1372,9 @@ export default function PracticePage() {
       )}
 {/* ─── EXAM ──────────────────────────────────────────────────────────── */}
       {view === 'exam' && session && currentQuestion && (
-        <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+        <div 
+          className={`grid gap-6 xl:grid-cols-[1fr_320px] ${isFullScreenMode ? 'fixed inset-0 z-[9999] bg-dark-50 p-4 md:p-6 overflow-y-auto' : ''}`}
+        >
           <section className="w-full min-w-0">
             <div className="mx-auto max-w-[800px] w-full min-w-0 rounded-[1.5rem] bg-white text-dark-900 p-4 md:p-6 shadow-2xl">
               {/* Header */}
@@ -1231,13 +1387,29 @@ export default function PracticePage() {
                     </span>
                   )}
                 </div>
-                <button 
-                  onClick={(e) => toggleBookmark(e)}
-                  className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
-                >
-                  <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-base`}></i>
-                  <span className="hidden md:inline">Save</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setShowShortcuts(true)}
+                    className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
+                  >
+                    <i className="fa-solid fa-keyboard text-base"></i>
+                    <span className="hidden md:inline">Shortcuts</span>
+                  </button>
+                  <button 
+                    onClick={toggleFullScreen}
+                    className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
+                  >
+                    <i className={`fa-solid ${isFullScreenMode ? 'fa-compress' : 'fa-expand'} text-base`}></i>
+                    <span className="hidden md:inline">{isFullScreenMode ? 'Exit' : 'Full Screen'}</span>
+                  </button>
+                  <button 
+                    onClick={(e) => toggleBookmark(e)}
+                    className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
+                  >
+                    <i className={`fa-bookmark ${session.bookmarked.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-base`}></i>
+                    <span className="hidden md:inline">Save</span>
+                  </button>
+                </div>
               </div>
 
               {/* Progress */}
@@ -1582,14 +1754,14 @@ export default function PracticePage() {
               Score {result.finalScore.toFixed(2)} / {session.questions.length} with {result.accuracy}% accuracy.
             </p>
 
-            {xpEarned !== null && xpEarned > 0 && (
-              <div className="mt-5 inline-flex items-center justify-center gap-3 rounded-[1.25rem] border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-amber-600 shadow-sm animate-[pulse_2s_ease-in-out_infinite]">
-                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-600 text-sm shadow-inner">
-                  <i className="fa-solid fa-star"></i>
+            {xpEarned !== null && xpEarned !== 0 && (
+              <div className={`mt-5 inline-flex items-center justify-center gap-3 rounded-[1.25rem] border px-5 py-3 shadow-sm animate-[pulse_2s_ease-in-out_infinite] ${xpEarned > 0 ? 'border-amber-500/30 bg-amber-500/10 text-amber-600' : 'border-red-500/30 bg-red-500/10 text-red-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-inner ${xpEarned > 0 ? 'bg-amber-500/20 text-amber-600' : 'bg-red-500/20 text-red-600'}`}>
+                  <i className={`fa-solid ${xpEarned > 0 ? 'fa-star' : 'fa-arrow-trend-down'}`}></i>
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600/70 leading-tight">Reward</p>
-                  <p className="text-lg font-black leading-none">+{xpEarned} XP Earned!</p>
+                  <p className={`text-[10px] font-bold uppercase tracking-widest leading-tight ${xpEarned > 0 ? 'text-amber-600/70' : 'text-red-600/70'}`}>{xpEarned > 0 ? 'Reward' : 'Penalty'}</p>
+                  <p className="text-lg font-black leading-none">{xpEarned > 0 ? '+' : ''}{xpEarned} XP {xpEarned > 0 ? 'Earned!' : 'Lost!'}</p>
                 </div>
               </div>
             )}
@@ -1692,21 +1864,8 @@ export default function PracticePage() {
                   </button>
                 );
               })}
-              <div className="flex bg-dark-50 border border-dark-200 p-1 rounded-lg shadow-sm w-fit">
-                  <button 
-                    onClick={() => setActiveLanguage('English')} 
-                    className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeLanguage === 'English' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
-                  >
-                    EN
-                  </button>
-                  <button 
-                    onClick={() => setActiveLanguage('Gujarati')} 
-                    className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeLanguage === 'Gujarati' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}
-                  >
-                    GU
-                  </button>
-              </div>
             </div>
+
 
             {/* Question list */}
             <div className="mt-6 space-y-4">
@@ -1718,7 +1877,8 @@ export default function PracticePage() {
                 const isUnanswered = res === undefined;
 
                 const tGuj = q.translations?.find(t => t.language === 'Gujarati');
-                const useGuj = activeLanguage === 'Gujarati' && !!tGuj;
+                const lang = reviewMcqLanguages[q.id] || activeLanguage;
+                const setLang = (l: 'English'|'Gujarati') => setReviewMcqLanguages(prev => ({ ...prev, [q.id]: l }));
 
                 return (
                   <article key={q.id} className="rounded-[1.5rem] border border-dark-100 bg-white p-5">
@@ -1726,10 +1886,16 @@ export default function PracticePage() {
                       <div>
                         <div className="text-sm font-bold text-dark-400">Q{idx + 1}</div>
                         <div className="mt-2 text-base font-semibold leading-7 text-dark-900">
-                          <div>{useGuj ? tGuj.question : q.question}</div>
+                          {lang === 'Gujarati' && tGuj && tGuj.question ? <div>{tGuj.question}</div> : <div>{q.question}</div>}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 items-center">
+                        {(q.question || (tGuj && tGuj.question)) && (
+                          <div className="flex bg-dark-50 border border-dark-200 p-1 rounded-lg shadow-sm mr-2">
+                            <button onClick={() => setLang('English')} className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${lang === 'English' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}>EN</button>
+                            <button onClick={() => setLang('Gujarati')} className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${lang === 'Gujarati' ? 'bg-white shadow-sm text-primary-700' : 'text-dark-500 hover:text-dark-700'}`}>GU</button>
+                          </div>
+                        )}
                         {isCorrect    && <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-accent">Correct</span>}
                         {isWrong      && <span className="rounded-full border border-red-500/20    bg-red-500/10    px-3 py-1 text-xs font-bold text-danger">Wrong</span>}
                         {isNa         && <span className="rounded-full border border-sky-500/20    bg-sky-500/10    px-3 py-1 text-xs font-bold text-sky-400">Not Attempted</span>}
@@ -1752,8 +1918,14 @@ export default function PracticePage() {
                             }}
                           >
                             <div className="flex items-center w-full">
-                              <span className="font-bold text-dark-400 w-6 shrink-0">{key}</span>
-                              <span className="text-dark-900">{useGuj ? (tGuj[`option${key}` as keyof typeof tGuj] as string) : label}</span>
+                              <span className="font-bold text-dark-400 w-6 shrink-0 mt-0.5">{key}</span>
+                              <div className="flex flex-col">
+                                {lang === 'Gujarati' && tGuj && tGuj[`option${key}` as keyof typeof tGuj] ? (
+                                  <span className="text-dark-900">{tGuj[`option${key}` as keyof typeof tGuj] as string}</span>
+                                ) : (
+                                  <span className="text-dark-900">{label}</span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
@@ -1762,7 +1934,13 @@ export default function PracticePage() {
 
                     <div className="mt-5 rounded-xl border border-emerald-500/15 bg-emerald-500/8 p-4">
                       <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Explanation</div>
-                      <p className="mt-2 text-sm leading-7 text-dark-600">{(useGuj && tGuj.explanation) ? tGuj.explanation : (q.explanation || 'No explanation provided.')}</p>
+                      <div className="flex flex-col gap-2 mt-2">
+                        {lang === 'Gujarati' && tGuj && tGuj.explanation ? (
+                          <p className="text-sm leading-7 text-dark-600">{tGuj.explanation}</p>
+                        ) : (
+                          <p className="text-sm leading-7 text-dark-600">{q.explanation || 'No explanation provided.'}</p>
+                        )}
+                      </div>
                     </div>
                   </article>
                 );
@@ -1777,6 +1955,48 @@ export default function PracticePage() {
           </section>
         </div>
       )}
+      {/* ─── KEYBOARD SHORTCUTS MODAL ─────────────────────────────────────── */}
+      {showShortcuts && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-dark-100 rounded-3xl p-7 max-w-md w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-primary-600"></div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
+                  <i className="fa-solid fa-keyboard text-xl"></i>
+                </div>
+                <h3 className="text-xl font-display font-bold text-dark-900">Keyboard Shortcuts</h3>
+              </div>
+              <button onClick={() => setShowShortcuts(false)} className="text-dark-400 hover:text-dark-900 transition-colors">
+                <i className="fa-solid fa-xmark text-xl"></i>
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-dark-700">
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Option A</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">1</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Option B</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">2</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Option C</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">3</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Option D</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">4</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Not Attempted</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">5</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Clear Answer</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">C</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Prev Question</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">←</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Next Question</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">→</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Mark Review</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">R</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2"><span>Fullscreen</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">F</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2 col-span-2"><span>Save & Next</span> <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">Enter</kbd></div>
+              <div className="flex justify-between border-b border-dark-50 pb-2 col-span-2"><span>Submit Test</span> <span className="flex gap-1"><kbd className="font-mono font-bold bg-dark-50 px-2 rounded">Ctrl</kbd> + <kbd className="font-mono font-bold bg-dark-50 px-2 rounded">Enter</kbd></span></div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setShowShortcuts(false)}
+                className="px-6 py-2.5 rounded-xl bg-primary-600 text-white font-bold text-sm shadow-[0_10px_20px_rgba(99,102,241,0.2)] hover:bg-primary-700 transition-all hover:scale-105"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── MODAL ────────────────────────────────────────────────────────── */}
       {modalConfig?.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -1811,21 +2031,25 @@ export default function PracticePage() {
         </div>
       )}
       {/* XP Toast Notification */}
-      {showXpToast && xpEarned !== null && xpEarned > 0 && (
-        <div className="fixed top-24 right-6 z-[100] animate-[bounce_1s_ease-in-out_infinite]">
-          <div className="flex items-center gap-4 rounded-2xl bg-dark-900 px-6 py-5 text-white shadow-2xl border border-dark-700">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500 shadow-inner">
-              <i className="fa-solid fa-star text-2xl"></i>
+      {showXpToast && xpEarned !== null && xpEarned !== 0 && (
+        <div className="fixed top-20 left-4 right-4 md:left-auto md:w-auto md:right-6 md:top-24 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+          <div className="flex items-center gap-3 rounded-full bg-dark-900/95 backdrop-blur-md pl-2 pr-4 py-2 border border-dark-700/50">
+            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner ${xpEarned > 0 ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white' : 'bg-gradient-to-br from-red-500 to-rose-600 text-white'}`}>
+              <i className={`fa-solid ${xpEarned > 0 ? 'fa-star' : 'fa-arrow-trend-down'} text-lg drop-shadow-md`}></i>
             </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-dark-400">Congratulations!</p>
-              <p className="text-xl font-black text-amber-500">+{xpEarned} XP Earned</p>
+            <div className="flex flex-col flex-1">
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-dark-300">
+                {xpEarned > 0 ? 'Awesome!' : 'Oops!'}
+              </p>
+              <p className={`text-base font-black ${xpEarned > 0 ? 'text-amber-400' : 'text-red-400'} drop-shadow-sm leading-tight`}>
+                {xpEarned > 0 ? '+' : ''}{xpEarned} XP
+              </p>
             </div>
             <button 
               onClick={() => setShowXpToast(false)}
-              className="ml-4 w-8 h-8 flex items-center justify-center rounded-full bg-dark-800 text-dark-400 hover:text-white transition-colors"
+              className="ml-2 w-7 h-7 shrink-0 flex items-center justify-center rounded-full bg-dark-800/50 text-dark-400 hover:text-white hover:bg-dark-700 transition-colors"
             >
-              <i className="fa-solid fa-xmark"></i>
+              <i className="fa-solid fa-xmark text-sm"></i>
             </button>
           </div>
         </div>

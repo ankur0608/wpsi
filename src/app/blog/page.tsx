@@ -205,7 +205,7 @@ export default function Blogs() {
             <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Never Miss an Update</h2>
             <p className="text-xl text-primary-200 mb-12 leading-relaxed">Join 50,000+ aspirants receiving our weekly strategy emails.</p>
             <form className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
-                <input type="email" placeholder="Enter your email" className="flex-1 px-6 py-4 rounded-xl text-dark-900 focus:outline-none focus:ring-4 focus:ring-accent-500/50" />
+                <input type="email" placeholder="Enter your email" className="flex-1 px-6 py-4 rounded-xl bg-white text-dark-900 focus:outline-none focus:ring-4 focus:ring-accent-500/50" />
                 <button type="submit" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl">Subscribe</button>
             </form>
         </div>
@@ -239,10 +239,14 @@ export default function Blogs() {
                 <div>
                     <h4 className="text-white font-bold mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm">
-                        <li>Email: support@mcqprepzone.online</li>
-                        <li>Phone: +91 83477 85879</li>
+                        <li>Email: Mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
+                    <div className="mt-4 flex gap-4">
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                    </div>
                 </div>
             </div>
             <div className="text-center text-xs border-t border-dark-800 pt-8">

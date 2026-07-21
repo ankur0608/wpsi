@@ -4,6 +4,7 @@ import { setSessionCookie } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { authRateLimiter } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
+import { sendWhatsAppWelcomeMessage } from '@/lib/msg91';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, mobile, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
+    const { name, email, password, mobile, acceptedTerms, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         mobile,
         isMobileVerified: true,
+        acceptedTerms: acceptedTerms === true,
       },
     });
 
@@ -111,6 +113,12 @@ export async function POST(req: NextRequest) {
 
     response.cookies.delete('verified_mobile');
     await setSessionCookie(response, user.id, deviceId || undefined);
+
+    // Send WhatsApp Welcome Message via MSG91
+    // We don't await this so it doesn't block the API response unnecessarily, 
+    // but in serverless environments, it's safer to await or use waitUntil.
+    // For simplicity, we await it but ignore failures.
+    await sendWhatsAppWelcomeMessage(mobile, name).catch(console.error);
 
     return response;
   } catch (error: any) {

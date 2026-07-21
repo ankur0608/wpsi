@@ -118,7 +118,7 @@ export default function Pricing() {
                                 </button>
                             );
                         })()}
-                        {plan.amount > 0 && <p className={`text-center text-xs mt-3 ${plan.isPopular ? 'text-primary-300' : 'text-dark-400'}`}>7-day money-back guarantee</p>}
+                        {plan.amount > 0 && <p className={`text-center text-xs mt-3 ${plan.isPopular ? 'text-primary-300' : 'text-dark-400'}`}></p>}
                     </div>
                 ))}
             </div>
@@ -133,14 +133,14 @@ export default function Pricing() {
                     </svg>
                     <span className="text-sm">SSL Secured</span>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clipRule="evenodd" />
                     </svg>
                     <span className="text-sm">7-Day Refund</span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"
@@ -219,10 +219,14 @@ export default function Pricing() {
                 <div>
                     <h4 className="text-white font-bold mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm">
-                        <li>Email: support@mcqprepzone.online</li>
-                        <li>Phone: +91 83477 85879</li>
+                        <li>Email: Mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
+                    <div className="mt-4 flex gap-4">
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                    </div>
                 </div>
             </div>
             <div className="text-center text-xs border-t border-dark-800 pt-8">

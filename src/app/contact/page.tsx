@@ -65,6 +65,24 @@ export default function Contact() {
                                         className="text-primary-600 hover:underline">Mcqprepzone@gmail.com</a></p>
                             </div>
                         </div>
+                        <div className="flex items-start gap-4 p-6 bg-dark-50 rounded-2xl border border-dark-200">
+                            <div
+                                className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-dark-900 mb-2">Follow Us</h4>
+                                <div className="flex gap-4">
+                                    <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:opacity-80 text-xl"><i className="fa-brands fa-instagram"></i></a>
+                                    <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:opacity-80 text-xl"><i className="fa-brands fa-telegram"></i></a>
+                                    <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:opacity-80 text-xl"><i className="fa-brands fa-facebook"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -150,7 +168,7 @@ export default function Contact() {
                 <a href="/refund"
                     className="bg-white rounded-2xl p-6 border border-dark-200 hover:border-primary-300 hover-lift transition-all text-left">
                     <h4 className="font-bold text-dark-900 mb-2">Refund Policy</h4>
-                    <p className="text-sm text-dark-500">Understand our 7-day money-back guarantee terms.</p>
+                    {/* <p className="text-sm text-dark-500">Understand our 7-day money-back guarantee terms.</p> */}
                 </a>
             </div>
         </div>
@@ -215,6 +233,11 @@ export default function Contact() {
                         <li>Email: Mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat, India</li>
                     </ul>
+                                    <div className="mt-4 flex gap-4">
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                    </div>
                 </div>
             </div>
             <div className="text-center text-xs border-t border-dark-800 pt-8">

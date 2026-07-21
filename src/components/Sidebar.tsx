@@ -32,21 +32,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Mobile Overlay */}
       <div 
-        className={`fixed inset-0 bg-dark-800/60 backdrop-blur-sm z-40 lg:hidden transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} 
+        className={`fixed inset-0 bg-dark-800/60 backdrop-blur-sm z-40 lg:hidden transition-opacity print:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} 
         onClick={onClose}
       ></div>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-dark-100 z-50 transform lg:static transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-dark-100 z-50 transform lg:static transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none print:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         
         {/* Logo section */}
         <div className="h-20 flex items-center px-6 border-b border-dark-100 shrink-0">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 text-white font-bold text-xl tracking-tighter">
-                    W
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 overflow-hidden shrink-0">
+                    <img src="/logo.jpeg" alt="McqPrepZone Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                    <h1 className="font-display font-bold text-xl text-dark-800 leading-none tracking-tight">WPSI <span className="text-primary-600">Pro</span></h1>
+                    <h1 className="font-display font-bold text-xl text-dark-800 leading-none tracking-tight">McqPrep<span className="text-primary-600">Zone</span></h1>
                     <p className="text-[10px] font-bold text-dark-400 uppercase tracking-widest mt-0.5">Study Console</p>
                 </div>
             </div>
@@ -118,8 +118,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             
             <Link href="/profile" onClick={onClose} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
-                <div className="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center text-primary-700 font-bold mr-3 text-xs border border-primary-200 group-hover:bg-primary-200 transition-colors uppercase">
-                    {loading ? '...' : displayName.slice(0, 2)}
+                <div className="w-9 h-9 shadow-sm rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600 group-hover:bg-primary-700 transition-colors">
+                    {loading ? '...' : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                 </div>
                 <div className="flex-1">
                     <p className="text-[13px] font-bold text-dark-800 leading-tight">{loading ? 'Loading...' : displayName}</p>

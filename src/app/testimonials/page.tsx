@@ -252,7 +252,7 @@ export default function Testimonials() {
                     <div className="text-sm text-dark-500 text-center md:text-right">
                         <p>123, Knowledge Park, Near Gujarat University</p>
                         <p>Ahmedabad, Gujarat - 380009, India</p>
-                        <p className="mt-1">support@mcqprepzone.online | +91 83477 85879</p>
+                        <p className="mt-1">Mcqprepzone@gmail.com</p>
                     </div>
                 </div>
                 <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs text-dark-600">

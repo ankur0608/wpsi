@@ -575,5 +575,27 @@ h1, h2, h3, h4, h5, h6 {
 :root.compact-mode .gap-8 { gap: 1rem !important; }
 :root.compact-mode .h-12 { height: 2.5rem !important; }
 :root.compact-mode .w-12 { width: 2.5rem !important; }
-:root.compact-mode .h-16 { height: 3rem !important; }
 :root.compact-mode .w-16 { width: 3rem !important; }
+
+/* ─────────────────────────────────────────────────────────
+   PRINT STYLES
+   ───────────────────────────────────────────────────────── */
+@media print {
+    #main-topbar, #sidebar, .mobile-bottom-nav, nav, header, aside, footer, [role="navigation"] {
+        display: none !important;
+    }
+    body {
+        background-color: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .print\:hidden {
+        display: none !important;
+    }
+}

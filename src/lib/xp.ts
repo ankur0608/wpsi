@@ -17,13 +17,9 @@ export const XP_REWARDS = {
   DAILY_STUDY_STREAK: 5, // Awarded on first submission of the day
   
   // Practice Modes
-  QUICK_PRACTICE: 30, // assuming 20 MCQs
-  FULL_PRACTICE: 100, // assuming full set
   
   // Tests
-  TIMED_TEST_COMPLETE: 75,
   TIMED_TEST_80_PLUS: 30,
-  MOCK_COMPLETE: 150,
   MOCK_90_PLUS: 75,
   
   // Global Modifiers

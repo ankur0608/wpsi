@@ -63,25 +63,24 @@ export default function MobileBottomTab() {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-dark-100 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] z-50 pb-safe">
-      <div className="flex justify-around items-center h-[68px] px-2 relative">
+    <div className="lg:hidden fixed bottom-4 left-4 right-4 z-50 pb-safe">
+      <div className="bg-white/90 backdrop-blur-xl border border-dark-100 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[2rem] flex justify-around items-center h-[72px] px-2 relative">
         {tabs.map((tab) => {
           const active = isActive(tab.path);
           return (
             <Link
               key={tab.name}
               href={tab.path}
-              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all duration-300 relative ${
-                active ? 'text-primary-600 scale-105' : 'text-dark-400 hover:text-dark-600'
+              className={`flex flex-col items-center justify-center w-full h-[85%] rounded-[1.5rem] transition-all duration-300 ${
+                active ? 'bg-primary-50/80 text-primary-600 shadow-sm scale-[1.02]' : 'text-dark-400 hover:text-dark-600 hover:bg-dark-50/50'
               }`}
             >
-              {active && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary-600 rounded-b-full shadow-[0_2px_8px_rgba(14,165,233,0.4)]"></div>
-              )}
-              <div className={`mt-1 transition-transform duration-300 ${active ? '-translate-y-1' : ''}`}>
+              <div className={`transition-transform duration-300 ${active ? 'scale-110 mb-0.5' : 'mb-1'}`}>
                  {tab.icon}
               </div>
-              <span className={`text-[9px] font-bold uppercase tracking-wider transition-all duration-300 ${active ? 'opacity-100 -translate-y-1' : 'opacity-70'}`}>{tab.name}</span>
+              <span className={`text-[9px] font-bold uppercase tracking-wider transition-all duration-300 ${active ? 'opacity-100' : 'opacity-70'}`}>
+                {tab.name}
+              </span>
             </Link>
           );
         })}

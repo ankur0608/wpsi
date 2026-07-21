@@ -13,6 +13,7 @@ model User {
     name             String?
     mobile           String?   @unique
     isMobileVerified Boolean   @default(false)
+    acceptedTerms    Boolean   @default(false)
     image            String?
     password         String
     planType         String    @default("free")
@@ -55,41 +56,63 @@ model Exam {
     id          String    @id @default(cuid())
     name        String    @unique
     description String?
+    isActive    Boolean   @default(true)
     subjects    Subject[]
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
 }
 
 model Subject {
-    id        String   @id @default(cuid())
-    name      String
-    icon      String?
-    part      String   @default("A")
-    sortOrder Int      @default(0)
+    id           String   @id @default(cuid())
+    name         String
+    icon         String?
+    part         String   @default("A")
+    sortOrder    Int      @default(0)
     isFree       Boolean  @default(false)
     isActive     Boolean  @default(true)
     isComingSoon Boolean  @default(false)
     examId       String
-    exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
-    topics    Topic[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    exam         Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+    topics       Topic[]
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 
     @@unique([name, examId])
 }
 
+// model Topic {
+//     id        String  @id @default(cuid())
+//     name      String
+//     subtopics String
+//     weight    String
+//     subjectId String
+//     sortOrder Int     @default(0)
+//     isActive  Boolean @default(true)
+
+//     subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+//     mcqs           MCQ[]
+//     images         UploadedImage[]
+//     createdAt      DateTime        @default(now())
+//     updatedAt      DateTime        @updatedAt
+//     // uploadedImages UploadedImage[]
+
+//     @@unique([name, subjectId])
+// }
+
 model Topic {
-    id        String @id @default(cuid())
+    id        String  @id @default(cuid())
     name      String
     subtopics String
     weight    String
     subjectId String
-    sortOrder Int    @default(0)
+    sortOrder Int     @default(0)
+    isActive  Boolean @default(true)
 
-    subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    subject   Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
     mcqs      MCQ[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    images    UploadedImage[]
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
 
     @@unique([name, subjectId])
 }
@@ -104,6 +127,7 @@ model MCQ {
     optionD       String
     correctAnswer String
     explanation   String?
+    imageUrl      String?
     difficulty    String      @default("Medium")
     isPyq         Boolean     @default(false)
     language      String      @default("English")
@@ -163,6 +187,7 @@ model PracticeMcq {
     optionD       String
     correctAnswer String
     explanation   String?
+    imageUrl      String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
@@ -179,6 +204,9 @@ model MockTest {
     totalQuestions  Int                @default(0)
     failedRows      Int                @default(0)
     uploadStatus    String             @default("draft")
+    isActive        Boolean            @default(true)
+    isComingSoon    Boolean            @default(false)
+    planType        String             @default("free")
     questions       MockTestQuestion[]
     createdAt       DateTime           @default(now())
     updatedAt       DateTime           @updatedAt
@@ -196,6 +224,7 @@ model MockTestQuestion {
     optionD       String
     correctAnswer String
     explanation   String?
+    imageUrl      String?
     difficulty    String   @default("Medium")
     language      String   @default("English")
     translationId String?
@@ -213,6 +242,17 @@ model CSVUpload {
     status    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model UploadedImage {
+    id        String   @id @default(cuid())
+    filename  String
+    url       String
+    topicId   String
+    topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+
+    @@index([topicId])
 }
 
 model Bookmark {
@@ -258,26 +298,26 @@ model Notification {
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     title     String
     message   String
-    type      String   // e.g., "XP", "STREAK", "LEVEL_UP"
+    type      String // e.g., "XP", "STREAK", "LEVEL_UP"
     isRead    Boolean  @default(false)
     createdAt DateTime @default(now())
 }
 
 model Device {
-    id          String   @id @default(cuid())
-    deviceId    String   @unique
-    userId      String
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    browser     String?
-    os          String?
-    deviceType  String?
-    screen      String?
-    timezone    String?
-    language    String?
-    firstLogin  DateTime @default(now())
-    lastLogin   DateTime @updatedAt
-    lastIp      String?
-    
+    id         String   @id @default(cuid())
+    deviceId   String   @unique
+    userId     String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    browser    String?
+    os         String?
+    deviceType String?
+    screen     String?
+    timezone   String?
+    language   String?
+    firstLogin DateTime @default(now())
+    lastLogin  DateTime @updatedAt
+    lastIp     String?
+
     @@index([userId])
 }
 
@@ -296,17 +336,17 @@ model LoginHistory {
 }
 
 model Coupon {
-    id              String   @id @default(cuid())
-    code            String   @unique
+    id              String    @id @default(cuid())
+    code            String    @unique
     discountPercent Int
-    isActive        Boolean  @default(true)
+    isActive        Boolean   @default(true)
     expiresAt       DateTime?
     maxUses         Int?
-    usedCount       Int      @default(0)
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
-    
-    payments        PaymentHistory[]
+    usedCount       Int       @default(0)
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    payments PaymentHistory[]
 }
 
 model PaymentHistory {

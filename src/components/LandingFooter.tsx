@@ -15,9 +15,9 @@ export default function LandingFooter() {
             </div>
             <p className="opacity-70 text-sm mb-6">Empowering aspirants to achieve their government job dreams with AI-driven, gamified learning.</p>
             <div className="flex space-x-4">
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-twitter"></i></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-youtube"></i></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-instagram"></i></a>
+              <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-telegram"></i></a>
+              <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-facebook"></i></a>
+              <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-instagram"></i></a>
             </div>
           </div>
 

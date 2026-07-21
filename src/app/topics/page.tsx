@@ -62,6 +62,7 @@ function TopicsContent() {
   }, [subjectId]);
 
   const isFreePlan = !user?.planType || user.planType === 'free';
+  const isProOrElite = user?.planType?.toLowerCase().includes('pro') || user?.planType?.toLowerCase().includes('elite');
 
   return (
     <div className="bg-dark-50 w-full font-sans text-dark-800 h-full overflow-y-auto">
@@ -78,8 +79,8 @@ function TopicsContent() {
             <div className="absolute right-0 top-0 bottom-0 w-64 bg-accent-100 rounded-l-full blur-3xl opacity-50"></div>
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-primary-200 rounded-2xl flex items-center justify-center text-primary-600 shrink-0 shadow-sm text-2xl">
-                        📚
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center text-primary-600 shrink-0 shadow-md border border-primary-200/50 text-2xl">
+                        <i className="fa-solid fa-book-open-reader drop-shadow-sm"></i>
                     </div>
                     <div>
                         <span className="bg-primary-100 text-primary-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1.5 inline-block">{examName}</span>
@@ -88,13 +89,13 @@ function TopicsContent() {
                         
                         <div className="flex flex-wrap items-center gap-3 mt-4">
                             <span className="bg-white/90 text-dark-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-dark-100/80 flex items-center gap-1.5">
-                                📚 <span>{loading ? '-' : topics.length} Chapters</span>
+                                <i className="fa-solid fa-layer-group text-dark-400"></i> <span>{loading ? '-' : topics.length} Chapters</span>
                             </span>
                             <span className="bg-white/90 text-primary-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-primary-100/80 flex items-center gap-1.5">
-                                📑 <span>{loading ? '-' : topics.reduce((acc, curr) => acc + (curr.mcqCount || 0), 0)}+ Practice MCQs</span>
+                                <i className="fa-solid fa-file-circle-question text-primary-500"></i> <span>{loading ? '-' : topics.reduce((acc, curr) => acc + (curr.mcqCount || 0), 0)}+ Practice MCQs</span>
                             </span>
                             <span className="bg-success-50/90 text-success-700 text-[11px] font-bold px-3 py-1 rounded-xl shadow-sm border border-success-200/80 flex items-center gap-1.5">
-                                👑 Combo Access Available
+                                <i className="fa-solid fa-crown text-success-500"></i> Combo Access Available
                             </span>
                         </div>
                     </div>
@@ -104,12 +105,30 @@ function TopicsContent() {
 
         {/* Full-Width Chapters List */}
         <div>
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-5 flex-wrap gap-4">
                 <div className="flex items-center">
                     <div className="w-1.5 h-6 bg-accent-500 rounded-full mr-3"></div>
                     <h3 className="font-display font-bold text-lg text-dark-900">Chapters & Topics List</h3>
                 </div>
-                <p className="text-xs text-dark-400 font-medium hidden sm:block">Click any chapter to configure and start</p>
+                <div className="flex items-center gap-3">
+                    {isProOrElite ? (
+                        <button 
+                            onClick={() => router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=all&mode=random50&diff=easy,medium,hard&auto=true`)}
+                            className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-md transition-transform hover:-translate-y-0.5 flex items-center gap-2"
+                        >
+                            <i className="fa-solid fa-shuffle"></i> 50 Random MCQs
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => router.push('/pricing')}
+                            className="bg-dark-100 text-dark-500 hover:text-dark-700 font-bold py-2 px-4 rounded-xl text-sm border border-dark-200/50 flex items-center gap-2 transition-colors cursor-pointer"
+                            title="Upgrade to Pro or Elite to unlock"
+                        >
+                            <i className="fa-solid fa-lock"></i> 50 Random MCQs
+                        </button>
+                    )}
+                    <p className="text-xs text-dark-400 font-medium hidden sm:block">Click any chapter to configure and start</p>
+                </div>
             </div>
 
             <div className="space-y-2">
@@ -132,8 +151,8 @@ function TopicsContent() {
                       className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${isTopicUnlocked ? 'cursor-pointer bg-white border-dark-100 hover:border-primary-300 hover:shadow-md hover:shadow-primary-500/5' : 'cursor-not-allowed bg-dark-50/50 border-dark-100 opacity-80'}`}
                     >
                       <div className="flex items-center gap-4 flex-1">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isTopicUnlocked ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-colors' : 'bg-dark-100 text-dark-400'}`}>
-                              <span className="text-xl">{isTopicUnlocked ? '🧩' : '🔒'}</span>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${isTopicUnlocked ? 'bg-gradient-to-br from-primary-50 to-primary-100 text-primary-600 group-hover:from-primary-600 group-hover:to-primary-700 group-hover:text-white transition-all duration-300 border border-primary-200/50' : 'bg-dark-100 text-dark-400 border border-dark-200/50'}`}>
+                              <i className={`fa-solid ${isTopicUnlocked ? 'fa-cube drop-shadow-sm' : 'fa-lock'} text-lg`}></i>
                           </div>
                           <div>
                               <h4 className={`font-bold text-sm transition-colors ${isTopicUnlocked ? 'text-dark-900 group-hover:text-primary-700' : 'text-dark-500'}`}>{idx + 1}. {topic.name}</h4>

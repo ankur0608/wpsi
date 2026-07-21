@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { UserProvider, useUser } from '@/context/UserContext';
@@ -13,8 +13,11 @@ interface ProtectedDashboardProps {
 
 function ProtectedShell({ children }: ProtectedDashboardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, loading } = useUser();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  
+  const isReceiptPage = pathname?.includes('/dashboard/payments/receipt/');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,17 +59,27 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
   }
 
   return (
-    <div className="text-dark-800 font-sans antialiased flex h-screen overflow-hidden selection:bg-primary-200 selection:text-primary-900 w-full bg-dark-50">
-      <Sidebar
-        isOpen={isMobileSidebarOpen}
-        onClose={() => setIsMobileSidebarOpen(false)}
-      />
-      <main id="nav-main-wrapper" className="flex-1 overflow-y-auto bg-dark-50 relative flex flex-col hide-scrollbar lg:pb-0 pb-20">
-        <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
-        <div className="flex-1">
+    <div className={`text-dark-800 font-sans antialiased flex h-screen overflow-hidden selection:bg-primary-200 selection:text-primary-900 w-full bg-dark-50 ${isReceiptPage ? 'bg-white' : ''} print:block print:h-auto print:overflow-visible print:bg-white`}>
+      {!isReceiptPage && (
+        <Sidebar
+          isOpen={isMobileSidebarOpen}
+          onClose={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+      <main id="nav-main-wrapper" className={`flex-1 overflow-y-auto ${isReceiptPage ? 'bg-white' : 'bg-dark-50'} relative flex flex-col hide-scrollbar lg:pb-0 ${isReceiptPage ? 'pb-0' : 'pb-20'} print:block print:overflow-visible print:bg-white print:p-0 print:m-0 print:h-auto`}>
+        {!isReceiptPage && (
+          <div className="print:hidden">
+            <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
+          </div>
+        )}
+        <div className="flex-1 print:block">
           {children}
         </div>
-        <MobileBottomTab />
+        {!isReceiptPage && (
+          <div className="print:hidden">
+            <MobileBottomTab />
+          </div>
+        )}
       </main>
     </div>
   );
