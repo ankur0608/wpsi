@@ -116,7 +116,7 @@ function TopicsContent() {
                             onClick={() => router.push(`/practice?subject=${encodeURIComponent(subjectName)}&topic=all&mode=random50&diff=easy,medium,hard&auto=true`)}
                             className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-md transition-transform hover:-translate-y-0.5 flex items-center gap-2"
                         >
-                            <i className="fa-solid fa-shuffle"></i> 50 Random MCQs
+                            <i className="fa-solid fa-shuffle"></i> Full Subject Test (50 mcqs)
                         </button>
                     ) : (
                         <button 
@@ -124,7 +124,7 @@ function TopicsContent() {
                             className="bg-dark-100 text-dark-500 hover:text-dark-700 font-bold py-2 px-4 rounded-xl text-sm border border-dark-200/50 flex items-center gap-2 transition-colors cursor-pointer"
                             title="Upgrade to Pro or Elite to unlock"
                         >
-                            <i className="fa-solid fa-lock"></i> 50 Random MCQs
+                            <i className="fa-solid fa-lock"></i> Full Subject Test (50 mcqs)
                         </button>
                     )}
                     <p className="text-xs text-dark-400 font-medium hidden sm:block">Click any chapter to configure and start</p>

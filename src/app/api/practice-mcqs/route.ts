@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
       optionD: true,
       correctAnswer: true,
       explanation: true,
+      imageUrl: true,
       language: true,
       translationId: true,
       topic: {
@@ -95,6 +96,7 @@ const mcqs = rawMcqs.map((m) => {
     optionD: m.optionD,
     correctAnswer: m.correctAnswer,
     explanation: m.explanation,
+    imageUrl: m.imageUrl,
     language: m.language,
     translationId: m.translationId,
     translations: mcqTranslations

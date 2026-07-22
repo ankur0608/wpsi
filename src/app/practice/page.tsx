@@ -20,6 +20,7 @@ export interface PracticeMcq {
   options: Record<'A' | 'B' | 'C' | 'D', string>;
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   explanation: string;
+  imageUrl?: string | null;
   language?: string;
   translationId?: string | null;
   translations?: PracticeMcq[];
@@ -39,6 +40,7 @@ interface ApiMcqRow {
   optionD: string;
   correctAnswer: string;
   explanation: string | null;
+  imageUrl?: string | null;
   language?: string;
   translationId?: string | null;
 }
@@ -165,6 +167,7 @@ function toMcq(row: ApiMcqRow): PracticeMcq {
     options: { A: row.optionA, B: row.optionB, C: row.optionC, D: row.optionD },
     correctAnswer: row.correctAnswer as 'A' | 'B' | 'C' | 'D',
     explanation: row.explanation ?? '',
+    imageUrl: row.imageUrl || null,
     language: row.language || 'English',
     translationId: row.translationId || null,
   };
@@ -394,6 +397,7 @@ export default function PracticePage() {
   // ── Fullscreen state ───────────────────────────────────────────────────────
   const [isFullScreenMode, setIsFullScreenMode] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const toggleFullScreen = () => {
     setIsFullScreenMode(!isFullScreenMode);
@@ -772,6 +776,7 @@ export default function PracticePage() {
               optionsGuj: guj ? (guj.options || { A: guj.optionA, B: guj.optionB, C: guj.optionC, D: guj.optionD }) : null,
               explanation: q.explanation,
               explanationGuj: guj?.explanation,
+              imageUrl: q.imageUrl,
               selectedOption: session.responses[q.id] || '',
               correctAnswer: q.correctAnswer,
               correct: session.responses[q.id] === q.correctAnswer
@@ -1486,7 +1491,19 @@ export default function PracticePage() {
               {/* Question Area */}
               <div className="flex gap-3 items-start mb-5 md:mb-6 mt-2">
                 <div className="w-6 h-6 md:w-8 md:h-8 bg-primary-600 text-[#111] rounded-md flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">Q</div>
-                <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-dark-900 font-medium">{displayedQuestion?.question}</div>
+                <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-dark-900 font-medium">
+                  {displayedQuestion?.question}
+                  {displayedQuestion?.imageUrl && (
+                    <div className="mt-4 mb-2">
+                      <img 
+                        src={displayedQuestion.imageUrl} 
+                        alt="Question Image" 
+                        className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                        onClick={() => setSelectedImage(displayedQuestion.imageUrl || null)}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Options List */}
@@ -1892,6 +1909,16 @@ export default function PracticePage() {
                         <div className="text-sm font-bold text-dark-400">Q{idx + 1}</div>
                         <div className="mt-2 text-base font-semibold leading-7 text-dark-900">
                           {lang === 'Gujarati' && tGuj && tGuj.question ? <div>{tGuj.question}</div> : <div>{q.question}</div>}
+                          {q.imageUrl && (
+                            <div className="mt-4 mb-2">
+                              <img 
+                                src={q.imageUrl} 
+                                alt="Question Image" 
+                                className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                                onClick={() => setSelectedImage(q.imageUrl || null)}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 items-center">
@@ -2076,6 +2103,21 @@ export default function PracticePage() {
             >
               <i className="fa-solid fa-xmark"></i>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-[99999] bg-black/80 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm" onClick={() => setSelectedImage(null)}>
+          <div className="relative max-w-5xl w-full h-full flex flex-col items-center justify-center pointer-events-none">
+            <button 
+              className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-md transition-colors pointer-events-auto"
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <img src={selectedImage} alt="Expanded Question Image" className="max-w-full max-h-full object-contain rounded-xl shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()} />
           </div>
         </div>
       )}

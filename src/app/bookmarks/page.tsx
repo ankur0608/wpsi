@@ -17,6 +17,7 @@ interface BookmarkRow {
     optionD: string;
     correctAnswer: 'A' | 'B' | 'C' | 'D';
     explanation: string | null;
+    imageUrl?: string | null;
     difficulty: string;
     topic: {
       name: string;
@@ -38,6 +39,7 @@ export default function BookmarksPage() {
   // Track which explanations are revealed
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [mcqLanguages, setMcqLanguages] = useState<Record<string, "English" | "Gujarati">>({});
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // View States
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
@@ -219,6 +221,16 @@ export default function BookmarksPage() {
 
                   <div className="text-base sm:text-lg font-bold text-dark-900 mb-6 leading-relaxed">
                     <div>{useGuj ? tGuj.question : b.mcq.question}</div>
+                    {b.mcq.imageUrl && (
+                      <div className="mt-4 mb-2">
+                        <img 
+                          src={b.mcq.imageUrl} 
+                          alt="Question Image" 
+                          className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                          onClick={() => setSelectedImage(b.mcq.imageUrl || null)}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4 mb-6">
@@ -267,6 +279,21 @@ export default function BookmarksPage() {
             })}
           </div>
         </div>
+
+        {/* Image Modal */}
+        {selectedImage && (
+          <div className="fixed inset-0 z-[99999] bg-black/80 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm" onClick={() => setSelectedImage(null)}>
+            <div className="relative max-w-5xl w-full h-full flex flex-col items-center justify-center pointer-events-none">
+              <button 
+                className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-md transition-colors pointer-events-auto"
+                onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+              <img src={selectedImage} alt="Expanded Question Image" className="max-w-full max-h-full object-contain rounded-xl shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()} />
+            </div>
+          </div>
+        )}
       </div>
     );
   }

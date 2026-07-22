@@ -35,6 +35,7 @@ export async function GET(
       optionD: q.optionD,
       correctAnswer: q.correctAnswer,
       explanation: q.explanation,
+      imageUrl: q.imageUrl,
       language: q.language,
       translationId: q.translationId,
     }));

@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionFromRequest, publicUserSelect } from '@/lib/auth';
+import { getSessionFromRequest, publicUserSelect, clearSessionCookie } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromRequest(request);
 
     if (!session) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     const user = await prisma.user.findUnique({
@@ -40,10 +42,12 @@ export async function PUT(request: NextRequest) {
     const session = await getSessionFromRequest(request);
 
     if (!session) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     const body = await request.json();

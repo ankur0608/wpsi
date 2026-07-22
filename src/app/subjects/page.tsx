@@ -110,8 +110,8 @@ function SubjectsContent() {
       e.stopPropagation();
       const subjectUrl = `${window.location.origin}/topics?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&examName=${encodeURIComponent(examName)}`;
       const shareData = {
-        title: `${subject.name} - ${examName} | WPSI Pro`,
-        text: `Check out the ${subject.name} subject for ${examName} on WPSI Pro!`,
+        title: `${subject.name} - ${examName} | MCQPrepZone`,
+        text: `📚 Practice ${subject.name} for ${examName} on MCQPrepZone!\n\nCheck out the topics and start your preparation today 👇\n`,
         url: subjectUrl,
       };
       
@@ -119,8 +119,8 @@ function SubjectsContent() {
         if (navigator.share) {
           await navigator.share(shareData);
         } else {
-          await navigator.clipboard.writeText(subjectUrl);
-          showToast('Link copied to clipboard!', 'success');
+          await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}${shareData.url}`);
+          showToast('Share text and link copied to clipboard!', 'success');
         }
       } catch (err) {
         console.log('Error sharing:', err);
@@ -136,6 +136,11 @@ function SubjectsContent() {
         {subject.isComingSoon && (
           <div className="absolute top-2 right-2 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
             Coming Soon
+          </div>
+        )}
+        {!subject.isComingSoon && subject.isFree && (
+          <div className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 uppercase tracking-widest border border-emerald-200">
+            Free
           </div>
         )}
         {!subject.isComingSoon && !isSubjectUnlocked && (
@@ -162,24 +167,20 @@ function SubjectsContent() {
             </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-dark-50 mt-1">
-            <span className="text-[10px] text-dark-400 font-bold uppercase">Ready</span>
+        <div className="flex items-center justify-between w-full pt-4 border-t border-dark-50 mt-2">
+            <button 
+              onClick={handleShareSubject}
+              className={`flex items-center gap-2 text-[11px] font-bold text-dark-500 hover:${textThemeColor} bg-dark-50/80 hover:bg-white border border-dark-100 hover:border-dark-200 hover:shadow-sm px-3 py-1.5 rounded-lg transition-all active:scale-95 group/share`}
+              title="Share Subject"
+            >
+              <i className="fa-solid fa-share-nodes text-[12px] group-hover/share:-translate-y-0.5 transition-transform"></i>
+              Share
+            </button>
             
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={handleShareSubject}
-                className={`flex items-center gap-1.5 text-[10px] font-bold text-dark-500 hover:${textThemeColor} bg-dark-50/80 hover:bg-white border border-dark-100 hover:border-dark-200 hover:shadow-sm px-2.5 py-1.5 rounded-lg transition-all active:scale-95 group/share`}
-                title="Share Subject"
-              >
-                <i className="fa-solid fa-share-nodes text-[12px] group-hover/share:-translate-y-0.5 transition-transform"></i>
-                SHARE
-              </button>
-              
-              <span className={`text-[11px] font-bold ${textThemeColor} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
-                  View Topics 
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-              </span>
-            </div>
+            <span className={`text-[12px] font-bold ${textThemeColor} flex items-center gap-1.5 group-hover:translate-x-1 transition-transform`}>
+                View Topics 
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
+            </span>
         </div>
       </Link>
     );

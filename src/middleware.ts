@@ -5,9 +5,9 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('wpsi_session')?.value;
   const path = request.nextUrl.pathname;
   
-  const isAuthPage = path === '/login' || path === '/register' || path === '/';
+  const isAuthPage = path === '/login' || path === '/register';
 
-  // If the user has a session cookie and is trying to access login/register/landing,
+  // If the user has a session cookie and is trying to access login/register,
   // redirect them to the dashboard.
   if (isAuthPage && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));

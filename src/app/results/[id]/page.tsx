@@ -12,6 +12,7 @@ export default function IndividualResultPage() {
   const [loading, setLoading] = useState(true);
   const [activeLanguage, setActiveLanguage] = useState<'English'|'Gujarati'>('English');
   const [mcqLanguages, setMcqLanguages] = useState<Record<string|number, 'English'|'Gujarati'>>({});
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Helpers to derive UI classes based on test type or score
   const getTestMeta = (title: string) => {
@@ -125,6 +126,7 @@ export default function IndividualResultPage() {
   const pace = "Pace not tracked";
 
   return (
+    <>
     <div className="bg-dark-50 min-h-[calc(100vh-80px)] w-full font-sans text-dark-800 pb-10">
       <div className="max-w-[1000px] mx-auto p-4 lg:p-6 space-y-6 mt-4">
         
@@ -238,6 +240,16 @@ export default function IndividualResultPage() {
                     <div className="text-sm font-semibold text-dark-900 leading-relaxed">
                       <span className="text-dark-400 mr-1">Q{index + 1}.</span> 
                       <span>{(lang === 'Gujarati' && mcq.questionGuj) ? mcq.questionGuj : mcq.question}</span>
+                      {mcq.imageUrl && (
+                        <div className="mt-4 mb-2">
+                           <img 
+                             src={mcq.imageUrl} 
+                             alt="Question Image" 
+                             className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                             onClick={() => setSelectedImage(mcq.imageUrl || null)}
+                           />
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-3">
                       {(mcq.question || mcq.questionGuj) && (
@@ -313,7 +325,24 @@ export default function IndividualResultPage() {
           </div>
         </div>
 
+        </div>
+
       </div>
-    </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-[99999] bg-black/80 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm" onClick={() => setSelectedImage(null)}>
+          <div className="relative max-w-5xl w-full h-full flex flex-col items-center justify-center pointer-events-none">
+            <button 
+              className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-md transition-colors pointer-events-auto"
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <img src={selectedImage} alt="Expanded Question Image" className="max-w-full max-h-full object-contain rounded-xl shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
