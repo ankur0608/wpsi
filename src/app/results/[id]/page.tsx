@@ -33,10 +33,10 @@ export default function IndividualResultPage() {
   useEffect(() => {
     async function fetchResultDetail() {
       try {
-        const res = await fetch("/api/user/results");
+        const res = await fetch(`/api/user/results/${id}`);
         if (res.ok) {
           const json = await res.json();
-          const submission = json.data.recentSubmissions?.find((s: any) => s.id === id) || {
+          const submission = json.data || {
             id,
             title: "Mock Test Results",
             marks: 15,
@@ -53,33 +53,6 @@ export default function IndividualResultPage() {
           
           if (!submission.marks && submission.score) submission.marks = submission.score;
           if (!submission.percentage && submission.totalMarks) submission.percentage = (submission.marks / submission.totalMarks) * 100;
-          
-          // For old tests that don't have the new detailed JSON saved, generate a rich mock breakdown
-          // so the UI looks complete and beautiful instead of showing a blank state!
-          if (!submission.mcqs || submission.mcqs.length === 0) {
-            const mockMcqs = [];
-            const total = submission.totalMarks || 20;
-            const correctTarget = Math.round((submission.marks + 0.25 * total) / 1.25) || Math.floor(total * (submission.percentage / 100));
-            
-            for (let i = 0; i < total; i++) {
-               const isCorrect = i < correctTarget;
-               mockMcqs.push({
-                 id: i + 1,
-                 question: `In the context of ${submission.title || 'this assessment'}, which of the following best describes the core principle of topic ${i + 1}?`,
-                 correct: isCorrect,
-                 options: {
-                   A: "Primary principle definition and implementation details",
-                   B: "Secondary related concept with slight deviation",
-                   C: "Common misconception or anti-pattern",
-                   D: "Unrelated theoretical framework"
-                 },
-                 selectedOption: isCorrect ? "A" : "C",
-                 correctAnswer: "A",
-                 explanation: "Option A is the correct answer because it directly addresses the primary principles established by the core framework. The other options either describe secondary effects or common anti-patterns that do not apply in this specific scenario."
-               });
-            }
-            submission.mcqs = mockMcqs;
-          }
           
           setResult(submission);
         }
@@ -110,7 +83,7 @@ export default function IndividualResultPage() {
     );
   }
 
-  const meta = getTestMeta(result.title);
+  const meta = getTestMeta(result.mode || result.title);
   const status = getStatusMeta(result.percentage || 0);
   
   let derivedCorrect = Math.round((result.marks + 0.25 * result.totalMarks) / 1.25);

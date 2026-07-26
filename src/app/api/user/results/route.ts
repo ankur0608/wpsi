@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
       return {
         id: sub.id,
         title: sub.title,
+        mode: sub.mode,
         date: new Date(sub.createdAt).toLocaleString('en-US', { 
           day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true 
         }),

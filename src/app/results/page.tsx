@@ -40,11 +40,15 @@ export default function ResultsPage() {
   }, []);
 
   // Helpers to derive UI classes based on test type or score
-  const getTestMeta = (title: string) => {
-    const t = title.toLowerCase();
-    if (t.includes('daily')) return { typeLabel: 'Daily Challenge', type: 'daily-challenge', icon: '🔥', iconClass: 'bg-amber-50 text-amber-600 border-amber-100' };
-    if (t.includes('sectional') || t.includes('mini')) return { typeLabel: 'Sectional', type: 'sectional', icon: '⚡', iconClass: 'bg-indigo-50 text-indigo-600 border-indigo-100' };
-    return { typeLabel: 'Full Mock', type: 'full-mock', icon: '🏆', iconClass: 'bg-primary-50 text-primary-600 border-primary-100' };
+  const getTestMeta = (mode: string) => {
+    const m = mode?.toLowerCase() || '';
+    if (m === 'daily') return { typeLabel: 'Daily Challenge', type: 'daily', icon: '🔥', iconClass: 'bg-amber-50 text-amber-600 border-amber-100' };
+    if (m === 'sectional') return { typeLabel: 'Sectional Mock', type: 'sectional', icon: '⚡', iconClass: 'bg-indigo-50 text-indigo-600 border-indigo-100' };
+    if (m === 'mock' || m === 'full') return { typeLabel: 'Full Length Mock', type: 'mock', icon: '🏆', iconClass: 'bg-primary-50 text-primary-600 border-primary-100' };
+    if (m === 'timed') return { typeLabel: 'Timed Test', type: 'timed', icon: '⏱️', iconClass: 'bg-rose-50 text-rose-600 border-rose-100' };
+    if (m === 'quick') return { typeLabel: 'Quick Practice', type: 'quick', icon: '🏃', iconClass: 'bg-emerald-50 text-emerald-600 border-emerald-100' };
+    if (m === 'quiz') return { typeLabel: 'Quiz', type: 'quiz', icon: '❓', iconClass: 'bg-violet-50 text-violet-600 border-violet-100' };
+    return { typeLabel: 'Practice Session', type: 'practice', icon: '📚', iconClass: 'bg-gray-50 text-gray-600 border-gray-200' };
   };
 
   const getStatusMeta = (percentage: number) => {
@@ -56,7 +60,7 @@ export default function ResultsPage() {
   };
 
   const filteredResults = stats.recentSubmissions.filter((res: any) => {
-      const meta = getTestMeta(res.title);
+      const meta = getTestMeta(res.mode);
       return (filterType === "all" || meta.type === filterType) &&
              res.title.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -154,10 +158,14 @@ export default function ResultsPage() {
                   onChange={(e) => setFilterType(e.target.value)}
                   className="px-3.5 py-2 text-xs font-bold rounded-xl border border-dark-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-dark-700"
                 >
-                  <option value="all">All Types</option>
-                  <option value="full-mock">Full Length Mock</option>
+                  <option value="all">All Categories</option>
+                  <option value="mock">Full Length Mock</option>
                   <option value="sectional">Sectional Mock</option>
-                  <option value="daily-challenge">Daily Challenge</option>
+                  <option value="daily">Daily Challenge</option>
+                  <option value="timed">Timed Test</option>
+                  <option value="quick">Quick Practice</option>
+                  <option value="quiz">Quiz</option>
+                  <option value="practice">Practice Session</option>
                 </select>
               </div>
             </div>
@@ -169,7 +177,7 @@ export default function ResultsPage() {
                   <p className="text-dark-500 font-bold">No results found.</p>
                 </div>
               ) : filteredResults.map((res: any, idx: number) => {
-                const testMeta = getTestMeta(res.title);
+                const testMeta = getTestMeta(res.mode);
                 const statusMeta = getStatusMeta(res.percentage);
 
                 return (

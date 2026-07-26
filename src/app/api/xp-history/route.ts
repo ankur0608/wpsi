@@ -20,16 +20,19 @@ export async function GET(request: NextRequest) {
     });
 
     const history = recentSubmissions.map((sub: any) => {
-      // Approximate XP earned for this submission based on XP_REWARDS logic
-      let xpEarned = Math.max(0, sub.earnedMarks * 10);
-      if (sub.mode === 'full') xpEarned += 100;
+      // Use actual xpEarned if available, else fallback to approximation
+      let xpEarned = sub.xpEarned;
+      if (xpEarned === 0 && sub.earnedMarks !== 0) {
+        xpEarned = sub.earnedMarks * 10;
+        if (sub.mode === 'full') xpEarned += 100;
       else if (sub.mode === 'mock') xpEarned += 150;
       else if (sub.mode === 'timed') xpEarned += 75;
       else if (sub.mode === 'quick') xpEarned += 30;
       
-      if (sub.percentage >= 80 && sub.mode === 'timed') xpEarned += 30;
-      if (sub.percentage >= 90 && sub.mode === 'mock') xpEarned += 75;
-      if (sub.percentage === 100 && sub.totalMarks > 0) xpEarned += 40;
+        if (sub.percentage >= 80 && sub.mode === 'timed') xpEarned += 30;
+        if (sub.percentage >= 90 && sub.mode === 'mock') xpEarned += 75;
+        if (sub.percentage === 100 && sub.totalMarks > 0) xpEarned += 40;
+      }
 
       return {
         id: sub.id,

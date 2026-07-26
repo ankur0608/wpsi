@@ -290,7 +290,8 @@ export async function POST(request: NextRequest) {
           totalMarks: serverTotalMarks,
           earnedMarks: serverEarnedMarks,
           percentage: serverPercentage,
-          details
+          details,
+          xpEarned: totalXPGained
         },
       }),
       prisma.user.update({

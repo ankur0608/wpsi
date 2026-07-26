@@ -18,17 +18,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const userXP = user?.xp || 0;
   const { currentLevel } = getUserLevel(userXP);
 
-  const [showExamLockModal, setShowExamLockModal] = React.useState(false);
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('examActive') === 'true') {
-      e.preventDefault();
-      setShowExamLockModal(true);
-    } else {
-      onClose();
-    }
-  };
-
   const isActive = (path: string) => {
     if (path === '/exam') {
       return pathname === '/exam' || pathname.startsWith('/subjects') || pathname.startsWith('/topics');
@@ -70,38 +59,38 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex-1 overflow-y-auto py-6 px-4 hide-scrollbar relative z-10">
             <p className="text-[10px] font-bold text-dark-400 mb-3 px-3 uppercase tracking-widest">Navigation</p>
             <nav className="space-y-1">
-                <Link href="/dashboard" onClick={handleLinkClick} className={`sidebar-item ${isActive('/dashboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/dashboard" onClick={onClose} className={`sidebar-item ${isActive('/dashboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     Dashboard
                 </Link>
-                <Link href="/exam" onClick={handleLinkClick} className={`sidebar-item ${isActive('/exam') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/exam" onClick={onClose} className={`sidebar-item ${isActive('/exam') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     Exam
                 </Link>
 
                 {/* 
-                <Link href="/practice" onClick={handleLinkClick} className={`sidebar-item ${isActive('/practice') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/practice" onClick={onClose} className={`sidebar-item ${isActive('/practice') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     Practice
                 </Link>
                 */}
-                <Link href="/test" onClick={handleLinkClick} className={`sidebar-item ${isActive('/test') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/test" onClick={onClose} className={`sidebar-item ${isActive('/test') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     Mock Tests
                 </Link>
-                <Link href="/analytics" onClick={handleLinkClick} className={`sidebar-item ${isActive('/analytics') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/analytics" onClick={onClose} className={`sidebar-item ${isActive('/analytics') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                     Analytics
                 </Link>
-                <Link href="/results" onClick={handleLinkClick} className={`sidebar-item ${isActive('/results') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/results" onClick={onClose} className={`sidebar-item ${isActive('/results') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Results
                 </Link>
-                <Link href="/bookmarks" onClick={handleLinkClick} className={`sidebar-item ${isActive('/bookmarks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/bookmarks" onClick={onClose} className={`sidebar-item ${isActive('/bookmarks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     Saved MCQs
                 </Link>
-                <Link href="/dashboard/pricing" onClick={handleLinkClick} className={`sidebar-item ${isActive('/dashboard/pricing') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
+                <Link href="/dashboard/pricing" onClick={onClose} className={`sidebar-item ${isActive('/dashboard/pricing') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                     Pricing & Plans
                 </Link>
@@ -109,15 +98,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             <p className="text-[10px] font-bold text-dark-400 mt-6 mb-3 px-3 uppercase tracking-widest">Gamification</p>
             <nav className="space-y-1">
-                <Link href="/xp" onClick={handleLinkClick} className={`sidebar-item ${isActive('/xp') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                <Link href="/xp" onClick={onClose} className={`sidebar-item ${isActive('/xp') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Points & XP
                 </Link>
-                <Link href="/streaks" onClick={handleLinkClick} className={`sidebar-item ${isActive('/streaks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                <Link href="/streaks" onClick={onClose} className={`sidebar-item ${isActive('/streaks') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
                     Streak
                 </Link>
-                <Link href="/leaderboard" onClick={handleLinkClick} className={`sidebar-item ${isActive('/leaderboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
+                <Link href="/leaderboard" onClick={onClose} className={`sidebar-item ${isActive('/leaderboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3.5 text-sm rounded-xl group transition-all`}>
                     <svg className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     Leaderboard
                 </Link>
@@ -128,7 +117,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 relative z-10 shrink-0">
 
             
-            <Link href="/profile" onClick={handleLinkClick} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
+            <Link href="/profile" onClick={onClose} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
                 <div className="w-9 h-9 shadow-sm rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600 group-hover:bg-primary-700 transition-colors">
                     {loading ? '...' : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                 </div>
@@ -144,33 +133,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </svg>
             </Link>
         </div>
-      </aside>
-
-      {/* Exam Lock Modal */}
-      {showExamLockModal && (
-        <div className="fixed inset-0 z-[10030] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-dark-100 rounded-3xl p-7 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-warning"></div>
-            <div className="flex items-center gap-4 mb-5">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-warning/10 text-warning">
-                <i className="fa-solid fa-lock"></i>
-              </div>
-              <h3 className="text-xl font-display font-bold text-dark-900">Exam in Progress</h3>
-            </div>
-            <p className="text-dark-600 text-sm mb-8 leading-relaxed">
-              You cannot navigate away while an exam is running. Please submit or finish your exam first.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setShowExamLockModal(false)}
-                className="px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider bg-warning text-dark-bg shadow-[0_10px_20px_rgba(245,158,11,0.2)] transition-transform hover:scale-105"
-              >
-                Return to Exam
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    </aside>
     </>
   );
 }

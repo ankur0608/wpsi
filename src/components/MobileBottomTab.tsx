@@ -63,7 +63,7 @@ export default function MobileBottomTab() {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-4 left-4 right-4 z-50 pb-safe">
+    <div id="mobile-bottom-tab" className="lg:hidden fixed bottom-4 left-4 right-4 z-50 pb-safe">
       <div className="bg-white/90 backdrop-blur-xl border border-dark-100 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[2rem] flex justify-around items-center h-[72px] px-2 relative">
         {tabs.map((tab) => {
           const active = isActive(tab.path);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { setSessionCookie } from '@/lib/auth';
 import { authRateLimiter } from '@/lib/rate-limit';
+import { authService } from '@/lib/authService';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
@@ -36,18 +37,10 @@ export async function POST(req: NextRequest) {
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
+    const deviceInfo = { deviceId, ip, browser, os, deviceType, screen, timezone, language };
 
     if (!isValidPassword) {
-      await prisma.loginHistory.create({
-        data: {
-            userId: user.id,
-            deviceId: deviceId || null,
-            ip,
-            status: "FAILED",
-            browser: browser || null,
-            os: os || null
-        }
-      });
+      await authService.logFailedAttempt(user.id, deviceInfo);
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -55,67 +48,24 @@ export async function POST(req: NextRequest) {
     }
 
     if (deviceId) {
-        const userDevices = await prisma.device.findMany({
-            where: { userId: user.id }
-        });
-        
-        const existingDevice = userDevices.find(d => d.deviceId === deviceId);
-        
-        if (userDevices.length > 0 && !existingDevice) {
-            if (force) {
-                await prisma.device.deleteMany({ where: { userId: user.id } });
-            } else {
-                const activeDevice = userDevices[0];
-                await prisma.loginHistory.create({
-                    data: { userId: user.id, deviceId, ip, status: "BLOCKED_DEVICE", browser, os }
-                });
-                return NextResponse.json(
-                    { 
-                        error: 'ACTIVE_DEVICE', 
-                        message: 'Your account is already linked to another device.',
-                        activeDevice: {
-                            browser: activeDevice.browser,
-                            os: activeDevice.os,
-                            lastLogin: activeDevice.lastLogin
-                        }
-                    },
-                    { status: 409 }
-                );
+      const deviceCheck = await authService.handleDeviceTracking(user.id, force, deviceInfo);
+      if (deviceCheck?.error) {
+        return NextResponse.json(
+          { 
+            error: deviceCheck.error, 
+            message: 'Your account is already linked to another device.',
+            activeDevice: {
+              browser: deviceCheck.activeDevice.browser,
+              os: deviceCheck.activeDevice.os,
+              lastLogin: deviceCheck.activeDevice.lastLogin
             }
-        }
-        
-        if (existingDevice) {
-            await prisma.device.update({
-                where: { id: existingDevice.id },
-                data: { lastLogin: new Date(), lastIp: ip }
-            });
-        } else {
-            await prisma.device.create({
-                data: {
-                    deviceId,
-                    userId: user.id,
-                    browser,
-                    os,
-                    deviceType,
-                    screen,
-                    timezone,
-                    language,
-                    lastIp: ip
-                }
-            });
-        }
+          },
+          { status: 409 }
+        );
+      }
     }
 
-    await prisma.loginHistory.create({
-        data: {
-            userId: user.id,
-            deviceId: deviceId || null,
-            ip,
-            status: "SUCCESS",
-            browser: browser || null,
-            os: os || null
-        }
-    });
+    await authService.logSuccessfulAttempt(user.id, deviceInfo);
 
     const response = NextResponse.json(
       {

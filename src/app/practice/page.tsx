@@ -561,15 +561,84 @@ export default function PracticePage() {
   // ── Inactivity Auto-submit & Tab-switch anti-cheat ────────────────────────
   const [forceSubmit, setForceSubmit] = useState(false);
   const awayTimerRef = useRef<number | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+
+  const latestSessionRef = useRef(session);
+  useEffect(() => {
+    latestSessionRef.current = session;
+  }, [session]);
+
+  useEffect(() => {
+    if (view === 'exam') {
+      sessionStorage.setItem('examActive', 'true');
+    } else {
+      sessionStorage.removeItem('examActive');
+    }
+  }, [view]);
+
+  useEffect(() => {
+    if (view !== 'exam') return;
+    
+    const handleUnload = () => {
+      const currentSession = latestSessionRef.current;
+      if (!currentSession || currentSession.submitted || currentSession.questions.length === 0) return;
+
+      const finalResult = calculateResult(currentSession);
+      const modeLabel = currentSession.mode === 'mock' ? 'Mock Test' : 'Practice';
+      const title = currentSession.questions.length > 0 && typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('testId')
+        ? currentSession.questions[0].subject 
+        : `${modeLabel} - ${currentSession.subjects.includes('All Subjects') ? 'Mixed' : currentSession.subjects.join(', ')}`;
+      
+      const payload = {
+          title,
+          mode: currentSession.mode,
+          totalMarks: currentSession.questions.length,
+          earnedMarks: finalResult.finalScore,
+          percentage: finalResult.accuracy,
+          details: currentSession.questions.map((q: any) => {
+            const guj = q.translations?.find((t: any) => t.language === 'Gujarati');
+            return {
+              id: q.id,
+              question: q.question,
+              questionGuj: guj?.question,
+              options: q.options || { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD },
+              optionsGuj: guj ? (guj.options || { A: guj.optionA, B: guj.optionB, C: guj.optionC, D: guj.optionD }) : null,
+              explanation: q.explanation,
+              explanationGuj: guj?.explanation,
+              imageUrl: q.imageUrl,
+              selectedOption: currentSession.responses[q.id] || '',
+              correctAnswer: q.correctAnswer,
+              correct: currentSession.responses[q.id] === q.correctAnswer
+            };
+          }),
+          responses: currentSession.questions
+            .map((q: any) => ({
+              mcqId: q.id,
+              answer: currentSession.responses[q.id] || ''
+            }))
+      };
+
+      fetch('/api/test-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [view]);
 
   useEffect(() => {
     if (view !== 'exam' || !session || session.submitted) return;
-    const handler = () => {
+    
+    const visibilityHandler = () => {
       if (document.hidden) {
         awayTimerRef.current = window.setTimeout(() => {
-          setStatusMessage('Exam auto-submitted due to 10 minutes of inactivity away from the tab.');
+          setStatusMessage('Exam auto-submitted due to 30 minutes of being away from the tab.');
           setForceSubmit(true);
-        }, 10 * 60 * 1000);
+        }, 30 * 60 * 1000);
 
         if (session.mode === 'mock') {
           const violations = session.violations + 1;
@@ -607,12 +676,41 @@ export default function PracticePage() {
         }
       }
     };
-    document.addEventListener('visibilitychange', handler);
-    return () => {
-      document.removeEventListener('visibilitychange', handler);
-      if (awayTimerRef.current !== null) {
-        window.clearTimeout(awayTimerRef.current);
+
+    const resetIdleTimer = () => {
+      if (idleTimerRef.current !== null) {
+        window.clearTimeout(idleTimerRef.current);
       }
+      idleTimerRef.current = window.setTimeout(() => {
+        setStatusMessage('Exam auto-submitted due to 30 minutes of inactivity.');
+        setModalConfig({
+          isOpen: true,
+          type: 'warning',
+          title: 'Test Terminated',
+          message: 'Exam auto-submitted due to 30 minutes of inactivity.',
+          confirmText: 'Okay',
+          onConfirm: () => setModalConfig(null)
+        });
+        setForceSubmit(true);
+      }, 30 * 60 * 1000);
+    };
+
+    document.addEventListener('visibilitychange', visibilityHandler);
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+    window.addEventListener('click', resetIdleTimer);
+    
+    resetIdleTimer();
+
+    return () => {
+      document.removeEventListener('visibilitychange', visibilityHandler);
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+      window.removeEventListener('scroll', resetIdleTimer);
+      window.removeEventListener('click', resetIdleTimer);
+      if (awayTimerRef.current !== null) window.clearTimeout(awayTimerRef.current);
+      if (idleTimerRef.current !== null) window.clearTimeout(idleTimerRef.current);
     };
   }, [session?.mode, session?.submitted, view]);
 
@@ -1107,8 +1205,11 @@ export default function PracticePage() {
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-6">
-
+    <>
+      {view === 'exam' && (
+        <style>{`#mobile-bottom-tab { display: none !important; }`}</style>
+      )}
+      <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-6">
       
 
       {/* Status message */}
@@ -2123,5 +2224,6 @@ export default function PracticePage() {
       )}
 
     </div>
+    </>
   );
 }

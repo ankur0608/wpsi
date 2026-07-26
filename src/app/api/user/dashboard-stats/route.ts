@@ -42,12 +42,7 @@ export async function GET(request: NextRequest) {
       // Ah! Line 122: subjectId String. Line 123: no subject relation. Oh wait, it is just subjectId.
     });
 
-    // 3. Weak Subjects
-    const weakProgresses = await prisma.userProgress.findMany({
-      where: { userId, totalAttempts: { gt: 0 } },
-      orderBy: { accuracy: 'asc' },
-      take: 3,
-    });
+    // 3. Weak Subjects (now computed from allProgresses below)
 
     // 4. Syllabus Coverage
     const allProgresses = await prisma.userProgress.findMany({
@@ -73,15 +68,19 @@ export async function GET(request: NextRequest) {
         };
     }
 
-    // Build Weak Topics
-    const weakTopics = weakProgresses.map(wp => {
-        const subj = subjectMap.get(wp.subjectId);
-        return {
-            subjectName: subj?.name || "Unknown",
-            accuracy: wp.accuracy,
-            errors: wp.totalAttempts - wp.correctCount
-        };
-    });
+    // Build Weak Topics safely ignoring orphaned subject IDs
+    const weakTopics = allProgresses
+        .filter(wp => wp.totalAttempts > 0 && subjectMap.has(wp.subjectId))
+        .sort((a, b) => a.accuracy - b.accuracy)
+        .slice(0, 3)
+        .map(wp => {
+            const subj = subjectMap.get(wp.subjectId);
+            return {
+                subjectName: subj!.name,
+                accuracy: wp.accuracy,
+                errors: wp.totalAttempts - wp.correctCount
+            };
+        });
 
     // Build Syllabus Coverage
     let partA_attempted = 0;

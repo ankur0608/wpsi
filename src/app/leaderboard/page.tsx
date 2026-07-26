@@ -97,8 +97,8 @@ export default function LeaderboardPage() {
                       {currentLevel.name} (Lvl {currentLevel.level})
                     </span>
                     <span className="text-primary-600 flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-primary-100 shadow-sm">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7-7m-7-7v18"/></svg> 
-                      Up 4 spots
+                      <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7-7m-7-7v18"/></svg> 
+                      +{userStats?.xp ? Math.floor(userStats.xp * 0.1) : 0} XP
                     </span>
                   </div>
                 </div>
@@ -162,9 +162,9 @@ export default function LeaderboardPage() {
                   </div>
                   
                   <div className="flex items-center gap-4">
-                    {item.change === 'up' && <span className="hidden sm:flex text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded items-center gap-0.5">↑</span>}
-                    {item.change === 'down' && <span className="hidden sm:flex text-[10px] text-rose-600 font-bold bg-rose-50 border border-rose-100 px-2 py-0.5 rounded items-center gap-0.5">↓</span>}
-                    {item.change === 'same' && <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>}
+                    {item.change === 'up' && <span className="flex text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded items-center justify-center"><i className="fa-solid fa-arrow-up"></i></span>}
+                    {item.change === 'down' && <span className="flex text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded items-center justify-center"><i className="fa-solid fa-arrow-up"></i></span>}
+                    {item.change === 'same' && <span className="flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center justify-center"><i className="fa-solid fa-minus"></i></span>}
                     
                     <div className="text-right flex flex-col items-end justify-center">
                       <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none flex items-center gap-1">
@@ -201,7 +201,7 @@ export default function LeaderboardPage() {
                     </div>
                     
                     <div className="flex items-center gap-4">
-                      <span className="hidden sm:flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>
+                      <span className="flex text-[10px] text-dark-400 font-bold bg-dark-50 border border-dark-100 px-2 py-0.5 rounded items-center gap-0.5">—</span>
                       <div className="text-right flex flex-col items-end justify-center">
                         <p className="font-display font-black text-dark-800 text-sm sm:text-lg leading-none flex items-center gap-1">
                           <span className="text-orange-500">🔥</span> 

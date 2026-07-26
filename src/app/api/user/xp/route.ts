@@ -50,16 +50,8 @@ export async function GET(request: NextRequest) {
       const date = new Date(sub.createdAt);
       const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 3600 * 24));
       
-      // Approximate XP earned for this submission based on XP_REWARDS logic
-      let xpEarned = sub.earnedMarks * 10;
-      if (sub.mode === 'full') xpEarned += 100;
-      else if (sub.mode === 'mock') xpEarned += 150;
-      else if (sub.mode === 'timed') xpEarned += 75;
-      else if (sub.mode === 'quick') xpEarned += 30;
-      
-      if (sub.percentage >= 80 && sub.mode === 'timed') xpEarned += 30;
-      if (sub.percentage >= 90 && sub.mode === 'mock') xpEarned += 75;
-      if (sub.percentage === 100 && sub.totalMarks > 0) xpEarned += 40;
+      // Use actual xpEarned directly
+      let xpEarned = sub.xpEarned || 0;
 
       // Group by date for highestDayXP
       const dateString = date.toISOString().split('T')[0];
