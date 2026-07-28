@@ -24,9 +24,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!file.type.startsWith('image/')) {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+    const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Only images are allowed.' },
+        { error: 'Invalid file format. Accepted formats: JPG, JPEG, PNG, WebP.' },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'File size exceeds the 5MB limit.' },
         { status: 400 }
       );
     }

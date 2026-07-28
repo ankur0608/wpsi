@@ -16,10 +16,11 @@ export async function sendWhatsAppWelcomeMessage(mobile: string, name: string) {
     }
 
     const payload = {
-      "integrated-number": integratedNumber,
-      "content-type": "template",
+      "integrated_number": integratedNumber,
+      "content_type": "template",
       "payload": {
         "messaging_product": "whatsapp",
+        "to": formattedMobile,
         "type": "template",
         "template": {
           "name": templateName,
@@ -27,17 +28,15 @@ export async function sendWhatsAppWelcomeMessage(mobile: string, name: string) {
             "code": "en",
             "policy": "deterministic"
           },
-          "to_and_components": [
+          "components": [
             {
-              "to": [
-                formattedMobile
-              ],
-              "components": {
-                "body_1": {
+              "type": "body",
+              "parameters": [
+                {
                   "type": "text",
-                  "value": name
+                  "text": name
                 }
-              }
+              ]
             }
           ]
         }

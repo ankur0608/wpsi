@@ -36,6 +36,7 @@ model User {
     devices         Device[]
     loginHistory    LoginHistory[]
     paymentHistory  PaymentHistory[]
+    whatsappLogs    WhatsappLog[]
 }
 
 model Plan {
@@ -363,6 +364,19 @@ model PaymentHistory {
     status            String   @default("PENDING") // PENDING, SUCCESS, FAILED
     createdAt         DateTime @default(now())
     updatedAt         DateTime @updatedAt
+
+    @@index([userId])
+}
+
+model WhatsappLog {
+    id           String   @id @default(cuid())
+    userId       String
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    mobile       String
+    templateName String
+    status       String   @default("SUCCESS") // SUCCESS, FAILED
+    response     Json?
+    createdAt    DateTime @default(now())
 
     @@index([userId])
 }

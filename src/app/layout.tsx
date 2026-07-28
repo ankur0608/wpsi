@@ -97,6 +97,7 @@ export default function RootLayout({
     <html lang="en" className={`scroll-smooth antialiased ${inter.variable} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5233930178708759" crossOrigin="anonymous"></script>
         <script
           type="application/ld+json"
           suppressHydrationWarning
