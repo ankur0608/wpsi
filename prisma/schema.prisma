@@ -27,6 +27,11 @@ model User {
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
 
+    // Referral fields
+    referralCode     String?   @unique
+    referralCount    Int       @default(0)
+    referralCoupons  Coupon[]  @relation("ReferrerCoupon")
+
     // Relations
     answers         MCQAnswer[]
     progress        UserProgress[]
@@ -209,6 +214,7 @@ model MockTest {
     isComingSoon    Boolean            @default(false)
     planType        String             @default("free")
     questions       MockTestQuestion[]
+    images          UploadedImage[]
     createdAt       DateTime           @default(now())
     updatedAt       DateTime           @updatedAt
 }
@@ -246,14 +252,17 @@ model CSVUpload {
 }
 
 model UploadedImage {
-    id        String   @id @default(cuid())
-    filename  String
-    url       String
-    topicId   String
-    topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
-    createdAt DateTime @default(now())
+    id         String    @id @default(cuid())
+    filename   String
+    url        String
+    topicId    String?
+    topic      Topic?    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+    mockTestId String?
+    mockTest   MockTest? @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+    createdAt  DateTime  @default(now())
 
     @@index([topicId])
+    @@index([mockTestId])
 }
 
 model Bookmark {
@@ -347,6 +356,9 @@ model Coupon {
     usedCount       Int       @default(0)
     createdAt       DateTime  @default(now())
     updatedAt       DateTime  @updatedAt
+
+    referrerId      String?
+    referrerUser    User?     @relation("ReferrerCoupon", fields: [referrerId], references: [id], onDelete: SetNull)
 
     payments PaymentHistory[]
 }

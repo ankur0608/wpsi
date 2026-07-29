@@ -618,16 +618,27 @@ export default function PracticePage() {
             }))
       };
 
-      fetch('/api/test-submissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        keepalive: true
-      }).catch(() => {});
+      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      
+      // Attempt to send using navigator.sendBeacon for higher reliability on tab close
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/test-submissions', blob);
+      } else {
+        fetch('/api/test-submissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(() => {});
+      }
     };
 
     window.addEventListener('beforeunload', handleUnload);
-    return () => window.removeEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+    };
   }, [view]);
 
   useEffect(() => {
@@ -1595,11 +1606,11 @@ export default function PracticePage() {
                 <div className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed text-dark-900 font-medium">
                   {displayedQuestion?.question}
                   {displayedQuestion?.imageUrl && (
-                    <div className="mt-4 mb-2">
+                    <div className="mt-4 mb-2 flex justify-center w-full">
                       <img 
                         src={displayedQuestion.imageUrl} 
                         alt="Question Image" 
-                        className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                        className="w-[120px] h-[120px] md:w-[160px] md:h-[160px] object-contain rounded-lg border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity bg-white" 
                         onClick={() => setSelectedImage(displayedQuestion.imageUrl || null)}
                       />
                     </div>
@@ -2011,11 +2022,11 @@ export default function PracticePage() {
                         <div className="mt-2 text-base font-semibold leading-7 text-dark-900">
                           {lang === 'Gujarati' && tGuj && tGuj.question ? <div>{tGuj.question}</div> : <div>{q.question}</div>}
                           {q.imageUrl && (
-                            <div className="mt-4 mb-2">
+                            <div className="mt-4 mb-2 flex justify-center w-full">
                               <img 
                                 src={q.imageUrl} 
                                 alt="Question Image" 
-                                className="max-w-full rounded-lg max-h-32 object-contain border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity" 
+                                className="w-[120px] h-[120px] md:w-[160px] md:h-[160px] object-contain rounded-lg border border-dark-100 cursor-pointer hover:opacity-90 shadow-sm transition-opacity bg-white" 
                                 onClick={() => setSelectedImage(q.imageUrl || null)}
                               />
                             </div>

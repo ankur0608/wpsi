@@ -73,6 +73,41 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Process Referral Reward
+    const appliedReferralCode = order.notes.referralCode as string;
+    if (appliedReferralCode) {
+      const referrerUser = await prisma.user.findUnique({
+        where: { referralCode: appliedReferralCode }
+      });
+
+      if (referrerUser && referrerUser.id !== session.userId) {
+        // Increment referral count
+        const updatedReferrer = await prisma.user.update({
+          where: { id: referrerUser.id },
+          data: { referralCount: { increment: 1 } }
+        });
+
+        const count = updatedReferrer.referralCount;
+        
+        let rewardDiscount = 0;
+        if (count === 1) rewardDiscount = 50;
+        else if (count === 2) rewardDiscount = 75;
+        else if (count >= 3) rewardDiscount = 100;
+
+        if (rewardDiscount > 0) {
+          const rewardCode = `REWARD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+          await prisma.coupon.create({
+            data: {
+              code: rewardCode,
+              discountPercent: rewardDiscount,
+              maxUses: 1,
+              referrerId: referrerUser.id
+            }
+          });
+        }
+      }
+    }
+
     return NextResponse.json({ success: true, message: 'Payment verified successfully', planId: securePlanId });
   } catch (error: any) {
     console.error('Error verifying razorpay payment:', error);

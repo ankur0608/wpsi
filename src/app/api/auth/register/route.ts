@@ -62,6 +62,11 @@ export async function POST(req: NextRequest) {
     // 2. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 2.5 Generate unique referral code
+    const cleanName = (name || 'USER').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 10);
+    const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const referralCode = `${cleanName}-${randomChars}`;
+
     // 3. Create the user
     const user = await prisma.user.create({
       data: {
@@ -71,6 +76,7 @@ export async function POST(req: NextRequest) {
         mobile,
         isMobileVerified: true,
         acceptedTerms: acceptedTerms === true,
+        referralCode,
       },
     });
 

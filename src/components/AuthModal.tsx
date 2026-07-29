@@ -68,6 +68,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [isMobileVerified, setIsMobileVerified] = useState(false);
   const [showRegisterOtp, setShowRegisterOtp] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [isReferralVerified, setIsReferralVerified] = useState(false);
+  const [referralSuccessMsg, setReferralSuccessMsg] = useState("");
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -101,6 +104,33 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     }
   };
 
+  const handleVerifyReferral = async () => {
+    if (!referralCode) return;
+    setLoading(true);
+    setError("");
+    setReferralSuccessMsg("");
+    try {
+      const response = await fetch("/api/coupons/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: referralCode }),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setIsReferralVerified(true);
+        setReferralSuccessMsg(`Valid code! ${data.coupon.discountPercent}% discount will be automatically applied at checkout.`);
+      } else {
+        setIsReferralVerified(false);
+        setError(data.error || "Invalid referral code");
+      }
+    } catch {
+      setIsReferralVerified(false);
+      setError("Failed to verify referral code.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleClose = useCallback(() => {
     setError("");
     setName("");
@@ -116,6 +146,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setExistingDevice(null);
     setIsMobileVerified(false);
     setShowRegisterOtp(false);
+    setReferralCode("");
+    setIsReferralVerified(false);
+    setReferralSuccessMsg("");
     onClose();
   }, [onClose]);
 
@@ -135,6 +168,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setIsMobileVerified(false);
     setShowRegisterOtp(false);
     setAcceptedTerms(false);
+    setReferralCode("");
+    setIsReferralVerified(false);
+    setReferralSuccessMsg("");
     onModeChange(nextMode);
   };
 
@@ -249,6 +285,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerData = await registerRes.json().catch(() => ({}));
         
         if (registerRes.ok) {
+          if (isReferralVerified && referralCode) {
+            localStorage.setItem('autoApplyCoupon', referralCode);
+          }
           await refreshUser();
           router.replace("/dashboard");
           router.refresh();
@@ -520,6 +559,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         </div>
 
         {error && <div className="mb-3 text-red-500 text-xs text-center">{error}</div>}
+        {referralSuccessMsg && <div className="mb-3 text-emerald-500 text-xs text-center font-bold">{referralSuccessMsg}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-2" noValidate>
           {showRegisterFields && (
@@ -535,6 +575,39 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
                   required
                 />
+              </div>
+            </div>
+          )}
+
+          {showRegisterFields && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Referral Code (Optional)</label>
+              <div className="relative flex gap-2">
+                <div className="relative flex-1">
+                  <i className="fa-solid fa-gift absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                  <input
+                    type="text"
+                    value={referralCode}
+                    onChange={(event) => { setReferralCode(event.target.value.toUpperCase()); setIsReferralVerified(false); setReferralSuccessMsg(""); }}
+                    placeholder="FRIEND50"
+                    disabled={isReferralVerified}
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors uppercase disabled:opacity-50"
+                  />
+                </div>
+                {!isReferralVerified ? (
+                  <button 
+                    type="button" 
+                    onClick={handleVerifyReferral} 
+                    disabled={loading || !referralCode}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
+                  >
+                    Apply
+                  </button>
+                ) : (
+                  <div className="bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold px-4 rounded-xl text-sm flex items-center justify-center">
+                    <i className="fa-solid fa-check mr-2"></i> Verified
+                  </div>
+                )}
               </div>
             </div>
           )}

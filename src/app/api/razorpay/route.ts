@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
     let appliedCouponId = null;
     let finalAmount = amount;
 
-    // Verify and apply coupon if provided
+    // Verify and apply coupon or referral code if provided
+    let appliedReferralCode = "";
     if (couponCode) {
       const coupon = await prisma.coupon.findUnique({
         where: { code: couponCode.toUpperCase() }
@@ -64,6 +65,16 @@ export async function POST(req: NextRequest) {
         const discountAmount = Math.floor((amount * coupon.discountPercent) / 100);
         finalAmount = amount - discountAmount;
         appliedCouponId = coupon.id;
+      } else if (!coupon) {
+        // Fallback: Check if it's a referral code
+        const referrerUser = await prisma.user.findUnique({
+          where: { referralCode: couponCode.toUpperCase() }
+        });
+        if (referrerUser && referrerUser.id !== session.userId && referrerUser.referralCount < 3) {
+          const discountAmount = Math.floor((amount * 50) / 100); // 50% discount for referral
+          finalAmount = amount - discountAmount;
+          appliedReferralCode = referrerUser.referralCode || "";
+        }
       }
     }
 
@@ -90,7 +101,8 @@ export async function POST(req: NextRequest) {
       notes: {
         userId: session.userId,
         planId: planId,
-        paymentHistoryId: paymentRecord.id
+        paymentHistoryId: paymentRecord.id,
+        referralCode: appliedReferralCode
       }
     };
 

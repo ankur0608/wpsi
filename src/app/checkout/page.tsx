@@ -36,8 +36,18 @@ export default function CheckoutPage() {
     }
   }, [planId, router]);
 
-  const applyCoupon = async () => {
-    if (!couponCode) return;
+  useEffect(() => {
+    const autoCoupon = localStorage.getItem('autoApplyCoupon');
+    if (autoCoupon) {
+      setCouponCode(autoCoupon);
+      applyCoupon(autoCoupon);
+      localStorage.removeItem('autoApplyCoupon'); // Only apply once automatically
+    }
+  }, []);
+
+  const applyCoupon = async (codeToApply?: string) => {
+    const code = codeToApply || couponCode;
+    if (!code) return;
     setCouponError('');
     setCouponSuccess('');
     setLoading(true);
@@ -46,7 +56,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/coupons/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: couponCode })
+        body: JSON.stringify({ code })
       });
       const data = await res.json();
       
