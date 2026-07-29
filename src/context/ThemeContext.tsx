@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 
 type Theme = "dark" | "light";
 
-// Shared toggle function — works without React context
 export function applyThemeToDOM(t: Theme) {
   const root = document.documentElement;
   if (t === "light") {
