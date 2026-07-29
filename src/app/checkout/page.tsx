@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                             disabled={loading || appliedCoupon}
                         />
                         <button 
-                            onClick={appliedCoupon ? () => { setAppliedCoupon(null); setCouponCode(''); setCouponSuccess(''); } : applyCoupon}
+                            onClick={appliedCoupon ? () => { setAppliedCoupon(null); setCouponCode(''); setCouponSuccess(''); } : () => applyCoupon()}
                             disabled={loading || (!couponCode && !appliedCoupon)}
                             className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-bold transition-all shadow-sm ${appliedCoupon ? 'bg-danger-50 border border-danger-200 text-danger-600 hover:bg-danger-100' : 'bg-dark-900 text-white hover:bg-dark-800'}`}
                         >

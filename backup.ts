@@ -1,4 +1,4 @@
-import { prisma } from './src/lib/prisma.ts';
+import { prisma } from './src/lib/prisma';
 import * as fs from 'fs';
 import * as path from 'path';
 
