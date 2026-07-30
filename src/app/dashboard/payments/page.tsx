@@ -16,6 +16,7 @@ export default function PaymentHistoryPage() {
       try {
         const res = await fetch('/api/payments');
         const data = await res.json();
+        
         if (data.success && data.payments) {
           setPayments(data.payments);
         }
@@ -43,16 +44,25 @@ export default function PaymentHistoryPage() {
     e.preventDefault();
     setPrintPayment(payment);
     setTimeout(() => {
+      const originalTitle = document.title;
+      document.title = `MCQPrepZone_Receipt_${payment.id}`;
       window.print();
+      document.title = originalTitle;
     }, 100);
   };
 
   return (
     <>
     <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full print:hidden">
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold text-dark-900 mb-2">Payment History</h1>
-        <p className="text-dark-500">View your past transactions and download receipts.</p>
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-dark-900 mb-2 tracking-tight">Payment History</h1>
+          <p className="text-dark-500">View your past transactions and download receipts.</p>
+        </div>
+        <div className="hidden md:flex items-center gap-2 text-sm font-medium text-dark-600 bg-white px-4 py-2 rounded-xl border border-dark-100 shadow-sm">
+          <i className="fa-solid fa-shield-halved text-success-500"></i>
+          Secure Payments
+        </div>
       </div>
 
       {payments.length === 0 ? (
@@ -69,75 +79,80 @@ export default function PaymentHistoryPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-dark-100 shadow-sm overflow-hidden">
+        <div className="space-y-4 md:space-y-0 md:bg-white md:rounded-3xl md:border md:border-dark-100 md:shadow-sm md:overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="hidden md:table-header-group">
-                <tr className="bg-dark-50 border-b border-dark-100 text-sm font-semibold text-dark-600">
-                  <th className="p-4 pl-6">Date</th>
-                  <th className="p-4">Plan</th>
-                  <th className="p-4">Amount</th>
-                  <th className="p-4">Coupon</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 pr-6 text-right">Action</th>
+                <tr className="bg-dark-50/50 border-b border-dark-100 text-sm font-bold text-dark-500 uppercase tracking-wider">
+                  <th className="p-5 pl-8">Date</th>
+                  <th className="p-5">Plan</th>
+                  <th className="p-5">Amount</th>
+                  <th className="p-5">Coupon</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5 pr-8 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-dark-100 block md:table-row-group">
+              <tbody className="block md:table-row-group">
                 {payments.map((payment) => (
-                  <tr key={payment.id} className="block md:table-row hover:bg-dark-50/50 transition-colors p-4 md:p-0">
-                    <td className="p-2 md:p-4 md:pl-6 text-dark-800 text-sm flex justify-between md:table-cell items-center">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Date</span>
-                      <span>{new Date(payment.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                  <tr key={payment.id} className="block md:table-row bg-white border border-dark-100 md:border-none md:border-b md:border-dark-100 last:border-none rounded-2xl md:rounded-none mb-4 md:mb-0 hover:bg-dark-50/30 transition-all shadow-sm md:shadow-none group p-1 md:p-0">
+                    <td className="p-4 md:p-5 md:pl-8 text-dark-800 text-sm flex justify-between md:table-cell items-center border-b border-dark-50 md:border-none">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Date</span>
+                      <span className="font-medium">{new Date(payment.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                     </td>
-                    <td className="p-2 md:p-4 text-dark-900 font-medium capitalize flex justify-between md:table-cell items-center">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Plan</span>
-                      <span>{payment.planId}</span>
+                    <td className="p-4 md:p-5 text-dark-900 font-bold flex justify-between md:table-cell items-center border-b border-dark-50 md:border-none">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Plan</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 hidden md:flex items-center justify-center group-hover:bg-primary-100 transition-colors">
+                          <i className="fa-solid fa-crown text-sm"></i>
+                        </div>
+                        <span className="capitalize text-base">{payment.planId.replace(/_(YEARLY|MONTHLY)/i, '').replace(/_/g, ' ').toLowerCase()}</span>
+                      </div>
                     </td>
-                    <td className="p-2 md:p-4 text-dark-800 font-medium flex justify-between md:table-cell items-center">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Amount</span>
-                      <span>₹{payment.amount}</span>
+                    <td className="p-4 md:p-5 text-dark-900 font-black flex justify-between md:table-cell items-center border-b border-dark-50 md:border-none">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Amount</span>
+                      <span className="text-base">₹{payment.amount}</span>
                     </td>
-                    <td className="p-2 md:p-4 text-dark-600 text-sm flex justify-between md:table-cell items-center">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Coupon</span>
+                    <td className="p-4 md:p-5 text-dark-600 text-sm flex justify-between md:table-cell items-center border-b border-dark-50 md:border-none">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Coupon</span>
                       {payment.coupon ? (
-                        <span className="bg-dark-100 px-2 py-1 rounded text-xs font-mono uppercase">{payment.coupon.code}</span>
+                        <span className="bg-primary-50 text-primary-700 px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase border border-primary-100">{payment.coupon.code}</span>
                       ) : (
-                        <span>-</span>
+                        <span className="text-dark-300 font-medium">-</span>
                       )}
                     </td>
-                    <td className="p-2 md:p-4 flex justify-between md:table-cell items-center">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Status</span>
+                    <td className="p-4 md:p-5 flex justify-between md:table-cell items-center border-b border-dark-50 md:border-none">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Status</span>
                       {payment.status === 'SUCCESS' ? (
-                        <span className="inline-flex items-center gap-1.5 bg-success-50 text-success-700 px-2.5 py-1 rounded-full text-xs font-bold border border-success-200">
+                        <span className="inline-flex items-center gap-1.5 bg-success-50 text-success-700 px-3 py-1.5 rounded-full text-xs font-bold border border-success-200 shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-success-500"></span>
                           Success
                         </span>
                       ) : payment.status === 'PENDING' ? (
-                        <span className="inline-flex items-center gap-1.5 bg-warning-50 text-warning-700 px-2.5 py-1 rounded-full text-xs font-bold border border-warning-200">
+                        <span className="inline-flex items-center gap-1.5 bg-warning-50 text-warning-700 px-3 py-1.5 rounded-full text-xs font-bold border border-warning-200 shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-warning-500 animate-pulse"></span>
                           Pending
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 bg-danger-50 text-danger-700 px-2.5 py-1 rounded-full text-xs font-bold border border-danger-200">
+                        <span className="inline-flex items-center gap-1.5 bg-danger-50 text-danger-700 px-3 py-1.5 rounded-full text-xs font-bold border border-danger-200 shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-danger-500"></span>
                           Failed
                         </span>
                       )}
                     </td>
-                    <td className="p-2 md:p-4 md:pr-6 text-right flex justify-between md:table-cell items-center mt-2 md:mt-0 pt-3 md:pt-4 border-t border-dark-50 md:border-none">
-                      <span className="md:hidden font-semibold text-dark-500 text-xs uppercase tracking-wider">Action</span>
+                    <td className="p-4 md:p-5 md:pr-8 text-right flex justify-between md:table-cell items-center">
+                      <span className="md:hidden font-bold text-dark-400 text-xs uppercase tracking-wider">Action</span>
                       {payment.status === 'SUCCESS' ? (
                         <button 
                           onClick={(e) => handlePrintReceipt(e, payment)}
-                          className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-semibold"
+                          className="inline-flex items-center gap-2 text-sm bg-primary-50 text-primary-600 hover:bg-primary-600 hover:text-white font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm md:opacity-0 md:group-hover:opacity-100 focus:opacity-100"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                           </svg>
                           Receipt
                         </button>
                       ) : (
-                        <span className="text-dark-300">-</span>
+                        <span className="text-dark-300 font-medium">-</span>
                       )}
                     </td>
                   </tr>

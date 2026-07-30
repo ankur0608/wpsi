@@ -22,8 +22,9 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
+      setLoading(true);
       try {
-        const res = await fetch('/api/leaderboard');
+        const res = await fetch(`/api/leaderboard?timeframe=${timeframe}`);
         if (res.ok) {
           const data = await res.json();
           setLeaderboardData(data.leaderboardData || []);
@@ -38,15 +39,13 @@ export default function LeaderboardPage() {
       }
     };
     fetchLeaderboard();
-  }, []);
+  }, [timeframe]);
 
   const top1 = leaderboardData[0];
   const top2 = leaderboardData[1];
   const top3 = leaderboardData[2];
 
-  if (loading) {
-    return <div className="p-20 text-center text-dark-500 font-bold animate-pulse">Loading Leaderboard...</div>;
-  }
+
 
   return (
     <div className="bg-dark-50 w-full font-sans text-dark-800 pb-10">
@@ -114,18 +113,6 @@ export default function LeaderboardPage() {
             <button onClick={() => setTimeframe('monthly')} className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${timeframe === 'monthly' ? 'bg-white shadow-sm text-dark-800' : 'text-dark-500 hover:text-dark-800'}`}>Monthly</button>
             <button onClick={() => setTimeframe('allTime')} className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${timeframe === 'allTime' ? 'bg-white shadow-sm text-dark-800' : 'text-dark-500 hover:text-dark-800'}`}>All Time</button>
           </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto py-1 hide-scrollbar">
-            {['All', 'WPSI', 'GPSC', 'GATE'].map((cat) => (
-              <button 
-                key={cat} 
-                onClick={() => setCategory(cat)} 
-                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-sm border ${category === cat ? 'bg-dark-100 text-dark-600 border-dark-200' : 'bg-white text-dark-600 hover:bg-dark-50 border-dark-200'}`}
-              >
-                {cat === 'All' ? 'All Branches' : cat}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
@@ -144,7 +131,28 @@ export default function LeaderboardPage() {
             </div>
 
             <div className="space-y-2.5">
-              {leaderboardData.map((item) => (
+              {loading ? (
+                <div className="p-10 text-center flex flex-col items-center justify-center gap-3">
+                  <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+                  <p className="text-dark-500 font-bold animate-pulse text-sm">Loading rankings...</p>
+                </div>
+              ) : leaderboardData.length === 0 ? (
+                <div className="p-10 text-center text-dark-500 font-bold bg-dark-50 rounded-2xl border border-dark-100">
+                  No rankings found for this timeframe.
+                </div>
+              ) : (
+                <>
+                {leaderboardData.map((item) => {
+                  const isPro = item.planType && item.planType.toLowerCase().includes('pro');
+                  const isElite = item.planType && item.planType.toLowerCase().includes('elite');
+                  const displayPlan = isElite ? 'ELITE' : isPro ? 'PRO' : null;
+                  
+                  const planTextColor = isElite ? 'text-violet-600' : isPro ? 'text-sky-600' : item.isUser ? 'text-primary-900' : 'text-dark-800';
+                  const planBadgeBg = isElite ? 'bg-violet-100' : 'bg-sky-100';
+                  const planBadgeText = isElite ? 'text-violet-700' : 'text-sky-700';
+                  const planBadgeBorder = isElite ? 'border-violet-200' : 'border-sky-200';
+
+                  return (
                 <div key={item.rank} className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl border transition-all ${item.isUser ? 'bg-primary-50/50 border-primary-200 shadow-sm' : 'bg-white border-dark-100 hover:border-dark-200 hover:shadow-sm group'}`}>
                   <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{item.rank}</span>
@@ -152,9 +160,17 @@ export default function LeaderboardPage() {
                       {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : item.avatar}
                     </div>
                     <div>
-                      <p className={`font-bold text-sm ${item.isUser ? 'text-primary-900' : 'text-dark-800'}`}>
-                        {item.name} {item.isUser && <span className="ml-1.5 text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">You</span>}
-                      </p>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <p className={`font-bold text-sm ${planTextColor}`}>
+                          {item.name}
+                        </p>
+                        {displayPlan && (
+                          <span className={`text-[9px] ${planBadgeBg} ${planBadgeText} border ${planBadgeBorder} px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shadow-sm`}>
+                            {displayPlan}
+                          </span>
+                        )}
+                        {item.isUser && <span className="text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">You</span>}
+                      </div>
                       <p className="text-[10px] text-dark-500 font-semibold mt-0.5 flex items-center gap-1.5">
                         <span className="text-primary-600 font-bold">{item.xp}</span>
                       </p>
@@ -174,7 +190,8 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+            })}
 
               {/* Show user rank if they are not in the top 10 */}
               {!leaderboardData.some(item => item.isUser) && userStats && userRank && (
@@ -211,6 +228,8 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
                 </>
+              )}
+              </>
               )}
             </div>
 

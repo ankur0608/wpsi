@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, mobile, acceptedTerms, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
+    const { name, email, password, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
@@ -65,7 +65,18 @@ export async function POST(req: NextRequest) {
     // 2.5 Generate unique referral code
     const cleanName = (name || 'USER').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 10);
     const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const referralCode = `${cleanName}-${randomChars}`;
+    const newReferralCode = `${cleanName}-${randomChars}`;
+
+    // Validate if the provided referralCode exists
+    let validReferredBy = null;
+    if (referralCode) {
+      const referrerUser = await prisma.user.findUnique({
+        where: { referralCode: referralCode.toUpperCase() }
+      });
+      if (referrerUser) {
+        validReferredBy = referrerUser.referralCode;
+      }
+    }
 
     // 3. Create the user
     const user = await prisma.user.create({
@@ -76,7 +87,8 @@ export async function POST(req: NextRequest) {
         mobile,
         isMobileVerified: true,
         acceptedTerms: acceptedTerms === true,
-        referralCode,
+        referralCode: newReferralCode,
+        referredBy: validReferredBy,
       },
     });
 

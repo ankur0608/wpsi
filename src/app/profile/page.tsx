@@ -36,6 +36,8 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +184,10 @@ export default function ProfilePage() {
             <p className="text-dark-500 mb-6 font-medium">{displayEmail} {displayMobile !== "No Mobile" && <><span className="mx-2">•</span> {displayMobile}</>}</p>
             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <button onClick={() => document.getElementById('personal-details')?.scrollIntoView({ behavior: 'smooth' })} className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">Edit Profile</button>
+              <button onClick={() => window.location.reload()} className="bg-dark-50 hover:bg-dark-100 text-dark-700 border border-dark-200 text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Refresh Page
+              </button>
             </div>
           </div>
         </div>
@@ -288,6 +294,15 @@ export default function ProfilePage() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                   </div>
                   <span className="font-bold text-dark-800">Support</span>
+                </div>
+                <svg className="w-5 h-5 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+              </Link>
+              <Link href="/dashboard/referrals" className="flex items-center justify-between p-4 bg-dark-50 rounded-2xl hover:bg-dark-100 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                  </div>
+                  <span className="font-bold text-dark-800">Referrals & Rewards</span>
                 </div>
                 <svg className="w-5 h-5 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
               </Link>

@@ -14,7 +14,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
               <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden border border-dark-200 shrink-0">
                 <img src="/logo.jpeg" alt="WPSI Logo" className="w-full h-full object-cover" />
               </div>
-              <h1 className="text-3xl font-black text-dark-900 tracking-tight" style={{ fontFamily: 'system-ui' }}>WPSI Pro</h1>
+              <h1 className="text-3xl font-black text-dark-900 tracking-tight" style={{ fontFamily: 'system-ui' }}>MCQPrepZone Pro</h1>
             </div>
             <p className="text-sm text-dark-500 font-medium ml-13">MCQ Prep Zone</p>
             <p className="text-sm text-dark-500 ml-13">www.mcqprepzone.online</p>
@@ -58,7 +58,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
             <tbody className="divide-y divide-dark-100">
               <tr>
                 <td className="py-6 px-2">
-                  <p className="font-bold text-dark-900 text-lg">WPSI {payment.planId} Plan</p>
+                  <p className="font-bold text-dark-900 text-lg">MCQPrepZone {payment.planId.replace(/_(YEARLY|MONTHLY)/i, '')} Plan</p>
                   <p className="text-sm text-dark-500 mt-1">Premium access to materials, mock tests, and analytics.</p>
                 </td>
                 <td className="py-6 px-2 text-right font-semibold text-dark-900 text-lg">₹{originalAmount.toFixed(2)}</td>
@@ -96,7 +96,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
         </div>
 
         <div className="text-center text-sm text-dark-400 mt-32 pt-8 border-t border-dark-100">
-          <p className="font-medium text-dark-500 mb-1">Thank you for choosing WPSI Pro - MCQ Prep Zone!</p>
+          <p className="font-medium text-dark-500 mb-1">Thank you for choosing MCQPrepZone!</p>
           <p>This is a computer-generated invoice and does not require a physical signature.</p>
           <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:Mcqprepzone@gmail.com" className="text-primary-600">Mcqprepzone@gmail.com</a></p>
         </div>

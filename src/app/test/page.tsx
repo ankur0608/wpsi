@@ -8,27 +8,9 @@ export default function Test() {
   const [mockTests, setMockTests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [planFilter, setPlanFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
 
   const filteredTests = mockTests.filter(test => {
-    const matchPlan = planFilter === 'all' || (test.planType && test.planType.toLowerCase() === planFilter.toLowerCase());
-    
-    const testTypeLabel = test.type || (
-      test.title?.includes('Part A') ? 'Part A' :
-      test.title?.includes('Part B') ? 'Part B' :
-      test.title?.includes('Mix') ? 'Mix' : 'Full Length'
-    );
-    
-    let matchType = true;
-    if (typeFilter !== 'all') {
-      if (typeFilter === 'Full') {
-         matchType = testTypeLabel.includes('Full');
-      } else {
-         matchType = testTypeLabel.includes(typeFilter);
-      }
-    }
-
-    return matchPlan && matchType;
+    return planFilter === 'all' || (test.planType && test.planType.toLowerCase() === planFilter.toLowerCase());
   });
 
   useEffect(() => {
@@ -84,23 +66,28 @@ export default function Test() {
                   <option value="elite">Elite Tests</option>
                 </select>
 
-                <select 
-                  value={typeFilter} 
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="bg-white border border-dark-200 text-dark-700 px-3 py-2 rounded-xl text-sm font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors cursor-pointer appearance-none outline-none"
-                  style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto', paddingRight: '2.5rem' }}
-                >
-                  <option value="all">All Types</option>
-                  <option value="Full">Full Length</option>
-                  <option value="Part A">Part A</option>
-                  <option value="Part B">Part B</option>
-                  <option value="Mix">Mix</option>
-                </select>
+
             </div>
         </div>
         
         {isLoading ? (
-          <div className="text-center py-12 text-dark-500">Loading mock tests...</div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="glass-card p-6 border border-dark-100 flex flex-col h-[280px] bg-white shadow-sm animate-pulse">
+                <div className="flex items-center justify-between mb-5">
+                    <div className="h-6 w-20 bg-dark-100 rounded-full"></div>
+                    <div className="h-4 w-16 bg-dark-100 rounded"></div>
+                </div>
+                <div className="w-12 h-12 bg-dark-100 rounded-2xl mb-4"></div>
+                <div className="h-6 w-3/4 bg-dark-100 rounded mb-3"></div>
+                <div className="h-4 w-full bg-dark-100 rounded mb-2 flex-1"></div>
+                <div className="flex items-center justify-between border-t border-dark-100 pt-4 mt-auto">
+                    <div className="h-3 w-24 bg-dark-100 rounded"></div>
+                    <div className="h-9 w-24 bg-dark-100 rounded-lg"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : mockTests.length === 0 ? (
           <div className="text-center py-12 text-dark-500">No mock tests available at the moment. Check back later!</div>
         ) : filteredTests.length === 0 ? (
@@ -117,7 +104,18 @@ export default function Test() {
                   <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
                       <div className="relative z-10 flex flex-col h-full">
                           <div className="flex items-center justify-between mb-5">
-                              <span className="bg-dark-100 text-dark-600 border border-dark-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{test.type || 'Full Length'}</span>
+                              <span className={`inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all ${
+                                (!test.planType || test.planType.toLowerCase() === 'free') 
+                                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-emerald-700 border-emerald-200/60 shadow-emerald-500/10' :
+                                test.planType.toLowerCase() === 'pro' 
+                                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-indigo-700 border-indigo-200/60 shadow-indigo-500/10' :
+                                'bg-gradient-to-r from-fuchsia-50 to-purple-50 text-purple-700 border-purple-200/60 shadow-purple-500/10'
+                              }`}>
+                                {test.planType?.toLowerCase() === 'pro' && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}
+                                {test.planType?.toLowerCase() === 'elite' && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>}
+                                {(!test.planType || test.planType.toLowerCase() === 'free') && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
+                                {test.planType || 'Free'}
+                              </span>
                               <span className="bg-dark-200 text-dark-700 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Locked
                               </span>
@@ -143,8 +141,17 @@ export default function Test() {
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center justify-between mb-5">
-                            <span className="bg-primary-50 text-primary-600 border border-primary-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                              {test.type || 'Full Length'}
+                            <span className={`inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all ${
+                              (!test.planType || test.planType.toLowerCase() === 'free') 
+                                ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-emerald-700 border-emerald-200/60 shadow-emerald-500/10' :
+                              test.planType.toLowerCase() === 'pro' 
+                                ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-indigo-700 border-indigo-200/60 shadow-indigo-500/10' :
+                              'bg-gradient-to-r from-fuchsia-50 to-purple-50 text-purple-700 border-purple-200/60 shadow-purple-500/10'
+                            }`}>
+                              {test.planType?.toLowerCase() === 'pro' && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}
+                              {test.planType?.toLowerCase() === 'elite' && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>}
+                              {(!test.planType || test.planType.toLowerCase() === 'free') && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
+                              {test.planType || 'Free'}
                             </span>
                             <span className="text-xs font-bold text-dark-500 flex items-center gap-1.5">
                               <svg className="w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
@@ -171,7 +178,10 @@ export default function Test() {
             <div className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
                 <div className="relative z-10 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-5">
-                        <span className="bg-dark-100 text-dark-600 border border-dark-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Full Length</span>
+                        <span className="inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all bg-gradient-to-r from-fuchsia-50 to-purple-50 text-purple-700 border-purple-200/60 shadow-purple-500/10">
+                          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
+                          Elite
+                        </span>
                         <span className="bg-accent-50 text-accent-600 border border-accent-100 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase">
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Upcoming
                         </span>

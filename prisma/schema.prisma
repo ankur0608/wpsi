@@ -31,6 +31,7 @@ model User {
     referralCode     String?   @unique
     referralCount    Int       @default(0)
     referralCoupons  Coupon[]  @relation("ReferrerCoupon")
+    referredBy       String?
 
     // Relations
     answers         MCQAnswer[]
@@ -213,6 +214,7 @@ model MockTest {
     isActive        Boolean            @default(true)
     isComingSoon    Boolean            @default(false)
     planType        String             @default("free")
+    testType        String             @default("Mix")
     questions       MockTestQuestion[]
     images          UploadedImage[]
     createdAt       DateTime           @default(now())

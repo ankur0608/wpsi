@@ -11,6 +11,9 @@ export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
   const [copiedReward, setCopiedReward] = useState<string | null>(null);
 
+  const [referredUsers, setReferredUsers] = useState<any[]>([]);
+  const [loadingReferred, setLoadingReferred] = useState(true);
+
   useEffect(() => {
     const fetchReferrals = async () => {
       try {
@@ -29,7 +32,23 @@ export default function ReferralsPage() {
         setLoading(false);
       }
     };
+
+    const fetchReferredUsers = async () => {
+      try {
+        const res = await fetch('/api/user/referred');
+        const json = await res.json();
+        if (json.success) {
+          setReferredUsers(json.referredUsers);
+        }
+      } catch (err) {
+        console.error("Failed to fetch referred users", err);
+      } finally {
+        setLoadingReferred(false);
+      }
+    };
+
     fetchReferrals();
+    fetchReferredUsers();
   }, []);
 
   const handleCopy = () => {
@@ -222,6 +241,53 @@ export default function ReferralsPage() {
           ))}
         </div>
       )}
+
+      {/* Referred Users List */}
+      <div className="mt-16 mb-8">
+        <h2 className="text-2xl lg:text-3xl font-display font-bold text-dark-900 mb-2">Users Signed Up With Your Code</h2>
+        <p className="text-dark-500">Track the users who have successfully used your referral code.</p>
+      </div>
+
+      <div className="bg-white rounded-3xl border border-dark-100 p-4 md:p-8 shadow-sm">
+        {loadingReferred ? (
+          <p className="text-sm text-dark-500 text-center py-4">Loading referred users...</p>
+        ) : referredUsers.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-dark-100 text-xs text-dark-500 uppercase tracking-wider">
+                  <th className="p-3 font-bold">Name</th>
+                  <th className="p-3 font-bold">Date Joined</th>
+                  <th className="p-3 font-bold">Plan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {referredUsers.map((u) => (
+                  <tr key={u.id} className="border-b border-dark-50 hover:bg-dark-50/50 transition-colors">
+                    <td className="p-3 font-medium text-dark-800">{u.name || 'Unknown'}</td>
+                    <td className="p-3 text-sm text-dark-600">
+                      {new Date(u.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3">
+                      <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${u.planType !== 'free' ? 'bg-accent-100 text-accent-700' : 'bg-dark-100 text-dark-600'}`}>
+                        {u.planType}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-10">
+            <div className="w-16 h-16 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-4 text-dark-300">
+              <i className="fa-solid fa-users text-2xl"></i>
+            </div>
+            <h3 className="text-lg font-bold text-dark-800 mb-2">No Referrals Yet</h3>
+            <p className="text-dark-500 text-sm">Share your code to invite friends and they will appear here once they register!</p>
+          </div>
+        )}
+      </div>
 
       {/* Terms & Conditions Section */}
       <div className="mt-16 bg-white rounded-3xl border border-dark-100 p-8 shadow-sm">
