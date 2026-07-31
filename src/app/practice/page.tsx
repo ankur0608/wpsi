@@ -580,6 +580,7 @@ export default function PracticePage() {
     if (view !== 'exam') return;
     
     const handleUnload = () => {
+      console.log('[TEST] handleUnload triggered');
       const currentSession = latestSessionRef.current;
       if (!currentSession || currentSession.submitted || currentSession.questions.length === 0) return;
 
@@ -621,9 +622,12 @@ export default function PracticePage() {
       const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
       
       // Attempt to send using navigator.sendBeacon for higher reliability on tab close
+      console.log('[TEST] Attempting to auto-submit. Payload:', payload);
       if (navigator.sendBeacon) {
+        console.log('[TEST] Using navigator.sendBeacon');
         navigator.sendBeacon('/api/test-submissions', blob);
       } else {
+        console.log('[TEST] Falling back to fetch keepalive');
         fetch('/api/test-submissions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -645,17 +649,21 @@ export default function PracticePage() {
     if (view !== 'exam' || !session || session.submitted) return;
     
     const visibilityHandler = () => {
+      console.log('[TEST] visibilityHandler triggered. Document hidden:', document.hidden);
       if (document.hidden) {
         awayTimerRef.current = window.setTimeout(() => {
+          console.log('[TEST] 30 minute timeout reached. Auto-submitting.');
           setStatusMessage('Exam auto-submitted due to 30 minutes of being away from the tab.');
           setForceSubmit(true);
         }, 30 * 60 * 1000);
 
         if (session.mode === 'mock') {
           const violations = session.violations + 1;
+          console.log('[TEST] Mock test tab switch violation detected. Violations:', violations);
           setSession((cur) => cur ? { ...cur, violations } : cur);
 
           if (violations > 3) {
+            console.log('[TEST] Exceeded 3 violations, auto-submitting mock test.');
             setStatusMessage('More than 3 tab-switch violations detected. Your mock test was auto-submitted.');
             setModalConfig({
               isOpen: true,
@@ -1063,6 +1071,7 @@ export default function PracticePage() {
 
   useEffect(() => {
     if (forceSubmit) {
+      console.log('[TEST] forceSubmit effect triggered. Submitting session.');
       submitSession(true);
       setForceSubmit(false);
     }

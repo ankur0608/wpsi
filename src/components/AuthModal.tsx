@@ -279,7 +279,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, mobile, acceptedTerms, ...getDeviceInfo() }),
+          body: JSON.stringify({ name, email, password, mobile, acceptedTerms, referralCode: isReferralVerified ? referralCode : undefined, ...getDeviceInfo() }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));

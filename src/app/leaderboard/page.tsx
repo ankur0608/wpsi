@@ -152,8 +152,17 @@ export default function LeaderboardPage() {
                   const planBadgeText = isElite ? 'text-violet-700' : 'text-sky-700';
                   const planBadgeBorder = isElite ? 'border-violet-200' : 'border-sky-200';
 
+                  let rowClasses = 'bg-white border border-dark-100 hover:border-dark-200 hover:shadow-sm group';
+                  if (item.isUser) {
+                    rowClasses = 'bg-primary-50/50 border-2 border-primary-300 shadow-sm';
+                  } else if (isElite) {
+                    rowClasses = 'bg-violet-50/20 border-2 border-violet-300 hover:border-violet-400 shadow-[0_2px_10px_-3px_rgba(139,92,246,0.3)] group';
+                  } else if (isPro) {
+                    rowClasses = 'bg-sky-50/20 border-2 border-sky-300 hover:border-sky-400 shadow-[0_2px_10px_-3px_rgba(14,165,233,0.3)] group';
+                  }
+
                   return (
-                <div key={item.rank} className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl border transition-all ${item.isUser ? 'bg-primary-50/50 border-primary-200 shadow-sm' : 'bg-white border-dark-100 hover:border-dark-200 hover:shadow-sm group'}`}>
+                <div key={item.rank} className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all ${rowClasses}`}>
                   <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{item.rank}</span>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm overflow-hidden ${item.isUser ? 'bg-primary-600 text-white' : 'bg-dark-100 text-dark-600 group-hover:bg-dark-200 transition-colors'}`}>

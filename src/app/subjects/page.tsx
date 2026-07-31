@@ -17,7 +17,6 @@ function SubjectsContent() {
   const { user } = useUser();
   
   const [comingSoonModalOpen, setComingSoonModalOpen] = useState(false);
-  const [lockedModalOpen, setLockedModalOpen] = useState(false);
   const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -90,7 +89,7 @@ function SubjectsContent() {
     const hoverTextColor = finalPart === "Part A" ? "group-hover:text-primary-600" : finalPart === "Part B" ? "group-hover:text-accent-600" : "group-hover:text-dark-600";
     const progressGradient = finalPart === "Part A" ? "from-primary-500 to-primary-600" : finalPart === "Part B" ? "from-accent-500 to-orange-500" : "from-dark-500 to-dark-600";
 
-    const isFreePlan = !user?.planType || user.planType === 'free';
+    const isFreePlan = !user?.planType || user.planType.toLowerCase() === 'free';
     const isSubjectUnlocked = subject.isFree || !isFreePlan;
 
     const handleClick = (e: React.MouseEvent) => {
@@ -98,11 +97,8 @@ function SubjectsContent() {
         e.preventDefault();
         setSelectedSubjectName(subject.name);
         setComingSoonModalOpen(true);
-      } else if (!isSubjectUnlocked) {
-        e.preventDefault();
-        setSelectedSubjectName(subject.name);
-        setLockedModalOpen(true);
       }
+      // Allow navigation even if !isSubjectUnlocked so users can test the first topic
     };
 
     const handleShareSubject = async (e: React.MouseEvent) => {
@@ -143,11 +139,7 @@ function SubjectsContent() {
             Free
           </div>
         )}
-        {!subject.isComingSoon && !isSubjectUnlocked && (
-          <div className="absolute top-2 right-2 text-dark-400 z-10">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-          </div>
-        )}
+
         <div className={`w-12 h-12 bg-gradient-to-tr ${meta.gradient} rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md shadow-dark-500/10`}>
             {meta.icon}
         </div>
@@ -340,37 +332,7 @@ function SubjectsContent() {
         </div>
       )}
 
-      {/* Locked Subject Modal */}
-      {lockedModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </div>
-            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Premium Subject</h3>
-            <p className="text-center text-dark-500 mb-6 text-sm">
-              <span className="font-bold text-dark-700">{selectedSubjectName}</span> is a premium subject. Please upgrade your plan to access this content.
-            </p>
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setLockedModalOpen(false)}
-                className="flex-1 py-2.5 bg-dark-100 hover:bg-dark-200 text-dark-700 rounded-xl font-bold transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={() => {
-                  setLockedModalOpen(false);
-                  router.push('/pricing');
-                }}
-                className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold transition-colors"
-              >
-                Upgrade
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Locked Subject Modal removed as free users can now navigate to try the first topic */}
 
       {toast && (
         <div className="fixed top-20 right-6 z-[10030] animate-in slide-in-from-top-4 fade-in duration-300 shadow-xl">

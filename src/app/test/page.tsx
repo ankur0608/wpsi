@@ -8,6 +8,7 @@ export default function Test() {
   const [mockTests, setMockTests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [planFilter, setPlanFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const filteredTests = mockTests.filter(test => {
     return planFilter === 'all' || (test.planType && test.planType.toLowerCase() === planFilter.toLowerCase());
@@ -15,8 +16,11 @@ export default function Test() {
 
   useEffect(() => {
     const fetchMockTests = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch('/api/mock-tests');
+        const queryParams = new URLSearchParams();
+        if (searchTerm.trim()) queryParams.append('q', searchTerm.trim());
+        const res = await fetch(`/api/mock-tests?${queryParams.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         setMockTests(Array.isArray(data) ? data : []);
@@ -26,8 +30,13 @@ export default function Test() {
         setIsLoading(false);
       }
     };
-    fetchMockTests();
-  }, []);
+
+    const timeoutId = setTimeout(() => {
+      fetchMockTests();
+    }, 400);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   useEffect(() => {
     // Basic Intersection Observer for Scroll Animations
@@ -53,7 +62,19 @@ export default function Test() {
                 <h2 className="font-display text-3xl font-bold text-dark-900 mb-1">Available Mock Tests</h2>
                 <p className="text-dark-500 text-sm">Challenge yourself with exam-simulated environments.</p>
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-3">
+            <div className="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto">
+                <div className="relative w-full md:w-64">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Search tests..." 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-white border border-dark-200 text-dark-700 pl-10 pr-3 py-2 rounded-xl text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
+                    />
+                </div>
                 <select 
                   value={planFilter} 
                   onChange={(e) => setPlanFilter(e.target.value)}
@@ -65,8 +86,6 @@ export default function Test() {
                   <option value="pro">Pro Tests</option>
                   <option value="elite">Elite Tests</option>
                 </select>
-
-
             </div>
         </div>
         
@@ -95,13 +114,23 @@ export default function Test() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTests.map((test, index) => {
-              const isFreePlan = !user?.planType || user.planType === 'free';
-              const isProPlan = user?.planType === 'pro';
-              const isLocked = (isFreePlan && index >= 3) || (isProPlan && index >= 10);
+              const userPlan = user?.planType?.toLowerCase() || 'free';
+              const testPlan = test.planType?.toLowerCase() || 'free';
+              
+              let isLocked = false;
+              if (userPlan === 'free') {
+                  isLocked = testPlan !== 'free';
+              } else if (userPlan === 'pro') {
+                  isLocked = testPlan === 'elite';
+              }
 
               if (isLocked) {
+                let borderClassLocked = 'border border-dark-100 shadow-sm';
+                if (test.planType?.toLowerCase() === 'pro') borderClassLocked = 'border-2 border-indigo-400 shadow-md shadow-indigo-500/10';
+                if (test.planType?.toLowerCase() === 'elite') borderClassLocked = 'border-2 border-purple-400 shadow-md shadow-purple-500/10';
+
                 return (
-                  <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
+                  <div key={test.id} className={`glass-card hover-card p-6 ${borderClassLocked} group flex flex-col h-full relative overflow-hidden bg-dark-50/50 opacity-80 cursor-not-allowed`}>
                       <div className="relative z-10 flex flex-col h-full">
                           <div className="flex items-center justify-between mb-5">
                               <span className={`inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all ${
@@ -136,8 +165,12 @@ export default function Test() {
                 );
               }
 
+              let borderClassUnlocked = 'border border-dark-100 shadow-sm';
+              if (test.planType?.toLowerCase() === 'pro') borderClassUnlocked = 'border-2 border-indigo-400 shadow-md shadow-indigo-500/10';
+              if (test.planType?.toLowerCase() === 'elite') borderClassUnlocked = 'border-2 border-purple-400 shadow-md shadow-purple-500/10';
+
               return (
-                <div key={test.id} className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white">
+                <div key={test.id} className={`glass-card hover-card p-6 ${borderClassUnlocked} group flex flex-col h-full relative overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white`}>
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center justify-between mb-5">
@@ -175,7 +208,7 @@ export default function Test() {
             })}
             
             {/* Locked Test Example */}
-            <div className="glass-card hover-card p-6 border border-dark-100 group flex flex-col h-full relative overflow-hidden shadow-sm bg-dark-50/50 opacity-80 cursor-not-allowed">
+            <div className="glass-card hover-card p-6 border-2 border-purple-400 group flex flex-col h-full relative overflow-hidden shadow-md shadow-purple-500/10 bg-dark-50/50 opacity-80 cursor-not-allowed">
                 <div className="relative z-10 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-5">
                         <span className="inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all bg-gradient-to-r from-fuchsia-50 to-purple-50 text-purple-700 border-purple-200/60 shadow-purple-500/10">

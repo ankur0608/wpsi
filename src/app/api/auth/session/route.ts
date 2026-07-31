@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionFromRequest, publicUserSelect } from '@/lib/auth';
+import { getSessionFromRequest, publicUserSelect, clearSessionCookie } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -19,10 +19,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'User not found' },
-        { status: 404 }
+        { status: 401 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     return NextResponse.json({ data: user }, { status: 200 });

@@ -1,12 +1,23 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const query = searchParams.get('q') || '';
+
+    const whereClause: any = { isActive: true };
+    if (query) {
+      whereClause.title = {
+        contains: query,
+        mode: 'insensitive',
+      };
+    }
+
     const mockTests = await prisma.mockTest.findMany({
-      where: { isActive: true },
+      where: whereClause,
       orderBy: {
         createdAt: 'asc',
       },

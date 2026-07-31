@@ -21,10 +21,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'User not found' },
-        { status: 404 }
+        { status: 401 }
       );
+      clearSessionCookie(response);
+      return response;
     }
 
     return NextResponse.json({ data: user }, { status: 200 });

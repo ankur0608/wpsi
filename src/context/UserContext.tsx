@@ -42,6 +42,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
 
+      if (!response.ok) {
+        setUser(null);
+        return null;
+      }
+
       const json = await response.json();
       const nextUser = json.data ?? null;
       setUser(nextUser);

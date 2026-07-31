@@ -189,6 +189,7 @@ export default function ReferralsPage() {
         </div>
       </div>
 
+
       {/* Rewards Hub */}
       <div className="mb-8">
         <h2 className="text-2xl lg:text-3xl font-display font-bold text-dark-900 mb-2">My Unlocked Coupons</h2>
@@ -243,48 +244,77 @@ export default function ReferralsPage() {
       )}
 
       {/* Referred Users List */}
-      <div className="mt-16 mb-8">
-        <h2 className="text-2xl lg:text-3xl font-display font-bold text-dark-900 mb-2">Users Signed Up With Your Code</h2>
-        <p className="text-dark-500">Track the users who have successfully used your referral code.</p>
+      <div className="mt-16 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl lg:text-3xl font-display font-bold text-dark-900 mb-2">Users Signed Up With Your Code</h2>
+          <p className="text-dark-500">Track the users who have successfully used your referral code.</p>
+        </div>
+        {!loadingReferred && referredUsers.length > 0 && (
+          <div className="inline-flex items-center gap-2 bg-primary-50 px-4 py-2 rounded-xl border border-primary-100 text-primary-700 font-bold text-sm shadow-sm">
+            <i className="fa-solid fa-users text-primary-500"></i>
+            {referredUsers.length} Referral{referredUsers.length !== 1 ? 's' : ''}
+          </div>
+        )}
       </div>
 
-      <div className="bg-white rounded-3xl border border-dark-100 p-4 md:p-8 shadow-sm">
+      <div className="w-full">
         {loadingReferred ? (
-          <p className="text-sm text-dark-500 text-center py-4">Loading referred users...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white rounded-2xl border border-dark-100 p-5 flex items-center gap-4 animate-pulse">
+                <div className="w-12 h-12 rounded-full bg-dark-100 shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-dark-100 rounded w-1/3"></div>
+                  <div className="h-3 bg-dark-50 rounded w-1/4"></div>
+                </div>
+                <div className="w-20 h-6 bg-dark-50 rounded-full"></div>
+              </div>
+            ))}
+          </div>
         ) : referredUsers.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-dark-100 text-xs text-dark-500 uppercase tracking-wider">
-                  <th className="p-3 font-bold">Name</th>
-                  <th className="p-3 font-bold">Date Joined</th>
-                  <th className="p-3 font-bold">Plan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {referredUsers.map((u) => (
-                  <tr key={u.id} className="border-b border-dark-50 hover:bg-dark-50/50 transition-colors">
-                    <td className="p-3 font-medium text-dark-800">{u.name || 'Unknown'}</td>
-                    <td className="p-3 text-sm text-dark-600">
-                      {new Date(u.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-3">
-                      <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${u.planType !== 'free' ? 'bg-accent-100 text-accent-700' : 'bg-dark-100 text-dark-600'}`}>
-                        {u.planType}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {referredUsers.map((u) => {
+              const isPremium = u.planType && u.planType.toLowerCase() !== 'free';
+              const avatarName = encodeURIComponent(u.name || 'User');
+              return (
+                <div key={u.id} className="group bg-white rounded-2xl border border-dark-100 p-4 sm:p-5 flex items-center justify-between shadow-sm hover:shadow-lg hover:shadow-primary-500/5 hover:border-primary-200 hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-center gap-4">
+                    <div className="relative shrink-0">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm group-hover:shadow-primary-500/20 transition-shadow">
+                        <img src={`https://ui-avatars.com/api/?name=${avatarName}&background=${isPremium ? 'F59E0B' : '007FFF'}&color=fff&bold=true`} alt={u.name || 'User'} className="w-full h-full object-cover" />
+                      </div>
+                      {isPremium && (
+                         <div className="absolute -top-1 -right-1 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white w-5 h-5 rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
+                           <i className="fa-solid fa-crown text-[9px]"></i>
+                         </div>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-dark-900 group-hover:text-primary-700 transition-colors">{u.name || 'Unknown User'}</h4>
+                      <p className="text-xs text-dark-500 flex items-center gap-1.5 mt-1">
+                        <i className="fa-regular fa-calendar-days opacity-70"></i>
+                        Joined {new Date(u.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right shrink-0 ml-2">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest ${isPremium ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 shadow-sm' : 'bg-dark-50 border border-dark-100 text-dark-500'}`}>
+                      {isPremium ? <><i className="fa-solid fa-star text-yellow-500"></i> {u.planType}</> : 'Free Plan'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="text-center py-10">
-            <div className="w-16 h-16 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-4 text-dark-300">
-              <i className="fa-solid fa-users text-2xl"></i>
+          <div className="bg-white rounded-3xl border border-dark-100 p-10 text-center shadow-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-dark-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative z-10 w-20 h-20 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-5 text-dark-300 group-hover:text-primary-400 group-hover:bg-primary-50 transition-colors duration-500">
+              <i className="fa-solid fa-users text-3xl"></i>
             </div>
-            <h3 className="text-lg font-bold text-dark-800 mb-2">No Referrals Yet</h3>
-            <p className="text-dark-500 text-sm">Share your code to invite friends and they will appear here once they register!</p>
+            <h3 className="relative z-10 text-xl font-bold text-dark-800 mb-2">No Referrals Yet</h3>
+            <p className="relative z-10 text-dark-500 max-w-sm mx-auto text-sm leading-relaxed">Share your unique code to invite friends. Once they register, they'll magically appear right here!</p>
           </div>
         )}
       </div>

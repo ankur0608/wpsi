@@ -56,6 +56,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (paymentHistoryId) {
+      const existingPayment = await prisma.paymentHistory.findUnique({
+        where: { id: paymentHistoryId }
+      });
+
+      if (existingPayment && existingPayment.status === 'SUCCESS') {
+        return NextResponse.json({ success: true, message: 'Payment already verified', planId: securePlanId });
+      }
+
       const paymentHistory = await prisma.paymentHistory.update({
         where: { id: paymentHistoryId },
         data: {

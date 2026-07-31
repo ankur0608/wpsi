@@ -13,6 +13,7 @@ function TopicsContent() {
   const router = useRouter();
   const { user } = useUser();
   const [topics, setTopics] = useState<any[]>([]);
+  const [subjectInfo, setSubjectInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
   const [selectedTopicName, setSelectedTopicName] = useState('');
@@ -49,8 +50,11 @@ function TopicsContent() {
               break;
             }
           }
-          if (foundSubject && foundSubject.topics) {
-            setTopics(foundSubject.topics);
+          if (foundSubject) {
+            setSubjectInfo(foundSubject);
+            if (foundSubject.topics) {
+              setTopics(foundSubject.topics);
+            }
           }
         }
         setLoading(false);
@@ -61,7 +65,7 @@ function TopicsContent() {
       });
   }, [subjectId]);
 
-  const isFreePlan = !user?.planType || user.planType === 'free';
+  const isFreePlan = !user?.planType || user.planType.toLowerCase() === 'free';
   const isProOrElite = user?.planType?.toLowerCase().includes('pro') || user?.planType?.toLowerCase().includes('elite');
 
   return (
@@ -138,7 +142,7 @@ function TopicsContent() {
                 <div className="text-center text-dark-400 py-10">No topics found for this subject.</div>
               ) : (
                 topics.map((topic, idx) => {
-                  const isTopicUnlocked = !isFreePlan || idx === 0;
+                  const isTopicUnlocked = !isFreePlan || idx === 0 || subjectInfo?.isFree === true;
 
                   return (
                     <div
@@ -297,8 +301,8 @@ function TopicsContent() {
                   {/* Modal Footer */}
                   <div className="p-6 border-t border-slate-100 shrink-0 flex justify-end">
                       {(() => {
-                        const isFirstTopic = selectedTopicIndex === 0;
-                        const isLimitReached = !isFirstTopic && limits?.planType === 'free' && (limits.mcqsSolvedToday || 0) >= 20;
+                        const isFreeTopic = selectedTopicIndex === 0 || subjectInfo?.isFree === true;
+                        const isLimitReached = !isFreeTopic && limits?.planType === 'free' && (limits.mcqsSolvedToday || 0) >= 20;
                         return (
                           <button 
                             onClick={() => {
@@ -310,7 +314,7 @@ function TopicsContent() {
                             }}
                             className={`${isLimitReached ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-blue-500/20'} text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all`}
                           >
-                              {isLimitReached ? 'Daily Limit Reached (20/20 FREE MCQs)' : <>Start Session {isFirstTopic && <span className="ml-1 text-xs text-blue-200">(Free)</span>} <i className="fa-solid fa-arrow-right ml-1"></i></>}
+                              {isLimitReached ? 'Daily Limit Reached (20/20 FREE MCQs)' : <>Start Session {isFreeTopic && <span className="ml-1 text-xs text-blue-200">(Free)</span>} <i className="fa-solid fa-arrow-right ml-1"></i></>}
                           </button>
                         );
                       })()}

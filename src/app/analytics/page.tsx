@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
     );
   }
 
-  const isFreePlan = !user?.planType || user.planType === 'free';
+  const isFreePlan = !user?.planType || user.planType.toLowerCase() === 'free';
   if (isFreePlan) {
     return (
       <div className="bg-dark-50 w-full min-h-[80vh] flex flex-col items-center justify-center font-sans text-dark-800 p-6">
