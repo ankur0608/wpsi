@@ -92,7 +92,7 @@ export default function Test() {
         {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="glass-card p-6 border border-dark-100 flex flex-col h-[280px] bg-white shadow-sm animate-pulse">
+              <div key={i} className="glass-card rounded-2xl p-6 border border-dark-100 flex flex-col h-[280px] bg-white shadow-sm animate-pulse">
                 <div className="flex items-center justify-between mb-5">
                     <div className="h-6 w-20 bg-dark-100 rounded-full"></div>
                     <div className="h-4 w-16 bg-dark-100 rounded"></div>
@@ -125,12 +125,16 @@ export default function Test() {
               }
 
               if (isLocked) {
-                let borderClassLocked = 'border border-dark-100 shadow-sm';
-                if (test.planType?.toLowerCase() === 'pro') borderClassLocked = 'border-2 border-indigo-400 shadow-md shadow-indigo-500/10';
-                if (test.planType?.toLowerCase() === 'elite') borderClassLocked = 'border-2 border-purple-400 shadow-md shadow-purple-500/10';
+                let borderClassLocked = '!border-2 !border-emerald-400 !shadow-md !shadow-emerald-500/10';
+                if (test.planType?.toLowerCase() === 'pro') borderClassLocked = '!border-2 !border-indigo-400 !shadow-md !shadow-indigo-500/10';
+                if (test.planType?.toLowerCase() === 'elite') borderClassLocked = '!border-2 !border-purple-400 !shadow-md !shadow-purple-500/10';
+
+                let iconBgLocked = 'bg-emerald-50 text-emerald-400';
+                if (test.planType?.toLowerCase() === 'pro') iconBgLocked = 'bg-indigo-50 text-indigo-400';
+                if (test.planType?.toLowerCase() === 'elite') iconBgLocked = 'bg-purple-50 text-purple-400';
 
                 return (
-                  <div key={test.id} className={`glass-card hover-card p-6 ${borderClassLocked} group flex flex-col h-full relative overflow-hidden bg-dark-50/50 opacity-80 cursor-not-allowed`}>
+                  <div key={test.id} className={`glass-card rounded-2xl hover-card p-6 ${borderClassLocked} group flex flex-col h-full relative overflow-hidden bg-dark-50/50 opacity-80 cursor-not-allowed`}>
                       <div className="relative z-10 flex flex-col h-full">
                           <div className="flex items-center justify-between mb-5">
                               <span className={`inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all ${
@@ -149,8 +153,8 @@ export default function Test() {
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Locked
                               </span>
                           </div>
-                          <div className="w-12 h-12 bg-dark-100 rounded-2xl flex items-center justify-center text-dark-400 mb-4">
-                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                          <div className={`w-12 h-12 ${iconBgLocked} rounded-2xl flex items-center justify-center mb-4`}>
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                           </div>
                           <h3 className="font-display font-bold text-dark-900 text-xl mb-2">{test.title}</h3>
                           <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">Upgrade to unlock this mock test and evaluate your complete preparation.</p>
@@ -165,12 +169,16 @@ export default function Test() {
                 );
               }
 
-              let borderClassUnlocked = 'border border-dark-100 shadow-sm';
-              if (test.planType?.toLowerCase() === 'pro') borderClassUnlocked = 'border-2 border-indigo-400 shadow-md shadow-indigo-500/10';
-              if (test.planType?.toLowerCase() === 'elite') borderClassUnlocked = 'border-2 border-purple-400 shadow-md shadow-purple-500/10';
+              let borderClassUnlocked = '!border-2 !border-emerald-400 !shadow-md !shadow-emerald-500/10';
+              if (test.planType?.toLowerCase() === 'pro') borderClassUnlocked = '!border-2 !border-indigo-400 !shadow-md !shadow-indigo-500/10';
+              if (test.planType?.toLowerCase() === 'elite') borderClassUnlocked = '!border-2 !border-purple-400 !shadow-md !shadow-purple-500/10';
+
+              let iconBgUnlocked = 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600';
+              if (test.planType?.toLowerCase() === 'pro') iconBgUnlocked = 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600';
+              if (test.planType?.toLowerCase() === 'elite') iconBgUnlocked = 'bg-purple-50 text-purple-600 group-hover:bg-purple-600';
 
               return (
-                <div key={test.id} className={`glass-card hover-card p-6 ${borderClassUnlocked} group flex flex-col h-full relative overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white`}>
+                <div key={test.id} className={`glass-card rounded-2xl hover-card p-6 ${borderClassUnlocked} group flex flex-col h-full relative overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 transition-all duration-300 bg-white`}>
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary-50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-out z-0"></div>
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center justify-between mb-5">
@@ -191,8 +199,8 @@ export default function Test() {
                               {test.durationMinutes || 120} Mins
                             </span>
                         </div>
-                        <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
-                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div className={`w-12 h-12 ${iconBgUnlocked} rounded-2xl flex items-center justify-center mb-4 group-hover:text-white transition-colors duration-300`}>
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                         </div>
                         <h3 className="font-display font-bold text-dark-900 text-xl mb-2 group-hover:text-primary-700 transition-colors">{test.title}</h3>
                         <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">{test.description || 'Complete coverage of Reasoning, Aptitude, Constitution, and Current Affairs.'}</p>
@@ -208,7 +216,7 @@ export default function Test() {
             })}
             
             {/* Locked Test Example */}
-            <div className="glass-card hover-card p-6 border-2 border-purple-400 group flex flex-col h-full relative overflow-hidden shadow-md shadow-purple-500/10 bg-dark-50/50 opacity-80 cursor-not-allowed">
+            <div className="glass-card rounded-2xl hover-card p-6 !border-2 !border-purple-400 group flex flex-col h-full relative overflow-hidden !shadow-md !shadow-purple-500/10 bg-dark-50/50 opacity-80 cursor-not-allowed">
                 <div className="relative z-10 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-5">
                         <span className="inline-flex items-center gap-1.5 border text-[11px] font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm transition-all bg-gradient-to-r from-fuchsia-50 to-purple-50 text-purple-700 border-purple-200/60 shadow-purple-500/10">
@@ -219,8 +227,8 @@ export default function Test() {
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Upcoming
                         </span>
                     </div>
-                    <div className="w-12 h-12 bg-dark-100 rounded-2xl flex items-center justify-center text-dark-400 mb-4">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-400 mb-4">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     </div>
                     <h3 className="font-display font-bold text-dark-900 text-xl mb-2">WPSI Part B - Technical</h3>
                     <p className="text-sm text-dark-500 mb-6 flex-1 line-clamp-2">Complete technical curriculum mock test unlocking soon.</p>
