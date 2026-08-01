@@ -118,7 +118,7 @@ export default function LeaderboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
           
           {/* Leaderboard List */}
-          <div className="bg-white border border-dark-100 rounded-3xl p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between pb-4 border-b border-dark-100 mb-5">
               <h3 className="font-display text-lg font-bold text-dark-800 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">🏆</span>
@@ -152,19 +152,47 @@ export default function LeaderboardPage() {
                   const planBadgeText = isElite ? 'text-violet-700' : 'text-sky-700';
                   const planBadgeBorder = isElite ? 'border-violet-200' : 'border-sky-200';
 
-                  let rowClasses = 'bg-white border border-dark-100 hover:border-dark-200 hover:shadow-sm group';
-                  if (item.isUser) {
-                    rowClasses = 'bg-primary-50/50 border-2 border-primary-300 shadow-sm';
+                  let rowClasses = 'bg-white border-b border-dark-50 hover:bg-dark-50 hover:shadow-sm group';
+                  if (item.rank === 1) {
+                    rowClasses = 'bg-amber-50/40 hover:bg-amber-50 shadow-sm group';
+                  } else if (item.isUser) {
+                    rowClasses = 'bg-primary-50/50 shadow-sm';
                   } else if (isElite) {
-                    rowClasses = 'bg-violet-50/20 border-2 border-violet-300 hover:border-violet-400 shadow-[0_2px_10px_-3px_rgba(139,92,246,0.3)] group';
+                    rowClasses = 'bg-violet-50/10 hover:bg-violet-50/30 group';
                   } else if (isPro) {
-                    rowClasses = 'bg-sky-50/20 border-2 border-sky-300 hover:border-sky-400 shadow-[0_2px_10px_-3px_rgba(14,165,233,0.3)] group';
+                    rowClasses = 'bg-sky-50/10 hover:bg-sky-50/30 group';
                   }
 
                   return (
                 <div key={item.rank} className={`flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all ${rowClasses}`}>
                   <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                    <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{item.rank}</span>
+                    {item.rank === 1 ? (
+                      <div className="w-8 h-8 relative flex items-center justify-center shrink-0 mb-2 mt-1">
+                        <div className="absolute -bottom-1.5 flex gap-0.5">
+                          <div className="w-2 h-3 bg-red-600 rounded-[1px] transform rotate-[25deg] shadow-sm"></div>
+                          <div className="w-2 h-3 bg-red-600 rounded-[1px] transform -rotate-[25deg] shadow-sm"></div>
+                        </div>
+                        <div className="w-7 h-7 bg-gradient-to-br from-amber-300 to-amber-500 rounded-full flex items-center justify-center font-bold text-white shadow-md border-[1.5px] border-amber-100 relative z-10 text-xs">1</div>
+                      </div>
+                    ) : item.rank === 2 ? (
+                      <div className="w-8 h-8 relative flex items-center justify-center shrink-0 mb-2 mt-1">
+                        <div className="absolute -bottom-1.5 flex gap-0.5">
+                          <div className="w-2 h-3 bg-indigo-500 rounded-[1px] transform rotate-[25deg] shadow-sm"></div>
+                          <div className="w-2 h-3 bg-indigo-500 rounded-[1px] transform -rotate-[25deg] shadow-sm"></div>
+                        </div>
+                        <div className="w-7 h-7 bg-gradient-to-br from-slate-200 to-slate-400 rounded-full flex items-center justify-center font-bold text-white shadow-md border-[1.5px] border-slate-100 relative z-10 text-xs">2</div>
+                      </div>
+                    ) : item.rank === 3 ? (
+                      <div className="w-8 h-8 relative flex items-center justify-center shrink-0 mb-2 mt-1">
+                        <div className="absolute -bottom-1.5 flex gap-0.5">
+                          <div className="w-2 h-3 bg-red-700 rounded-[1px] transform rotate-[25deg] shadow-sm"></div>
+                          <div className="w-2 h-3 bg-red-700 rounded-[1px] transform -rotate-[25deg] shadow-sm"></div>
+                        </div>
+                        <div className="w-7 h-7 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center font-bold text-white shadow-md border-[1.5px] border-orange-200 relative z-10 text-xs">3</div>
+                      </div>
+                    ) : (
+                      <span className="w-8 font-display font-bold text-dark-400 text-center text-sm">{item.rank}</span>
+                    )}
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm overflow-hidden ${item.isUser ? 'bg-primary-600 text-white' : 'bg-dark-100 text-dark-600 group-hover:bg-dark-200 transition-colors'}`}>
                       {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : item.avatar}
                     </div>
@@ -210,7 +238,7 @@ export default function LeaderboardPage() {
                     <span className="w-1.5 h-1.5 rounded-full bg-dark-300 mx-1"></span>
                     <span className="w-1.5 h-1.5 rounded-full bg-dark-300 mx-1"></span>
                   </div>
-                  <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl border bg-primary-50/50 border-primary-200 shadow-sm transition-all">
+                  <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary-50/50 shadow-sm transition-all">
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <span className="w-6 font-display font-bold text-dark-400 text-center text-sm">{userRank}</span>
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm bg-primary-600 text-white overflow-hidden">

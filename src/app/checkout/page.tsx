@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import pricingData from '@/data/pricing.json';
 import Script from 'next/script';
+import { useUser } from '@/context/UserContext';
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const planId = searchParams.get('plan');
+  const { user } = useUser();
   
   const [plan, setPlan] = useState<any>(null);
   const [couponCode, setCouponCode] = useState('');
@@ -44,6 +46,16 @@ export default function CheckoutPage() {
       localStorage.removeItem('autoApplyCoupon'); // Only apply once automatically
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.referredBy && !appliedCoupon && !couponCode && !loading) {
+      if (sessionStorage.getItem('referralAttempted') !== 'true') {
+        sessionStorage.setItem('referralAttempted', 'true');
+        setCouponCode(user.referredBy);
+        applyCoupon(user.referredBy);
+      }
+    }
+  }, [user?.referredBy, loading]);
 
   const applyCoupon = async (codeToApply?: string) => {
     const code = codeToApply || couponCode;

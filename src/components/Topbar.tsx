@@ -247,6 +247,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                             <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                             Payment History
                         </Link>
+                        <Link href="/dashboard/referrals" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            Refer & Earn
+                        </Link>
                         <Link href="/dashboard/pricing" className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-dark-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors">
                             <svg className="w-4 h-4 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                             Upgrade Plan

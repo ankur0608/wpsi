@@ -14,6 +14,7 @@ interface User {
   planType?: string;
   image?: string;
   mobile?: string | null;
+  referredBy?: string | null;
 }
 
 interface UserContextType {

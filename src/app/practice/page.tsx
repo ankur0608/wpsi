@@ -584,6 +584,9 @@ export default function PracticePage() {
       const currentSession = latestSessionRef.current;
       if (!currentSession || currentSession.submitted || currentSession.questions.length === 0) return;
 
+      // Clear local storage so it doesn't get restored after auto-submitting
+      localStorage.removeItem('activeExamSession');
+
       const finalResult = calculateResult(currentSession);
       const modeLabel = currentSession.mode === 'mock' ? 'Mock Test' : 'Practice';
       const title = currentSession.questions.length > 0 && typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('testId')

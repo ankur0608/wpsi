@@ -69,14 +69,17 @@ export const authService = {
             }
         }
         
-        if (existingDevice) {
-            await prisma.device.update({
-                where: { id: existingDevice.id },
-                data: { lastLogin: new Date(), lastIp: device.ip }
-            });
-        } else {
-            await prisma.device.create({
-                data: {
+        try {
+            await prisma.device.upsert({
+                where: { deviceId: device.deviceId },
+                update: {
+                    userId,
+                    lastLogin: new Date(),
+                    lastIp: device.ip,
+                    browser: device.browser,
+                    os: device.os
+                },
+                create: {
                     deviceId: device.deviceId,
                     userId,
                     browser: device.browser,
@@ -88,6 +91,10 @@ export const authService = {
                     lastIp: device.ip
                 }
             });
+        } catch (error: any) {
+            if (error.code !== 'P2002') {
+                console.error("Error upserting device:", error);
+            }
         }
 
         return null;

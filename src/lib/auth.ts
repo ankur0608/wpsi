@@ -126,6 +126,7 @@ export const publicUserSelect = {
   bestStreak: true,
   totalStudyDays: true,
   createdAt: true,
+  referredBy: true,
 } as const;
 
 // --- Reset Token Logic ---
