@@ -143,6 +143,113 @@ function NotesViewContent() {
       });
   }, [subjectId]);
 
+  // Screenshot & Content Protection Blocker
+  useEffect(() => {
+    const hideContent = () => {
+      const container = document.getElementById('notes-protection-container');
+      if (container) {
+        container.style.opacity = '0';
+        container.style.filter = 'blur(20px)';
+      }
+    };
+
+    const showContent = () => {
+      const container = document.getElementById('notes-protection-container');
+      if (container) {
+        container.style.opacity = '1';
+        container.style.filter = 'none';
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Aggressively hide on modifier keys used for screenshots (Win/Cmd, Alt) 
+      // This hides the content BEFORE the OS freezes the screen for Snipping Tool
+      if (e.key === 'Meta' || e.key === 'Alt' || e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+        hideContent();
+      }
+
+      // Block PrintScreen specifically and aggressively clear clipboard
+      if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
+        clearClipboard();
+        setTimeout(clearClipboard, 100);
+        setTimeout(clearClipboard, 500);
+        setTimeout(clearClipboard, 1000);
+        e.preventDefault();
+      }
+      
+      // Block Ctrl/Cmd + P (Print) and Ctrl/Cmd + S (Save)
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 's')) {
+        e.preventDefault();
+      }
+
+      // Block Mac screenshot shortcuts (Cmd+Shift+3, Cmd+Shift+4, Cmd+Shift+5)
+      // and Windows Snipping Tool (Win+Shift+S) just in case
+      if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5' || e.key.toLowerCase() === 's'))) {
+        hideContent();
+        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
+        clearClipboard();
+        setTimeout(clearClipboard, 500);
+        e.preventDefault();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
+        clearClipboard();
+        setTimeout(clearClipboard, 200);
+        setTimeout(clearClipboard, 800);
+      }
+      
+      // Restore content when modifier keys are released (only if window still has focus)
+      if (e.key === 'Meta' || e.key === 'Alt' || e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+        if (document.hasFocus()) {
+          showContent();
+        }
+      }
+    };
+
+    // Hide content on window blur (when Snipping Tool or other apps take focus)
+    const handleBlur = () => hideContent();
+    const handleFocus = () => showContent();
+    
+    const handleVisibilityChange = () => {
+      if (document.hidden) hideContent();
+      else if (document.hasFocus()) showContent();
+    };
+    
+    // Prevent copy
+    const handleCopy = (e: ClipboardEvent) => {
+      e.preventDefault();
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/plain', 'Content is protected by MCQPrepZone.');
+      }
+    };
+
+    // Prevent dragging images
+    const handleDragStart = (e: DragEvent) => e.preventDefault();
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('keyup', handleKeyUp, true);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('copy', handleCopy);
+    document.addEventListener('dragstart', handleDragStart);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true);
+      window.removeEventListener('keyup', handleKeyUp, true);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('copy', handleCopy);
+      document.removeEventListener('dragstart', handleDragStart);
+      showContent();
+    };
+  }, []);
+
   const breadcrumbs = mounted && document.getElementById("topbar-breadcrumbs") ? createPortal(
     <div className="flex items-center gap-1.5 text-[11px] text-dark-500 font-medium">
       <Link href="/dashboard" className="hover:text-primary-600 transition-colors">Home</Link>
@@ -174,7 +281,8 @@ function NotesViewContent() {
 
   return (
     <div 
-      className="flex h-[calc(100vh-80px)] bg-[#f8f9fa] font-sans overflow-hidden select-none relative"
+      id="notes-protection-container"
+      className="flex h-[calc(100vh-80px)] bg-[#f8f9fa] font-sans overflow-hidden select-none relative transition-all duration-200"
       onContextMenu={(e) => e.preventDefault()}
     >
       <style dangerouslySetInnerHTML={{__html: `

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { useUser } from "@/context/UserContext";
 
 // Set worker source to use local node_modules via import.meta.url
 if (typeof window !== "undefined") {
@@ -18,6 +19,7 @@ interface PDFViewerProps {
 }
 
 export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: PDFViewerProps) {
+  const { user } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rightCanvasRef = useRef<HTMLCanvasElement>(null);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -138,8 +140,17 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
         </div>
       )}
 
-      {pdfDoc && (
+        {pdfDoc && (
         <>
+          {/* Forensic Watermark Overlay */}
+          <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden flex flex-wrap content-start justify-start gap-8 opacity-[0.035] select-none" aria-hidden="true">
+            {Array.from({ length: 100 }).map((_, i) => (
+              <div key={i} className="-rotate-45 text-2xl font-black text-dark-900 whitespace-nowrap tracking-widest" style={{ marginLeft: i % 2 === 0 ? '0' : '50px' }}>
+                {user?.name || 'Protected'} • {user?.email || 'MCQPrepZone'}
+              </div>
+            ))}
+          </div>
+
           {/* Navigation Overlay (Left) */}
           <button
             onClick={goPrev}
@@ -168,47 +179,47 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
           </div>
 
           <div className="flex-1 w-full overflow-auto hide-scrollbar relative z-10">
-            <div className="min-h-full min-w-max p-4 md:p-8 flex items-start justify-center">
-
-          <div 
-            className={`relative flex ${twoPageMode ? 'gap-1' : ''} mx-auto`} 
-            style={{ 
-              opacity: rendering ? 0.7 : 1,
-              transition: 'opacity 0.3s'
-            }}
-          >
-            {/* Left/Single Page */}
-            <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center">
-              <canvas 
-                ref={canvasRef} 
-                style={{ 
-                  display: 'block', 
-                  width: 'auto', 
-                  height: 'auto',
-                  maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
-                  maxHeight: `${85 * (zoom / 100)}vh`,
-                  transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
-                }} 
-              />
-            </div>
+            <div className="min-h-full min-w-max p-4 md:p-8 flex items-start justify-center relative">
             
-            {/* Right Page (Two Page Mode) */}
-            {twoPageMode && (
-              <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center">
-                <canvas 
-                  ref={rightCanvasRef} 
-                  style={{ 
-                    display: 'block', 
-                    width: 'auto', 
-                    height: 'auto',
-                    maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
-                    maxHeight: `${85 * (zoom / 100)}vh`,
-                    transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
-                  }} 
-                />
+              <div 
+                className={`relative flex ${twoPageMode ? 'gap-1' : ''} mx-auto`} 
+                style={{ 
+                  opacity: rendering ? 0.7 : 1,
+                  transition: 'opacity 0.3s'
+                }}
+              >
+                {/* Left/Single Page */}
+                <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center relative">
+                  <canvas 
+                    ref={canvasRef} 
+                    style={{ 
+                      display: 'block', 
+                      width: 'auto', 
+                      height: 'auto',
+                      maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
+                      maxHeight: `${85 * (zoom / 100)}vh`,
+                      transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
+                    }} 
+                  />
+                </div>
+                
+                {/* Right Page (Two Page Mode) */}
+                {twoPageMode && (
+                  <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center relative">
+                    <canvas 
+                      ref={rightCanvasRef} 
+                      style={{ 
+                        display: 'block', 
+                        width: 'auto', 
+                        height: 'auto',
+                        maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
+                        maxHeight: `${85 * (zoom / 100)}vh`,
+                        transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
+                      }} 
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
             </div>
           </div>
         </>

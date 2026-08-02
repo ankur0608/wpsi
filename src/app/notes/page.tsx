@@ -15,6 +15,7 @@ interface Subject {
   name: string;
   icon?: string;
   topics: Topic[];
+  notesCount?: number;
 }
 
 interface Exam {
@@ -106,46 +107,49 @@ export default function ExamPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {exams.map((exam) => {
             const subjectCount = exam.subjects.length;
-            const topicCount = exam.subjects.reduce((sum, subject) => sum + subject.topics.length, 0);
-            const mcqCount = exam.subjects.reduce((sum, subject) => {
-              return sum + subject.topics.reduce((tSum, topic) => tSum + (topic.mcqCount || 0), 0);
-            }, 0);
+            const notesCount = exam.subjects.reduce((sum, subject) => sum + (subject.notesCount || 0), 0);
 
             return (
-              <Link key={exam.id} href={`/notes/subjects?examId=${exam.id}&examName=${encodeURIComponent(exam.name)}`} className="glass-card group cursor-pointer relative overflow-hidden border-2 border-primary-100 hover:border-primary-400 hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br from-white via-white to-primary-50/20 p-6 flex flex-col justify-between min-h-[300px] bg-white rounded-2xl">
-                <div className="absolute -right-6 -top-6 w-24 h-24 bg-primary-500/10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-tr from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-primary-500/20 group-hover:scale-110 transition-transform">
-                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <span className="bg-success-100 text-success-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 border border-success-200">
-                      <span className="w-1.5 h-1.5 bg-success-500 rounded-full animate-pulse"></span> Active
-                    </span>
+              <Link key={exam.id} href={`/notes/subjects?examId=${exam.id}&examName=${encodeURIComponent(exam.name)}`} className="group flex flex-col bg-white rounded-3xl p-6 border border-dark-100 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-300 transform hover:-translate-y-1.5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-bl-[100px] -z-10 transition-transform group-hover:scale-110"></div>
+                
+                <div className="flex items-start justify-between mb-6 z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/25 group-hover:scale-110 transition-transform duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                   </div>
-                  <h4 className="font-display font-bold text-dark-900 text-lg mb-2 group-hover:text-primary-600 transition-colors">{exam.name}</h4>
-                  <p className="text-xs text-dark-500 leading-relaxed mb-6 line-clamp-3">{exam.description || "Comprehensive test preparation series for government and technical exams."}</p>
+                  <span className="bg-success-50 text-success-700 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider flex items-center gap-1.5 border border-success-100 shadow-sm">
+                    <span className="w-1.5 h-1.5 bg-success-500 rounded-full animate-pulse"></span> Active
+                  </span>
                 </div>
-                <div>
-                  <div className="grid grid-cols-3 gap-2 mb-6 border-t border-dark-100 pt-4">
-                    <div className="text-center">
+                
+                <h4 className="font-display font-bold text-dark-900 text-xl mb-6 group-hover:text-primary-600 transition-colors z-10">
+                  {exam.name}
+                </h4>
+                
+                <div className="flex items-center gap-6 mb-8 z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-dark-50 flex items-center justify-center text-dark-400 group-hover:bg-white group-hover:shadow-sm transition-all border border-transparent group-hover:border-dark-100">
+                      <i className="fa-solid fa-layer-group text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-dark-400 uppercase tracking-wider leading-none mb-1">Subjects</p>
                       <p className="font-bold text-dark-800 text-base leading-none">{subjectCount}</p>
-                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Subjects</p>
-                    </div>
-                    <div className="text-center border-x border-dark-100">
-                      <p className="font-bold text-dark-800 text-base leading-none">{topicCount}</p>
-                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">Topics</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-bold text-dark-800 text-base leading-none">
-                        {mcqCount >= 1000 ? `${(mcqCount / 1000).toFixed(1)}k+` : mcqCount}
-                      </p>
-                      <p className="text-[9px] text-dark-400 font-bold uppercase tracking-wider mt-1">MCQs</p>
                     </div>
                   </div>
-                  <div className="w-full bg-primary-600 text-white font-bold text-center py-3 rounded-xl text-xs transition-all shadow-md group-hover:bg-primary-700 group-hover:shadow-lg shadow-primary-500/10 flex items-center justify-center gap-2">
-                    View Notes <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  <div className="w-px h-10 bg-dark-100"></div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-500 group-hover:bg-primary-100 transition-all">
+                      <i className="fa-regular fa-file-lines text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-dark-400 uppercase tracking-wider leading-none mb-1">Notes</p>
+                      <p className="font-bold text-dark-800 text-base leading-none">{notesCount}</p>
+                    </div>
                   </div>
+                </div>
+                
+                <div className="mt-auto w-full bg-dark-50 text-dark-600 font-bold text-center py-3.5 rounded-xl text-sm transition-all group-hover:bg-primary-600 group-hover:text-white flex items-center justify-center gap-2 group-hover:shadow-lg shadow-primary-500/25 z-10">
+                  View Notes <i className="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
                 </div>
               </Link>
             );
