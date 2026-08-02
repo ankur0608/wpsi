@@ -49,10 +49,27 @@ export async function POST(req: NextRequest) {
        return NextResponse.json({ success: false, error: 'Payment does not belong to this user' }, { status: 403 });
     }
 
-    // Update user's plan in the database using the securePlanId
+    // Fetch the user's current plan to ensure we don't accidentally downgrade them
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { planType: true }
+    });
+
+    const currentPlan = currentUser?.planType?.toLowerCase() || 'free';
+    let newPlanType = securePlanId;
+
+    if (securePlanId === 'notespass' && currentPlan === 'pro') {
+      newPlanType = 'pro_notespass';
+    } else if (securePlanId === 'pro' && currentPlan === 'notespass') {
+      newPlanType = 'pro_notespass';
+    } else if (securePlanId === 'elite') {
+      newPlanType = 'elite';
+    }
+
+    // Update user's plan in the database using the newPlanType
     await prisma.user.update({
       where: { id: session.userId },
-      data: { planType: securePlanId }
+      data: { planType: newPlanType }
     });
 
     if (paymentHistoryId) {

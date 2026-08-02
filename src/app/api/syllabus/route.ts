@@ -13,6 +13,9 @@ export async function GET() {
           where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
           include: {
+            _count: {
+              select: { notes: true }
+            },
             topics: {
               where: { isActive: true },
               orderBy: { sortOrder: 'asc' },
@@ -40,6 +43,7 @@ export async function GET() {
         isFree: subject.isFree,
         isActive: subject.isActive,
         isComingSoon: subject.isComingSoon,
+        notesCount: subject._count?.notes || 0,
         topics: subject.topics.map(topic => ({
           ...topic,
           sortOrder: topic.sortOrder,

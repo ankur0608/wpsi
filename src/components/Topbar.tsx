@@ -65,6 +65,9 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     "/dashboard/payments": "Payment History",
     "/notifications": "Notifications",
     "/xp/history": "XP History",
+    "/notes": "Available Notes",
+    "/notes/subjects": "Select Subject",
+    "/notes/view": "📖 Notes",
     "/subjects": "Exam",
     "/topics": "Exam",
   };
@@ -134,8 +137,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             
             {/* Desktop Page Title */}
             <div className="hidden md:flex flex-col justify-center">
-                <h2 className="text-xl font-display font-bold text-dark-900 leading-tight">{displayTitle}</h2>
+                <div className="flex items-center gap-2">
+                   <h2 className="text-xl font-display font-bold text-dark-900 leading-tight">{displayTitle}</h2>
+                </div>
                 {displaySubtitle && <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mt-0.5">{displaySubtitle}</p>}
+                <div id="topbar-breadcrumbs"></div>
             </div>
         </div>
         

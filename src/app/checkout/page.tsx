@@ -57,9 +57,17 @@ export default function CheckoutPage() {
     }
   }, [user?.referredBy, loading]);
 
+
+
   const applyCoupon = async (codeToApply?: string) => {
     const code = codeToApply || couponCode;
     if (!code) return;
+
+    if (plan?.id === 'notespass') {
+      setCouponError('Coupons cannot be applied to the Notes Pass.');
+      return;
+    }
+
     setCouponError('');
     setCouponSuccess('');
     setLoading(true);

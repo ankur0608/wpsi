@@ -59,6 +59,24 @@
       ],
       "buttonText": "Upgrade to Elite",
       "isPopular": false
+    },
+    {
+      "id": "notespass",
+      "name": "Notes Pass",
+      "subtitle": "Get Complete Access to All Subject Notes",
+      "price": "₹49",
+      "period": "(One-Time)",
+      "amount": 49,
+      "recommendation": "Best for Quick Revisions",
+      "features": [
+        "All Subject Notes",
+        "High-Quality PDF Viewer",
+        "Zoom & Fullscreen Mode",
+        "Single & Dual Page Layouts",
+        "Print-friendly format (Coming Soon)"
+      ],
+      "buttonText": "Get Notes Pass",
+      "isPopular": false
     }
   ]
 }

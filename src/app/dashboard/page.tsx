@@ -221,8 +221,8 @@ export default function Dashboard() {
             </div>
 
             {/* COL 2: WEAK TOPICS */}
-            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm relative ${user?.planType === 'free' ? 'overflow-hidden' : ''}`}>
-                {user?.planType === 'free' && (
+            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm relative ${(user?.planType === 'free' || user?.planType === 'notespass') ? 'overflow-hidden' : ''}`}>
+                {(user?.planType === 'free' || user?.planType === 'notespass') && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed">
                         <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-dark-500 mb-3">
                             🔒
@@ -255,7 +255,7 @@ export default function Dashboard() {
                         const classSet = bgClasses[idx % 3];
                         const [bg, border, hover, text, textHover, iconHover] = classSet.split(' ');
                         
-                        const destHref = user?.planType === 'pro' ? '/analytics' : '/subjects';
+                        const destHref = (user?.planType === 'pro' || user?.planType === 'pro_notespass' || user?.planType === 'elite') ? '/analytics' : '/subjects';
 
                         return (
                             <Link href={destHref} key={idx} className={`flex items-center gap-3 p-3 ${bg} ${border} rounded-xl ${hover} transition-colors group`}>

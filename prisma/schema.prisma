@@ -81,6 +81,7 @@ model Subject {
     examId       String
     exam         Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
     topics       Topic[]
+    notes        Note[]
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 
@@ -393,4 +394,35 @@ model WhatsappLog {
     createdAt    DateTime @default(now())
 
     @@index([userId])
+}
+
+model Note {
+    id                   String        @id @default(cuid())
+    title                String
+    pdfUrl               String
+    subjectId            String
+    subject              Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    sortOrder            Int           @default(0)
+    isActive             Boolean       @default(true)
+    estimatedTimeMinutes Int?          @default(60)
+    totalPages           Int?          @default(0)
+    isFree               Boolean       @default(false)
+    sections             NoteSection[]
+    createdAt            DateTime      @default(now())
+    updatedAt            DateTime      @updatedAt
+
+    @@index([subjectId])
+}
+
+model NoteSection {
+    id         String   @id @default(cuid())
+    title      String
+    pageNumber Int?
+    sortOrder  Int      @default(0)
+    noteId     String
+    note       Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@index([noteId])
 }

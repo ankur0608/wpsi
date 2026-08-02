@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       // Fallbacks matching pricing.json
       if (planId === 'Pro' || planId === 'pro') amount = 299;
       else if (planId === 'Elite' || planId === 'elite' || planId === 'Premium' || planId === 'premium') amount = 499;
+      else if (planId === 'Notespass' || planId === 'notespass') amount = 49;
       else {
         return NextResponse.json({ success: false, error: 'Invalid planId' }, { status: 400 });
       }
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     // Verify and apply coupon or referral code if provided
     let appliedReferralCode = "";
-    if (couponCode) {
+    if (couponCode && planId.toLowerCase() !== 'notespass') {
       const coupon = await prisma.coupon.findUnique({
         where: { code: couponCode.toUpperCase() }
       });
