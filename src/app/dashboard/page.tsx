@@ -146,6 +146,28 @@ export default function Dashboard() {
 
             {/* COL 1: ACTIONABLE PRACTICE */}
             <div className="flex flex-col gap-4">
+                {/* PDF Notes Access */}
+                <div className="bg-gradient-to-r from-primary-50 to-primary-100/50 border border-primary-200 rounded-2xl p-5 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-100/50 to-transparent pointer-events-none"></div>
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div>
+                            <h3 className="font-display text-sm font-bold text-dark-800 flex items-center gap-2 mb-2">
+                                <span className="w-8 h-8 bg-white border border-primary-200 rounded-lg flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                                    <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </span>
+                                Study Notes
+                            </h3>
+                            <p className="text-xs text-dark-500 font-medium mb-4">Access high-quality PDF notes for all subjects to revise quickly.</p>
+                        </div>
+                        <Link href="/notes" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl transition-all shadow-[0_4px_12px_-4px_rgba(var(--primary-600),0.4)] hover:shadow-[0_6px_16px_-4px_rgba(var(--primary-600),0.5)] w-full">
+                            Browse Notes
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                        </Link>
+                    </div>
+                </div>
+
                 {/* Resume Practice */}
                 <div className="bg-white border border-dark-100 rounded-2xl p-5 shadow-sm">
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-100">
@@ -221,8 +243,8 @@ export default function Dashboard() {
             </div>
 
             {/* COL 2: WEAK TOPICS */}
-            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm relative ${(user?.planType === 'free' || user?.planType === 'notespass') ? 'overflow-hidden' : ''}`}>
-                {(user?.planType === 'free' || user?.planType === 'notespass') && (
+            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm relative ${(!user?.planType || user?.planType.toLowerCase() === 'free' || user?.planType.toLowerCase() === 'notespass') ? 'overflow-hidden' : ''}`}>
+                {(!user?.planType || user?.planType.toLowerCase() === 'free' || user?.planType.toLowerCase() === 'notespass') && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed">
                         <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-dark-500 mb-3">
                             🔒
@@ -255,7 +277,8 @@ export default function Dashboard() {
                         const classSet = bgClasses[idx % 3];
                         const [bg, border, hover, text, textHover, iconHover] = classSet.split(' ');
                         
-                        const destHref = (user?.planType === 'pro' || user?.planType === 'pro_notespass' || user?.planType === 'elite') ? '/analytics' : '/subjects';
+                        const userPlan = user?.planType?.toLowerCase() || '';
+                        const destHref = (userPlan.includes('pro') || userPlan.includes('elite')) ? '/analytics' : '/subjects';
 
                         return (
                             <Link href={destHref} key={idx} className={`flex items-center gap-3 p-3 ${bg} ${border} rounded-xl ${hover} transition-colors group`}>
@@ -281,8 +304,8 @@ export default function Dashboard() {
             </div>
 
             {/* COL 3: ACTIVITY / PERFORMANCE */}
-            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm flex flex-col relative ${user?.planType === 'free' ? 'overflow-hidden' : ''}`}>
-                {user?.planType === 'free' && (
+            <div className={`bg-white border border-dark-100 rounded-2xl p-5 shadow-sm flex flex-col relative ${(!user?.planType || user?.planType.toLowerCase() === 'free') ? 'overflow-hidden' : ''}`}>
+                {(!user?.planType || user?.planType.toLowerCase() === 'free') && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed">
                         <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-dark-500 mb-3">
                             🔒

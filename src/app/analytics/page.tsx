@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
         {/* Weak vs Strong Topics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Weak Topics */}
-          {user?.planType === 'pro' || user?.planType === 'pro_notespass' ? (
+          {user?.planType?.toLowerCase().includes('pro') || user?.planType?.toLowerCase().includes('elite') ? (
             <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
               <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
               <div className="relative z-10">
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Interactive Subject Performance (Full Width) */}
-        {user?.planType === 'pro' || user?.planType === 'pro_notespass' ? (
+        {user?.planType?.toLowerCase().includes('pro') || user?.planType?.toLowerCase().includes('elite') ? (
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
             <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
             <div className="relative z-10">

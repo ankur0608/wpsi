@@ -35,10 +35,18 @@ function NotesViewContent() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isTwoPage, setIsTwoPage] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Close sidebar on mobile by default
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const isElite = user?.planType?.toLowerCase() === 'elite';
-  const hasNotesPass = user?.planType?.toLowerCase() === 'notespass' || user?.planType?.toLowerCase() === 'pro_notespass';
+  const userPlan = user?.planType?.toLowerCase() || '';
+  const isElite = userPlan.includes('elite');
+  const hasNotesPass = userPlan.includes('notespass');
   const selectedNoteIndex = notes.findIndex(n => n.id === selectedNote?.id);
   const canAccessNote = isElite || hasNotesPass || (selectedNote?.isFree === true);
   const elitePlan = pricingData.plans.find((p: any) => p.id === 'elite');
@@ -168,13 +176,8 @@ function NotesViewContent() {
         hideContent();
       }
 
-      // Block PrintScreen specifically and aggressively clear clipboard
+      // Block PrintScreen specifically
       if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
-        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
-        clearClipboard();
-        setTimeout(clearClipboard, 100);
-        setTimeout(clearClipboard, 500);
-        setTimeout(clearClipboard, 1000);
         e.preventDefault();
       }
       
@@ -187,20 +190,11 @@ function NotesViewContent() {
       // and Windows Snipping Tool (Win+Shift+S) just in case
       if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5' || e.key.toLowerCase() === 's'))) {
         hideContent();
-        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
-        clearClipboard();
-        setTimeout(clearClipboard, 500);
         e.preventDefault();
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
-        const clearClipboard = () => { try { navigator.clipboard.writeText('Screenshots are protected by MCQPrepZone.'); } catch (err) {} };
-        clearClipboard();
-        setTimeout(clearClipboard, 200);
-        setTimeout(clearClipboard, 800);
-      }
       
       // Restore content when modifier keys are released (only if window still has focus)
       if (e.key === 'Meta' || e.key === 'Alt' || e.key === 'PrintScreen' || e.code === 'PrintScreen') {
@@ -282,7 +276,7 @@ function NotesViewContent() {
   return (
     <div 
       id="notes-protection-container"
-      className="flex h-[calc(100vh-80px)] bg-[#f8f9fa] font-sans overflow-hidden select-none relative transition-all duration-200"
+      className="flex h-[calc(100dvh-80px)] lg:h-[calc(100vh-80px)] bg-[#f8f9fa] font-sans overflow-hidden select-none relative transition-all duration-200"
       onContextMenu={(e) => e.preventDefault()}
     >
       <style dangerouslySetInnerHTML={{__html: `
@@ -295,7 +289,7 @@ function NotesViewContent() {
       {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-dark-900/50 z-[90] lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-[90] lg:hidden backdrop-blur-sm"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -475,9 +469,9 @@ function NotesViewContent() {
         </div>,
         document.body
       ) : (
-        <div className="flex-1 flex flex-col h-full overflow-hidden px-3 sm:px-6 lg:px-8 pb-3 sm:pb-6 lg:pb-8 pt-0 relative bg-[#f8f9fa]">
+        <div className="flex-1 flex flex-col h-full overflow-hidden px-0 sm:px-3 lg:px-8 pb-20 sm:pb-6 lg:pb-8 pt-0 relative bg-[#f8f9fa]">
           {/* PDF Viewer Container */}
-          <div className="w-full h-full flex flex-col overflow-hidden relative bg-white border-dark-100 rounded-b-2xl shadow-sm border-b border-l border-r">
+          <div className="w-full h-full flex flex-col overflow-hidden relative bg-white border-dark-100 sm:rounded-b-2xl shadow-sm border-b sm:border-l sm:border-r">
             {/* Toolbar */}
             <div className="h-14 border-b flex items-center justify-between px-3 sm:px-6 shrink-0 border-dark-50 bg-white">
                {/* Left */}
