@@ -156,13 +156,13 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </a>
 
             {/* Streak Header Badge */}
-            <Link href="/streaks" className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-amber-600 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Streaks">
+            <Link href="/streaks" className="hidden sm:flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-amber-600 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Streaks">
                 <span>🔥</span>
                 <span className="hidden sm:inline">{user?.streak || 0} Days</span>
             </Link>
             
             {/* Leaderboard Header Badge */}
-            <Link href="/leaderboard" className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Leaderboard">
+            <Link href="/leaderboard" className="hidden sm:flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Leaderboard">
                 <span>🏆</span>
                 <span className="hidden sm:inline">{userRank ? `#${userRank}` : 'Unranked'}</span>
             </Link>

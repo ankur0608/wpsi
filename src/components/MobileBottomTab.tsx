@@ -52,6 +52,15 @@ export default function MobileBottomTab() {
       )
     },
     {
+      name: 'Progress',
+      path: '/progress',
+      icon: (
+        <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+        </svg>
+      )
+    },
+    {
       name: 'Profile',
       path: '/profile',
       icon: (
@@ -63,22 +72,22 @@ export default function MobileBottomTab() {
   ];
 
   return (
-    <div id="mobile-bottom-tab" className="lg:hidden fixed bottom-4 left-4 right-4 z-50 pb-safe">
-      <div className="bg-white/90 backdrop-blur-xl border border-dark-100 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[2rem] flex justify-around items-center h-[72px] px-2 relative">
+    <div id="mobile-bottom-tab" className="lg:hidden fixed bottom-0 left-0 right-0 w-full z-50 pb-safe">
+      <div className="bg-white/95 backdrop-blur-xl border-t border-dark-100 shadow-[0_-8px_24px_rgba(0,0,0,0.04)] flex overflow-x-auto hide-scrollbar items-center h-[76px] px-2 sm:px-4 relative gap-1 snap-x snap-mandatory pt-1">
         {tabs.map((tab) => {
           const active = isActive(tab.path);
           return (
             <Link
               key={tab.name}
               href={tab.path}
-              className={`flex flex-col items-center justify-center w-full h-[85%] rounded-[1.5rem] transition-all duration-300 ${
+              className={`snap-center flex flex-col items-center justify-center min-w-[64px] flex-1 flex-shrink-0 h-[85%] rounded-[1.5rem] transition-all duration-300 ${
                 active ? 'bg-primary-50/80 text-primary-600 shadow-sm scale-[1.02]' : 'text-dark-400 hover:text-dark-600 hover:bg-dark-50/50'
               }`}
             >
-              <div className={`transition-transform duration-300 ${active ? 'scale-110 mb-0.5' : 'mb-1'}`}>
+              <div className={`transition-transform duration-300 flex items-center justify-center ${active ? 'scale-110 mb-0.5' : 'mb-1'}`}>
                  {tab.icon}
               </div>
-              <span className={`text-[9px] font-bold uppercase tracking-wider transition-all duration-300 ${active ? 'opacity-100' : 'opacity-70'}`}>
+              <span className={`text-[8px] font-extrabold uppercase tracking-normal whitespace-nowrap transition-all duration-300 ${active ? 'opacity-100' : 'opacity-70'}`}>
                 {tab.name}
               </span>
             </Link>
