@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import { getUserLevel } from "@/lib/xp";
@@ -54,7 +55,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="h-20 flex items-center px-6 border-b border-dark-100 shrink-0">
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 overflow-hidden shrink-0">
-                    <img src="/logo.jpeg" alt="McqPrepZone Logo" className="w-full h-full object-cover" />
+                    <Image src="/logo.jpeg" alt="McqPrepZone Logo" width={40} height={40} className="w-full h-full object-cover" />
                 </div>
                 <div>
                     <h1 className="font-display font-bold text-xl text-dark-800 leading-none tracking-tight">McqPrep<span className="text-primary-600">Zone</span></h1>
@@ -138,7 +139,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             
             <Link href="/profile" onClick={handleLinkClick} className="flex items-center p-3 bg-dark-50 rounded-xl border border-dark-200 hover:border-dark-300 transition-colors cursor-pointer group">
                 <div className="w-9 h-9 shadow-sm rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600 group-hover:bg-primary-700 transition-colors">
-                    {loading ? '...' : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
+                    {loading ? '...' : user?.image ? <Image src={user.image} alt={displayName} width={32} height={32} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                 </div>
                 <div className="flex-1">
                     <p className="text-[13px] font-bold text-dark-800 leading-tight">{loading ? 'Loading...' : displayName}</p>

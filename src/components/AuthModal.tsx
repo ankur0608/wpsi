@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import Link from "next/link";
 import OTPInput from "./OTPInput";
 import { useUser } from '@/context/UserContext';
@@ -544,7 +545,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         <div className="text-center mb-5">
           <Link href="/" className="inline-flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden shrink-0 border border-dark-200">
-              <img src="/logo.jpeg" alt="WPSI Logo" className="w-full h-full object-cover" />
+              <Image src="/logo.jpeg" alt="WPSI Logo" width={64} height={64} className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-bold text-xl tracking-tight">
               Mcqprep<span className="text-blue-600 dark:text-blue-500">zone</span>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export default function ReceiptTemplate({ payment, user }: { payment: any, user: any }) {
   if (!payment) return null;
@@ -12,7 +13,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden border border-dark-200 shrink-0">
-                <img src="/logo.jpeg" alt="WPSI Logo" className="w-full h-full object-cover" />
+                <Image src="/logo.jpeg" alt="WPSI Logo" width={40} height={40} className="w-full h-full object-cover" />
               </div>
               <h1 className="text-3xl font-black text-dark-900 tracking-tight" style={{ fontFamily: 'system-ui' }}>MCQPrepZone Pro</h1>
             </div>

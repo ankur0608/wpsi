@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
@@ -8,6 +9,31 @@ export async function generateStaticParams() {
   return blogPosts.map((post) => ({
     slug: post.slug,
   }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const post = blogPosts.find(p => p.slug === resolvedParams.slug);
+  
+  if (!post) return { title: 'Post Not Found' };
+  
+  return {
+    title: `${post.title} | MCQ Prep Zone`,
+    description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+    openGraph: {
+      title: post.title,
+      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      type: 'article',
+      publishedTime: post.date, // Note: You may want to parse this to ISO 8601 if it's not already
+      images: [post.imageUrl],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      images: [post.imageUrl],
+    }
+  };
 }
 
 export default async function BlogSlugPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,12 +52,97 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
     );
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.mcqprepzone.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://www.mcqprepzone.com/blog"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.title,
+        "item": `https://www.mcqprepzone.com/blog/${post.slug}`
+      }
+    ]
+  };
+
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://www.mcqprepzone.com/blog/${post.slug}`
+    },
+    "headline": post.title,
+    "image": post.imageUrl,
+    "datePublished": post.date,
+    "dateModified": post.date,
+    "author": {
+      "@type": "Organization",
+      "name": "MCQ Prep Zone"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "MCQ Prep Zone",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.mcqprepzone.com/logo.jpeg"
+      }
+    },
+    "description": post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
+  };
+
   return (
     <div className="relative w-full overflow-x-hidden page-transition">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+        />
         <DynamicNavbar />
         
         {/*  Standardized Hero Section  */}
-        <section className="relative bg-primary-900 pt-40 pb-28 overflow-hidden border-b border-primary-800">
+        <section className="relative bg-primary-900 pt-32 pb-28 overflow-hidden border-b border-primary-800">
+            {/* Breadcrumbs */}
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-4 pb-8">
+                <nav className="flex text-sm text-primary-300 font-medium justify-center md:justify-start" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                        <li className="inline-flex items-center">
+                            <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                                Home
+                            </Link>
+                        </li>
+                        <li>
+                            <div className="flex items-center">
+                                <svg className="w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
+                                <Link href="/blog" className="hover:text-white transition-colors ml-1 md:ml-2">Blog</Link>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div className="flex items-center">
+                                <svg className="w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
+                                <span className="text-white ml-1 md:ml-2 line-clamp-1 max-w-[200px] sm:max-w-xs">{post.title}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
             {/*  Premium Grid Background  */}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fillRule=\\'evenodd\\'%3E%3Cg fill=\\'%23000000\\' fill-opacity=\\'0.02\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
             

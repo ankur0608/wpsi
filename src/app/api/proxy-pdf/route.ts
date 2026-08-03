@@ -9,18 +9,29 @@ export async function GET(request: Request) {
   }
 
   try {
+    const parsedUrl = new URL(url);
+    
+    // Security: Prevent SSRF by only allowing specific trusted domains
+    const allowedDomains = [
+      'pub-c3e8ef5798ce468485f4b300b5ffea95.r2.dev',
+      // Add other trusted domains here if needed
+    ];
+
+    if (!allowedDomains.includes(parsedUrl.hostname)) {
+      return NextResponse.json({ error: 'Unauthorized domain' }, { status: 403 });
+    }
+
     const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch PDF: ${response.statusText}`);
     }
 
-    const blob = await response.blob();
-    
-    return new NextResponse(blob, {
+    return new NextResponse(response.body, {
       headers: {
         'Content-Type': 'application/pdf',
         'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=43200',
       },
     });
   } catch (error) {

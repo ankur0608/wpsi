@@ -20,7 +20,11 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ data: notes });
+    return NextResponse.json({ data: notes }, {
+      headers: {
+        'Cache-Control': 'public, max-age=600, stale-while-revalidate=120',
+      },
+    });
   } catch (error) {
     console.error("Error fetching notes:", error);
     return NextResponse.json(

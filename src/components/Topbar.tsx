@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import { useUser } from "@/context/UserContext";
 import { getUserLevel } from "@/lib/xp";
 
@@ -128,7 +129,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             {/* Mobile Logo */}
             <div className="flex md:hidden items-center gap-2">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30 overflow-hidden shrink-0">
-                    <img src="/logo.jpeg" alt="McqPrepZone Logo" className="w-full h-full object-cover" />
+                    <Image src="/logo.jpeg" alt="McqPrepZone Logo" width={40} height={40} className="w-full h-full object-cover" />
                 </div>
                 <div>
                     <h1 className="font-display font-bold text-lg text-dark-800 leading-none tracking-tight">McqPrep<span className="text-primary-600">Zone</span></h1>
@@ -222,7 +223,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             <div className="relative">
                 <div className="flex items-center gap-2 pl-2 md:pl-4 md:border-l border-dark-200 cursor-pointer hover:bg-dark-50 p-1.5 rounded-xl transition-colors" onClick={() => togglePopover("profile")}>
                     <div className="w-9 h-9 shadow-sm rounded-full flex items-center justify-center text-white font-bold text-sm border border-primary-500 uppercase overflow-hidden shrink-0 bg-primary-600">
-                        {loading ? "..." : user?.image ? <img src={user.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
+                        {loading ? "..." : user?.image ? <Image src={user.image} alt={displayName} width={36} height={36} className="w-full h-full object-cover" /> : displayName.slice(0, 2)}
                     </div>
                     <div className="hidden lg:block text-left">
                         <p className="text-xs font-bold text-dark-900 leading-tight">{loading ? 'Loading...' : displayName}</p>
