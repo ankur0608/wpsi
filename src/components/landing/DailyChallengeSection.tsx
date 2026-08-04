@@ -21,7 +21,7 @@ export default function DailyChallengeSection() {
                                 <Image width={100} height={100} src="https://i.pravatar.cc/100?img=2" className="w-6 h-6 rounded-full border-2 border-white"alt="image" />
                                 <Image width={100} height={100} src="https://i.pravatar.cc/100?img=3" className="w-6 h-6 rounded-full border-2 border-white"alt="image" />
                             </div>
-                            <span>+450 playing</span>
+                            <span>Active now</span>
                         </div>
                         
                         <div className="bg-dark-50 rounded-xl p-4 mb-4 border border-dark-100 flex-1">

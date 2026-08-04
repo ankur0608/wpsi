@@ -73,18 +73,8 @@ export default function HeroSection() {
             
             {/*  Trust Indicators  */}
             <div className="mt-16 pt-8 flex flex-col items-center justify-center gap-4">
-                <div className="flex -space-x-3">
-                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=11" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
-                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=12" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
-                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=13" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
-                    <Image width={100} height={100} src="https://i.pravatar.cc/100?img=14" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="image" />
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-dark-100 flex items-center justify-center text-xs font-bold text-dark-600 z-10">+5k</div>
-                </div>
                 <div className="text-center">
-                    <div className="flex gap-1 justify-center text-amber-400 text-lg mb-1 drop-shadow-sm">
-                        ★★★★★
-                    </div>
-                    <div className="text-xs font-bold text-dark-500 uppercase tracking-widest">Trusted by Gujarat's Top Aspirants</div>
+                    <div className="text-xs font-bold text-dark-500 uppercase tracking-widest">Join our growing community of aspirants</div>
                 </div>
             </div>
             

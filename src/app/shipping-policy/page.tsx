@@ -52,7 +52,7 @@ export default function ShippingPolicyPage() {
               For any queries regarding delivery and access to your digital products, reach out to us:
             </p>
             <ul className="list-disc pl-6 mt-4 space-y-2">
-              <li><strong>Email:</strong> p8166250@gmail.com</li>
+              <li><strong>Email:</strong> Mcqprepzone@gmail.com</li>
               {/* <li><strong>Company:</strong> [Your Legal Company Name]</li> */}
             </ul>
           </section>

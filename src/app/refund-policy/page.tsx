@@ -59,7 +59,7 @@ export default function RefundPolicyPage() {
                 If you have any questions about our Cancellation and Refund Policy, please contact us at:
               </p>
               <ul className="list-disc pl-6 mt-4 space-y-2">
-                <li><strong>Email:</strong>p8166250@gmail.com</li>
+                <li><strong>Email:</strong> Mcqprepzone@gmail.com</li>
                 {/* <li><strong>Company:</strong> [Your Legal Company Name]</li> */}
               </ul>
             </section>

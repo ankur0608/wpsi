@@ -2,7 +2,8 @@ import { MetadataRoute } from 'next';
 import { blogPosts } from '@/data/blogs';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://mcqprepzone.online';
+  // Use the canonical domain
+  const baseUrl = 'https://www.mcqprepzone.com';
   
   // Public static pages
   const staticPages: MetadataRoute.Sitemap = [
@@ -34,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.8,
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/contact`,
@@ -99,12 +100,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Dynamic blog post pages
-  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => {
+    // Attempt to parse the date from readTime since blogs.ts mistakenly put the date there.
+    // If it's invalid, fallback to new Date()
+    let postDate = new Date();
+    if (post.readTime && !post.readTime.includes('min')) {
+      const parsed = new Date(post.readTime);
+      if (!isNaN(parsed.getTime())) {
+        postDate = parsed;
+      }
+    }
+    
+    return {
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: postDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    };
+  });
 
   return [...staticPages, ...blogPages];
 }
