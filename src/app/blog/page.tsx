@@ -23,13 +23,13 @@ export default function Blogs() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.mcqprepzone.com"
+        "item": "https://www.mcqprepzone.online"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://www.mcqprepzone.com/blog"
+        "item": "https://www.mcqprepzone.online/blog"
       }
     ]
   };

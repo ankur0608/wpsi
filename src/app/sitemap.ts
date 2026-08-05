@@ -3,7 +3,7 @@ import { blogPosts } from '@/data/blogs';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Use the canonical domain
-  const baseUrl = 'https://www.mcqprepzone.com';
+  const baseUrl = 'https://www.mcqprepzone.online';
   
   // Public static pages
   const staticPages: MetadataRoute.Sitemap = [

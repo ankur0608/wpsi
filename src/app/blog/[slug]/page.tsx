@@ -60,19 +60,19 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.mcqprepzone.com"
+        "item": "https://www.mcqprepzone.online"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://www.mcqprepzone.com/blog"
+        "item": "https://www.mcqprepzone.online/blog"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `https://www.mcqprepzone.com/blog/${post.slug}`
+        "item": `https://www.mcqprepzone.online/blog/${post.slug}`
       }
     ]
   };
@@ -82,7 +82,7 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.mcqprepzone.com/blog/${post.slug}`
+      "@id": `https://www.mcqprepzone.online/blog/${post.slug}`
     },
     "headline": post.title,
     "image": post.imageUrl,
@@ -97,7 +97,7 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
       "name": "MCQ Prep Zone",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.mcqprepzone.com/logo.jpeg"
+        "url": "https://www.mcqprepzone.online/logo.jpeg"
       }
     },
     "description": post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
