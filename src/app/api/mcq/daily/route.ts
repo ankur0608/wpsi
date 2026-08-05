@@ -1,15 +1,41 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSessionFromRequest } from '@/lib/auth';
 
-export const revalidate = 86400; // Cache for 24 hours (86400 seconds)
+export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Fetch random MCQs grouped by difficulty
+    const session = await getSessionFromRequest(request);
+    let userSeedOffset = 0;
+    
+    if (session && session.userId) {
+       for (let i = 0; i < session.userId.length; i++) {
+           userSeedOffset += session.userId.charCodeAt(i);
+       }
+    }
+
+    // Generate a daily seed based on the current date + user offset (between -1 and 1 for Postgres)
+    const today = new Date();
+    const seedStr = `${today.getUTCFullYear()}-${today.getUTCMonth() + 1}-${today.getUTCDate()}-${userSeedOffset}`;
+    
+    let hash = 0;
+    for (let i = 0; i < seedStr.length; i++) {
+        const char = seedStr.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    
+    const seedVal = (Math.abs(hash) % 1000000) / 1000000.0;
+
+    // Fetch random MCQs grouped by difficulty using a transaction to maintain the seed on the connection
     // 10 Easy, 5 Medium, 5 Hard
-    const easyMcqs = await prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Easy' ORDER BY RANDOM() LIMIT 10`;
-    const mediumMcqs = await prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Medium' ORDER BY RANDOM() LIMIT 5`;
-    const hardMcqs = await prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Hard' ORDER BY RANDOM() LIMIT 5`;
+    const [_, easyMcqs, mediumMcqs, hardMcqs] = await prisma.$transaction([
+      prisma.$executeRaw`SELECT setseed(${seedVal})`,
+      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Easy' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 10`,
+      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Medium' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 5`,
+      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Hard' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 5`
+    ]);
 
     const combined = [
       ...(Array.isArray(easyMcqs) ? easyMcqs : []),
@@ -35,8 +61,8 @@ export async function GET() {
       });
     }
 
-    // Shuffle and attach translations
-    const shuffled = combined.sort(() => Math.random() - 0.5).map(m => {
+    // Process and attach translations (Order is preserved: 10 Easy, 5 Medium, 5 Hard)
+    const processed = combined.map(m => {
       const mcqTranslations = translations.filter(t => 
         (m.translationId && t.id === m.translationId) || 
         (t.translationId === m.id) || 
@@ -48,7 +74,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ data: shuffled }, { status: 200 });
+    return NextResponse.json({ data: processed }, { status: 200 });
   } catch (error) {
     console.error('Error fetching daily MCQs:', error);
     return NextResponse.json(

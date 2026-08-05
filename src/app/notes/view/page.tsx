@@ -77,7 +77,6 @@ function NotesViewContent() {
             <p className="text-xs text-dark-500 mb-4 h-8">Complete access to all subject notes</p>
             <div className="text-2xl font-black text-dark-900 mb-4">₹49 <span className="text-sm font-normal text-dark-400">only</span></div>
             <ul className="text-xs text-dark-600 mb-6 space-y-2 flex-1">
-              <li><i className="fa-solid fa-check text-success-500 mr-2"></i> All Subject Notes</li>
               <li><i className="fa-solid fa-check text-success-500 mr-2"></i> High-Quality PDF Viewer</li>
               <li><i className="fa-solid fa-check text-success-500 mr-2"></i> Lifetime Access</li>
             </ul>
@@ -103,7 +102,6 @@ function NotesViewContent() {
                <div className="text-sm text-dark-400 line-through decoration-red-500 font-medium mb-1">₹{elitePlan?.amount}</div>
             </div>
             <ul className="text-xs text-dark-700 mb-6 space-y-2 flex-1">
-              <li><i className="fa-solid fa-check text-primary-500 mr-2"></i> All Subject Notes</li>
               <li><i className="fa-solid fa-check text-primary-500 mr-2"></i> Unlimited MCQs & Mocks</li>
               <li><i className="fa-solid fa-check text-primary-500 mr-2"></i> AI Analytics & Weak Topic Analysis</li>
             </ul>

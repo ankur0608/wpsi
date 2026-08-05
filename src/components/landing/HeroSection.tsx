@@ -71,12 +71,6 @@ export default function HeroSection() {
                 </a>
             </div>
             
-            {/*  Trust Indicators  */}
-            <div className="mt-16 pt-8 flex flex-col items-center justify-center gap-4">
-                <div className="text-center">
-                    <div className="text-xs font-bold text-dark-500 uppercase tracking-widest">Join our growing community of aspirants</div>
-                </div>
-            </div>
             
         </div>
     </header>

@@ -58,6 +58,44 @@ export default function DailyPracticePage() {
     }
   }, [started, isFinished]);
 
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+    const storageKey = `dailyPracticeState_${todayStr}`;
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.responses) setResponses(parsed.responses);
+        if (parsed.visitedList) setVisitedList(parsed.visitedList);
+        if (parsed.markedForReview) setMarkedForReview(parsed.markedForReview);
+        if (parsed.timeLeft !== undefined) setTimeLeft(parsed.timeLeft);
+        if (parsed.violations !== undefined) setViolations(parsed.violations);
+        if (parsed.started) setStarted(parsed.started);
+        if (parsed.isFinished) setIsFinished(parsed.isFinished);
+      } catch (e) {
+        console.error('Failed to parse saved state', e);
+      }
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (!started || isFinished || mcqs.length === 0) return;
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+    const storageKey = `dailyPracticeState_${todayStr}`;
+    
+    localStorage.setItem(storageKey, JSON.stringify({
+      responses,
+      visitedList,
+      markedForReview,
+      timeLeft,
+      violations,
+      started,
+      isFinished
+    }));
+  }, [responses, visitedList, markedForReview, timeLeft, violations, started, isFinished, mcqs.length]);
+
   useEffect(() => {
     if (!started || isFinished) return;
     
@@ -442,11 +480,13 @@ export default function DailyPracticePage() {
   }
 
   const currentQuestion = mcqs[currentIndex];
-  const displayedQuestion = currentQuestion && activeLanguage === (currentQuestion.language || 'English')
+  const activeLangLower = activeLanguage.toLowerCase();
+  const currentLangLower = (currentQuestion?.language || 'English').toLowerCase();
+  const displayedQuestion = currentQuestion && activeLangLower === currentLangLower
     ? currentQuestion
-    : (currentQuestion?.translations?.find(t => (t.language || 'English') === activeLanguage) || currentQuestion);
+    : (currentQuestion?.translations?.find(t => (t.language || 'English').toLowerCase() === activeLangLower) || currentQuestion);
   
-  const currentResponse = responses[currentQuestion.id];
+  const currentResponse = responses[currentQuestion?.id || ''];
 
   const selectOption = (key: string) => {
     setResponses(prev => ({ ...prev, [currentQuestion.id]: key }));
@@ -521,7 +561,7 @@ export default function DailyPracticePage() {
       const isCorrect = ans === q.correctAnswer;
       if (isCorrect) score++;
       
-      const gujTranslation = q.translations?.find(t => t.language === 'Gujarati');
+      const gujTranslation = q.translations?.find(t => (t.language || '').toLowerCase() === 'gujarati');
       
       return {
         id: q.id,
@@ -575,6 +615,10 @@ export default function DailyPracticePage() {
     setFinalResult({ score, total: mcqs.length });
     setIsFinished(true);
     setIsSubmitting(false);
+
+    // Clear local storage on submit
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+    localStorage.removeItem(`dailyPracticeState_${todayStr}`);
   };
 
   const renderPaletteState = (q: MCQ) => {
@@ -597,10 +641,10 @@ export default function DailyPracticePage() {
   };
 
   const options = [
-    { key: 'A', value: displayedQuestion.optionA },
-    { key: 'B', value: displayedQuestion.optionB },
-    { key: 'C', value: displayedQuestion.optionC },
-    { key: 'D', value: displayedQuestion.optionD },
+    { key: 'A', value: displayedQuestion?.optionA || '' },
+    { key: 'B', value: displayedQuestion?.optionB || '' },
+    { key: 'C', value: displayedQuestion?.optionC || '' },
+    { key: 'D', value: displayedQuestion?.optionD || '' },
     { key: 'E', value: 'Not Attempted' },
   ];
 
@@ -625,7 +669,7 @@ export default function DailyPracticePage() {
             <div className="flex justify-between items-center mb-3 md:mb-4">
               <div className="flex items-center gap-4 flex-1">
                 <h2 className="text-base md:text-lg font-bold m-0">Question {currentIndex + 1} of {mcqs.length}</h2>
-                {currentQuestion.part && (
+                {currentQuestion?.part && (
                   <span className="bg-[#38bdf8]/10 border border-[#38bdf8]/25 text-[#38bdf8] px-3 py-1 rounded-full text-xs font-semibold">
                     Part {currentQuestion.part}
                   </span>
@@ -654,7 +698,7 @@ export default function DailyPracticePage() {
                   onClick={toggleBookmark}
                   className="bg-transparent border border-dark-100 text-primary-600 px-3 py-2 rounded-lg cursor-pointer flex flex-col items-center text-[10px] gap-1 hover:bg-dark-50 transition-colors"
                 >
-                  <i className={`fa-bookmark ${bookmarked.includes(currentQuestion.id) ? 'fa-solid' : 'fa-regular'} text-base`}></i>
+                  <i className={`fa-bookmark ${bookmarked.includes(currentQuestion?.id || '') ? 'fa-solid' : 'fa-regular'} text-base`}></i>
                   <span className="hidden md:inline">Save</span>
                 </button>
               </div>
@@ -681,7 +725,7 @@ export default function DailyPracticePage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[9px] text-dark-400 uppercase tracking-wider">Subject</span>
-                  <span className="text-xs font-semibold leading-tight">{currentQuestion.subject || 'Mixed'}</span>
+                  <span className="text-xs font-semibold leading-tight">{currentQuestion?.subject || 'Mixed'}</span>
                 </div>
               </div>
               <div className="flex-1 min-w-[130px] bg-dark-50 border border-dark-100 rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
@@ -690,7 +734,7 @@ export default function DailyPracticePage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[9px] text-dark-400 uppercase tracking-wider">Topic</span>
-                  <span className="text-xs font-semibold leading-tight">{currentQuestion.topic || 'Various'}</span>
+                  <span className="text-xs font-semibold leading-tight">{currentQuestion?.topic || 'Various'}</span>
                 </div>
               </div>
               <div className="flex-1 min-w-[100px] bg-dark-50 border border-dark-100 rounded-xl p-1.5 md:p-2 flex items-center gap-1.5 md:gap-2">
@@ -699,7 +743,7 @@ export default function DailyPracticePage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[9px] text-dark-400 uppercase tracking-wider">Difficulty</span>
-                  <span className="text-xs font-semibold leading-tight">{currentQuestion.difficulty}</span>
+                  <span className="text-xs font-semibold leading-tight">{currentQuestion?.difficulty}</span>
                 </div>
               </div>
             </div>
@@ -707,18 +751,18 @@ export default function DailyPracticePage() {
             {/* Controls */}
             <div className="flex flex-row justify-between items-center gap-2 mb-3 md:mb-5">
               <div className="flex bg-dark-50 rounded-lg p-0.5">
-                {(!currentQuestion.language || currentQuestion.language === 'English' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => (t.language || 'English') === 'English')) && (
+                {(!currentQuestion?.language || currentLangLower === 'english' || currentLangLower === 'both' || currentQuestion?.translations?.some(t => (t.language || 'English').toLowerCase() === 'english')) && (
                   <button 
                     onClick={() => setActiveLanguage('English')}
-                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'English' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
+                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLangLower === 'english' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
                   >
                     English
                   </button>
                 )}
-                {(currentQuestion.language === 'Gujarati' || currentQuestion.language === 'Both' || currentQuestion.translations?.some(t => (t.language || 'English') === 'Gujarati')) && (
+                {(currentLangLower === 'gujarati' || currentLangLower === 'both' || currentQuestion?.translations?.some(t => (t.language || '').toLowerCase() === 'gujarati')) && (
                   <button 
                     onClick={() => setActiveLanguage('Gujarati')}
-                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLanguage === 'Gujarati' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
+                    className={`px-2 md:px-3 py-1 rounded-md text-xs font-semibold transition-colors ${activeLangLower === 'gujarati' ? 'bg-primary-600 text-[#111]' : 'text-dark-400 hover:text-dark-900'}`}
                   >
                     Gujarati
                   </button>
