@@ -70,7 +70,7 @@ export default function CheckoutPage() {
     const code = codeToApply || couponCode;
     if (!code) return;
 
-    if (plan?.id === 'notespass') {
+    if (plan?.id === 'notespass' && code.toUpperCase() !== 'FOUNDERVIP') {
       setCouponError('Coupons cannot be applied to the Notes Pass.');
       return;
     }

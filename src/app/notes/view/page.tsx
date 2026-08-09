@@ -52,7 +52,7 @@ function NotesViewContent() {
   const elitePlan = pricingData.plans.find((p: any) => p.id === 'elite');
 
   const handleUpgradeElite = () => {
-    localStorage.setItem('autoApplyCoupon', 'ELITE67');
+    localStorage.setItem('autoApplyCoupon', 'FOUNDERVIP');
     router.push('/checkout?plan=elite');
   };
 

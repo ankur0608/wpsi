@@ -29,6 +29,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (code.toUpperCase() === 'FOUNDERVIP') {
+      return NextResponse.json({ 
+        success: true, 
+        coupon: {
+          id: 'special-foundervip',
+          code: 'FOUNDERVIP',
+          discountPercent: 67,
+          type: 'coupon'
+        } 
+      });
+    }
+
     const coupon = await prisma.coupon.findUnique({
       where: { code: code.toUpperCase() }
     });

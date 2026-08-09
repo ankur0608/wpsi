@@ -53,11 +53,15 @@ export async function POST(req: NextRequest) {
 
     // Verify and apply coupon or referral code if provided
     let appliedReferralCode = "";
-    if (couponCode && planId.toLowerCase() !== 'notespass') {
+    if (couponCode && (planId.toLowerCase() !== 'notespass' || couponCode.toUpperCase() === 'FOUNDERVIP')) {
       if (couponCode.toUpperCase() === 'ELITE67') {
         const discountAmount = Math.floor((amount * 67) / 100);
         finalAmount = amount - discountAmount;
-        appliedCouponId = 'special-elite-67';
+        appliedReferralCode = 'ELITE67'; // Storing it in notes for tracking
+      } else if (couponCode.toUpperCase() === 'FOUNDERVIP') {
+        const discountAmount = Math.floor((amount * 67) / 100);
+        finalAmount = amount - discountAmount;
+        appliedReferralCode = 'FOUNDERVIP'; // Storing it in notes for tracking
       } else {
         const coupon = await prisma.coupon.findUnique({
           where: { code: couponCode.toUpperCase() }
