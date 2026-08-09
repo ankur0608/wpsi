@@ -44,6 +44,13 @@ export default function CheckoutPage() {
       setCouponCode(autoCoupon);
       applyCoupon(autoCoupon);
       localStorage.removeItem('autoApplyCoupon'); // Only apply once automatically
+    } else {
+      if (sessionStorage.getItem('mazgrmftAttempted') !== 'true') {
+        sessionStorage.setItem('mazgrmftAttempted', 'true');
+        setCouponCode('MAZGRMFT');
+        // Small delay to ensure state is ready
+        setTimeout(() => applyCoupon('MAZGRMFT'), 100);
+      }
     }
   }, []);
 
@@ -246,6 +253,25 @@ export default function CheckoutPage() {
                     </div>
                     {couponError && <p className="text-danger-500 text-sm mt-3 font-semibold flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> {couponError}</p>}
                     {couponSuccess && <p className="text-success-600 text-sm mt-3 font-semibold flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> {couponSuccess}</p>}
+                    
+                    {!appliedCoupon && (
+                        <div className="mt-6 border-t border-dark-100 pt-5">
+                            <h3 className="text-sm font-bold text-dark-500 uppercase tracking-wider mb-3">Available Coupons</h3>
+                            <div className="bg-primary-50 border border-primary-100 rounded-xl p-4 flex items-center justify-between">
+                                <div>
+                                    <div className="font-bold text-primary-700 text-lg tracking-widest">MAZGRMFT</div>
+                                    <div className="text-xs text-primary-600 font-medium mt-0.5">Special 61% discount on all plans</div>
+                                </div>
+                                <button 
+                                    onClick={() => { setCouponCode('MAZGRMFT'); applyCoupon('MAZGRMFT'); }}
+                                    disabled={loading}
+                                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-lg shadow-sm transition-colors"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
