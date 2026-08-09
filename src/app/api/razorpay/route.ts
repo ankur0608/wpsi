@@ -54,10 +54,15 @@ export async function POST(req: NextRequest) {
     // Verify and apply coupon or referral code if provided
     let appliedReferralCode = "";
     if (couponCode && planId.toLowerCase() !== 'notespass') {
-      const coupon = await prisma.coupon.findUnique({
-        where: { code: couponCode.toUpperCase() }
-      });
-      if (
+      if (couponCode.toUpperCase() === 'ELITE67') {
+        const discountAmount = Math.floor((amount * 67) / 100);
+        finalAmount = amount - discountAmount;
+        appliedCouponId = 'special-elite-67';
+      } else {
+        const coupon = await prisma.coupon.findUnique({
+          where: { code: couponCode.toUpperCase() }
+        });
+        if (
           coupon && 
           coupon.isActive && 
           (!coupon.expiresAt || new Date(coupon.expiresAt) > new Date()) &&
@@ -75,6 +80,7 @@ export async function POST(req: NextRequest) {
           const discountAmount = Math.floor((amount * 50) / 100); // 50% discount for referral
           finalAmount = amount - discountAmount;
           appliedReferralCode = referrerUser.referralCode || "";
+        }
         }
       }
     }
