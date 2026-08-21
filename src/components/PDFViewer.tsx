@@ -4,12 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { useUser } from "@/context/UserContext";
 
-// Set worker source to use local node_modules via import.meta.url
+// Set worker source to use CDN to prevent bundler and mobile issues
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.mjs',
-    import.meta.url
-  ).toString();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 }
 
 interface PDFViewerProps {
@@ -48,7 +45,11 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
         if (active) setError(err.message || "Failed to load PDF");
       }
     };
-    if (fileUrl) loadPdf();
+    if (fileUrl) {
+      loadPdf();
+    } else {
+      setError("No PDF URL provided for this note");
+    }
     return () => { active = false; };
   }, [fileUrl]);
 

@@ -76,7 +76,7 @@ export default function DailyChallengeSection() {
                         </li>
                     </ul>
                     <div className="pt-4">
-                        <a href="/login" className="inline-block bg-primary-900 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-xl hover:-translate-y-1">Start Today's Challenge</a>
+                        <a href="/daily-challenge" className="inline-block bg-primary-900 hover:bg-primary-800 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-xl hover:-translate-y-1">Start Today's Free Challenge</a>
                     </div>
                 </div>
             </div>

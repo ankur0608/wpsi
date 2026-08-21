@@ -3,6 +3,7 @@ import ClientEffects from '@/components/ClientEffects';
 import Link from 'next/link';
 import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
+import { blogPosts } from '@/data/blogs';
 
 export const metadata: Metadata = {
   title: 'Blogs & Strategies | MCQ Prep Zone',
@@ -88,161 +89,33 @@ export default function Blogs() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/syllabus-90-days" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="How to Master the Wireless PSI Syllabus in 90 Days" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+{blogPosts.map((post) => (
+        <article key={post.slug} className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+            <Link href={`/blog/${post.slug}`} className="relative h-64 overflow-hidden block">
+                <Image fill src={post.imageUrl} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    Exam Strategy
+                    {post.category}
                 </div>
-            </a>
+            </Link>
             <div className="p-8 flex flex-col flex-1">
                 <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Oct 15, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>5 min read</span>
+                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>{post.date}</span>
+                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>{post.readTime}</span>
                 </div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/syllabus-90-days" className="hover:underline">How to Master the Wireless PSI Syllabus in 90 Days</a>
+                    <Link href={`/blog/${post.slug}`} className="hover:underline">{post.title}</Link>
                 </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">A complete, week-by-week study plan to cover both Technical and Non-Technical subjects effectively.</p>
+                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">{post.content.replace(/<[^>]*>?/gm, '').substring(0, 160)}...</p>
                 
                 <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/syllabus-90-days" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
+                    <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
                         Read Article 
                         <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </article>
-        
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/computer-networks" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Top 50 Most Repeated Questions in Computer Networks" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    Technical Paper
-                </div>
-            </a>
-            <div className="p-8 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Oct 12, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>8 min read</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/computer-networks" className="hover:underline">Top 50 Most Repeated Questions in Computer Networks</a>
-                </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">Analyze the past 5 years of papers to understand the core networking concepts you must absolutely know.</p>
-                
-                <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/computer-networks" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
-                        Read Article 
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
-        
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/rahuls-strategy" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="From 45 Marks to Rank #12: Rahul's Strategy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    Success Story
-                </div>
-            </a>
-            <div className="p-8 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Oct 08, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>4 min read</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/rahuls-strategy" className="hover:underline">From 45 Marks to Rank #12: Rahul's Strategy</a>
-                </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">How consistent mock test analysis and targeting weak topics helped Rahul clear the cutoff.</p>
-                
-                <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/rahuls-strategy" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
-                        Read Article 
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
-        
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/current-affairs-september-2025" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Current Affairs Roundup: September 2025" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    General Knowledge
-                </div>
-            </a>
-            <div className="p-8 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Oct 01, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>12 min read</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/current-affairs-september-2025" className="hover:underline">Current Affairs Roundup: September 2025</a>
-                </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">The definitive list of national and international events you need to memorize for Part A of the exam.</p>
-                
-                <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/current-affairs-september-2025" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
-                        Read Article 
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
-        
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/microprocessors-vs-microcontrollers" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Understanding Microprocessors vs Microcontrollers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    Electronics
-                </div>
-            </a>
-            <div className="p-8 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Sep 28, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>6 min read</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/microprocessors-vs-microcontrollers" className="hover:underline">Understanding Microprocessors vs Microcontrollers</a>
-                </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">A deep dive into the architecture differences that are heavily tested in the Technical Paper.</p>
-                
-                <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/microprocessors-vs-microcontrollers" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
-                        Read Article 
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
-        
-        <article className="bg-white rounded-3xl overflow-hidden border border-dark-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-            <a href="/blog/exam-anxiety" className="relative h-64 overflow-hidden block">
-                <Image fill src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dealing with Exam Anxiety During Mock Tests" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-700 uppercase tracking-widest shadow-sm">
-                    Mental Prep
-                </div>
-            </a>
-            <div className="p-8 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-dark-500 mb-4 font-medium">
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Sep 20, 2025</span>
-                    <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>3 min read</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-dark-900 mb-4 group-hover:text-primary-700 transition-colors leading-tight">
-                    <a href="/blog/exam-anxiety" className="hover:underline">Dealing with Exam Anxiety During Mock Tests</a>
-                </h3>
-                <p className="text-dark-600 mb-8 leading-relaxed line-clamp-3">Learn psychological techniques to stay calm and avoid silly mistakes when the timer is ticking.</p>
-                
-                <div className="mt-auto pt-6 border-t border-dark-100">
-                    <a href="/blog/exam-anxiety" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors group/link">
-                        Read Article 
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
+        ))}
         
             </div>
             

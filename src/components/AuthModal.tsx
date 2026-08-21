@@ -615,55 +615,95 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
           {showRegisterFields && (
             <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Mobile Number</label>
-              <div className="relative flex gap-2">
-                <div className="relative flex-1">
-                  <i className="fa-solid fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                  <input
-                    type="tel"
-                    value={mobile}
-                    onChange={(event) => setMobile(event.target.value)}
-                    placeholder="9999999999"
-                    pattern="[0-9]{10}"
-                    disabled={isMobileVerified || showRegisterOtp}
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors disabled:opacity-50"
-                    required
-                  />
-                </div>
-                {!isMobileVerified ? (
-                  <button 
-                    type="button" 
-                    onClick={handleRegisterSendOtp} 
-                    disabled={loading || showRegisterOtp}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
-                  >
-                    {resendTimer > 0 ? `${resendTimer}s` : 'Verify'}
-                  </button>
-                ) : (
-                  <div className="bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold px-4 rounded-xl text-sm flex items-center justify-center">
-                    <i className="fa-solid fa-check mr-2"></i> Verified
+              {isMobileVerified ? (
+                <div className="flex items-center justify-between bg-dark-bg/50 border border-emerald-500/30 rounded-xl px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                      <i className="fa-solid fa-phone text-emerald-500 text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Verified Mobile</p>
+                      <p className="text-sm font-bold text-[var(--text-primary)]">+91 {mobile}</p>
+                    </div>
                   </div>
-                )}
-              </div>
+                  <div className="bg-emerald-500/20 text-emerald-500 font-bold px-3 py-1 rounded-lg text-xs flex items-center">
+                    <i className="fa-solid fa-check mr-1.5"></i> Verified
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Mobile Number</label>
+                  <div className="relative flex gap-2">
+                    <div className="relative flex-1">
+                      <i className="fa-solid fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                      <input
+                        type="tel"
+                        value={mobile}
+                        onChange={(event) => setMobile(event.target.value)}
+                        placeholder="9999999999"
+                        pattern="[0-9]{10}"
+                        disabled={showRegisterOtp}
+                        className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors disabled:opacity-50"
+                        required
+                      />
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={handleRegisterSendOtp} 
+                      disabled={loading || showRegisterOtp}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
           {showRegisterFields && showRegisterOtp && !isMobileVerified && (
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Enter OTP</label>
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-center pt-1 pb-1">
-                  <OTPInput value={otp} onChange={setOtp} />
-                </div>
+            <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="glass-card w-full max-w-sm p-6 sm:p-8 rounded-3xl border border-white/10 relative shadow-2xl text-center">
                 <button 
                   type="button" 
-                  onClick={handleRegisterVerifyOtp}
-                  disabled={loading}
-                  className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold px-8 rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center transform hover:-translate-y-0.5 active:translate-y-0"
+                  onClick={() => { setShowRegisterOtp(false); setOtp(""); setResendTimer(0); }} 
+                  className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors"
                 >
-                  <i className="fa-solid fa-circle-check mr-2"></i>
-                  Confirm OTP
+                  <i className="fa-solid fa-xmark text-xl" />
                 </button>
+                
+                <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fa-solid fa-shield-halved text-2xl text-blue-500" />
+                </div>
+                
+                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Verify Mobile</h2>
+                <p className="text-sm text-[var(--text-secondary)] mb-6">
+                  Enter the OTP sent to <br/><strong className="text-white">+91 {mobile}</strong>
+                  <button type="button" onClick={() => { setShowRegisterOtp(false); setOtp(""); setResendTimer(0); }} className="text-blue-500 hover:underline ml-2 text-xs">Edit</button>
+                </p>
+
+                <div className="flex flex-col gap-5">
+                  <div className="flex justify-center">
+                    <OTPInput value={otp} onChange={setOtp} />
+                  </div>
+                  
+                  <button 
+                    type="button" 
+                    onClick={handleRegisterVerifyOtp}
+                    disabled={loading}
+                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center transform hover:-translate-y-0.5"
+                  >
+                    {loading ? <i className="fa-solid fa-spinner fa-spin" /> : <><i className="fa-solid fa-circle-check mr-2"></i> Verify OTP</>}
+                  </button>
+
+                  <div className="text-sm">
+                    {resendTimer > 0 ? (
+                      <span className="text-[var(--text-secondary)]">Resend code in <strong className="text-white">{resendTimer}s</strong></span>
+                    ) : (
+                      <button type="button" onClick={handleRegisterSendOtp} disabled={loading} className="text-blue-500 hover:underline font-bold disabled:opacity-50">Resend OTP</button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}

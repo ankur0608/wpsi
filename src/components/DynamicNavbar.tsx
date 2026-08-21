@@ -18,7 +18,7 @@ export default function DynamicNavbar() {
   const isHome = pathname === '/';
   
   // Pages with dark hero section at top where navbar should be transparent+white text initially
-  const isDarkHeroPage = pathname === '/features' || pathname === '/pricing' || pathname === '/about' || pathname === '/blog' || pathname === '/contact' || pathname === '/testimonials' || pathname.startsWith('/blog-');
+  const isDarkHeroPage = pathname === '/features' || pathname === '/pricing' || pathname === '/about' || pathname === '/blog' || pathname === '/contact' || pathname === '/testimonials' || pathname === '/daily-challenge' || pathname.startsWith('/blog-');
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);

@@ -127,8 +127,12 @@ function NotesViewContent() {
   }, []);
 
   useEffect(() => {
-    if (!subjectId) return;
+    if (!subjectId) {
+      setLoading(false);
+      return;
+    }
 
+    setLoading(true);
     fetch(`/api/notes?subjectId=${subjectId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");

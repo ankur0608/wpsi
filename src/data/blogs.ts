@@ -252,4 +252,124 @@ export const blogPosts: BlogPost[] = [
     "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Modern wireless systems operate on standardized protocols. Knowing the specifications of Wi-Fi (IEEE 802.11) and Bluetooth (IEEE 802.15.1) is critical.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Wi-Fi (IEEE 802.11)</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Wi-Fi networks primarily operate in the 2.4 GHz and 5 GHz frequency bands. They are used for Wireless Local Area Networks (WLANs).</p><ul className=\"list-disc pl-6 mb-8 text-dark-600 space-y-2\"><li><strong>802.11b/g/n:</strong> Operate on 2.4 GHz. Slower, but better range and obstacle penetration.</li><li><strong>802.11ac/ax (Wi-Fi 5 / Wi-Fi 6):</strong> Operate on 5 GHz (and 2.4 GHz for ax). Much higher data rates, but shorter effective range.</li></ul><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Bluetooth (IEEE 802.15.1)</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Bluetooth is a standard for short-range Wireless Personal Area Networks (WPANs). It also operates in the 2.4 GHz ISM band.</p><p className=\"text-dark-600 mb-8 leading-relaxed\">It uses a technique called <strong>Frequency-Hopping Spread Spectrum (FHSS)</strong> to avoid interference, hopping across 79 different channels incredibly fast.</p><div className=\"bg-primary-50 border border-primary-100 rounded-2xl p-6 my-8\"><span className=\"text-xs font-bold text-primary-700 uppercase tracking-widest block mb-2\">Piconets</span><p className=\"text-dark-800 font-medium m-0 leading-relaxed\">A Bluetooth network is called a piconet, consisting of one master device and up to seven active slave devices.</p></div>"
   }
-];
+,  {
+  "slug": "understanding-analog-communication",
+  "category": "Telecommunication",
+  "title": "Understanding Analog Communication Systems",
+  "date": "Jan 05, 2026",
+  "readTime": "8 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Analog communication forms the historical basis of telecommunications. Questions on AM, FM, and PM modulations are fundamental to the Wireless PSI exam.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Modulation Fundamentals</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Modulation involves varying the properties of a carrier wave (amplitude, frequency, or phase) according to a modulating signal.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Noise and Interference</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Analog systems are highly susceptible to noise, which degrades signal quality linearly as the signal strength decreases.</p>"
+},  {
+  "slug": "digital-communication-advantages",
+  "category": "Telecommunication",
+  "title": "Why Digital Communication Replaced Analog",
+  "date": "Jan 10, 2026",
+  "readTime": "7 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Digital communication is robust and efficient. Let us explore the reasons why police and military networks migrated from analog radios to digital systems.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Error Correction</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Digital systems can use algorithms to detect and correct errors in transmission, ensuring perfect fidelity over long distances.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Encryption</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">For law enforcement, security is paramount. Digital signals can be encrypted easily using AES, unlike analog signals which are trivial to intercept.</p>"
+},  {
+  "slug": "mobile-communication-generations",
+  "category": "Telecommunication",
+  "title": "Generations of Mobile Communication: 1G to 5G",
+  "date": "Jan 15, 2026",
+  "readTime": "9 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Understanding the evolution of cellular networks is crucial. Expect questions comparing the technologies used across different generations.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. 1G and 2G</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">1G was purely analog. 2G (GSM) introduced digital voice and basic data (SMS, EDGE).</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. 3G, 4G, and 5G</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">3G brought mobile broadband. 4G (LTE) delivered high-speed IP-based data. 5G introduces ultra-low latency and massive IoT connectivity.</p>"
+},  {
+  "slug": "laws-of-thermodynamics",
+  "category": "Physics",
+  "title": "The Laws of Thermodynamics Simplified",
+  "date": "Jan 20, 2026",
+  "readTime": "6 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1614729939124-03290b5609ce?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Thermodynamics is a key physics topic. You must know the definitions and implications of the four laws of thermodynamics.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. First Law (Conservation of Energy)</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Energy cannot be created or destroyed, only transformed from one form to another.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Second Law (Entropy)</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">The total entropy of an isolated system can never decrease over time. This explains why heat flows from hot to cold bodies naturally.</p>"
+},  {
+  "slug": "fundamentals-of-optics",
+  "category": "Physics",
+  "title": "Fundamentals of Optics: Reflection and Refraction",
+  "date": "Jan 25, 2026",
+  "readTime": "8 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1544256718-3bcf237f3974?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Optics questions frequently appear in the general physics paper. Key concepts include Snell's Law and Total Internal Reflection.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Snell's Law</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Formula: n1*sin(\u03b81) = n2*sin(\u03b82). It describes the relationship between the angles of incidence and refraction when light passes between two different media.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Total Internal Reflection</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Occurs when light travels from a denser to a rarer medium and the angle of incidence exceeds the critical angle. This is the operating principle of optical fibers.</p>"
+},  {
+  "slug": "understanding-capacitors",
+  "category": "Electronics",
+  "title": "Understanding Capacitors in DC and AC Circuits",
+  "date": "Jan 30, 2026",
+  "readTime": "7 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Capacitors store electrical energy in an electric field. Let us look at their behavior in different circuit types.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Capacitors in DC</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">In a DC circuit, a capacitor acts as an open circuit once it is fully charged, blocking the flow of direct current.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Capacitors in AC</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">In AC circuits, capacitors constantly charge and discharge. They offer capacitive reactance (Xc = 1/2\u03c0fC), which decreases as frequency increases, making them useful in high-pass filters.</p>"
+},  {
+  "slug": "logic-gate-implementations",
+  "category": "Electronics",
+  "title": "Implementing Logic Gates using Universal Gates",
+  "date": "Feb 04, 2026",
+  "readTime": "8 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">NAND and NOR are universal gates. The exam often tests your ability to derive basic gates from them.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. NOT Gate from NAND</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">By tying both inputs of a NAND gate together, it functions identically to a NOT gate (inverter).</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. AND Gate from NAND</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Connect the output of a standard NAND gate into a second NAND gate configured as a NOT gate. This double inversion yields the AND function.</p>"
+},  {
+  "slug": "network-topologies",
+  "category": "Computer Networks",
+  "title": "Network Topologies: Bus, Ring, Star, and Mesh",
+  "date": "Feb 09, 2026",
+  "readTime": "9 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">A network topology defines how devices are interconnected. This is a fundamental concept in Part B.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Star Topology</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">All nodes connect to a central hub or switch. It is easy to troubleshoot but features a single point of failure (the central hub).</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Mesh Topology</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Every node connects to every other node. It offers the highest redundancy and reliability but is the most expensive and complex to cable.</p>"
+},  {
+  "slug": "tcp-vs-udp",
+  "category": "Computer Networks",
+  "title": "Transport Layer Protocols: TCP vs. UDP",
+  "date": "Feb 14, 2026",
+  "readTime": "8 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">The Transport Layer uses two primary protocols. Knowing when to use which is heavily tested.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. TCP (Transmission Control Protocol)</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Connection-oriented, reliable, and uses a three-way handshake. It guarantees delivery (e.g., HTTP, FTP, SMTP).</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. UDP (User Datagram Protocol)</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Connectionless, fast, but unreliable. It does not guarantee delivery and is used where speed is prioritized over accuracy (e.g., VoIP, video streaming, DNS).</p>"
+},  {
+  "slug": "indian-constitution-fundamental-rights",
+  "category": "General Knowledge",
+  "title": "Indian Constitution: Fundamental Rights Overview",
+  "date": "Feb 19, 2026",
+  "readTime": "10 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">For Part A, the Indian Constitution is highly scoring. Fundamental Rights (Part III) form the core of this section.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Articles 14 to 18 (Right to Equality)</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Guarantees equality before the law, prohibits discrimination, and abolishes untouchability.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Article 21 (Right to Life)</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">The most expansive right, guaranteeing protection of life and personal liberty. You should also study Article 32, which allows citizens to approach the Supreme Court directly.</p>"
+},  {
+  "slug": "gujarat-geography-important-rivers",
+  "category": "General Knowledge",
+  "title": "Gujarat Geography: Important Rivers and Dams",
+  "date": "Feb 24, 2026",
+  "readTime": "7 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Questions on Gujarat's drainage systems are extremely common in state police exams.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Narmada and Tapi</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Narmada is the longest river in Gujarat (Sardar Sarovar Dam). Tapi is known for the Ukai Dam project.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Sabarmati</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Though historically and culturally significant (originating in Rajasthan), it is crucial for irrigation in central Gujarat via the Dharoi Dam.</p>"
+},  {
+  "slug": "time-and-work-shortcuts",
+  "category": "Mental Ability",
+  "title": "Mental Ability: Shortcuts for Time and Work Problems",
+  "date": "Mar 01, 2026",
+  "readTime": "8 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Time and Work problems can drain your time if solved using traditional fraction methods. Let us look at the LCM method.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. The LCM Approach</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">If A takes 10 days and B takes 15 days, assume the Total Work is the LCM of (10, 15) = 30 units. Efficiency of A = 3 units/day, B = 2 units/day.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Faster Calculations</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Together they do 5 units/day. Total time = 30/5 = 6 days. This method completely eliminates complex fractions and saves precious seconds.</p>"
+},  {
+  "slug": "blood-relations-reasoning",
+  "category": "Mental Ability",
+  "title": "Mastering Blood Relations in Logical Reasoning",
+  "date": "Mar 06, 2026",
+  "readTime": "7 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">Blood relation puzzles are guaranteed to appear in Part A. Drawing a family tree is the only reliable way to solve them.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Standard Notation</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Use a square for males, a circle for females, a single line for siblings, and a double line for married couples.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Generation Gaps</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Use vertical lines to denote generation gaps (parents above, children below). This prevents confusion in complex 'A is the uncle of B' scenarios.</p>"
+},  {
+  "slug": "basic-cyber-laws-india",
+  "category": "Technology",
+  "title": "Basic Cyber Laws in India (IT Act 2000)",
+  "date": "Mar 11, 2026",
+  "readTime": "9 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">As a future Wireless PSI, you must be aware of the Information Technology Act, 2000, which governs cybercrimes in India.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Section 66</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Deals with computer-related offenses, including hacking and data theft. It prescribes punishment up to 3 years imprisonment.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Section 66C and 66D</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">These sections deal with identity theft and cheating by personation using a computer resource, heavily relevant in modern phishing investigations.</p>"
+},  {
+  "slug": "final-week-revision-plan",
+  "category": "Exam Strategy",
+  "title": "The Final 7 Days: Ultimate Revision Plan",
+  "date": "Mar 16, 2026",
+  "readTime": "6 min read",
+  "imageUrl": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3",
+  "content": "<p className=\"text-lg text-dark-700 mb-6 font-semibold leading-relaxed\">The last week before the exam should NOT be used for learning new concepts. It is purely for consolidation.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">1. Formula Revision</h2><p className=\"text-dark-600 mb-6 leading-relaxed\">Spend your mornings revising your physics and electronics formula sheets. Memory retention peaks in the morning.</p><h2 className=\"font-display text-2xl font-bold text-dark-900 mt-12 mb-6\">2. Stop Testing</h2><p className=\"text-dark-600 mb-8 leading-relaxed\">Stop taking full mock tests 3 days before the exam to prevent burnout or sudden loss of confidence. Review your error log instead.</p>"
+}];
