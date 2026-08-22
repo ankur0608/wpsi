@@ -484,7 +484,7 @@ model Challenge {
     scheduledDate   DateTime?
     endDate         DateTime?
     maxUsers        Int?
-    maxAttempts     Int      @default(1)
+    maxAttempts     Int?
     
     rules           ChallengeRule[]
     questions       ChallengeQuestion[]
