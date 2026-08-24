@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
       serverEarnedMarks = earnedMarks ?? 0;
       serverPercentage = percentage ?? 0;
     } else {
-      // Using standard +1 for correct and -0.25 for wrong (assuming WPSI format)
+      // Using standard +1 for correct and -0.25 for wrong (assuming Standard format)
       serverEarnedMarks = correctAnswersCount - (wrongAnswersCount * 0.25);
       serverPercentage = serverTotalMarks > 0 ? (Math.max(0, serverEarnedMarks) / serverTotalMarks) * 100 : 0;
     }

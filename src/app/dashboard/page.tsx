@@ -6,7 +6,9 @@ import { useUser } from "@/context/UserContext";
 import { subjectMeta, defaultMeta } from "@/lib/subjectMeta";
 
 export default function Dashboard() {
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: userLoading, switchExam } = useUser();
+  const [allExams, setAllExams] = useState<any[]>([]);
+  const [showAddExamModal, setShowAddExamModal] = useState(false);
   const [stats, setStats] = useState<any>({
     mockTestsAttempted: 0,
     mcqsSolved: 0,
@@ -45,10 +47,25 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch all exams for onboarding or adding a new exam
+  useEffect(() => {
+    if (!userLoading && user && (!user.examId || showAddExamModal)) {
+      fetch('/api/exams')
+        .then(res => res.json())
+        .then(json => {
+          if (json.data) setAllExams(json.data);
+        })
+        .catch(err => console.error("Failed to fetch exams", err));
+    }
+  }, [user, userLoading, showAddExamModal]);
+
   useEffect(() => {
     async function fetchStats() {
+      if (!user) return;
       try {
-        const res = await fetch("/api/user/dashboard-stats");
+        setLoadingStats(true);
+        const examQuery = user.examId ? `?examId=${user.examId}` : '';
+        const res = await fetch(`/api/user/dashboard-stats${examQuery}`);
         if (res.ok) {
           const json = await res.json();
           setStats((prev: any) => ({ ...prev, ...json.data }));
@@ -59,8 +76,10 @@ export default function Dashboard() {
         setLoadingStats(false);
       }
     }
-    fetchStats();
-  }, []);
+    if (!userLoading) {
+      fetchStats();
+    }
+  }, [user?.examId, userLoading]);
 
   const currentLevel = user?.level ?? 7;
   const currentXp = user?.xp ?? 2400;
@@ -74,8 +93,113 @@ export default function Dashboard() {
       );
   }
 
+  // ONBOARDING MODAL
+  if (user && !user.examId) {
+    return (
+      <div className="flex h-[80vh] flex-col items-center justify-center p-4">
+        <div className="bg-white border border-dark-200 rounded-3xl p-8 max-w-md w-full shadow-xl text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary-500 to-emerald-500"></div>
+          <div className="w-16 h-16 bg-primary-50 rounded-2xl mx-auto flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <h2 className="font-display text-2xl font-bold text-dark-800 mb-2">Welcome to WPSI!</h2>
+          <p className="text-sm text-dark-500 mb-8">Please select the exam you are preparing for to personalize your dashboard and practice sessions.</p>
+          
+          <div className="space-y-3 text-left">
+            {allExams.map(exam => (
+              <button 
+                key={exam.id} 
+                onClick={() => switchExam(exam.id)}
+                className="w-full p-4 border border-dark-200 rounded-2xl flex flex-col hover:border-primary-500 hover:bg-primary-50 transition-all group focus:outline-none"
+              >
+                <span className="font-bold text-dark-800 group-hover:text-primary-700">{exam.name}</span>
+                {exam.description && <span className="text-xs text-dark-500 mt-1">{exam.description}</span>}
+              </button>
+            ))}
+          </div>
+          {allExams.length === 0 && (
+             <div className="text-sm text-dark-500 py-4 animate-pulse">Loading available exams...</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Filter exams the user hasn't enrolled in yet for the Add Exam modal
+  const availableToEnroll = allExams.filter(exam => !user?.exams?.some((e: any) => e.id === exam.id));
+
   return (
     <div className="flex-1 p-4 lg:p-6 max-w-[1360px] mx-auto w-full space-y-4">
+        
+        {/* ADD EXAM MODAL */}
+        {showAddExamModal && (
+          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm">
+            <div className="bg-white border border-dark-200 rounded-3xl p-6 max-w-md w-full shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+              <button 
+                onClick={() => setShowAddExamModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-dark-50 text-dark-500 hover:text-dark-900 hover:bg-dark-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+              
+              <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+              </div>
+              <h2 className="font-display text-xl font-bold text-dark-800 mb-1">Add Another Exam</h2>
+              <p className="text-sm text-dark-500 mb-6">Select an exam to enroll in and add it to your dashboard.</p>
+              
+              <div className="space-y-3 text-left max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                {availableToEnroll.map(exam => (
+                  <button 
+                    key={exam.id} 
+                    onClick={() => {
+                      switchExam(exam.id);
+                      setShowAddExamModal(false);
+                    }}
+                    className="w-full p-4 border border-dark-200 rounded-2xl flex flex-col hover:border-primary-500 hover:bg-primary-50 transition-all group focus:outline-none"
+                  >
+                    <span className="font-bold text-dark-800 group-hover:text-primary-700">{exam.name}</span>
+                    {exam.description && <span className="text-xs text-dark-500 mt-1">{exam.description}</span>}
+                  </button>
+                ))}
+                {availableToEnroll.length === 0 && allExams.length > 0 && (
+                  <div className="text-sm text-dark-500 py-6 text-center">You are already enrolled in all available exams!</div>
+                )}
+                {allExams.length === 0 && (
+                   <div className="text-sm text-dark-500 py-4 text-center animate-pulse">Loading available exams...</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── EXAM SWITCHER ── */}
+        {user?.exams && user.exams.length > 0 && (
+          <div className="flex justify-end mb-2 items-center gap-3">
+            <button 
+              onClick={() => setShowAddExamModal(true)}
+              className="text-[11px] font-bold text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/></svg>
+               Add Exam
+            </button>
+            <select 
+              className="bg-white border border-dark-200 text-dark-800 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 font-semibold shadow-sm"
+              value={user.examId || ''}
+              onChange={(e) => switchExam(e.target.value)}
+            >
+              <option value="" disabled>Select Exam</option>
+              {user.exams.map((exam: any) => (
+                <option key={exam.id} value={exam.id}>{exam.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* ── HERO BANNER ── */}
         <div className="relative overflow-hidden rounded-2xl border border-dark-100 shadow-sm bg-white">
             <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

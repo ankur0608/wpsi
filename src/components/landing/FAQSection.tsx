@@ -32,7 +32,7 @@ export default function FAQSection() {
                   </div>
               </button>
               <div className="py-4 text-dark-600 text-lg hidden leading-relaxed">
-                  <p>Absolutely! All questions strictly follow the latest Wireless PSI syllabus and Gujarat Police exam patterns.</p>
+                  <p>Absolutely! All questions strictly follow the latest Competitive Exams syllabus and Gujarat Police exam patterns.</p>
               </div>
           </div>
           

@@ -116,7 +116,7 @@ export default function Rewards() {
                 <section className="space-y-8">
                     <div className="flex items-center gap-4">
                         <div className="w-1.5 h-8 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                        <h3 className="text-2xl font-heading font-black text-[var(--text-primary)] tracking-tight">WPSI Membership Tiers</h3>
+                        <h3 className="text-2xl font-heading font-black text-[var(--text-primary)] tracking-tight">Exams Membership Tiers</h3>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -186,7 +186,7 @@ export default function Rewards() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                         <div className="flex items-center gap-4">
                             <div className="w-1.5 h-8 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                            <h3 className="text-2xl font-heading font-black text-[var(--text-primary)] tracking-tight">Spend Your WPSICoins</h3>
+                            <h3 className="text-2xl font-heading font-black text-[var(--text-primary)] tracking-tight">Spend Your ExamsCoins</h3>
                         </div>
                         <div className="flex p-1 bg-white rounded-2xl border border-blue-100 shadow-sm">
                             <button className="px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-blue-600 text-white shadow-md">Redeem Tools</button>

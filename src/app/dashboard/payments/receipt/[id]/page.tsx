@@ -55,7 +55,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
                 <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xl print:border print:border-primary-600">
                   W
                 </div>
-                <h1 className="text-3xl font-display font-black text-dark-900 tracking-tight">WPSI Pro</h1>
+                <h1 className="text-3xl font-display font-black text-dark-900 tracking-tight">Exam Pro</h1>
               </div>
               <p className="text-sm text-dark-500 font-medium ml-13">MCQ Prep Zone</p>
               <p className="text-sm text-dark-500 ml-13">www.mcqprepzone.online</p>
@@ -100,7 +100,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
               <tbody className="divide-y divide-dark-100 bg-white">
                 <tr>
                   <td className="py-6 px-6">
-                    <p className="font-bold text-dark-900 text-lg">WPSI {payment.planId} Plan</p>
+                    <p className="font-bold text-dark-900 text-lg">Exams {payment.planId} Plan</p>
                     <p className="text-sm text-dark-500 mt-1">Premium access to materials, mock tests, and analytics.</p>
                   </td>
                   <td className="py-6 px-6 text-right font-semibold text-dark-900 text-lg">₹{originalAmount.toFixed(2)}</td>
@@ -143,7 +143,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
           </div>
 
           <div className="text-center text-sm text-dark-400 mt-20 print:mt-32 pt-8 border-t border-dark-100">
-            <p className="font-medium text-dark-500 mb-1">Thank you for choosing WPSI Pro - MCQ Prep Zone!</p>
+            <p className="font-medium text-dark-500 mb-1">Thank you for choosing Exam Pro - MCQ Prep Zone!</p>
             <p>This is a computer-generated invoice and does not require a physical signature.</p>
             <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:Mcqprepzone@gmail.com" className="text-primary-600">Mcqprepzone@gmail.com</a></p>
           </div>

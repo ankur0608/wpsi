@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
           const u = usersData.find(user => user.id === userId);
           return {
               id: userId,
-              name: u?.name || 'WPSI Aspirant',
+              name: u?.name || 'Aspirant',
               xp: Math.round(xp), // Ensure integer XP
               level: u?.level || 1,
               streak: u?.streak || 0,
@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
 
     // Format data for the frontend
     const leaderboardData = topUsers.map((u, index) => {
-        const name = (u.name && u.name.trim().length > 0) ? u.name.trim() : "WPSI Aspirant";
+        const name = (u.name && u.name.trim().length > 0) ? u.name.trim() : "Aspirant";
         const avatar = name.substring(0, 2).toUpperCase();
         const xpString = u.xp >= 1000 ? (u.xp / 1000).toFixed(1) + 'k XP' : u.xp + ' XP';
         const changeOptions = ['up', 'same'];

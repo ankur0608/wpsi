@@ -133,7 +133,7 @@ export default function DetectiveDashboardClient({
               <div key={exam.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col h-full hover:shadow-md transition">
                 <div className="absolute top-0 left-0 w-full h-1 bg-red-400"></div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="text-xs font-bold tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Wireless PSI</div>
+                  <div className="text-xs font-bold tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Competitive Exams</div>
                   <div className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full flex items-center gap-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div> LIVE
                   </div>
@@ -224,7 +224,7 @@ export default function DetectiveDashboardClient({
               <div key={exam.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col h-full hover:shadow-md transition">
                 <div className="absolute top-0 left-0 w-full h-1 bg-yellow-400"></div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="text-xs font-bold tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Wireless PSI</div>
+                  <div className="text-xs font-bold tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Competitive Exams</div>
                   <div className="text-xs font-bold text-gray-500 bg-gray-50 border border-gray-200 px-2 py-1 rounded-full flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" /> ENDED
                   </div>

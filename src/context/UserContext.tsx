@@ -15,6 +15,9 @@ interface User {
   image?: string;
   mobile?: string | null;
   referredBy?: string | null;
+  examId?: string | null;
+  exams?: any[]; // You can type this better with an Exam interface if you have one
+  examPlans?: Record<string, string>;
 }
 
 interface UserContextType {
@@ -22,6 +25,7 @@ interface UserContextType {
   loading: boolean;
   refreshUser: () => Promise<User | null>;
   updateUser: (userData: Partial<User>) => Promise<User | null>;
+  switchExam: (examId: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -97,6 +101,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const switchExam = async (examId: string) => {
+    try {
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ examId: examId }),
+      });
+      if (response.ok) {
+        const json = await response.json();
+        if (json.data) setUser(json.data);
+      }
+    } catch (error) {
+      console.error('Failed to switch exam:', error);
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', {
@@ -110,7 +130,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, refreshUser, updateUser, logout }}>
+    <UserContext.Provider value={{ user, loading, refreshUser, updateUser, switchExam, logout }}>
       {children}
     </UserContext.Provider>
   );

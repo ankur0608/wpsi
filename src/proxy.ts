@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  const token = request.cookies.get('wpsi_session')?.value;
+  const token = request.cookies.get('mcq_session')?.value;
   const path = request.nextUrl.pathname;
   
   const isAuthPage = path === '/login' || path === '/register';

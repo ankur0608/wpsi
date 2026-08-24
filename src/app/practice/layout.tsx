@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Practice MCQs',
-  description: 'Practice free MCQs for Wireless PSI, GPSC, and Talati exams. Create custom test sessions, get AI analytics, and track your progress.',
+  description: 'Practice free MCQs for Competitive Exams, GPSC, and Talati exams. Create custom test sessions, get AI analytics, and track your progress.',
   alternates: {
     canonical: '/practice',
   },

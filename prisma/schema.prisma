@@ -48,7 +48,8 @@ model User {
     challengeDisputes ChallengeDispute[]
 
     examId          String?
-    exam            Exam?     @relation(fields: [examId], references: [id], onDelete: SetNull)
+    activeExam      Exam?     @relation("ActiveUserExam", fields: [examId], references: [id], onDelete: SetNull)
+    exams           Exam[]    @relation("UserExams")
 }
 
 model Plan {
@@ -70,9 +71,11 @@ model Exam {
     name        String    @unique
     description String?
     isActive    Boolean   @default(true)
+    isComingSoon Boolean  @default(false)
     subjects    Subject[]
     mockTests   MockTest[]
-    users       User[]
+    activeUsers User[]    @relation("ActiveUserExam")
+    users       User[]    @relation("UserExams")
     payments    PaymentHistory[]
     coupons     Coupon[]
     admins      Admin[]   @relation("AdminExams")

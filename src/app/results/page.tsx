@@ -96,7 +96,7 @@ export default function ResultsPage() {
                   <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full">🔥 {user.streak} Day Streak</span>
                 )}
               </div>
-              <p className="text-xs text-dark-400 font-medium mt-1.5">WPSI Exam 2026 · Aspirant Performance Dashboard</p>
+              <p className="text-xs text-dark-400 font-medium mt-1.5">MCQ Prep Zone 2026 · Aspirant Performance Dashboard</p>
             </div>
           </div>
 

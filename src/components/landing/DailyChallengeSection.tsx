@@ -53,7 +53,7 @@ export default function DailyChallengeSection() {
                     <span className="inline-block bg-primary-50 text-primary-700 font-bold px-4 py-2 rounded-full text-sm tracking-wide border border-primary-100">Daily Consistency</span>
                     <h2 className="font-display text-4xl md:text-5xl font-bold text-dark-900 leading-tight">Practice 20 MCQs <span className="text-primary-600">Every Day</span></h2>
                     <p className="text-lg text-dark-600 leading-relaxed">
-                        Build consistency and improve your ranking by solving 20 daily MCQs designed according to the latest Wireless PSI syllabus.
+                        Build consistency and improve your ranking by solving 20 daily MCQs designed according to the latest Competitive Exams syllabus.
                     </p>
                     <ul className="space-y-4">
                         <li className="flex items-center gap-4 text-dark-800 font-medium">

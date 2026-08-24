@@ -7,7 +7,7 @@ export default function ExamPatternSection() {
     <section className="py-24 md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
-                <span className="inline-block bg-dark-50 text-dark-700 font-bold px-4 py-2 rounded-full text-sm tracking-wide mb-4 border border-dark-100">Wireless PSI Exam Pattern</span>
+                <span className="inline-block bg-dark-50 text-dark-700 font-bold px-4 py-2 rounded-full text-sm tracking-wide mb-4 border border-dark-100">Competitive Exams Exam Pattern</span>
                 <h2 className="font-display text-4xl md:text-5xl font-bold text-dark-900 mb-6">Know the Exam <span className="text-primary-600">Before You Prepare</span></h2>
             </div>
             

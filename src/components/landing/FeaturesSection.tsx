@@ -8,7 +8,7 @@ export default function FeaturesSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-dark-900 mb-4">Why Choose MCQ Prep Zone?</h2>
-                <p className="text-dark-600 text-lg">Everything you need to crack the Gujarat Wireless PSI exam.</p>
+                <p className="text-dark-600 text-lg">Everything you need to crack the Gujarat Competitive Exams exam.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">

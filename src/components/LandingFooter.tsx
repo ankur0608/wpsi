@@ -24,7 +24,7 @@ export default function LandingFooter() {
           <div>
             <h4 className="font-bold mb-4 opacity-90">Exams</h4>
             <ul className="space-y-2 text-sm opacity-70">
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Wireless PSI</Link></li>
+              <li><Link href="/" className="hover:text-brand-400 transition-colors">Competitive Exams</Link></li>
               <li><Link href="/" className="hover:text-brand-400 transition-colors">Gujarat Police PSI</Link></li>
               <li><Link href="/" className="hover:text-brand-400 transition-colors">GPSC Class 1/2</Link></li>
               <li><Link href="/" className="hover:text-brand-400 transition-colors">Talati</Link></li>

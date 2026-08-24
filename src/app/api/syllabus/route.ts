@@ -54,10 +54,10 @@ export async function GET() {
     }));
 
     if (syllabuses.length === 0) {
-      // Return default WPSI syllabus structure
+      // Return default Exams syllabus structure
       const defaultSyllabus = {
-        id: 'wpsi_2025',
-        name: 'WPSI 2025',
+        id: 'exam_2025',
+        name: 'Exam 2025',
         subjects: [
           {
             id: 'part_a',

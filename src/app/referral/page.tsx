@@ -17,7 +17,7 @@ export default function Referral() {
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-500/20" style={{"background":"linear-gradient(135deg,#6366f1,#8b5cf6)"}}>
                 <i className="fa-solid fa-graduation-cap text-[var(--text-primary)] text-xl"></i>
             </div>
-            <span className="font-heading font-black text-3xl tracking-tighter text-[var(--text-primary)]">WPSI<span className="text-brand-400">Pro</span></span>
+            <span className="font-heading font-black text-3xl tracking-tighter text-[var(--text-primary)]">Exams<span className="text-brand-400">Pro</span></span>
         </div>
 
         {/*  Referral Message  */}
@@ -41,7 +41,7 @@ export default function Referral() {
                 <div className="flex items-start gap-4 text-left p-4 rounded-2xl bg-white/5 border border-[var(--border-subtle)]">
                     <div className="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0"><i className="fa-solid fa-coins"></i></div>
                     <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">100 Bonus WPSICoins</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)]">100 Bonus ExamsCoins</div>
                         <p className="text-[10px] text-[var(--text-muted)]">Instantly credited to unlock your first chapter.</p>
                     </div>
                 </div>

@@ -107,7 +107,7 @@ export default function LandingNavbar() {
                     MCQ Prep Zone
                   </span>
                   <span className="text-[10px] font-bold tracking-widest uppercase mt-1 text-brand-500">
-                    WPSI Specialised
+                    Exams Specialised
                   </span>
                 </div>
               </Link>

@@ -105,7 +105,7 @@ export default function DynamicNavbar() {
                     </div>
                     <div>
                         <span className={`font-display font-bold text-xl tracking-tight leading-none block transition-colors ${textColorClass}`}>MCQ Prep Zone</span>
-                        <span className={`block text-[10px] font-bold tracking-widest uppercase mt-1 transition-colors ${subtitleColorClass}`}>WPSI Specialised</span>
+                        <span className={`block text-[10px] font-bold tracking-widest uppercase mt-1 transition-colors ${subtitleColorClass}`}>Exams Specialised</span>
                     </div>
                 </Link>
                 

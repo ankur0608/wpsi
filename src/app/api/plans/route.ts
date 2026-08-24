@@ -20,7 +20,7 @@ export async function GET() {
         {
           name: 'Pro',
           price: 249,
-          description: 'Unlock full WPSI 2025 combo',
+          description: 'Unlock full Exam 2025 combo',
           features: [
             'Part A + B full access',
             'Unlimited mock tests',

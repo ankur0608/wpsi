@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import type { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export const SESSION_COOKIE_NAME = 'wpsi_session';
+export const SESSION_COOKIE_NAME = 'mcq_session';
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7;
 
 interface SessionPayload {
@@ -127,6 +127,8 @@ export const publicUserSelect = {
   totalStudyDays: true,
   createdAt: true,
   referredBy: true,
+  examId: true,
+  exams: true,
 } as const;
 
 // --- Reset Token Logic ---

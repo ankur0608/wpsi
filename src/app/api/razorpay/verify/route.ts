@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, examId } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
@@ -66,10 +66,15 @@ export async function POST(req: NextRequest) {
       newPlanType = 'elite';
     }
 
+    const finalExamId = order.notes.examId || examId;
+
     // Update user's plan in the database using the newPlanType
     await prisma.user.update({
       where: { id: session.userId },
-      data: { planType: newPlanType }
+      data: { 
+        planType: newPlanType,
+        ...(finalExamId ? { exams: { connect: { id: finalExamId as string } } } : {})
+      }
     });
 
     if (paymentHistoryId) {

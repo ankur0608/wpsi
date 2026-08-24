@@ -22,7 +22,7 @@ export default function About() {
         
             <span className="inline-flex items-center gap-2 bg-primary-900 border border-primary-100 shadow-sm text-accent-300 rounded-full px-5 py-2 text-sm font-bold tracking-wide mb-8 hover:-translate-y-0.5 transition-transform"><svg className="w-4 h-4 text-accent-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>About Us</span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">Building India's <span className="text-accent-400">Future Bureaucrats</span></h1>
-            <p className="text-lg md:text-xl text-primary-200 max-w-2xl mx-auto leading-relaxed">We are on a mission to democratize access to quality Wireless PSI Exam preparation through technology, gamification, and expert mentorship.</p>
+            <p className="text-lg md:text-xl text-primary-200 max-w-2xl mx-auto leading-relaxed">We are on a mission to democratize access to quality Competitive Exams Exam preparation through technology, gamification, and expert mentorship.</p>
         
     </div>
 </section>
@@ -34,8 +34,8 @@ export default function About() {
                 <div>
                     <h2 className="font-display text-4xl sm:text-5xl font-bold text-dark-900 mb-8">Our <span className="text-primary-600">Story</span></h2>
                     <div className="space-y-6 text-dark-600 leading-relaxed text-lg">
-                        <p>MCQ Prep Zone was founded by a group of former Wireless PSI Exam toppers and ed-tech enthusiasts who believed that quality exam preparation should not be a privilege of the wealthy.</p>
-                        <p>What started as a small Telegram group sharing daily MCQs has grown into India's most trusted Wireless PSI Preparation Platform, serving over 50,000 aspirants across Gujarat and beyond.</p>
+                        <p>MCQ Prep Zone was founded by a group of former Competitive Exams Exam toppers and ed-tech enthusiasts who believed that quality exam preparation should not be a privilege of the wealthy.</p>
+                        <p>What started as a small Telegram group sharing daily MCQs has grown into India's most trusted Competitive Exams Preparation Platform, serving over 50,000 aspirants across Gujarat and beyond.</p>
                         <p>Our platform combines cutting-edge AI technology with proven pedagogical methods to create a learning experience that is not just effective, but genuinely enjoyable. We believe that when learning feels like a game, success becomes inevitable.</p>
                     </div>
                     <div className="mt-12 grid grid-cols-2 gap-6">
@@ -57,7 +57,7 @@ export default function About() {
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <h3 className="font-display text-2xl font-bold text-dark-900 mb-4">Our Mission</h3>
-                        <p className="text-dark-600 leading-relaxed text-lg">To make quality Wireless PSI Exam preparation accessible, affordable, and addictive for every aspirant in India, regardless of their economic background.</p>
+                        <p className="text-dark-600 leading-relaxed text-lg">To make quality Competitive Exams Exam preparation accessible, affordable, and addictive for every aspirant in India, regardless of their economic background.</p>
                     </div>
                     
                     {/*  Vision  */}
@@ -91,7 +91,7 @@ export default function About() {
             <div className="grid md:grid-cols-4 gap-12 mb-12">
                 <div className="md:col-span-1">
                     <h2 className="font-display font-bold text-2xl text-white tracking-tight mb-4">MCQ Prep Zone</h2>
-                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Wireless PSI Examination.</p>
+                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Competitive Exams Examination.</p>
                 </div>
                 <div>
                     <h4 className="text-white font-bold mb-4">Quick Links</h4>

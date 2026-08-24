@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 function TopicsContent() {
   const searchParams = useSearchParams();
   const subjectId = searchParams.get('subjectId');
-  const examName = searchParams.get('examName') || 'WPSIPro Syllabus';
+  const examName = searchParams.get('examName') || 'ExamsPro Syllabus';
   const subjectName = searchParams.get('subjectName') || 'Loading...';
 
   const router = useRouter();

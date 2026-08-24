@@ -4,7 +4,7 @@ import LandingFooter from '@/components/LandingFooter';
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
-  description: 'Find answers to common questions about Mcqprepzone, including details about our government exam mock tests, pricing plans, syllabus coverage for Wireless PSI and GPSC, and platform features.',
+  description: 'Find answers to common questions about Mcqprepzone, including details about our government exam mock tests, pricing plans, syllabus coverage for Competitive Exams and GPSC, and platform features.',
 };
 
 export default function FAQPage() {
@@ -24,7 +24,7 @@ export default function FAQPage() {
           <div className="glass-card p-6 rounded-2xl border border-[var(--border-subtle)]">
             <h3 className="text-xl font-bold mb-3 text-primary-text">What exams do you cover?</h3>
             <p className="text-secondary-text leading-relaxed">
-              We currently offer comprehensive test series, syllabus coverage, and AI-driven study plans for Wireless PSI, GPSC Class 1/2, Talati, and SSC exams. We are constantly expanding our database to include more Gujarat Government exams.
+              We currently offer comprehensive test series, syllabus coverage, and AI-driven study plans for Competitive Exams, GPSC Class 1/2, Talati, and SSC exams. We are constantly expanding our database to include more Gujarat Government exams.
             </p>
           </div>
 
@@ -71,7 +71,7 @@ export default function FAQPage() {
                 "name": "What exams do you cover?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "We currently offer comprehensive test series, syllabus coverage, and AI-driven study plans for Wireless PSI, GPSC Class 1/2, Talati, and SSC exams. We are constantly expanding our database to include more Gujarat Government exams."
+                  "text": "We currently offer comprehensive test series, syllabus coverage, and AI-driven study plans for Competitive Exams, GPSC Class 1/2, Talati, and SSC exams. We are constantly expanding our database to include more Gujarat Government exams."
                 }
               },
               {

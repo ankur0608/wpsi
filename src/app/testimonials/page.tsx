@@ -35,7 +35,7 @@ export default function Testimonials() {
                     Stories</span>
                 <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 mb-4">Trusted by <span
                         className="text-primary-600">12,500+ Aspirants</span></h2>
-                <p className="text-dark-500 text-lg">Real students, real results. See how WPSI Prep Zone helped them crack
+                <p className="text-dark-500 text-lg">Real students, real results. See how Exams Prep Zone helped them crack
                     their dream government jobs.</p>
             </div>
 
@@ -65,14 +65,14 @@ export default function Testimonials() {
                     </div>
                     <p className="text-dark-600 text-sm mb-6 leading-relaxed">"The AI weakness detection feature is a
                         game-changer. It identified exactly where I was losing marks and helped me improve my score by
-                        23% in just 3 weeks. Cleared WPSI on my first attempt!"</p>
+                        23% in just 3 weeks. Cleared Exams on my first attempt!"</p>
                     <div className="flex items-center gap-3">
                         <div
                             className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center text-primary-800 font-bold">
                             RP</div>
                         <div>
                             <div className="font-bold text-dark-900 text-sm">Rahul Parmar</div>
-                            <div className="text-xs text-dark-500">Wireless PSI 2025 | Rank #14</div>
+                            <div className="text-xs text-dark-500">Competitive Exams 2025 | Rank #14</div>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export default function Testimonials() {
                         </svg>
                     </div>
                     <p className="text-dark-600 text-sm mb-6 leading-relaxed">"The gamification kept me hooked. I never
-                        thought I would enjoy studying for Wireless PSI Exams, but the XP points and leaderboard made it
+                        thought I would enjoy studying for Competitive Exams Exams, but the XP points and leaderboard made it
                         addictive. Best investment I made for my career."</p>
                     <div className="flex items-center gap-3">
                         <div
@@ -165,12 +165,12 @@ export default function Testimonials() {
                             <span className="text-xl">🎯</span>
                         </div>
                         <div>
-                            <span className="font-display font-bold text-xl text-white tracking-tight">WPSI Prep Zone</span>
+                            <span className="font-display font-bold text-xl text-white tracking-tight">Exams Prep Zone</span>
                             <span className="block text-[10px] text-dark-400 -mt-1 tracking-wider uppercase">Elite Exam
                                 Prep</span>
                         </div>
                     </a>
-                    <p className="text-sm text-dark-400 mb-4">India's most addictive Wireless PSI Preparation Platform.
+                    <p className="text-sm text-dark-400 mb-4">India's most addictive Competitive Exams Preparation Platform.
                         AI-powered, gamified, and built for success.</p>
                     <div className="flex gap-3">
                         <a href="#"
@@ -211,10 +211,10 @@ export default function Testimonials() {
                 <div>
                     <h4 className="font-bold text-white mb-4">Exams</h4>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="#" className="hover:text-white transition-colors">Wireless PSI (WPSI)</a></li>
-                        <li><a href="#" className="hover:text-white transition-colors">WPSI Part A (General)</a></li>
+                        <li><a href="#" className="hover:text-white transition-colors">Competitive Exams (Exams)</a></li>
+                        <li><a href="#" className="hover:text-white transition-colors">Exams Part A (General)</a></li>
                         <li><a href="#" className="hover:text-white transition-colors">Gujarat Police Exams Exam</a></li>
-                        <li><a href="#" className="hover:text-white transition-colors">WPSI Tech CGL/CHSL</a></li>
+                        <li><a href="#" className="hover:text-white transition-colors">Exams Tech CGL/CHSL</a></li>
                         <li><a href="#" className="hover:text-white transition-colors">All Syllabi</a></li>
                     </ul>
                 </div>
@@ -246,7 +246,7 @@ export default function Testimonials() {
             <div className="border-t border-dark-800 pt-8">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="text-sm text-dark-500">
-                        <p>WPSI Prep Zone Pvt Ltd. All rights reserved.</p>
+                        <p>Exams Prep Zone Pvt Ltd. All rights reserved.</p>
                         <p className="mt-1">CIN: U80904GJ2024PTC123456 | GST: 24AABCM1234Z1Z5</p>
                     </div>
                     <div className="text-sm text-dark-500 text-center md:text-right">

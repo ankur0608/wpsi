@@ -77,7 +77,7 @@ export default function DailyChallengePage() {
               Today's <span className="text-accent-400">Free MCQs</span>
             </h1>
             <p className="text-xl text-primary-200 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Test your knowledge with 10 handpicked questions from the Wireless PSI syllabus. 
+              Test your knowledge with 10 handpicked questions from the Competitive Exams syllabus. 
               Experience our mock test interface for free, no login required!
             </p>
             <button 

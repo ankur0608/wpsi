@@ -145,8 +145,8 @@ function SubjectsContent() {
 
   const handleShareCurriculum = async () => {
     const shareData = {
-      title: `${examName} Curriculum - WPSI Pro`,
-      text: `Check out the complete curriculum for ${examName} on WPSI Pro!`,
+      title: `${examName} Curriculum - Exam Pro`,
+      text: `Check out the complete curriculum for ${examName} on Exam Pro!`,
       url: window.location.href,
     };
     

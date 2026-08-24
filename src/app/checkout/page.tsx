@@ -10,6 +10,7 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const planId = searchParams.get('plan');
+  const examId = searchParams.get('examId');
   const { user } = useUser();
   
   const [plan, setPlan] = useState<any>(null);
@@ -19,6 +20,25 @@ export default function CheckoutPage() {
   const [couponSuccess, setCouponSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [isCCE, setIsCCE] = useState(false);
+  const [examFetched, setExamFetched] = useState(false);
+
+  useEffect(() => {
+    if (examId) {
+      fetch('/api/exams')
+        .then(res => res.json())
+        .then(json => {
+          const found = json.data?.find((e: any) => e.id === examId);
+          if (found && found.name.toLowerCase().includes('cce')) {
+            setIsCCE(true);
+          }
+          setExamFetched(true);
+        })
+        .catch(() => setExamFetched(true));
+    } else {
+      setExamFetched(true);
+    }
+  }, [examId]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
@@ -39,6 +59,9 @@ export default function CheckoutPage() {
   }, [planId, router]);
 
   useEffect(() => {
+    if (!examFetched) return;
+    if (isCCE) return;
+
     const autoCoupon = localStorage.getItem('autoApplyCoupon');
     if (autoCoupon) {
       setCouponCode(autoCoupon);
@@ -52,9 +75,12 @@ export default function CheckoutPage() {
         setTimeout(() => applyCoupon('MAZGRMFT'), 100);
       }
     }
-  }, []);
+  }, [examFetched, isCCE]);
 
   useEffect(() => {
+    if (!examFetched) return;
+    if (isCCE) return;
+
     if (user?.referredBy && !appliedCoupon && !couponCode && !loading) {
       if (sessionStorage.getItem('referralAttempted') !== 'true') {
         sessionStorage.setItem('referralAttempted', 'true');
@@ -62,13 +88,18 @@ export default function CheckoutPage() {
         applyCoupon(user.referredBy);
       }
     }
-  }, [user?.referredBy, loading]);
+  }, [user?.referredBy, loading, examFetched, isCCE]);
 
 
 
   const applyCoupon = async (codeToApply?: string) => {
     const code = codeToApply || couponCode;
     if (!code) return;
+
+    if (isCCE) {
+      setCouponError('Coupons cannot be applied to the CCE exam.');
+      return;
+    }
 
     if (plan?.id === 'notespass' && code.toUpperCase() !== 'FOUNDERVIP') {
       setCouponError('Coupons cannot be applied to the Notes Pass.');
@@ -111,6 +142,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({ 
           amount: plan.amount, 
           planId: plan.id,
+          examId: examId,
           couponCode: appliedCoupon?.code || undefined
         })
       });
@@ -131,7 +163,7 @@ export default function CheckoutPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_dummy_key_id',
         amount: data.order.amount,
         currency: data.order.currency,
-        name: 'WPSI Exam Prep',
+        name: 'Exam Prep',
         description: 'Plan Upgrade',
         order_id: data.order.id,
         handler: async function (response: any) {
@@ -143,7 +175,8 @@ export default function CheckoutPage() {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
-                planId: plan.id
+                planId: plan.id,
+                examId: examId
               })
             });
             const verifyData = await verifyRes.json();
@@ -195,7 +228,7 @@ export default function CheckoutPage() {
       <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-10">
         <div className="mb-6 sm:mb-10 flex flex-col items-start border-b border-dark-100 pb-6 sm:pb-8">
             <h1 className="font-display text-4xl font-bold text-dark-900 mb-2">Checkout</h1>
-            <p className="text-dark-500">You're one step away from unlocking premium WPSI features.</p>
+            <p className="text-dark-500">You're one step away from unlocking premium premium features.</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-10">
@@ -229,6 +262,7 @@ export default function CheckoutPage() {
                     </ul>
                 </div>
 
+                {!isCCE && (
                 <div className="glass-card bg-white border border-dark-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
                     <h2 className="font-display text-lg sm:text-xl font-bold text-dark-900 mb-6 flex items-center gap-2">
                         <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
@@ -273,6 +307,7 @@ export default function CheckoutPage() {
                         </div>
                     )}
                 </div>
+                )}
             </div>
 
             <div className="lg:col-span-2">

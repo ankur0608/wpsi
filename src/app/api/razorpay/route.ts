@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { currency = 'INR', planId, couponCode } = body;
+    const { currency = 'INR', planId, couponCode, examId } = body;
 
     // Check planId
     if (!planId) {
@@ -101,7 +101,8 @@ export async function POST(req: NextRequest) {
         planId: planId,
         amount: finalAmount,
         couponId: appliedCouponId,
-        status: "PENDING"
+        status: "PENDING",
+        examId: examId
       }
     });
 
@@ -113,7 +114,8 @@ export async function POST(req: NextRequest) {
         userId: session.userId,
         planId: planId,
         paymentHistoryId: paymentRecord.id,
-        referralCode: appliedReferralCode
+        referralCode: appliedReferralCode,
+        examId: examId
       }
     };
 

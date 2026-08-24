@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Exams & Courses',
-  description: 'View all exams and courses offered by Mcqprepzone including Wireless PSI, Talati, GPSC Class 1 and Class 2.',
+  description: 'View all exams and courses offered by Mcqprepzone including Competitive Exams, Talati, GPSC Class 1 and Class 2.',
   alternates: {
     canonical: '/exam',
   },

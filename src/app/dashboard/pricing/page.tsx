@@ -7,8 +7,21 @@ import { useUser } from '@/context/UserContext';
 
 export default function DashboardPricing() {
   const { user } = useUser();
-  const currentPlan = user?.planType?.toLowerCase() || 'free';
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [exams, setExams] = useState<any[]>([]);
+  const [selectedExam, setSelectedExam] = useState<string>('');
+
+  React.useEffect(() => {
+    fetch('/api/exams')
+      .then(res => res.json())
+      .then(json => {
+        if (json.data && json.data.length > 0) {
+          setExams(json.data);
+          setSelectedExam(user?.examId || json.data[0].id);
+        }
+      })
+      .catch(err => console.error("Failed to fetch exams:", err));
+  }, [user]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
@@ -20,10 +33,16 @@ export default function DashboardPricing() {
     if (planId.includes('pro')) return 1;
     return 0;
   };
+  
+  const currentPlan = (user?.examPlans?.[selectedExam]?.toLowerCase()) || 'free';
   const currentLevel = getPlanLevel(currentPlan);
 
   const handlePayment = (amount: number, planId: string) => {
-    window.location.href = `/checkout?plan=${planId}`;
+    if (!selectedExam) {
+      showToast('Please select an exam first', 'error');
+      return;
+    }
+    window.location.href = `/checkout?plan=${planId}&examId=${selectedExam}`;
   };
 
   return (
@@ -34,16 +53,38 @@ export default function DashboardPricing() {
               Pricing Plans
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 mb-4">
-              Invest in your WPSI <span className="text-primary-600">Future</span>
+              Invest in your Exams <span className="text-primary-600">Future</span>
           </h2>
           <p className="text-dark-500 text-lg">
               Get access to premium materials, AI analysis, and unlimited mock tests. Less than the cost of a daily tea.
           </p>
-          <div className="mt-6 inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-4 py-2 rounded-full text-sm font-bold">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Flat 60% OFF - Ends Today!
+          {(() => {
+              const selectedExamObj = exams.find(e => e.id === selectedExam);
+              const isCCE = selectedExamObj?.name?.toLowerCase().includes('cce');
+              return !isCCE && (
+                  <div className="mt-6 inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-4 py-2 rounded-full text-sm font-bold">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Flat 60% OFF - Ends Today!
+                  </div>
+              );
+          })()}
+          
+          {/* Exam Filter */}
+          <div className="mt-8 flex flex-col items-center justify-center">
+              <label className="text-sm font-bold text-dark-500 mb-2 uppercase tracking-wider">Select Exam to Prepare For</label>
+              <select 
+                value={selectedExam}
+                onChange={(e) => setSelectedExam(e.target.value)}
+                className="bg-white border-2 border-primary-200 text-primary-800 px-6 py-3 rounded-xl text-lg font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer appearance-none outline-none w-full max-w-xs text-center"
+                style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '.8rem auto' }}
+              >
+                {exams.length === 0 && <option value="">Loading Exams...</option>}
+                {exams.map(exam => (
+                  <option key={exam.id} value={exam.id}>{exam.name}</option>
+                ))}
+              </select>
           </div>
       </div>
 

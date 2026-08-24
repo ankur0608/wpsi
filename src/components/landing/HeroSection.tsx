@@ -47,13 +47,13 @@ export default function HeroSection() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]"></span>
                 </span>
-                <span className="tracking-wide">India's Smartest Wireless PSI Platform</span>
+                <span className="tracking-wide">India's Smartest Competitive Exams Platform</span>
             </div>
             
             <h1 className="font-display text-4xl md:text-6xl font-black text-dark-900 mb-6 tracking-tight leading-[1.15]">
                 Master the Syllabus.<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-500 to-indigo-600">
-                    Crack Wireless PSI.
+                    Crack Competitive Exams.
                 </span>
             </h1>
             

@@ -21,7 +21,7 @@ export default function RoadmapSection() {
                     </div>
                     <div className="bg-dark-50 rounded-2xl p-6 border border-dark-100 flex-1 group-hover:bg-primary-50 transition-colors">
                         <h3 className="text-xl font-bold text-primary-900 mb-2">1. Choose Subject</h3>
-                        <p className="text-dark-600 text-sm leading-relaxed">Select any subject or topic from the massive Wireless PSI syllabus.</p>
+                        <p className="text-dark-600 text-sm leading-relaxed">Select any subject or topic from the massive Competitive Exams syllabus.</p>
                     </div>
                 </div>
                 

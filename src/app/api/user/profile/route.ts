@@ -29,7 +29,42 @@ export async function GET(request: NextRequest) {
       return response;
     }
 
-    return NextResponse.json({ data: user }, { status: 200 });
+    const payments = await prisma.paymentHistory.findMany({
+      where: { userId: session.userId, status: 'SUCCESS' },
+      select: { examId: true, planId: true }
+    });
+
+    const planHierarchy: Record<string, number> = { 'elite': 3, 'pro_notespass': 2, 'pro': 1, 'notespass': 0, 'free': -1 };
+    const examPlans: Record<string, string> = {};
+    
+    for (const payment of payments) {
+      if (!payment.examId) continue;
+      const pid = payment.planId.toLowerCase();
+      const currentBest = examPlans[payment.examId] || 'free';
+      if ((planHierarchy[pid] ?? -1) > (planHierarchy[currentBest] ?? -1)) {
+        examPlans[payment.examId] = pid;
+      }
+    }
+
+    let activePlanType = 'free';
+    const sortedExams = [...(user.exams || [])].sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const firstExamId = sortedExams.length > 0 ? sortedExams[0].id : null;
+
+    if (firstExamId && !examPlans[firstExamId]) {
+      examPlans[firstExamId] = user.planType || 'free';
+    }
+
+    if (user.examId) {
+      activePlanType = examPlans[user.examId] || 'free';
+    }
+
+    const finalUser = {
+      ...user,
+      planType: activePlanType,
+      examPlans: examPlans
+    };
+
+    return NextResponse.json({ data: finalUser }, { status: 200 });
   } catch (error) {
     console.error('Error fetching user profile:', error);
     return NextResponse.json(
@@ -53,7 +88,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, mobile, xp, coins, streak, level } = body;
+    const { name, email, mobile, xp, coins, streak, level, examId } = body;
     const normalizedName = typeof name === 'string' ? name.trim() : undefined;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined;
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : undefined;
@@ -101,8 +136,13 @@ export async function PUT(request: NextRequest) {
         ...(normalizedMobile ? { mobile: normalizedMobile } : {}),
         ...(xp !== undefined && { xp }),
         ...(coins !== undefined && { coins }),
-        ...(streak !== undefined && { streak }),
         ...(level !== undefined && { level }),
+        ...(examId !== undefined && { 
+          examId,
+          exams: {
+            connect: { id: examId }
+          }
+        }),
       },
       select: publicUserSelect,
     });

@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = session.userId;
+    const examId = request.nextUrl.searchParams.get('examId');
 
     // 1. Basic Stats
     const mockTestsAttempted = await prisma.testSubmission.count({
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
 
     // Let's fetch all subjects to join the data
     const allSubjects = await prisma.subject.findMany({
+      where: examId ? { examId } : undefined,
       select: { id: true, name: true, part: true }
     });
     

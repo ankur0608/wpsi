@@ -9,7 +9,7 @@ export default function FooterSection() {
             <div className="grid md:grid-cols-4 gap-12 mb-12">
                 <div className="md:col-span-1">
                     <h2 className="font-display font-bold text-2xl text-white tracking-tight mb-4">MCQ Prep Zone</h2>
-                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Wireless PSI Examination.</p>
+                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Competitive Exams Examination.</p>
                 </div>
                 <div>
                     <h4 className="text-white font-bold mb-4">Quick Links</h4>

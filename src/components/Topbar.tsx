@@ -97,7 +97,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   useEffect(() => { setOpenPopover(null); }, [pathname]);
 
-  const displayTitle = titles[pathname] || "WPSI Console";
+  const displayTitle = titles[pathname] || "Exams Console";
   const displaySubtitle = subtitles[pathname] || "";
 
   const confirmLogout = async () => {
@@ -278,7 +278,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </div>
-            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Log out of WPSI?</h3>
+            <h3 className="text-xl font-bold text-center text-dark-900 mb-2">Log out of Exams?</h3>
             <p className="text-center text-sm text-dark-500 mb-6">Are you sure you want to log out? You will need to log back in to access your dashboard.</p>
             <div className="flex gap-3">
               <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-4 py-3 rounded-xl border-2 border-dark-200 text-dark-700 font-bold hover:bg-dark-50 transition-colors">Cancel</button>

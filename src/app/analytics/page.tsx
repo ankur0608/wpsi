@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
           <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-6">
             <div>
               <h3 className="font-display text-2xl font-bold text-dark-900">Performance Summary</h3>
-              <p className="text-xs text-dark-500">Real-time tracker of WPSI Exam 2026 preparation progress</p>
+              <p className="text-xs text-dark-500">Real-time tracker of MCQ Prep Zone 2026 preparation progress</p>
             </div>
             
             <div className="flex items-center gap-3 bg-dark-50 border border-dark-100 rounded-xl px-4 py-2 self-start lg:self-auto text-xs font-semibold z-10 relative">

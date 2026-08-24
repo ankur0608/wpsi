@@ -545,7 +545,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         <div className="text-center mb-5">
           <Link href="/" className="inline-flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden shrink-0 border border-dark-200">
-              <Image src="/logo.jpeg" alt="WPSI Logo" width={64} height={64} className="w-full h-full object-cover" />
+              <Image src="/logo.jpeg" alt="Exams Logo" width={64} height={64} className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-bold text-xl tracking-tight">
               Mcqprep<span className="text-blue-600 dark:text-blue-500">zone</span>
@@ -555,7 +555,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             {isLogin ? "Welcome Back" : isForgot ? "Reset Password" : "Create an Account"}
           </h2>
           <p className="text-xs text-[var(--text-secondary)]">
-            {isLogin ? "Log in to continue your preparation." : isForgot ? "Enter your details to reset password." : "Start your WPSI preparation journey today."}
+            {isLogin ? "Log in to continue your preparation." : isForgot ? "Enter your details to reset password." : "Start your Exams preparation journey today."}
           </p>
         </div>
 

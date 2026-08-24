@@ -21,7 +21,7 @@ export function getStoredTheme(): Theme {
 
 export function saveTheme(t: Theme) {
   try {
-    localStorage.setItem("wpsi-theme", t);
+    localStorage.setItem("mcq-theme", t);
   } catch {}
 }
 
@@ -49,8 +49,8 @@ export function useThemeToggle() {
     const handler = (e: Event) => {
       setTheme((e as CustomEvent<Theme>).detail);
     };
-    window.addEventListener("wpsi-theme-change", handler);
-    return () => window.removeEventListener("wpsi-theme-change", handler);
+    window.addEventListener("mcq-theme-change", handler);
+    return () => window.removeEventListener("mcq-theme-change", handler);
   }, []);
 
   return { theme, toggleTheme };
