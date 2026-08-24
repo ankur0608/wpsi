@@ -4,6 +4,7 @@ import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import { blogPosts, BlogPost } from '@/data/blogs';
 import ClientEffects from '@/components/ClientEffects';
+import FooterSection from '@/components/landing/FooterSection';
 
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({
@@ -17,20 +18,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!post) return { title: 'Post Not Found' };
   
+  const metaTitle = post.metaTitle || `${post.title} | MCQ Prep Zone`;
+  const metaDesc = post.metaDescription || post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...';
+
   return {
-    title: `${post.title} | MCQ Prep Zone`,
-    description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+    title: metaTitle,
+    description: metaDesc,
     openGraph: {
-      title: post.title,
-      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      title: metaTitle,
+      description: metaDesc,
       type: 'article',
       publishedTime: post.date, // Note: You may want to parse this to ISO 8601 if it's not already
       images: [post.imageUrl],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      title: metaTitle,
+      description: metaDesc,
       images: [post.imageUrl],
     }
   };
@@ -100,8 +104,21 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
         "url": "https://www.mcqprepzone.online/logo.jpeg"
       }
     },
-    "description": post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
+    "description": post.metaDescription || post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
   };
+
+  const faqSchema = post.faqs && post.faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": post.faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  } : null;
 
   return (
     <div className="relative w-full overflow-x-hidden page-transition">
@@ -113,6 +130,12 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
         />
+        {faqSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          />
+        )}
         <DynamicNavbar />
         
         {/*  Standardized Hero Section  */}
@@ -198,6 +221,21 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
                   dangerouslySetInnerHTML={{ __html: post.content }} 
                 />
 
+                {/* FAQ Section */}
+                {post.faqs && post.faqs.length > 0 && (
+                  <div className="mt-16 pt-12 border-t border-dark-100">
+                    <h2 className="font-display text-3xl font-bold text-dark-900 mb-8">Frequently Asked Questions</h2>
+                    <div className="space-y-6">
+                      {post.faqs.map((faq, index) => (
+                        <div key={index} className="bg-dark-50 rounded-2xl p-6 border border-dark-100 hover:border-primary-200 transition-colors">
+                          <h3 className="text-xl font-bold text-dark-900 mb-3">{faq.question}</h3>
+                          <p className="text-dark-600 leading-relaxed">{faq.answer}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/*  Bottom Divider & Call to Action  */}
                 <div className="mt-16 pt-8 border-t border-dark-100 flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-3">
@@ -228,55 +266,19 @@ export default async function BlogSlugPage({ params }: { params: Promise<{ slug:
                 <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Never Miss an Update</h2>
                 <p className="text-xl text-primary-200 mb-12 leading-relaxed">Join 50,000+ aspirants receiving our weekly strategy emails.</p>
                 <form className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
-                    <input type="email" placeholder="Enter your email" className="flex-1 px-6 py-4 rounded-xl text-dark-900 focus:outline-none focus:ring-4 focus:ring-accent-500/50" />
-                    <button type="button" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl">Subscribe</button>
+                    <div className="relative flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <input type="email" placeholder="Enter your email" className="w-full pl-12 pr-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:bg-white/20 focus:ring-4 focus:ring-accent-500/50 transition-all" />
+                    </div>
+                    <button type="button" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl shrink-0">Subscribe</button>
                 </form>
             </div>
         </section>
 
         {/*  Common Footer  */}
-        <footer className="bg-dark-900 text-dark-300 py-16 border-t border-dark-800">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid md:grid-cols-4 gap-12 mb-12">
-                    <div className="md:col-span-1">
-                        <h2 className="font-display font-bold text-2xl text-white tracking-tight mb-4">MCQ Prep Zone</h2>
-                        <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Competitive Exams Examination.</p>
-                    </div>
-                    <div>
-                        <h4 className="text-white font-bold mb-4">Quick Links</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/" className="hover:text-accent-400 transition-colors">Home</Link></li>
-                            <li><Link href="/pricing" className="hover:text-accent-400 transition-colors">Pricing</Link></li>
-                            <li><Link href="/blog" className="hover:text-accent-400 transition-colors">Blogs</Link></li>
-                            <li><Link href="/about" className="hover:text-accent-400 transition-colors">About Us</Link></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="text-white font-bold mb-4">Legal</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/privacy" className="hover:text-accent-400 transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="hover:text-accent-400 transition-colors">Terms of Service</Link></li>
-                            <li><Link href="/cancellation" className="hover:text-accent-400 transition-colors">Cancellation</Link></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="text-white font-bold mb-4">Contact</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li>Email: Mcqprepzone@gmail.com</li>
-                            <li>Location: Ahmedabad, Gujarat</li>
-                        </ul>
-                    <div className="mt-4 flex gap-4">
-                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
-                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
-                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
-                    </div>
-                </div>
-                </div>
-                <div className="text-center text-xs border-t border-dark-800 pt-8">
-                    &copy; 2026 MCQ Prep Zone Pvt Ltd. All rights reserved.
-                </div>
-            </div>
-        </footer>
+        <FooterSection />
 
     <ClientEffects />
     </div>

@@ -47,9 +47,9 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch all exams for onboarding or adding a new exam
+  // Fetch all exams
   useEffect(() => {
-    if (!userLoading && user && (!user.examId || showAddExamModal)) {
+    if (!userLoading && user) {
       fetch('/api/exams')
         .then(res => res.json())
         .then(json => {
@@ -57,7 +57,7 @@ export default function Dashboard() {
         })
         .catch(err => console.error("Failed to fetch exams", err));
     }
-  }, [user, userLoading, showAddExamModal]);
+  }, [user, userLoading]);
 
   useEffect(() => {
     async function fetchStats() {
@@ -178,22 +178,15 @@ export default function Dashboard() {
         )}
 
         {/* ── EXAM SWITCHER ── */}
-        {user?.exams && user.exams.length > 0 && (
+        {allExams && allExams.length > 0 && (
           <div className="flex justify-end mb-2 items-center gap-3">
-            <button 
-              onClick={() => setShowAddExamModal(true)}
-              className="text-[11px] font-bold text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-            >
-               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/></svg>
-               Add Exam
-            </button>
             <select 
               className="bg-white border border-dark-200 text-dark-800 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 font-semibold shadow-sm"
-              value={user.examId || ''}
+              value={user?.examId || ''}
               onChange={(e) => switchExam(e.target.value)}
             >
               <option value="" disabled>Select Exam</option>
-              {user.exams.map((exam: any) => (
+              {allExams.map((exam: any) => (
                 <option key={exam.id} value={exam.id}>{exam.name}</option>
               ))}
             </select>

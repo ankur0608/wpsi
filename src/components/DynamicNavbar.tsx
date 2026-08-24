@@ -143,7 +143,7 @@ export default function DynamicNavbar() {
         </nav>
         
         {/* Mobile Menu */}
-        <div className={`lg:hidden max-w-7xl mx-auto bg-white/98 backdrop-blur-2xl border border-dark-100 px-4 py-4 space-y-3 rounded-2xl mt-2 shadow-2xl pointer-events-auto transition-all duration-300 ${mobileMenuOpen ? "block opacity-100" : "hidden opacity-0"}`}>
+        <div className={`lg:hidden max-w-7xl mx-auto bg-white backdrop-blur-2xl border border-dark-100 px-4 py-4 space-y-3 rounded-2xl mt-2 shadow-2xl pointer-events-auto transition-all duration-300 ${mobileMenuOpen ? "block opacity-100" : "hidden opacity-0"}`}>
             <Link href="/" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Home</Link>
             <Link href="/features" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Features</Link>
             <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Pricing</Link>

@@ -1,5 +1,6 @@
 import ClientEffects from '@/components/ClientEffects';
 import Link from 'next/link';
+import { BookOpen, Target, Lightbulb, FileText, BarChart2, AlertTriangle, Library, Flame, Trophy, Search } from 'lucide-react';
 import DynamicNavbar from '@/components/DynamicNavbar';
 
 export default function Features() {
@@ -35,7 +36,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">📚</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><BookOpen className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Topic-Wise MCQ Practice</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Practice MCQs from every subject and topic of the official Competitive Exams syllabus.</p>
             </div>
@@ -52,7 +53,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">🎯</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Target className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Daily Practice Challenge</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Build a consistent study routine with daily MCQ practice.</p>
             </div>
@@ -69,7 +70,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">💡</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Lightbulb className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Instant Answers & Explanations</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Learn concepts immediately after submitting each question.</p>
             </div>
@@ -86,7 +87,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">📝</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><FileText className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Full-Length Mock Tests</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Experience the actual Competitive Exams exam environment.</p>
             </div>
@@ -103,7 +104,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">📊</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><BarChart2 className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Performance Analytics</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Track your preparation and measure improvement over time.</p>
             </div>
@@ -120,7 +121,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">⚠️</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><AlertTriangle className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Weak Topic Identification</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Automatically discover topics that need more practice.</p>
             </div>
@@ -137,7 +138,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">⏳</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Library className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Previous Year Questions</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Practice questions based on actual Competitive Exams exam patterns.</p>
             </div>
@@ -154,7 +155,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">🔥</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Flame className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Streak & XP System</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Stay motivated by maintaining consistency and earning experience points.</p>
             </div>
@@ -171,7 +172,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">🏆</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Trophy className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Leaderboard Competition</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Compete with other aspirants and stay motivated.</p>
             </div>
@@ -188,7 +189,7 @@ export default function Features() {
         <div className="bg-white rounded-3xl p-8 border border-dark-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-primary-200 transition-all duration-300 group relative overflow-hidden flex flex-col h-full">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300">🔄</div>
+                <div className="w-16 h-16 bg-primary-50 border border-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300"><Search className="w-8 h-8" strokeWidth={2} /></div>
                 <h3 className="font-display text-2xl font-bold text-dark-900 mb-3 group-hover:text-primary-700 transition-colors">Revision & Reattempt Mode</h3>
                 <p className="text-dark-500 mb-8 leading-relaxed">Revisit previously attempted questions and strengthen concepts.</p>
             </div>

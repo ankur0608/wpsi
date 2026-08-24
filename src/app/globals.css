@@ -599,3 +599,51 @@ h1, h2, h3, h4, h5, h6 {
         display: none !important;
     }
 }
+
+/* ---------------------------------------------------------
+   BLOG PROSE TYPOGRAPHY
+   --------------------------------------------------------- */
+.prose {
+    font-size: 1.25rem !important; /* Extra large text (text-xl equivalent) for readability */
+    line-height: 1.8 !important;
+}
+.prose p {
+    font-size: 1.125rem !important;
+    line-height: 1.8 !important;
+    margin-bottom: 1.75rem !important;
+    color: var(--text-primary) !important;
+    opacity: 0.9;
+}
+.prose ul {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 2.5rem !important;
+}
+.prose ul > li {
+    position: relative;
+    padding-left: 2.5rem !important;
+    margin-bottom: 1.25rem !important;
+    font-size: 1.125rem !important;
+    line-height: 1.7 !important;
+    color: var(--text-primary) !important;
+}
+.prose ul > li::before {
+    content: "•" !important;
+    position: absolute;
+    left: 0.5rem;
+    color: #D4922A !important;
+    font-size: 1.3rem;
+    line-height: 1.4;
+}
+.prose h2 {
+    font-size: 2.25rem !important; /* Big headings */
+    font-weight: 800 !important;
+    margin-top: 4rem !important;
+    margin-bottom: 2rem !important;
+    color: var(--text-primary) !important;
+}
+.prose strong {
+    font-weight: 700 !important;
+    color: #D4922A !important; /* Make bold text pop with accent color */
+}

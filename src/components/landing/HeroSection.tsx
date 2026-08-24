@@ -1,7 +1,31 @@
+"use client";
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function HeroSection() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const checkSession = async () => {
+      try {
+        const response = await fetch('/api/auth/session', { cache: 'no-store' });
+        if (!active) return;
+        if (response.ok) {
+          const json = await response.json();
+          if (json.data) setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error('Failed to check session:', error);
+      }
+    };
+    checkSession();
+    return () => { active = false; };
+  }, []);
+
+  const ctaLink = isLoggedIn ? '/dashboard' : '/login';
+
   return (
     <>
     <header className="relative bg-primary-50 pt-32 pb-48 overflow-hidden">
@@ -62,13 +86,13 @@ export default function HeroSection() {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-5 items-center">
-                <a href="/login" className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 shadow-[0_15px_30px_rgba(37,99,235,0.25)] flex items-center justify-center gap-2 group">
+                <Link href={ctaLink} className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 shadow-[0_15px_30px_rgba(37,99,235,0.25)] flex items-center justify-center gap-2 group">
                     Start Practicing Free
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </a>
-                <a href="/features" className="w-full sm:w-auto bg-white hover:bg-dark-50 border border-dark-200 text-dark-800 px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm">
+                </Link>
+                <Link href="/features" className="w-full sm:w-auto bg-white hover:bg-dark-50 border border-dark-200 text-dark-800 px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm">
                     Explore Features
-                </a>
+                </Link>
             </div>
             
             
