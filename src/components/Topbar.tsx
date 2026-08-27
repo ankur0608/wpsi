@@ -17,7 +17,7 @@ type PopoverKey = "profile" | "notifications" | null;
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading, logout } = useUser();
+  const { user, loading, logout, switchExam } = useUser();
   const displayName = user?.name?.trim() || "Profile";
   const userXP = user?.xp || 0;
   const { currentLevel } = getUserLevel(userXP);
@@ -27,6 +27,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [allExams, setAllExams] = useState<any[]>([]);
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
+  const [examSearchTerm, setExamSearchTerm] = useState("");
+  const [comingSoonExam, setComingSoonExam] = useState<any>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -44,6 +48,14 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
              setNotifications(data.data);
              setUnreadCount(data.unreadCount || 0);
           }
+        })
+        .catch(console.error);
+
+      fetch('/api/exams', { cache: 'no-store' })
+        .then(res => res.json())
+        .then(json => {
+          console.log("Fetched exams:", json.data);
+          if (json.data) setAllExams(json.data);
         })
         .catch(console.error);
     }
@@ -123,6 +135,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     }
   };
 
+  console.log("Current comingSoonExam state:", comingSoonExam);
+
   return (
     <header className="h-20 bg-primary-50/30 flex items-center justify-between px-4 lg:px-10 shrink-0 sticky top-0 z-30 border-b border-primary-100 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-4">
@@ -162,11 +176,25 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </Link>
             
             {/* Leaderboard Header Badge */}
-            <Link href="/leaderboard" className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Leaderboard">
+            <Link href="/leaderboard" className="hidden sm:flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 transition-all text-xs font-bold shadow-sm hover:scale-105" title="Leaderboard">
                 <span>🏆</span>
                 <span className="hidden sm:inline">{userRank ? `#${userRank}` : 'Unranked'}</span>
             </Link>
 
+            {/* Exam Switcher Button */}
+            <button 
+              onClick={() => {
+                console.log("Main Exam Switcher button clicked! Opening modal...");
+                setIsExamModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 rounded-xl text-xs font-bold shadow-sm transition-all hover:scale-105"
+            >
+              <div className="hidden sm:flex w-4 h-4 bg-primary-200 text-primary-800 rounded items-center justify-center shrink-0">
+                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+              </div>
+              <span className="max-w-[80px] sm:max-w-[120px] truncate">{user?.examId ? allExams.find(e => e.id === user.examId)?.name || 'Select Exam' : 'Select Exam'}</span>
+              <svg className="w-3 h-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+            </button>
 
             {/* Notification Bell */}
             <div className="relative">
@@ -284,6 +312,142 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
               <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-4 py-3 rounded-xl border-2 border-dark-200 text-dark-700 font-bold hover:bg-dark-50 transition-colors">Cancel</button>
               <button onClick={confirmLogout} className="flex-1 px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-lg shadow-rose-500/30 transition-all">Yes, Log Out</button>
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ── EXAM SWITCHER MODAL ── */}
+      {isExamModalOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4 sm:p-6 bg-dark-900/60 backdrop-blur-sm">
+          <div className="bg-white border border-dark-200 rounded-3xl p-6 max-w-4xl w-full shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+            <button 
+              onClick={() => setIsExamModalOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-dark-50 text-dark-500 hover:text-dark-900 hover:bg-dark-100 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center border border-primary-100 shadow-sm shrink-0">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="font-display text-xl sm:text-2xl font-bold text-dark-800 leading-tight">Switch Exam Target</h2>
+                  <p className="text-sm text-dark-500 mt-1">Select an exam to focus your preparation on.</p>
+                </div>
+              </div>
+              
+              {allExams.length > 3 && (
+                <div className="relative w-full sm:w-64 shrink-0">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="w-4 h-4 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search exams..."
+                    value={examSearchTerm}
+                    onChange={(e) => setExamSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 bg-dark-50 border border-dark-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all text-dark-800 placeholder:text-dark-400"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar pb-2">
+              {allExams.filter(exam => exam.name.toLowerCase().includes(examSearchTerm.toLowerCase())).map((exam: any) => {
+                const isActive = exam.id === user?.examId;
+                const isComingSoon = exam.isComingSoon;
+                return (
+                  <div
+                    key={exam.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      console.log("Exam clicked:", exam.name, "| isComingSoon:", isComingSoon, "| Full object:", exam);
+                      if (isComingSoon) {
+                        setIsExamModalOpen(false);
+                        setComingSoonExam(exam);
+                        return;
+                      }
+                      switchExam(exam.id);
+                      setIsExamModalOpen(false);
+                      setExamSearchTerm("");
+                      if (pathname !== "/dashboard") {
+                         router.push("/dashboard");
+                      }
+                    }}
+                    className={`w-full p-5 border-2 rounded-2xl flex flex-col items-start transition-all group focus:outline-none relative overflow-hidden pointer-events-auto ${isActive ? 'bg-primary-50/50 border-primary-400 shadow-md ring-4 ring-primary-500/10 text-primary-900' : isComingSoon ? 'bg-dark-50 border-dark-100 opacity-80 cursor-pointer' : 'bg-white border-dark-100 hover:border-primary-300 hover:bg-dark-50 hover:shadow-md hover:-translate-y-0.5 cursor-pointer'}`}
+                  >
+                    {isActive && <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100/50 rounded-bl-full pointer-events-none"></div>}
+                    
+                    <div className="flex items-start justify-between w-full mb-3 pointer-events-none">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm border ${isActive ? 'bg-primary-600 border-primary-700 text-white' : isComingSoon ? 'bg-dark-200 border-dark-300 text-dark-500' : 'bg-dark-100 border-dark-200 text-dark-500 group-hover:bg-primary-100 group-hover:text-primary-600 group-hover:border-primary-200'} transition-colors`}>
+                        {isComingSoon ? (
+                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ) : (
+                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        )}
+                      </div>
+                      {isActive && (
+                        <div className="w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center shrink-0 shadow-sm relative z-10">
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                      )}
+                      {isComingSoon && (
+                        <div className="px-2 py-1 bg-dark-200 text-dark-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">Coming Soon</div>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-col text-left w-full relative z-10 pointer-events-none">
+                       <span className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-primary-800' : 'text-dark-800 group-hover:text-primary-700'}`}>{exam.name}</span>
+                       <span className={`text-xs line-clamp-2 ${isActive ? 'text-primary-600/90' : 'text-dark-500'}`}>{exam.description || 'Comprehensive exam preparation materials.'}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              {allExams.filter(exam => exam.name.toLowerCase().includes(examSearchTerm.toLowerCase())).length === 0 && (
+                <div className="col-span-full py-12 text-center">
+                  <div className="w-16 h-16 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-3 text-dark-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  </div>
+                  <h3 className="text-dark-800 font-bold">No exams found</h3>
+                  <p className="text-dark-500 text-sm">Try adjusting your search term.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ── COMING SOON MODAL ── */}
+      {comingSoonExam && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm">
+          <div className="bg-white border border-dark-200 rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200 text-center">
+            <button 
+              onClick={() => setComingSoonExam(null)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-dark-50 text-dark-500 hover:text-dark-900 hover:bg-dark-100 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div className="w-20 h-20 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-dark-100 relative shadow-inner">
+               <svg className="w-10 h-10 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+               <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+               </div>
+            </div>
+            <h2 className="font-display text-2xl font-bold text-dark-900 mb-2">{comingSoonExam.name}</h2>
+            <p className="text-sm text-dark-500 mb-6">We are currently preparing the best study materials and mock tests for this exam. It will be available soon!</p>
+            <button 
+              onClick={() => setComingSoonExam(null)}
+              className="w-full py-3.5 bg-dark-800 hover:bg-dark-900 text-white font-bold rounded-xl shadow-lg transition-colors focus:outline-none focus:ring-4 focus:ring-dark-200"
+            >
+              Got it, thanks
+            </button>
           </div>
         </div>,
         document.body

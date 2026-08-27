@@ -12,11 +12,14 @@ model User {
     email            String    @unique
     name             String?
     mobile           String?   @unique
+    birthdate        DateTime?
+    gender           String?
     isMobileVerified Boolean   @default(false)
     acceptedTerms    Boolean   @default(false)
     image            String?
     password         String
     planType         String    @default("free")
+    hasNotesSubscription Boolean @default(false)
     level            Int       @default(1)
     xp               Int       @default(0)
     coins            Int       @default(0)

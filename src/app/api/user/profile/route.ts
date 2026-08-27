@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, mobile, xp, coins, streak, level, examId } = body;
+    const { name, email, mobile, birthdate, gender, xp, coins, streak, level, examId } = body;
     const normalizedName = typeof name === 'string' ? name.trim() : undefined;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined;
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : undefined;
@@ -134,6 +134,8 @@ export async function PUT(request: NextRequest) {
         ...(name !== undefined ? { name: normalizedName || null } : {}),
         ...(normalizedEmail ? { email: normalizedEmail } : {}),
         ...(normalizedMobile ? { mobile: normalizedMobile } : {}),
+        ...(birthdate !== undefined ? { birthdate: birthdate ? new Date(birthdate) : null } : {}),
+        ...(gender !== undefined ? { gender: gender || null } : {}),
         ...(xp !== undefined && { xp }),
         ...(coins !== undefined && { coins }),
         ...(level !== undefined && { level }),

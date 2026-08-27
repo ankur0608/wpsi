@@ -14,6 +14,8 @@ interface User {
   planType?: string;
   image?: string;
   mobile?: string | null;
+  birthdate?: Date | string | null;
+  gender?: string | null;
   referredBy?: string | null;
   examId?: string | null;
   exams?: any[]; // You can type this better with an Exam interface if you have one

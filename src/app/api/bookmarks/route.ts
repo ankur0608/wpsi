@@ -13,8 +13,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { examId: true }
+    });
+
     const bookmarks = await prisma.bookmark.findMany({
-      where: { userId: session.userId },
+      where: { 
+        userId: session.userId,
+        ...(user?.examId ? {
+          mcq: {
+            topic: {
+              subject: {
+                examId: user.examId
+              }
+            }
+          }
+        } : {})
+      },
       include: {
         mcq: {
           include: {
