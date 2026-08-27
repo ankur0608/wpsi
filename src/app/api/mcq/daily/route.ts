@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSessionFromRequest } from '@/lib/auth';
+import { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,10 +9,20 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromRequest(request);
     let userSeedOffset = 0;
+    let userExamId: string | null = null;
     
     if (session && session.userId) {
        for (let i = 0; i < session.userId.length; i++) {
            userSeedOffset += session.userId.charCodeAt(i);
+       }
+       
+       const user = await prisma.user.findUnique({
+         where: { id: session.userId },
+         select: { examId: true }
+       });
+       
+       if (user?.examId) {
+         userExamId = user.examId;
        }
     }
 
@@ -28,13 +39,24 @@ export async function GET(request: NextRequest) {
     
     const seedVal = (Math.abs(hash) % 1000000) / 1000000.0;
 
+    let joinClause = Prisma.empty;
+    let whereClause = Prisma.empty;
+    
+    if (userExamId) {
+      joinClause = Prisma.sql`
+        JOIN "Topic" t ON "MCQ"."topicId" = t.id
+        JOIN "Subject" s ON t."subjectId" = s.id
+      `;
+      whereClause = Prisma.sql`AND s."examId" = ${userExamId}`;
+    }
+
     // Fetch random MCQs grouped by difficulty using a transaction to maintain the seed on the connection
     // 10 Easy, 5 Medium, 5 Hard
     const [_, easyMcqs, mediumMcqs, hardMcqs] = await prisma.$transaction([
       prisma.$executeRaw`SELECT setseed(${seedVal})`,
-      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Easy' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 10`,
-      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Medium' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 5`,
-      prisma.$queryRaw`SELECT * FROM "MCQ" WHERE "difficulty" = 'Hard' AND "translationId" IS NULL ORDER BY RANDOM() LIMIT 5`
+      prisma.$queryRaw`SELECT "MCQ".* FROM "MCQ" ${joinClause} WHERE "MCQ"."difficulty" = 'Easy' ${whereClause} ORDER BY RANDOM() LIMIT 10`,
+      prisma.$queryRaw`SELECT "MCQ".* FROM "MCQ" ${joinClause} WHERE "MCQ"."difficulty" = 'Medium' ${whereClause} ORDER BY RANDOM() LIMIT 5`,
+      prisma.$queryRaw`SELECT "MCQ".* FROM "MCQ" ${joinClause} WHERE "MCQ"."difficulty" = 'Hard' ${whereClause} ORDER BY RANDOM() LIMIT 5`
     ]);
 
     const combined = [

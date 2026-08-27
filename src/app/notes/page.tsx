@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 interface Topic {
   id: string;
@@ -27,6 +28,7 @@ interface Exam {
 
 export default function ExamPage() {
   const router = useRouter();
+  const { user } = useUser();
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +52,10 @@ export default function ExamPage() {
   useEffect(() => {
     fetchExams();
   }, []);
+
+  const displayExams = user?.examId 
+    ? exams.filter(exam => exam.id === user.examId)
+    : exams;
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
@@ -97,15 +103,15 @@ export default function ExamPage() {
         </div>
       )}
 
-      {!loading && !error && exams.length === 0 && (
+      {!loading && !error && displayExams.length === 0 && (
         <div className="text-center py-12 bg-dark-50 rounded-2xl border border-dark-100">
           <p className="text-dark-500 font-medium">No exams found. Check back soon!</p>
         </div>
       )}
 
-      {!loading && !error && exams.length > 0 && (
+      {!loading && !error && displayExams.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {exams.map((exam) => {
+          {displayExams.map((exam) => {
             const subjectCount = exam.subjects.length;
             const notesCount = exam.subjects.reduce((sum, subject) => sum + (subject.notesCount || 0), 0);
 

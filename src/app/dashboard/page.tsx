@@ -177,21 +177,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── EXAM SWITCHER ── */}
-        {allExams && allExams.length > 0 && (
-          <div className="flex justify-end mb-2 items-center gap-3">
-            <select 
-              className="bg-white border border-dark-200 text-dark-800 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 font-semibold shadow-sm"
-              value={user?.examId || ''}
-              onChange={(e) => switchExam(e.target.value)}
-            >
-              <option value="" disabled>Select Exam</option>
-              {allExams.map((exam: any) => (
-                <option key={exam.id} value={exam.id}>{exam.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
+
 
         {/* ── HERO BANNER ── */}
         <div className="relative overflow-hidden rounded-2xl border border-dark-100 shadow-sm bg-white">

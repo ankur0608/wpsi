@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const exams = await prisma.exam.findMany({
@@ -9,6 +11,7 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         description: true,
+        isComingSoon: true,
       },
       orderBy: { createdAt: 'asc' }
     });

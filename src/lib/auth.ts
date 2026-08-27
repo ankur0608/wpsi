@@ -117,6 +117,8 @@ export const publicUserSelect = {
   email: true,
   name: true,
   mobile: true,
+  birthdate: true,
+  gender: true,
   image: true,
   planType: true,
   level: true,

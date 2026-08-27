@@ -20,10 +20,26 @@ export default function ProfilePage() {
     setTimeout(() => setToast(null), 3000);
   };
   
+  const [allExams, setAllExams] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      fetch('/api/exams')
+        .then(res => res.json())
+        .then(json => {
+          if (json.data) setAllExams(json.data);
+        })
+        .catch(err => console.error("Failed to fetch exams", err));
+    }
+  }, [user]);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    mobile: ''
+    mobile: '',
+    birthdate: '',
+    gender: '',
+    examId: ''
   });
 
   useEffect(() => {
@@ -31,7 +47,10 @@ export default function ProfilePage() {
       setFormData({
         name: user.name || '',
         email: user.email || '',
-        mobile: user.mobile || ''
+        mobile: user.mobile || '',
+        birthdate: user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '',
+        gender: user.gender || '',
+        examId: user.examId || ''
       });
     }
   }, [user]);
@@ -127,7 +146,10 @@ export default function ProfilePage() {
       await updateUser({
         name: formData.name,
         email: formData.email,
-        mobile: formData.mobile
+        mobile: formData.mobile,
+        birthdate: formData.birthdate ? new Date(formData.birthdate).toISOString() : null,
+        gender: formData.gender,
+        examId: formData.examId
       });
       showToast('Profile updated successfully!', 'success');
     } catch (error: any) {
@@ -226,6 +248,43 @@ export default function ProfilePage() {
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
                   className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Birthdate</label>
+                  <input 
+                    type="date" 
+                    value={formData.birthdate}
+                    onChange={(e) => setFormData({...formData, birthdate: e.target.value})}
+                    className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Gender</label>
+                  <select 
+                    value={formData.gender}
+                    onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                    className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Target Exam</label>
+                <select 
+                  value={formData.examId}
+                  onChange={(e) => setFormData({...formData, examId: e.target.value})}
+                  className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                >
+                  <option value="">Select an Exam</option>
+                  {allExams.map(exam => (
+                    <option key={exam.id} value={exam.id}>{exam.name}</option>
+                  ))}
+                </select>
               </div>
               <button 
                 type="submit" 

@@ -34,6 +34,7 @@ export async function GET() {
       id: exam.id,
       name: exam.name,
       description: exam.description,
+      isComingSoon: exam.isComingSoon,
       subjects: exam.subjects.map(subject => ({
         id: subject.id,
         name: subject.name,
