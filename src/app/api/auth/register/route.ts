@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, screen, timezone, language } = await req.json();
+    const { name, email, password, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
                 browser,
                 os,
                 deviceType,
+                deviceModel,
                 screen,
                 timezone,
                 language,
@@ -115,7 +116,8 @@ export async function POST(req: NextRequest) {
             ip,
             status: "SUCCESS",
             browser: browser || null,
-            os: os || null
+            os: os || null,
+            deviceModel: deviceModel || null
         }
     });
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { setSessionCookie, publicUserSelect } from '@/lib/auth';
 import { authRateLimiter } from '@/lib/rate-limit';
+import { authService } from '@/lib/authService';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { mobile, deviceId, browser, os, deviceType, screen, timezone, language, force } = await req.json();
+    const { mobile, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language, force } = await req.json();
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : '';
 
     if (!normalizedMobile) {
@@ -48,54 +49,21 @@ export async function POST(req: NextRequest) {
     }
 
     if (deviceId) {
-        const userDevices = await prisma.device.findMany({
-            where: { userId: user.id }
-        });
-        
-        const existingDevice = userDevices.find(d => d.deviceId === deviceId);
-        
-        if (userDevices.length > 0 && !existingDevice) {
-            if (force) {
-                await prisma.device.deleteMany({ where: { userId: user.id } });
-            } else {
-                const activeDevice = userDevices[0];
-                await prisma.loginHistory.create({
-                    data: { userId: user.id, deviceId, ip, status: "BLOCKED_DEVICE", browser, os }
-                });
-                return NextResponse.json(
-                    { 
-                        error: 'ACTIVE_DEVICE', 
-                        message: 'Your account is already linked to another device.',
-                        activeDevice: {
-                            browser: activeDevice.browser,
-                            os: activeDevice.os,
-                            lastLogin: activeDevice.lastLogin
-                        }
-                    },
-                    { status: 409 }
-                );
-            }
-        }
-        
-        if (existingDevice) {
-            await prisma.device.update({
-                where: { id: existingDevice.id },
-                data: { lastLogin: new Date(), lastIp: ip }
-            });
-        } else {
-            await prisma.device.create({
-                data: {
-                    deviceId,
-                    userId: user.id,
-                    browser,
-                    os,
-                    deviceType,
-                    screen,
-                    timezone,
-                    language,
-                    lastIp: ip
-                }
-            });
+        const deviceInfo = { deviceId, ip, browser, os, deviceType, deviceModel, screen, timezone, language };
+        const deviceCheck = await authService.handleDeviceTracking(user as any, force, deviceInfo);
+        if (deviceCheck?.error) {
+            return NextResponse.json(
+                { 
+                    error: deviceCheck.error, 
+                    message: 'Your account is already linked to another device.',
+                    activeDevice: {
+                        browser: deviceCheck.activeDevice.browser,
+                        os: deviceCheck.activeDevice.os,
+                        lastLogin: deviceCheck.activeDevice.lastLogin
+                    }
+                },
+                { status: 409 }
+            );
         }
     }
 
@@ -106,7 +74,8 @@ export async function POST(req: NextRequest) {
             ip,
             status: "SUCCESS",
             browser: browser || null,
-            os: os || null
+            os: os || null,
+            deviceModel: deviceModel || null
         }
     });
 

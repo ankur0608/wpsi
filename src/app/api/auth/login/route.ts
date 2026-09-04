@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, password, deviceId, browser, os, deviceType, screen, timezone, language, force } = await req.json();
+    const { email, password, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language, force } = await req.json();
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
 
     if (!normalizedEmail || !password) {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    const deviceInfo = { deviceId, ip, browser, os, deviceType, screen, timezone, language };
+    const deviceInfo = { deviceId, ip, browser, os, deviceType, deviceModel, screen, timezone, language };
 
     if (!isValidPassword) {
       await authService.logFailedAttempt(user.id, deviceInfo);
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (deviceId) {
-      const deviceCheck = await authService.handleDeviceTracking(user.id, force, deviceInfo);
+      const deviceCheck = await authService.handleDeviceTracking(user, force, deviceInfo);
       if (deviceCheck?.error) {
         return NextResponse.json(
           { 

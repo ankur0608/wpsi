@@ -139,9 +139,9 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <header className="h-20 bg-primary-50/30 flex items-center justify-between px-4 lg:px-10 shrink-0 sticky top-0 z-30 border-b border-primary-100 shadow-sm backdrop-blur-md">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-1 min-w-0 pr-4">
             {/* Mobile Logo */}
-            <div className="flex md:hidden items-center gap-2">
+            <div className="flex md:hidden items-center gap-2 shrink-0">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30 overflow-hidden shrink-0">
                     <Image src="/logo.jpeg" alt="McqPrepZone Logo" width={40} height={40} className="w-full h-full object-cover" />
                 </div>
@@ -151,12 +151,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </div>
             
             {/* Desktop Page Title */}
-            <div className="hidden md:flex flex-col justify-center">
+            <div className="hidden md:flex flex-col justify-center flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                   <h2 className="text-xl font-display font-bold text-dark-900 leading-tight">{displayTitle}</h2>
+                   <h2 className="text-xl font-display font-bold text-dark-900 leading-tight truncate">{displayTitle}</h2>
                 </div>
-                {displaySubtitle && <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mt-0.5">{displaySubtitle}</p>}
-                <div id="topbar-breadcrumbs"></div>
+                {displaySubtitle && <p className="text-[10px] text-primary-600 font-bold uppercase tracking-widest mt-0.5 truncate">{displaySubtitle}</p>}
+                <div id="topbar-breadcrumbs" className="min-w-0 w-full mt-0.5"></div>
             </div>
         </div>
         

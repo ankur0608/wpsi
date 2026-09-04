@@ -13,9 +13,10 @@ interface PDFViewerProps {
   fileUrl: string;
   zoom?: number;
   twoPageMode?: boolean;
+  viewMode?: "A4" | "PPT";
 }
 
-export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: PDFViewerProps) {
+export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false, viewMode = "A4" }: PDFViewerProps) {
   const { user } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rightCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -89,7 +90,8 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
           taskRef.current = null;
         };
 
-        if (twoPageMode) {
+        const actualTwoPageMode = twoPageMode && viewMode !== 'PPT';
+        if (actualTwoPageMode) {
           await Promise.all([
             renderSinglePage(pageNum, canvasRef.current, renderTaskRef),
             renderSinglePage(pageNum + 1, rightCanvasRef.current, rightRenderTaskRef)
@@ -108,14 +110,33 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
     
     renderPage();
     return () => { active = false; };
-  }, [pdfDoc, pageNum, twoPageMode, numPages]);
+  }, [pdfDoc, pageNum, twoPageMode, numPages, viewMode]);
 
-  const step = twoPageMode ? 2 : 1;
+  const actualTwoPageMode = twoPageMode && viewMode !== 'PPT';
+  const step = actualTwoPageMode ? 2 : 1;
   const goPrev = () => setPageNum(p => Math.max(1, p - step));
   const goNext = () => setPageNum(p => Math.min(numPages, p + step));
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in an input
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+      
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        setPageNum(p => Math.min(numPages, p + step));
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        setPageNum(p => Math.max(1, p - step));
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [numPages, step]);
+
   return (
-    <div className="relative w-full h-full bg-dark-50 flex flex-col overflow-hidden">
+    <div className={`relative w-full h-full ${viewMode === 'PPT' ? 'bg-[#222]' : 'bg-dark-50'} flex flex-col overflow-hidden`}>
       {error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-white z-50 text-center">
           <div className="w-20 h-20 mb-6 bg-danger-50 text-danger-500 rounded-full flex items-center justify-center">
@@ -166,8 +187,8 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
           {/* Navigation Overlay (Right) */}
           <button
             onClick={goNext}
-            disabled={pageNum >= (twoPageMode ? numPages - 1 : numPages)}
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center transition-all ${pageNum >= (twoPageMode ? numPages - 1 : numPages) ? 'opacity-0 cursor-default pointer-events-none' : 'hover:scale-110'}`}
+            disabled={pageNum >= (actualTwoPageMode ? numPages - 1 : numPages)}
+            className={`absolute right-4 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center transition-all ${pageNum >= (actualTwoPageMode ? numPages - 1 : numPages) ? 'opacity-0 cursor-default pointer-events-none' : 'hover:scale-110'}`}
           >
             <div className="w-14 h-14 rounded-full bg-dark-900/50 hover:bg-dark-900/80 text-white flex items-center justify-center shadow-lg backdrop-blur-sm">
               <i className="fa-solid fa-chevron-right text-2xl"></i>
@@ -176,36 +197,39 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
 
           {/* Page Counter */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-dark-900/80 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur-sm z-40 shadow-lg">
-            {twoPageMode ? `${pageNum}-${Math.min(pageNum + 1, numPages)}` : pageNum} / {numPages}
+            {actualTwoPageMode ? `${pageNum}-${Math.min(pageNum + 1, numPages)}` : pageNum} / {numPages}
           </div>
 
-          <div className="flex-1 w-full overflow-auto hide-scrollbar relative z-10">
-            <div className="min-h-full min-w-max p-4 md:p-8 flex items-start justify-center relative">
+          <div className={`flex-1 w-full overflow-auto hide-scrollbar relative z-10 ${viewMode === 'PPT' ? 'flex flex-col' : ''}`}>
+            <div className={`min-h-full ${viewMode === 'PPT' ? 'flex-1 flex p-0' : 'min-w-max p-4 md:p-8 flex items-start justify-center'} relative`}>
             
               <div 
-                className={`relative flex ${twoPageMode ? 'gap-1' : ''} mx-auto`} 
+                className={`relative flex ${actualTwoPageMode ? 'gap-1' : ''} mx-auto ${viewMode === 'PPT' ? 'my-auto justify-center items-center' : ''}`} 
                 style={{ 
                   opacity: rendering ? 0.7 : 1,
-                  transition: 'opacity 0.3s'
+                  transition: 'opacity 0.3s, width 0.2s, height 0.2s',
+                  width: viewMode === 'PPT' ? `${zoom}%` : 'auto',
+                  height: viewMode === 'PPT' ? `${zoom}%` : 'auto',
                 }}
               >
                 {/* Left/Single Page */}
-                <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center relative">
+                <div className={`shadow-2xl bg-white border border-dark-200 flex items-center justify-center relative ${viewMode === 'PPT' ? 'w-full h-full shadow-none border-none bg-transparent' : 'shrink-0'}`}>
                   <canvas 
                     ref={canvasRef} 
                     style={{ 
                       display: 'block', 
-                      width: 'auto', 
-                      height: 'auto',
-                      maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
-                      maxHeight: `${85 * (zoom / 100)}vh`,
+                      width: viewMode === 'PPT' ? '100%' : 'auto', 
+                      height: viewMode === 'PPT' ? '100%' : 'auto',
+                      maxWidth: viewMode === 'PPT' ? '100%' : `${actualTwoPageMode ? zoom / 2 : zoom}%`,
+                      maxHeight: viewMode === 'PPT' ? '100%' : `${85 * (zoom / 100)}vh`,
+                      objectFit: viewMode === 'PPT' ? 'contain' : 'fill',
                       transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
                     }} 
                   />
                 </div>
                 
                 {/* Right Page (Two Page Mode) */}
-                {twoPageMode && (
+                {actualTwoPageMode && (
                   <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center relative">
                     <canvas 
                       ref={rightCanvasRef} 
@@ -213,7 +237,7 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false }: 
                         display: 'block', 
                         width: 'auto', 
                         height: 'auto',
-                        maxWidth: `${twoPageMode ? zoom / 2 : zoom}%`,
+                        maxWidth: `${actualTwoPageMode ? zoom / 2 : zoom}%`,
                         maxHeight: `${85 * (zoom / 100)}vh`,
                         transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
                       }} 

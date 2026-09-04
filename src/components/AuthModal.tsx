@@ -47,7 +47,25 @@ const getDeviceInfo = () => {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const language = navigator.language;
   
-  return { deviceId, browser, os, deviceType, screen, timezone, language };
+  let deviceModel = "Unknown";
+  if (/android/i.test(userAgent)) {
+    const match = userAgent.match(/Android.*?; (.*?)\s+(Build|\))/i);
+    if (match && match[1]) {
+      deviceModel = match[1];
+    } else {
+      deviceModel = "Android Device";
+    }
+  } else if (/ipad/i.test(userAgent)) {
+    deviceModel = "iPad";
+  } else if (/iphone/i.test(userAgent)) {
+    deviceModel = "iPhone";
+  } else if (/macintosh/i.test(userAgent)) {
+    deviceModel = "Mac";
+  } else if (/windows/i.test(userAgent)) {
+    deviceModel = "Windows PC";
+  }
+
+  return { deviceId, browser, os, deviceType, deviceModel, screen, timezone, language };
 };
 
 export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthModalProps) {
@@ -453,9 +471,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
   if (existingDevice) {
     return (
-      <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
-        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center">
+        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center max-h-[90vh] overflow-y-auto hide-scrollbar">
           <button type="button" onClick={handleClose} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors">
             <i className="fa-solid fa-xmark text-xl" />
           </button>
@@ -477,10 +495,10 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             Logging in here will securely log out the other device.
           </p>
           <div className="space-y-3">
-              <button type="button" onClick={handleForceLogin} disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold transition-colors">
+              <button type="button" onClick={handleForceLogin} disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold transition-colors">
                 {loading ? <i className="fa-solid fa-spinner fa-spin" /> : "Log out other device & Login"}
               </button>
-              <button type="button" onClick={() => setExistingDevice(null)} className="w-full bg-transparent hover:bg-white/5 text-[var(--text-secondary)] py-3 rounded-xl font-bold transition-colors border border-white/10">
+              <button type="button" onClick={() => setExistingDevice(null)} className="w-full bg-transparent hover:bg-white/5 text-[var(--text-secondary)] py-2.5 rounded-xl font-bold transition-colors border border-white/10">
                 Cancel
               </button>
           </div>
@@ -498,9 +516,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
   if (isForgot && step === 2) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
-        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center">
+        <div className="glass-card w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 relative shadow-2xl text-center max-h-[90vh] overflow-y-auto hide-scrollbar">
           <button type="button" onClick={handleClose} className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors">
             <i className="fa-solid fa-xmark text-xl" />
           </button>
@@ -509,7 +527,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           <p className="text-sm text-[var(--text-secondary)] mb-6">
             We've sent a password reset link to <br/> <strong className="text-white">{email}</strong>
           </p>
-          <button type="button" onClick={handleClose} className="w-full btn-primary py-3 rounded-xl font-bold">
+          <button type="button" onClick={handleClose} className="w-full btn-primary py-2.5 rounded-xl font-bold">
             Got it
           </button>
         </div>
@@ -519,7 +537,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
         onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           handleClose();
@@ -532,7 +550,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="glass-card w-full max-w-md p-6 sm:p-7 rounded-3xl border border-white/10 relative shadow-2xl">
+      <div className="glass-card w-full max-w-md p-6 sm:p-7 rounded-3xl border border-white/10 relative shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
         <button
           type="button"
           onClick={handleClose}
@@ -573,7 +591,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Rahul Parmar"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
                   required
                 />
               </div>
@@ -592,7 +610,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                     onChange={(event) => { setReferralCode(event.target.value.toUpperCase()); setIsReferralVerified(false); setReferralSuccessMsg(""); }}
                     placeholder="FRIEND50"
                     disabled={isReferralVerified}
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors uppercase disabled:opacity-50"
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors uppercase disabled:opacity-50"
                   />
                 </div>
                 {!isReferralVerified ? (
@@ -616,7 +634,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           {showRegisterFields && (
             <div>
               {isMobileVerified ? (
-                <div className="flex items-center justify-between bg-dark-bg/50 border border-emerald-500/30 rounded-xl px-4 py-3">
+                <div className="flex items-center justify-between bg-dark-bg/50 border border-emerald-500/30 rounded-xl px-4 py-2.5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
                       <i className="fa-solid fa-phone text-emerald-500 text-sm"></i>
@@ -643,7 +661,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                         placeholder="9999999999"
                         pattern="[0-9]{10}"
                         disabled={showRegisterOtp}
-                        className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors disabled:opacity-50"
+                        className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors disabled:opacity-50"
                         required
                       />
                     </div>
@@ -662,8 +680,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           )}
 
           {showRegisterFields && showRegisterOtp && !isMobileVerified && (
-            <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="glass-card w-full max-w-sm p-6 sm:p-8 rounded-3xl border border-white/10 relative shadow-2xl text-center">
+            <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+              <div className="glass-card w-full max-w-sm p-6 sm:p-8 rounded-3xl border border-white/10 relative shadow-2xl text-center max-h-[90vh] overflow-y-auto hide-scrollbar">
                 <button 
                   type="button" 
                   onClick={() => { setShowRegisterOtp(false); setOtp(""); setResendTimer(0); }} 
@@ -691,7 +709,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                     type="button" 
                     onClick={handleRegisterVerifyOtp}
                     disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center transform hover:-translate-y-0.5"
+                    className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center transform hover:-translate-y-0.5"
                   >
                     {loading ? <i className="fa-solid fa-spinner fa-spin" /> : <><i className="fa-solid fa-circle-check mr-2"></i> Verify OTP</>}
                   </button>
@@ -718,7 +736,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@example.com"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
                   required
                 />
               </div>
@@ -736,7 +754,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   onChange={(event) => setMobile(event.target.value)}
                   placeholder="9999999999"
                   pattern="[0-9]{10}"
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
                   required
                 />
               </div>
@@ -762,7 +780,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-12 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-12 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
                   required
                 />
                 <button
@@ -827,7 +845,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 mt-4 transition-transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <i className="fa-solid fa-spinner fa-spin" />

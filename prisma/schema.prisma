@@ -53,6 +53,7 @@ model User {
     examId          String?
     activeExam      Exam?     @relation("ActiveUserExam", fields: [examId], references: [id], onDelete: SetNull)
     exams           Exam[]    @relation("UserExams")
+    examPlans       UserExamPlan[]
 }
 
 model Plan {
@@ -79,6 +80,7 @@ model Exam {
     mockTests   MockTest[]
     activeUsers User[]    @relation("ActiveUserExam")
     users       User[]    @relation("UserExams")
+    userPlans   UserExamPlan[]
     payments    PaymentHistory[]
     coupons     Coupon[]
     admins      Admin[]   @relation("AdminExams")
@@ -343,6 +345,7 @@ model Device {
     browser    String?
     os         String?
     deviceType String?
+    deviceModel String?
     screen     String?
     timezone   String?
     language   String?
@@ -362,6 +365,7 @@ model LoginHistory {
     status    String
     browser   String?
     os        String?
+    deviceModel String?
     createdAt DateTime @default(now())
 
     @@index([userId])
@@ -491,6 +495,7 @@ model Challenge {
     endDate         DateTime?
     maxUsers        Int?
     maxAttempts     Int?
+    planType        String   @default("free")
     
     rules           ChallengeRule[]
     questions       ChallengeQuestion[]
@@ -563,3 +568,17 @@ model ChallengeDispute {
     @@unique([challengeId, mcqId])
 }
 
+
+model UserExamPlan {
+    id        String   @id @default(cuid())
+    userId    String
+    examId    String
+    planType  String   @default("Free")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, examId])
+}

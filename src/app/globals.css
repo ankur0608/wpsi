@@ -214,6 +214,14 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(212, 146, 42, 0.5);
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* ─────────────────────────────────────────────────────────
    GLASSMORPHISM
    ───────────────────────────────────────────────────────── */

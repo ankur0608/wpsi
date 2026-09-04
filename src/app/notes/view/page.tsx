@@ -35,6 +35,7 @@ function NotesViewContent() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isTwoPage, setIsTwoPage] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [viewMode, setViewMode] = useState<"A4" | "PPT">("A4");
 
   // Close sidebar on mobile by default
   useEffect(() => {
@@ -247,18 +248,18 @@ function NotesViewContent() {
   }, []);
 
   const breadcrumbs = mounted && document.getElementById("topbar-breadcrumbs") ? createPortal(
-    <div className="flex items-center gap-1.5 text-[11px] text-dark-500 font-medium">
-      <Link href="/dashboard" className="hover:text-primary-600 transition-colors">Home</Link>
-      <span>›</span>
-      <Link href="/notes" className="hover:text-primary-600 transition-colors">Notes</Link>
-      <span>›</span>
-      <Link href={`/notes/subjects?examId=${searchParams.get("examId") || ""}`} className="hover:text-primary-600 transition-colors">{examName}</Link>
-      <span>›</span>
-      <span className="text-dark-800">{subjectName}</span>
+    <div className="flex items-center gap-1.5 text-[11px] text-dark-500 font-medium overflow-hidden whitespace-nowrap w-full">
+      <Link href="/dashboard" className="hover:text-primary-600 transition-colors shrink-0">Home</Link>
+      <span className="shrink-0">›</span>
+      <Link href="/notes" className="hover:text-primary-600 transition-colors shrink-0">Notes</Link>
+      <span className="shrink-0">›</span>
+      <Link href={`/notes/subjects?examId=${searchParams.get("examId") || ""}`} className="hover:text-primary-600 transition-colors truncate max-w-[100px] sm:max-w-[150px]" title={examName}>{examName}</Link>
+      <span className="shrink-0">›</span>
+      <span className="text-dark-800 truncate max-w-[120px] sm:max-w-[200px]" title={subjectName}>{subjectName}</span>
       {selectedNote && (
         <>
-          <span>›</span>
-          <span className="text-primary-600 font-bold max-w-[150px] truncate" title={selectedNote.title}>{selectedNote.title}</span>
+          <span className="shrink-0">›</span>
+          <span className="text-primary-600 font-bold truncate max-w-[150px] sm:max-w-[250px]" title={selectedNote.title}>{selectedNote.title}</span>
         </>
       )}
     </div>,
@@ -423,8 +424,19 @@ function NotesViewContent() {
             <div className="h-14 border-b border-dark-50 bg-white flex items-center justify-between px-6 shrink-0">
                {/* Left */}
                <div className="flex-1 flex justify-start">
-                 <div className="flex items-center gap-2 border border-dark-200 rounded-lg px-3 py-1.5 text-xs font-bold bg-white text-dark-700">
-                   A4
+                 <div className="flex items-center bg-dark-50 border border-dark-200 rounded-lg p-1 text-xs font-bold text-dark-700">
+                    <button 
+                      onClick={() => setViewMode("A4")} 
+                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "A4" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                    >
+                      A4
+                    </button>
+                    <button 
+                      onClick={() => setViewMode("PPT")} 
+                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "PPT" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                    >
+                      PPT
+                    </button>
                  </div>
                </div>
                
@@ -455,7 +467,7 @@ function NotesViewContent() {
                 canAccessNote ? (
                   <div className="transition-transform duration-200 ease-out flex justify-center h-full w-full">
                     <div style={{ width: '100%', height: '100%' }}>
-                      <PDFViewer fileUrl={selectedNote.pdfUrl} zoom={zoom} twoPageMode={isTwoPage} />
+                      <PDFViewer fileUrl={selectedNote.pdfUrl} zoom={zoom} twoPageMode={isTwoPage} viewMode={viewMode} />
                     </div>
                   </div>
                 ) : (
@@ -485,8 +497,19 @@ function NotesViewContent() {
                  >
                    <i className="fa-solid fa-bars"></i>
                  </button>
-                 <div className="hidden sm:flex items-center gap-2 border rounded-lg px-3 py-1.5 text-xs font-bold bg-white border-dark-200 text-dark-700">
-                   A4
+                 <div className="hidden sm:flex items-center bg-dark-50 border border-dark-200 rounded-lg p-1 text-xs font-bold text-dark-700">
+                    <button 
+                      onClick={() => setViewMode("A4")} 
+                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "A4" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                    >
+                      A4
+                    </button>
+                    <button 
+                      onClick={() => setViewMode("PPT")} 
+                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "PPT" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                    >
+                      PPT
+                    </button>
                  </div>
                </div>
                
@@ -516,7 +539,7 @@ function NotesViewContent() {
                 canAccessNote ? (
                   <div className="transition-transform duration-200 ease-out flex justify-center h-full w-full">
                     <div style={{ width: '100%', height: '100%' }}>
-                      <PDFViewer fileUrl={selectedNote.pdfUrl} zoom={zoom} twoPageMode={isTwoPage} />
+                      <PDFViewer fileUrl={selectedNote.pdfUrl} zoom={zoom} twoPageMode={isTwoPage} viewMode={viewMode} />
                     </div>
                   </div>
                 ) : (

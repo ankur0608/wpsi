@@ -59,7 +59,7 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
   }
 
   return (
-    <div className={`text-dark-800 font-sans antialiased flex h-screen overflow-hidden selection:bg-primary-200 selection:text-primary-900 w-full bg-dark-50 ${isReceiptPage ? 'bg-white' : ''} print:block print:h-auto print:overflow-visible print:bg-white`}>
+    <div className={`text-dark-800 font-sans antialiased flex h-[100dvh] overscroll-none overflow-hidden selection:bg-primary-200 selection:text-primary-900 w-full bg-dark-50 ${isReceiptPage ? 'bg-white' : ''} print:block print:h-auto print:overflow-visible print:bg-white`}>
       {!isReceiptPage && (
         <Sidebar
           isOpen={isMobileSidebarOpen}
@@ -68,7 +68,7 @@ function ProtectedShell({ children }: ProtectedDashboardProps) {
       )}
       <main id="nav-main-wrapper" className={`flex-1 overflow-y-auto ${isReceiptPage ? 'bg-white' : 'bg-dark-50'} relative flex flex-col hide-scrollbar lg:pb-0 ${isReceiptPage ? 'pb-0' : 'pb-20'} print:block print:overflow-visible print:bg-white print:p-0 print:m-0 print:h-auto`}>
         {!isReceiptPage && (
-          <div className="print:hidden">
+          <div className="print:hidden sticky top-0 z-30 w-full">
             <Topbar onMenuClick={() => setIsMobileSidebarOpen((current) => !current)} />
           </div>
         )}

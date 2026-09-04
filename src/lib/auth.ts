@@ -69,11 +69,11 @@ export async function getSessionFromRequest(request: NextRequest) {
 
   if (payload.deviceId) {
     try {
-      const activeDevice = await prisma.device.findFirst({
-        where: { userId: payload.userId }
+      const activeDevice = await prisma.device.findUnique({
+        where: { deviceId: payload.deviceId }
       });
 
-      if (!activeDevice || activeDevice.deviceId !== payload.deviceId) {
+      if (!activeDevice || activeDevice.userId !== payload.userId) {
         return null;
       }
     } catch (error) {
