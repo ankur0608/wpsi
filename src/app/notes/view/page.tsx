@@ -497,16 +497,16 @@ function NotesViewContent() {
                  >
                    <i className="fa-solid fa-bars"></i>
                  </button>
-                 <div className="hidden sm:flex items-center bg-dark-50 border border-dark-200 rounded-lg p-1 text-xs font-bold text-dark-700">
+                 <div className="flex items-center bg-dark-50 border border-dark-200 rounded-lg p-1 text-xs font-bold text-dark-700">
                     <button 
                       onClick={() => setViewMode("A4")} 
-                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "A4" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                      className={`px-2 sm:px-3 py-1 rounded-md transition-colors ${viewMode === "A4" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
                     >
                       A4
                     </button>
                     <button 
                       onClick={() => setViewMode("PPT")} 
-                      className={`px-3 py-1 rounded-md transition-colors ${viewMode === "PPT" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
+                      className={`px-2 sm:px-3 py-1 rounded-md transition-colors ${viewMode === "PPT" ? 'bg-white shadow-sm text-primary-600' : 'hover:bg-dark-100 text-dark-500'}`}
                     >
                       PPT
                     </button>
@@ -514,17 +514,17 @@ function NotesViewContent() {
                </div>
                
                {/* Center */}
-               <div className="flex items-center gap-4">
+               <div className="flex items-center gap-2 sm:gap-4">
                   <button onClick={() => setZoom(Math.max(50, zoom - 10))} className="w-8 h-8 flex items-center justify-center text-dark-500 hover:bg-dark-50 hover:text-dark-900 rounded-lg transition-colors"><i className="fa-solid fa-minus"></i></button>
-                  <span className="text-xs font-bold text-dark-800 min-w-[3rem] text-center">{zoom}%</span>
+                  <span className="text-xs font-bold text-dark-800 min-w-[2.5rem] sm:min-w-[3rem] text-center">{zoom}%</span>
                   <button onClick={() => setZoom(Math.min(200, zoom + 10))} className="w-8 h-8 flex items-center justify-center text-dark-500 hover:bg-dark-50 hover:text-dark-900 rounded-lg transition-colors"><i className="fa-solid fa-plus"></i></button>
                </div>
                
                {/* Right */}
-               <div className="flex-1 flex justify-end gap-2">
+               <div className="flex-1 flex justify-end gap-1 sm:gap-2">
                  <button 
                    onClick={() => setIsTwoPage(!isTwoPage)}
-                   className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${isTwoPage ? 'bg-primary-50 text-primary-600' : 'text-dark-500 hover:bg-dark-50'}`}
+                   className={`hidden sm:flex w-8 h-8 items-center justify-center rounded-lg transition-colors ${isTwoPage ? 'bg-primary-50 text-primary-600' : 'text-dark-500 hover:bg-dark-50'}`}
                    title="Toggle two-page view"
                  >
                    <i className="fa-solid fa-book-open"></i>

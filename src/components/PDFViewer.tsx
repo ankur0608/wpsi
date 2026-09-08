@@ -201,10 +201,10 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false, vi
           </div>
 
           <div className={`flex-1 w-full overflow-auto hide-scrollbar relative z-10 ${viewMode === 'PPT' ? 'flex flex-col' : ''}`}>
-            <div className={`min-h-full ${viewMode === 'PPT' ? 'flex-1 flex p-0' : 'min-w-max p-4 md:p-8 flex items-start justify-center'} relative`}>
+            <div className={`min-h-full flex ${viewMode === 'PPT' ? 'flex-1 p-0' : 'min-w-full p-4 md:p-8'} relative`}>
             
               <div 
-                className={`relative flex ${actualTwoPageMode ? 'gap-1' : ''} mx-auto ${viewMode === 'PPT' ? 'my-auto justify-center items-center' : ''}`} 
+                className={`relative flex ${actualTwoPageMode ? 'gap-1' : ''} m-auto ${viewMode === 'PPT' ? 'justify-center items-center' : ''}`} 
                 style={{ 
                   opacity: rendering ? 0.7 : 1,
                   transition: 'opacity 0.3s, width 0.2s, height 0.2s',
