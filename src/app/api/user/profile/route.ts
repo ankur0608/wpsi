@@ -2,6 +2,44 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSessionFromRequest, publicUserSelect, clearSessionCookie } from '@/lib/auth';
 
+async function computeUserPlans(user: any) {
+  const payments = await prisma.paymentHistory.findMany({
+    where: { userId: user.id, status: 'SUCCESS' },
+    select: { examId: true, planId: true }
+  });
+
+  const planHierarchy: Record<string, number> = { 'elite': 3, 'pro_notespass': 2, 'pro': 1, 'notespass': 0, 'free': -1 };
+  const examPlans: Record<string, string> = {};
+  
+  // Legacy or globally assigned plan
+  const legacyPlan = user.planType && user.planType !== 'free' ? user.planType.toLowerCase() : 'free';
+  const legacyPlanRank = planHierarchy[legacyPlan] ?? -1;
+
+  for (const payment of payments) {
+    if (!payment.examId) continue;
+    const pid = payment.planId.toLowerCase();
+    const currentBest = examPlans[payment.examId] || 'free';
+    if ((planHierarchy[pid] ?? -1) > (planHierarchy[currentBest] ?? -1)) {
+      examPlans[payment.examId] = pid;
+    }
+  }
+
+  let activePlanType = legacyPlan;
+
+  if (user.examId) {
+    const examSpecificPlan = examPlans[user.examId] || 'free';
+    const examSpecificRank = planHierarchy[examSpecificPlan] ?? -1;
+    // The active plan is the best of their legacy global plan or exam-specific plan
+    activePlanType = examSpecificRank > legacyPlanRank ? examSpecificPlan : legacyPlan;
+  }
+
+  return {
+    ...user,
+    planType: activePlanType,
+    examPlans: examPlans
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromRequest(request);
@@ -29,40 +67,7 @@ export async function GET(request: NextRequest) {
       return response;
     }
 
-    const payments = await prisma.paymentHistory.findMany({
-      where: { userId: session.userId, status: 'SUCCESS' },
-      select: { examId: true, planId: true }
-    });
-
-    const planHierarchy: Record<string, number> = { 'elite': 3, 'pro_notespass': 2, 'pro': 1, 'notespass': 0, 'free': -1 };
-    const examPlans: Record<string, string> = {};
-    
-    for (const payment of payments) {
-      if (!payment.examId) continue;
-      const pid = payment.planId.toLowerCase();
-      const currentBest = examPlans[payment.examId] || 'free';
-      if ((planHierarchy[pid] ?? -1) > (planHierarchy[currentBest] ?? -1)) {
-        examPlans[payment.examId] = pid;
-      }
-    }
-
-    let activePlanType = 'free';
-    const sortedExams = [...(user.exams || [])].sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    const firstExamId = sortedExams.length > 0 ? sortedExams[0].id : null;
-
-    if (firstExamId && !examPlans[firstExamId]) {
-      examPlans[firstExamId] = user.planType || 'free';
-    }
-
-    if (user.examId) {
-      activePlanType = examPlans[user.examId] || 'free';
-    }
-
-    const finalUser = {
-      ...user,
-      planType: activePlanType,
-      examPlans: examPlans
-    };
+    const finalUser = await computeUserPlans(user);
 
     return NextResponse.json({ data: finalUser }, { status: 200 });
   } catch (error) {
@@ -149,7 +154,9 @@ export async function PUT(request: NextRequest) {
       select: publicUserSelect,
     });
 
-    return NextResponse.json({ data: updatedUser }, { status: 200 });
+    const finalUser = await computeUserPlans(updatedUser);
+
+    return NextResponse.json({ data: finalUser }, { status: 200 });
   } catch (error) {
     console.error('Error updating user profile:', error);
     return NextResponse.json(
