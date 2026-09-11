@@ -204,23 +204,24 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false, vi
             <div className={`min-h-full flex ${viewMode === 'PPT' ? 'flex-1 p-0' : 'min-w-full p-4 md:p-8'} relative`}>
             
               <div 
-                className={`relative flex ${actualTwoPageMode ? 'gap-1' : ''} m-auto ${viewMode === 'PPT' ? 'justify-center items-center' : ''}`} 
+                className={`relative flex ${actualTwoPageMode ? 'gap-2 md:gap-4' : ''} m-auto ${viewMode === 'PPT' ? 'justify-center items-center' : ''}`} 
                 style={{ 
                   opacity: rendering ? 0.7 : 1,
                   transition: 'opacity 0.3s, width 0.2s, height 0.2s',
-                  width: viewMode === 'PPT' ? `${zoom}%` : 'auto',
+                  width: `${zoom}%`,
                   height: viewMode === 'PPT' ? `${zoom}%` : 'auto',
+                  justifyContent: 'center',
                 }}
               >
                 {/* Left/Single Page */}
-                <div className={`shadow-2xl bg-white border border-dark-200 flex items-center justify-center relative ${viewMode === 'PPT' ? 'w-full h-full shadow-none border-none bg-transparent' : 'shrink-0'}`}>
+                <div className={`shadow-2xl bg-white border border-dark-200 flex items-center justify-center relative ${viewMode === 'PPT' ? 'w-full h-full shadow-none border-none bg-transparent' : 'min-w-0'}`}>
                   <canvas 
                     ref={canvasRef} 
                     style={{ 
                       display: 'block', 
                       width: viewMode === 'PPT' ? '100%' : 'auto', 
                       height: viewMode === 'PPT' ? '100%' : 'auto',
-                      maxWidth: viewMode === 'PPT' ? '100%' : `${actualTwoPageMode ? zoom / 2 : zoom}%`,
+                      maxWidth: '100%',
                       maxHeight: viewMode === 'PPT' ? '100%' : `${85 * (zoom / 100)}vh`,
                       objectFit: viewMode === 'PPT' ? 'contain' : 'fill',
                       transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
@@ -230,14 +231,14 @@ export default function PDFViewer({ fileUrl, zoom = 100, twoPageMode = false, vi
                 
                 {/* Right Page (Two Page Mode) */}
                 {actualTwoPageMode && (
-                  <div className="shadow-2xl bg-white border border-dark-200 shrink-0 flex items-center justify-center relative">
+                  <div className="shadow-2xl bg-white border border-dark-200 min-w-0 flex items-center justify-center relative">
                     <canvas 
                       ref={rightCanvasRef} 
                       style={{ 
                         display: 'block', 
                         width: 'auto', 
                         height: 'auto',
-                        maxWidth: `${actualTwoPageMode ? zoom / 2 : zoom}%`,
+                        maxWidth: '100%',
                         maxHeight: `${85 * (zoom / 100)}vh`,
                         transition: 'max-width 0.2s ease-out, max-height 0.2s ease-out'
                       }} 

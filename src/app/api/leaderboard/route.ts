@@ -7,12 +7,16 @@ export async function GET(request: NextRequest) {
     const session = await getSessionFromRequest(request);
 
     const timeframe = request.nextUrl.searchParams.get('timeframe') || 'allTime';
+    const examId = request.nextUrl.searchParams.get('examId');
+
+    const userWhereClause = examId ? { examId } : {};
 
     let topUsers: any[] = [];
-    let totalUsers = await prisma.user.count();
+    let totalUsers = await prisma.user.count({ where: userWhereClause });
 
     if (timeframe === 'allTime') {
       topUsers = await prisma.user.findMany({
+        where: userWhereClause,
         orderBy: { xp: 'desc' },
         take: 30,
         select: {
@@ -35,7 +39,10 @@ export async function GET(request: NextRequest) {
 
       // Fetch all submissions in timeframe
       const submissions = await prisma.testSubmission.findMany({
-          where: { createdAt: { gte: dateCutoff } },
+          where: { 
+              createdAt: { gte: dateCutoff },
+              ...(examId ? { user: { examId } } : {})
+          },
           select: { userId: true, xpEarned: true, earnedMarks: true, mode: true, percentage: true, totalMarks: true }
       });
 
@@ -97,7 +104,10 @@ export async function GET(request: NextRequest) {
             
             if (timeframe === 'allTime') {
                 const rankCount = await prisma.user.count({
-                    where: { xp: { gt: currentUser.xp } }
+                    where: { 
+                        xp: { gt: currentUser.xp },
+                        ...(examId ? { examId } : {})
+                    }
                 });
                 userRank = rankCount + 1;
             } else {

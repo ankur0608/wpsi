@@ -34,7 +34,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   useEffect(() => {
     if (user?.id) {
-      fetch('/api/leaderboard?timeframe=allTime')
+      const url = new URL('/api/leaderboard', window.location.origin);
+      url.searchParams.set('timeframe', 'allTime');
+      if (user?.examId) {
+        url.searchParams.set('examId', user.examId);
+      }
+      fetch(url.toString())
         .then(res => res.json())
         .then(data => {
           if (data.userRank) setUserRank(data.userRank);

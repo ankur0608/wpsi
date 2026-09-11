@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('mcq_session')?.value;
   const path = request.nextUrl.pathname;
   
-  const isAuthPage = path === '/login' || path === '/register' || path === '/';
+  const isAuthPage = path === '/login' || path === '/register';
 
   // If the user has a session cookie and is trying to access login/register,
   // redirect them to the dashboard.

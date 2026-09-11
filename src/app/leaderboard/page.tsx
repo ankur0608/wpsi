@@ -24,7 +24,12 @@ export default function LeaderboardPage() {
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/leaderboard?timeframe=${timeframe}`);
+        const url = new URL('/api/leaderboard', window.location.origin);
+        url.searchParams.set('timeframe', timeframe);
+        if (user?.examId) {
+          url.searchParams.set('examId', user.examId);
+        }
+        const res = await fetch(url.toString());
         if (res.ok) {
           const data = await res.json();
           setLeaderboardData(data.leaderboardData || []);
@@ -38,8 +43,10 @@ export default function LeaderboardPage() {
         setLoading(false);
       }
     };
-    fetchLeaderboard();
-  }, [timeframe]);
+    if (user !== undefined) {
+      fetchLeaderboard();
+    }
+  }, [timeframe, user?.examId, user]);
 
   const top1 = leaderboardData[0];
   const top2 = leaderboardData[1];
