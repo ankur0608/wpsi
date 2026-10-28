@@ -58,7 +58,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
                 <h1 className="text-3xl font-display font-black text-dark-900 tracking-tight">Exam Pro</h1>
               </div>
               <p className="text-sm text-dark-500 font-medium ml-13">MCQ Prep Zone</p>
-              <p className="text-sm text-dark-500 ml-13">www.mcqprepzone.online</p>
+              <p className="text-sm text-dark-500 ml-13">mcqprepzone.online</p>
             </div>
             <div className="text-right">
               <h2 className="text-4xl font-black text-primary-600 tracking-tight mb-2 uppercase">Invoice</h2>

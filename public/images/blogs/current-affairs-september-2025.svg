@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1C1306"/>
+      <stop offset="100%" stop-color="#3D2A08"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#F59E0B" stroke-width="1" stroke-opacity="0.07"/>
+    </pattern>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="30" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glowing background orb -->
+  <circle cx="950" cy="270" r="220" fill="#F59E0B" fill-opacity="0.18" filter="url(#glow)"/>
+  <circle cx="200" cy="100" r="140" fill="#FBBF24" fill-opacity="0.10" filter="url(#glow)"/>
+
+  <!-- Top Brand Ribbon -->
+  <g transform="translate(70, 70)">
+    <!-- MCQ Prep Zone Brand pill -->
+    <rect x="0" y="0" width="220" height="38" rx="19" fill="#0F172A" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.5"/>
+    <circle cx="20" cy="19" r="6" fill="#FDE68A"/>
+    <text x="36" y="24" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5">MCQ PREP ZONE</text>
+
+    <!-- Category Pill -->
+    <rect x="235" y="0" width="180" height="38" rx="19" fill="#F59E0B" fill-opacity="0.25" stroke="#FBBF24" stroke-width="1.5"/>
+    <text x="325" y="24" fill="#FDE68A" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5" text-anchor="middle">GENERAL KNOWLEDGE</text>
+  </g>
+
+  <!-- Left Content: Title -->
+  <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">
+    <tspan x="70" y="250">Current Affairs Roundup:</tspan><tspan x="70" y="298">September 2025</tspan>
+  </text>
+
+  <!-- Target Exam Badge / Read Time -->
+  <g transform="translate(70, 480)">
+    <rect x="0" y="0" width="460" height="54" rx="14" fill="#0F172A" fill-opacity="0.8" stroke="#334155" stroke-width="1.5"/>
+    <path d="M 22,27 L 30,17 L 38,27 Z" fill="#FDE68A"/>
+    <text x="46" y="32" fill="#E2E8F0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">Gujarat Police WPSI &amp; GPSC Technical Exam Prep</text>
+  </g>
+
+  <!-- Right Visual Component -->
+  
+        <g transform="translate(740, 150)">
+          <!-- Ashoka Pillar / Scales of Justice & Gujarat Shield -->
+          <rect x="30" y="30" width="320" height="230" rx="16" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="2"/>
+          <!-- Scale of Justice -->
+          <line x1="190" y1="60" x2="190" y2="210" stroke="#FBBF24" stroke-width="4"/>
+          <line x1="120" y1="80" x2="260" y2="80" stroke="#FBBF24" stroke-width="4"/>
+          <circle cx="190" cy="60" r="8" fill="#FDE68A"/>
+          <!-- Left Pan -->
+          <line x1="130" y1="80" x2="110" y2="130" stroke="#FBBF24" stroke-width="2"/>
+          <line x1="130" y1="80" x2="150" y2="130" stroke="#FBBF24" stroke-width="2"/>
+          <path d="M 100,130 Q 130,150 160,130 Z" fill="#FBBF24" fill-opacity="0.5"/>
+          <!-- Right Pan -->
+          <line x1="250" y1="80" x2="230" y2="130" stroke="#FBBF24" stroke-width="2"/>
+          <line x1="250" y1="80" x2="270" y2="130" stroke="#FBBF24" stroke-width="2"/>
+          <path d="M 220,130 Q 250,150 280,130 Z" fill="#FBBF24" fill-opacity="0.5"/>
+          <!-- Base -->
+          <rect x="150" y="210" width="80" height="15" rx="4" fill="#FBBF24"/>
+          <text x="190" y="245" fill="#FDE68A" font-family="system-ui" font-size="14" font-weight="bold" text-anchor="middle">ARTICLES 12 TO 35</text>
+        </g>
+
+  <!-- Bottom Accent Gradient Line -->
+  <rect x="0" y="622" width="1200" height="8" fill="url(#primaryGrad)"/>
+</svg>

@@ -18,7 +18,14 @@ export default function DynamicNavbar() {
   const isHome = pathname === '/';
   
   // Pages with dark hero section at top where navbar should be transparent+white text initially
-  const isDarkHeroPage = pathname === '/features' || pathname === '/pricing' || pathname === '/about' || pathname === '/blog' || pathname === '/contact' || pathname === '/testimonials' || pathname === '/daily-challenge' || pathname.startsWith('/blog-');
+  const isDarkHeroPage = 
+    pathname === '/features' || 
+    pathname === '/pricing' || 
+    pathname === '/about' || 
+    pathname.startsWith('/blog') || 
+    pathname === '/contact' || 
+    pathname === '/testimonials' || 
+    pathname === '/daily-challenge';
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -93,10 +100,21 @@ export default function DynamicNavbar() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-4 pointer-events-none">
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled 
+            ? 'w-full bg-white/95 backdrop-blur-xl border-b border-dark-200/50 shadow-[0_4px_20px_-4px_rgba(0,51,102,0.08)] pt-0 px-0 pointer-events-auto' 
+            : 'pt-4 px-4 sm:px-6 lg:px-8 bg-transparent pointer-events-none'
+        }`}
+      >
         <nav 
-          className={`max-w-7xl mx-auto rounded-2xl pointer-events-auto transition-all duration-300 ${navBgClass}`}
-          style={{ backgroundColor: (isScrolled || !isDarkHeroPage) ? 'rgba(255, 255, 255, 0.95)' : 'transparent' }}
+          className={`max-w-7xl mx-auto transition-all duration-300 pointer-events-auto ${
+            isScrolled 
+              ? 'px-4 sm:px-6 lg:px-8 rounded-none bg-transparent border-transparent shadow-none' 
+              : (isDarkHeroPage 
+                  ? 'rounded-2xl bg-transparent border-transparent shadow-none' 
+                  : 'rounded-2xl backdrop-blur-xl border border-dark-200/50 shadow-[0_12px_40px_-12px_rgba(0,51,102,0.08)] bg-white/95')
+          }`}
         >
             <div className="flex justify-between items-center h-16 px-4 sm:px-6">
                 <Link href="/" className="flex items-center gap-3 group">
@@ -109,8 +127,12 @@ export default function DynamicNavbar() {
                     </div>
                 </Link>
                 
-                <div className="hidden lg:flex items-center gap-8">
+                <div className="hidden lg:flex items-center gap-7">
                     <Link href="/" className={`font-semibold transition-all duration-200 text-sm hover:-translate-y-0.5 inline-block ${linkColorClass}`}>Home</Link>
+                    <Link href="/government-exams" className={`font-semibold transition-all duration-200 text-sm hover:-translate-y-0.5 inline-flex items-center gap-1.5 ${linkColorClass}`}>
+                      <span>Govt Exams</span>
+                      <span className="bg-accent-500 text-dark-900 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold uppercase">Live</span>
+                    </Link>
                     <Link href="/features" className={`font-semibold transition-all duration-200 text-sm hover:-translate-y-0.5 inline-block ${linkColorClass}`}>Features</Link>
                     <Link href="/pricing" className={`font-semibold transition-all duration-200 text-sm hover:-translate-y-0.5 inline-block ${linkColorClass}`}>Pricing</Link>
                     <Link href="/blog" className={`font-semibold transition-all duration-200 text-sm hover:-translate-y-0.5 inline-block ${linkColorClass}`}>Blogs</Link>
@@ -143,8 +165,12 @@ export default function DynamicNavbar() {
         </nav>
         
         {/* Mobile Menu */}
-        <div className={`lg:hidden max-w-7xl mx-auto bg-white backdrop-blur-2xl border border-dark-100 px-4 py-4 space-y-3 rounded-2xl mt-2 shadow-2xl pointer-events-auto transition-all duration-300 ${mobileMenuOpen ? "block opacity-100" : "hidden opacity-0"}`}>
+        <div className={`lg:hidden max-w-7xl mx-auto bg-white backdrop-blur-2xl border border-dark-100 px-4 py-4 space-y-3 rounded-2xl mx-4 sm:mx-6 mt-2 mb-4 shadow-2xl pointer-events-auto transition-all duration-300 ${mobileMenuOpen ? "block opacity-100" : "hidden opacity-0"}`}>
             <Link href="/" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Home</Link>
+            <Link href="/government-exams" className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">
+                <span>Govt Exams</span>
+                <span className="bg-accent-500 text-dark-900 text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase">Live</span>
+            </Link>
             <Link href="/features" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Features</Link>
             <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Pricing</Link>
             <Link href="/blog" className="block px-4 py-3 rounded-xl hover:bg-dark-50 text-dark-700 font-bold transition-colors">Blogs</Link>
@@ -167,7 +193,7 @@ export default function DynamicNavbar() {
                 )}
             </div>
         </div>
-      </div>
+      </header>
 
       <AuthModal
         isOpen={authModalOpen}

@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import { BookOpen, ListChecks, Lightbulb, TrendingUp } from 'lucide-react';
 
 export default function RoadmapSection() {
   return (
@@ -17,7 +16,7 @@ export default function RoadmapSection() {
                 
                 <div className="relative z-10 text-center group flex flex-col h-full">
                     <div className="w-24 h-24 mx-auto bg-white border-4 border-primary-100 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:border-primary-500 group-hover:scale-110 transition-all shadow-md shrink-0">
-                        <span className="text-3xl">📚</span>
+                        <BookOpen className="w-10 h-10 text-primary-600" />
                     </div>
                     <div className="bg-dark-50 rounded-2xl p-6 border border-dark-100 flex-1 group-hover:bg-primary-50 transition-colors">
                         <h3 className="text-xl font-bold text-primary-900 mb-2">1. Choose Subject</h3>
@@ -27,7 +26,7 @@ export default function RoadmapSection() {
                 
                 <div className="relative z-10 text-center group flex flex-col h-full">
                     <div className="w-24 h-24 mx-auto bg-white border-4 border-primary-100 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:border-primary-500 group-hover:scale-110 transition-all shadow-md shrink-0">
-                        <span className="text-3xl">✍️</span>
+                        <ListChecks className="w-10 h-10 text-primary-600" />
                     </div>
                     <div className="bg-dark-50 rounded-2xl p-6 border border-dark-100 flex-1 group-hover:bg-primary-50 transition-colors">
                         <h3 className="text-xl font-bold text-primary-900 mb-2">2. Practice MCQs</h3>
@@ -37,7 +36,7 @@ export default function RoadmapSection() {
                 
                 <div className="relative z-10 text-center group flex flex-col h-full">
                     <div className="w-24 h-24 mx-auto bg-white border-4 border-accent-100 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:border-accent-500 group-hover:scale-110 transition-all shadow-md shrink-0">
-                        <span className="text-3xl">💡</span>
+                        <Lightbulb className="w-10 h-10 text-accent-500" />
                     </div>
                     <div className="bg-dark-50 rounded-2xl p-6 border border-dark-100 flex-1 group-hover:bg-accent-50 transition-colors">
                         <h3 className="text-xl font-bold text-primary-900 mb-2">3. Review Solutions</h3>
@@ -47,7 +46,7 @@ export default function RoadmapSection() {
                 
                 <div className="relative z-10 text-center group flex flex-col h-full">
                     <div className="w-24 h-24 mx-auto bg-white border-4 border-success-100 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:border-success-500 group-hover:scale-110 transition-all shadow-md shrink-0">
-                        <span className="text-3xl">📈</span>
+                        <TrendingUp className="w-10 h-10 text-success-600" />
                     </div>
                     <div className="bg-dark-50 rounded-2xl p-6 border border-dark-100 flex-1 group-hover:bg-success-50 transition-colors">
                         <h3 className="text-xl font-bold text-primary-900 mb-2">4. Track Progress</h3>

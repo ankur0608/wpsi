@@ -18,7 +18,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
               <h1 className="text-3xl font-black text-dark-900 tracking-tight" style={{ fontFamily: 'system-ui' }}>MCQPrepZone Pro</h1>
             </div>
             <p className="text-sm text-dark-500 font-medium ml-13">MCQ Prep Zone</p>
-            <p className="text-sm text-dark-500 ml-13">www.mcqprepzone.online</p>
+            <p className="text-sm text-dark-500 ml-13">mcqprepzone.online</p>
           </div>
           <div className="text-right">
             <h2 className="text-4xl font-black text-primary-600 tracking-tight mb-2 uppercase">Invoice</h2>

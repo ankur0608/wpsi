@@ -146,12 +146,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     <header className="h-20 bg-primary-50/30 flex items-center justify-between px-4 lg:px-10 shrink-0 sticky top-0 z-30 border-b border-primary-100 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-4 flex-1 min-w-0 pr-4">
             {/* Mobile Logo */}
-            <div className="flex md:hidden items-center gap-2 shrink-0">
+            <div className="flex md:hidden items-center gap-2 shrink min-w-0">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30 overflow-hidden shrink-0">
                     <Image src="/logo.jpeg" alt="McqPrepZone Logo" width={40} height={40} className="w-full h-full object-cover" />
                 </div>
-                <div>
-                    <h1 className="font-display font-bold text-lg text-dark-800 leading-none tracking-tight">McqPrep<span className="text-primary-600">Zone</span></h1>
+                <div className="min-w-0 truncate">
+                    <span className="block font-display font-bold text-lg text-dark-800 leading-none tracking-tight truncate">McqPrep<span className="text-primary-600 hidden sm:inline">Zone</span></span>
                 </div>
             </div>
             

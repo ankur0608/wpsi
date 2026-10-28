@@ -24,9 +24,11 @@ export default function LandingNavbar() {
   const [sessionChecked, setSessionChecked] = useState(false);
 
   const navLinks = [
+    { href: '/government-exams', label: 'Govt Exams' },
     { href: isHome ? '#exams' : '/#exams', label: 'Exams' },
     { href: isHome ? '#features' : '/#features', label: 'Features' },
     { href: isHome ? '#rankers' : '/#rankers', label: 'Rankers' },
+    { href: '/blog', label: 'Blogs' },
     { href: isHome ? '#pricing' : '/#pricing', label: 'Pricing' },
   ];
 

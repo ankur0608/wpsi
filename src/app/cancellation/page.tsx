@@ -1,3 +1,13 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Cancellation & Refund Policy | Mcqprepzone',
+  description: 'Learn about Mcqprepzone\'s cancellation and refund terms for mock test series and subscription plans.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/cancellation',
+  },
+};
+
 import Link from 'next/link';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';

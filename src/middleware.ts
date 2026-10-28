@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || '';
+
+  // Enforce canonical non-WWW domain redirect (HTTP 301 Permanent Redirect)
+  if (host.startsWith('www.')) {
+    const nonWwwHost = host.replace(/^www\./i, '');
+    const url = request.nextUrl.clone();
+    url.host = nonWwwHost;
+    url.protocol = 'https:';
+    url.port = '';
+    return NextResponse.redirect(url, 301);
+  }
+
   const token = request.cookies.get('mcq_session')?.value;
   const path = request.nextUrl.pathname;
   
@@ -12,9 +24,6 @@ export function middleware(request: NextRequest) {
   if (isAuthPage && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-
-  // Optional: You could also protect /dashboard and other private routes here by
-  // checking if (!token && isPrivateRoute) -> redirect to /login
 
   return NextResponse.next();
 }

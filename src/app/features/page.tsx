@@ -207,14 +207,14 @@ export default function Features() {
         </div>
     </section>
     
-    <section className="py-24 md:py-40 bg-primary-900 text-center px-4 relative overflow-hidden">
+    <section className="py-16 md:py-20 bg-primary-900 text-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20  from-white via-transparent to-transparent"></div>
         <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Start Your Competitive Exams Preparation Today</h2>
-            <p className="text-xl text-primary-200 mb-12 leading-relaxed">Practice topic-wise MCQs, track your progress, identify weak areas, and compete with aspirants across Gujarat.</p>
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3">Start Your Competitive Exams Preparation Today</h2>
+            <p className="text-base md:text-lg text-primary-200 mb-8 leading-relaxed">Practice topic-wise MCQs, track your progress, identify weak areas, and compete with aspirants across Gujarat.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/login" className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 shadow-lg hover:shadow-xl">Start Practicing Free</a>
-                <a href="/mock_tests" className="bg-primary-800 hover:bg-primary-700 border border-primary-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1">Explore Mock Tests</a>
+                <a href="/login" className="bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-xl font-semibold text-sm sm:text-base transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg">Start Practicing Free</a>
+                <a href="/mock_tests" className="bg-primary-800 hover:bg-primary-700 border border-primary-600 text-white px-6 py-3 rounded-xl font-semibold text-sm sm:text-base transition-all hover:-translate-y-0.5">Explore Mock Tests</a>
             </div>
         </div>
     </section>
@@ -263,9 +263,9 @@ export default function Features() {
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
                     <div className="mt-4 flex gap-4">
-                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
-                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
-                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" aria-label="Instagram Profile" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i><span className="sr-only">Instagram</span></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" aria-label="Telegram Channel" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i><span className="sr-only">Telegram</span></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" aria-label="Facebook Page" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i><span className="sr-only">Facebook</span></a>
                     </div>
                 </div>
             </div>

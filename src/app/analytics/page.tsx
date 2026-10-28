@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
+import { FileText, Target, Clock, Trophy, AlertTriangle, Star, BookOpen, BarChart3, Lock, ChevronRight } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 
 type TopicData = {
@@ -81,8 +82,8 @@ export default function AnalyticsPage() {
   if (isFreePlan) {
     return (
       <div className="bg-dark-50 w-full min-h-[80vh] flex flex-col items-center justify-center font-sans text-dark-800 p-6">
-        <div className="w-20 h-20 bg-dark-200 rounded-full flex items-center justify-center text-4xl mb-6 shadow-sm">
-          🔒
+        <div className="w-20 h-20 bg-dark-200 rounded-full flex items-center justify-center mb-6 shadow-sm">
+          <Lock className="w-8 h-8 text-dark-400" />
         </div>
         <h2 className="font-display text-3xl font-bold text-dark-900 mb-3 text-center">Premium Feature</h2>
         <p className="text-dark-500 max-w-md text-center mb-8">
@@ -130,13 +131,13 @@ export default function AnalyticsPage() {
           {/* Grid of Overview stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
             <div className="bg-dark-50 border border-dark-100 p-4 rounded-2xl hover:border-primary-200 transition-colors shadow-sm">
-              <span className="text-2xl">📝</span>
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center"><FileText className="w-5 h-5 text-primary-600" /></div>
               <h4 className="text-[10px] text-dark-400 font-bold uppercase tracking-wider mt-2">Questions Solved</h4>
               <p className="text-2xl font-black text-dark-900 mt-0.5">{performance.questionsSolved.toLocaleString()}</p>
               <p className="text-[9px] text-emerald-600 font-bold mt-1">✓ {performance.correctAnswers.toLocaleString()} Correct</p>
             </div>
             <div className="bg-dark-50 border border-dark-100 p-4 rounded-2xl hover:border-primary-200 transition-colors shadow-sm">
-              <span className="text-2xl">🎯</span>
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center"><Target className="w-5 h-5 text-primary-600" /></div>
               <h4 className="text-[10px] text-dark-400 font-bold uppercase tracking-wider mt-2">Average Accuracy</h4>
               <p className="text-2xl font-black text-primary-600 mt-0.5">{performance.averageAccuracy}%</p>
               <div className="w-full bg-dark-200 h-1.5 rounded-full mt-2 overflow-hidden">
@@ -144,13 +145,13 @@ export default function AnalyticsPage() {
               </div>
             </div>
             <div className="bg-dark-50 border border-dark-100 p-4 rounded-2xl hover:border-primary-200 transition-colors shadow-sm">
-              <span className="text-2xl">⏱️</span>
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center"><Clock className="w-5 h-5 text-primary-600" /></div>
               <h4 className="text-[10px] text-dark-400 font-bold uppercase tracking-wider mt-2">Study Hours</h4>
               <p className="text-2xl font-black text-dark-900 mt-0.5">{performance.estimatedStudyHours} Hrs</p>
               <p className="text-[9px] text-dark-500 font-semibold mt-1">est. {performance.questionsPerHour} questions/hr</p>
             </div>
             <div className="bg-dark-50 border border-dark-100 p-4 rounded-2xl hover:border-primary-200 transition-colors shadow-sm">
-              <span className="text-2xl">🏆</span>
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center"><Trophy className="w-5 h-5 text-amber-600" /></div>
               <h4 className="text-[10px] text-dark-400 font-bold uppercase tracking-wider mt-2">Mocks Taken</h4>
               <p className="text-2xl font-black text-dark-900 mt-0.5">{performance.mocksTaken}</p>
               <p className="text-[9px] text-amber-600 font-bold mt-1">★ {performance.avgMockScore}% Avg Score</p>
@@ -165,7 +166,7 @@ export default function AnalyticsPage() {
             <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
               <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
               <div className="relative z-10">
-                <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">🔒</div>
+                <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center mb-4 mx-auto"><Lock className="w-5 h-5 text-dark-500" /></div>
                 <h4 className="font-bold text-dark-900 mb-2">Area of Focus Locked</h4>
                 <p className="text-xs text-dark-500 max-w-[200px] mx-auto mb-4">Upgrade to ELITE to identify and target your weakest topics.</p>
                 <Link href="/dashboard/pricing" className="bg-dark-800 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-dark-900">Upgrade to ELITE</Link>
@@ -174,7 +175,7 @@ export default function AnalyticsPage() {
           ) : (
             <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
               <h4 className="font-display font-bold text-rose-600 flex items-center gap-2 mb-4">
-                ⚠️ Area of Focus (Weak Topics)
+                <AlertTriangle className="w-5 h-5 text-rose-500" /> Area of Focus (Weak Topics)
               </h4>
               <div className="space-y-3">
                 {weakTopics.length > 0 ? weakTopics.map((wt, i) => (
@@ -195,7 +196,7 @@ export default function AnalyticsPage() {
           {/* Strong Topics */}
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
             <h4 className="font-display font-bold text-emerald-600 flex items-center gap-2 mb-4">
-              ⭐ Strength Areas (Strong Topics)
+              <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Strength Areas (Strong Topics)
             </h4>
             <div className="space-y-3">
               {strongTopics.length > 0 ? strongTopics.map((st, i) => (
@@ -218,7 +219,7 @@ export default function AnalyticsPage() {
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm relative overflow-hidden flex flex-col items-center justify-center text-center h-[300px]">
             <div className="absolute inset-0 bg-dark-50/50 backdrop-blur-[2px]"></div>
             <div className="relative z-10">
-              <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">🔒</div>
+              <div className="w-12 h-12 bg-dark-100 rounded-full flex items-center justify-center mb-4 mx-auto"><Lock className="w-5 h-5 text-dark-500" /></div>
               <h4 className="font-bold text-dark-900 mb-2">Subject Performance Locked</h4>
               <p className="text-sm text-dark-500 max-w-sm mx-auto mb-4">Get the ELITE plan to unlock interactive subject and topic-level analytics.</p>
               <Link href="/dashboard/pricing" className="bg-dark-800 text-white text-sm font-bold py-2.5 px-6 rounded-lg hover:bg-dark-900 transition-colors">Upgrade to ELITE</Link>
@@ -228,7 +229,7 @@ export default function AnalyticsPage() {
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
             <div className="pb-3 border-b border-dark-100 mb-4 flex items-center justify-between">
               <div>
-                <h3 className="font-display text-lg font-bold text-dark-900">📚 Subject Performance</h3>
+                <h3 className="font-display text-lg font-bold text-dark-900 flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary-600" /> Subject Performance</h3>
                 <p className="text-xs text-dark-500">Click a subject to view topic-level accuracy metrics</p>
               </div>
             </div>
@@ -260,7 +261,7 @@ export default function AnalyticsPage() {
                           {sub.label} ({sub.accuracy}%)
                         </p>
                       </div>
-                      <span className="text-dark-400">→</span>
+                      <ChevronRight className="w-4 h-4 text-dark-400" />
                     </div>
                   </div>
                 );
@@ -324,7 +325,7 @@ export default function AnalyticsPage() {
           {/* Difficulty analysis */}
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
             <div className="pb-3 border-b border-dark-100 mb-4">
-              <h4 className="font-display font-bold text-dark-900">📊 Difficulty Analysis</h4>
+              <h4 className="font-display font-bold text-dark-900 flex items-center gap-2"><BarChart3 className="w-5 h-5 text-dark-700" /> Difficulty Analysis</h4>
               <p className="text-[10px] text-dark-500">Accuracy sorted by question level</p>
             </div>
             <div className="space-y-4">
@@ -361,7 +362,7 @@ export default function AnalyticsPage() {
           {/* Practice mode breakdown */}
           <div className="bg-white border border-dark-200 rounded-[24px] p-5 lg:p-6 shadow-sm">
             <div className="pb-3 border-b border-dark-100 mb-4">
-              <h4 className="font-display font-bold text-dark-900">🎯 Practice Mode Analytics</h4>
+              <h4 className="font-display font-bold text-dark-900 flex items-center gap-2"><Target className="w-5 h-5 text-dark-700" /> Practice Mode Analytics</h4>
               <p className="text-[10px] text-dark-500">Accuracy split by study modes</p>
             </div>
             <div className="space-y-4">

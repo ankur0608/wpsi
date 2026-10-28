@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { FileText, TrendingUp, HelpCircle, Target, BarChart2, Flame, Zap, Trophy, Timer, CircleHelp, BookOpen, Inbox, ChevronRight } from 'lucide-react';
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 
@@ -42,13 +43,13 @@ export default function ResultsPage() {
   // Helpers to derive UI classes based on test type or score
   const getTestMeta = (mode: string) => {
     const m = mode?.toLowerCase() || '';
-    if (m === 'daily') return { typeLabel: 'Daily Challenge', type: 'daily', icon: '🔥', iconClass: 'bg-amber-50 text-amber-600 border-amber-100' };
-    if (m === 'sectional') return { typeLabel: 'Sectional Mock', type: 'sectional', icon: '⚡', iconClass: 'bg-indigo-50 text-indigo-600 border-indigo-100' };
-    if (m === 'mock' || m === 'full') return { typeLabel: 'Full Length Mock', type: 'mock', icon: '🏆', iconClass: 'bg-primary-50 text-primary-600 border-primary-100' };
-    if (m === 'timed') return { typeLabel: 'Timed Test', type: 'timed', icon: '⏱️', iconClass: 'bg-rose-50 text-rose-600 border-rose-100' };
-    if (m === 'quick') return { typeLabel: 'Quick Practice', type: 'quick', icon: '🏃', iconClass: 'bg-emerald-50 text-emerald-600 border-emerald-100' };
-    if (m === 'quiz') return { typeLabel: 'Quiz', type: 'quiz', icon: '❓', iconClass: 'bg-violet-50 text-violet-600 border-violet-100' };
-    return { typeLabel: 'Practice Session', type: 'practice', icon: '📚', iconClass: 'bg-gray-50 text-gray-600 border-gray-200' };
+    if (m === 'daily') return { typeLabel: 'Daily Challenge', type: 'daily', icon: <Flame className="w-5 h-5" />, iconClass: 'bg-amber-50 text-amber-600 border-amber-100' };
+    if (m === 'sectional') return { typeLabel: 'Sectional Mock', type: 'sectional', icon: <Zap className="w-5 h-5" />, iconClass: 'bg-indigo-50 text-indigo-600 border-indigo-100' };
+    if (m === 'mock' || m === 'full') return { typeLabel: 'Full Length Mock', type: 'mock', icon: <Trophy className="w-5 h-5" />, iconClass: 'bg-primary-50 text-primary-600 border-primary-100' };
+    if (m === 'timed') return { typeLabel: 'Timed Test', type: 'timed', icon: <Timer className="w-5 h-5" />, iconClass: 'bg-rose-50 text-rose-600 border-rose-100' };
+    if (m === 'quick') return { typeLabel: 'Quick Practice', type: 'quick', icon: <Zap className="w-5 h-5" />, iconClass: 'bg-emerald-50 text-emerald-600 border-emerald-100' };
+    if (m === 'quiz') return { typeLabel: 'Quiz', type: 'quiz', icon: <CircleHelp className="w-5 h-5" />, iconClass: 'bg-violet-50 text-violet-600 border-violet-100' };
+    return { typeLabel: 'Practice Session', type: 'practice', icon: <BookOpen className="w-5 h-5" />, iconClass: 'bg-gray-50 text-gray-600 border-gray-200' };
   };
 
   const getStatusMeta = (percentage: number) => {
@@ -93,7 +94,7 @@ export default function ResultsPage() {
                 <h2 className="font-display text-2xl font-black text-dark-900 tracking-tight leading-none">{displayName}</h2>
                 <span className="bg-primary-50 border border-primary-200 text-primary-700 text-[10px] font-bold px-2.5 py-1 rounded-full">Pro Student</span>
                 {user?.streak && user.streak > 0 && (
-                  <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full">🔥 {user.streak} Day Streak</span>
+                  <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full"><Flame className="w-3 h-3 inline" /> {user.streak} Day Streak</span>
                 )}
               </div>
               <p className="text-xs text-dark-400 font-medium mt-1.5">MCQ Prep Zone 2026 · Aspirant Performance Dashboard</p>
@@ -103,7 +104,7 @@ export default function ResultsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="group bg-gradient-to-br from-primary-50 to-primary-100/50 border border-primary-200/70 px-5 py-4 rounded-2xl text-left hover:shadow-md hover:border-primary-300 transition-all cursor-default">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-primary-500/15 flex items-center justify-center text-sm">📝</div>
+                <div className="w-7 h-7 rounded-lg bg-primary-500/15 flex items-center justify-center text-sm"><FileText className="w-4 h-4 text-primary-600" /></div>
                 <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wider">Tests Taken</p>
               </div>
               <p className="text-3xl font-black text-primary-700 leading-none">{stats.totalTests}</p>
@@ -111,7 +112,7 @@ export default function ResultsPage() {
             </div>
             <div className="group bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/70 px-5 py-4 rounded-2xl text-left hover:shadow-md hover:border-emerald-300 transition-all cursor-default">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-sm">📈</div>
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-sm"><TrendingUp className="w-4 h-4 text-emerald-600" /></div>
                 <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">Avg Score</p>
               </div>
               <p className="text-3xl font-black text-emerald-700 leading-none">{Math.round(stats.avgAccuracy || 0)}%</p>
@@ -119,7 +120,7 @@ export default function ResultsPage() {
             </div>
             <div className="group bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/70 px-5 py-4 rounded-2xl text-left hover:shadow-md hover:border-amber-300 transition-all cursor-default">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center text-sm">❓</div>
+                <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center text-sm"><HelpCircle className="w-4 h-4 text-amber-600" /></div>
                 <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">Total Questions</p>
               </div>
               <p className="text-3xl font-black text-amber-700 leading-none">{stats.totalQuestions}</p>
@@ -127,7 +128,7 @@ export default function ResultsPage() {
             </div>
             <div className="group bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/70 px-5 py-4 rounded-2xl text-left hover:shadow-md hover:border-violet-300 transition-all cursor-default">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-violet-500/15 flex items-center justify-center text-sm">🎯</div>
+                <div className="w-7 h-7 rounded-lg bg-violet-500/15 flex items-center justify-center text-sm"><Target className="w-4 h-4 text-violet-600" /></div>
                 <p className="text-[10px] text-violet-700 font-bold uppercase tracking-wider">Highest Score</p>
               </div>
               <p className="text-3xl font-black text-violet-700 leading-none">{Math.round(stats.highestScore || 0)}%</p>
@@ -141,7 +142,7 @@ export default function ResultsPage() {
           <div className="bg-white border border-dark-100 rounded-[24px] p-6 lg:p-8 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-dark-100">
               <div>
-                <h3 className="font-display text-lg font-bold text-dark-900 flex items-center gap-2">📊 Exam & Test Results</h3>
+                <h3 className="font-display text-lg font-bold text-dark-900 flex items-center gap-2"><BarChart2 className="w-5 h-5 text-primary-600" /> Exam & Test Results</h3>
                 <p className="text-xs text-dark-500">Comprehensive history of attempted mock exams, sectionals, and daily challenges.</p>
               </div>
               
@@ -173,7 +174,7 @@ export default function ResultsPage() {
             <div className="space-y-4">
               {filteredResults.length === 0 ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">📭</div>
+                  <div className="w-16 h-16 bg-dark-50 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl"><Inbox className="w-7 h-7 text-dark-400" /></div>
                   <p className="text-dark-500 font-bold">No results found.</p>
                 </div>
               ) : filteredResults.map((res: any, idx: number) => {

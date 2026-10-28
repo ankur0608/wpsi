@@ -15,20 +15,20 @@ export default function LandingFooter() {
             </div>
             <p className="opacity-70 text-sm mb-6">Empowering aspirants to achieve their government job dreams with AI-driven, gamified learning.</p>
             <div className="flex space-x-4">
-              <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-telegram"></i></a>
-              <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-facebook"></i></a>
-              <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-instagram"></i></a>
+              <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" aria-label="Join our Telegram Channel" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-telegram"></i><span className="sr-only">Telegram</span></a>
+              <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" aria-label="Follow Mcqprepzone on Facebook" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-facebook"></i><span className="sr-only">Facebook</span></a>
+              <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" aria-label="Follow Mcqprepzone on Instagram" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-70 hover:bg-brand-500 hover:text-white transition-all"><i className="fa-brands fa-instagram"></i><span className="sr-only">Instagram</span></a>
             </div>
           </div>
 
           <div>
             <h4 className="font-bold mb-4 opacity-90">Exams</h4>
             <ul className="space-y-2 text-sm opacity-70">
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Competitive Exams</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Gujarat Police PSI</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">GPSC Class 1/2</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">Talati</Link></li>
-              <li><Link href="/" className="hover:text-brand-400 transition-colors">SSC CGL</Link></li>
+              <li><Link href="/government-exams" className="hover:text-brand-400 transition-colors font-semibold text-brand-300">All Government Exams</Link></li>
+              <li><Link href="/government-exams" className="hover:text-brand-400 transition-colors">Gujarat Police PSI</Link></li>
+              <li><Link href="/government-exams" className="hover:text-brand-400 transition-colors">GPSC Class 1/2</Link></li>
+              <li><Link href="/government-exams" className="hover:text-brand-400 transition-colors">Talati</Link></li>
+              <li><Link href="/government-exams" className="hover:text-brand-400 transition-colors">SSC CGL</Link></li>
             </ul>
           </div>
 
@@ -39,8 +39,7 @@ export default function LandingFooter() {
               <li><Link href="/contact" className="hover:text-brand-400 transition-colors">Contact Us</Link></li>
               <li><Link href="/terms" className="hover:text-brand-400 transition-colors">Terms and Conditions</Link></li>
               <li><Link href="/privacy" className="hover:text-brand-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/refund-policy" className="hover:text-brand-400 transition-colors">Refund Policy</Link></li>
-              <li><Link href="/shipping-policy" className="hover:text-brand-400 transition-colors">Shipping Policy</Link></li>
+              <li><Link href="/cancellation" className="hover:text-brand-400 transition-colors">Cancellation & Refund Policy</Link></li>
             </ul>
           </div>
 
@@ -72,7 +71,7 @@ export default function LandingFooter() {
             <Link href="/faq" className="hover:opacity-100 transition-opacity">FAQ</Link>
             <Link href="/terms" className="hover:opacity-100 transition-opacity">Terms</Link>
             <Link href="/privacy" className="hover:opacity-100 transition-opacity">Privacy</Link>
-            <Link href="/refund-policy" className="hover:opacity-100 transition-opacity">Refunds</Link>
+            <Link href="/cancellation" className="hover:opacity-100 transition-opacity">Cancellation & Refunds</Link>
             <Link href="/contact" className="hover:opacity-100 transition-opacity">Contact</Link>
           </div>
         </div>

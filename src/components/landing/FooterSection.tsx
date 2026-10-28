@@ -18,6 +18,7 @@ export default function FooterSection() {
                     <h4 className="text-white font-bold mb-4">Quick Links</h4>
                     <ul className="space-y-2 text-sm">
                         <li><a href="/" className="hover:text-accent-400 transition-colors">Home</a></li>
+                        <li><a href="/government-exams" className="hover:text-accent-400 transition-colors">Government Exams</a></li>
                         <li><a href="/about" className="hover:text-accent-400 transition-colors">About Us</a></li>
                         <li><a href="/pricing" className="hover:text-accent-400 transition-colors">Pricing</a></li>
                         <li><a href="/features" className="hover:text-accent-400 transition-colors">Features</a></li>
@@ -48,9 +49,9 @@ export default function FooterSection() {
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
                     <div className="mt-4 flex gap-4">
-                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i></a>
-                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i></a>
-                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" aria-label="Follow Mcqprepzone on Instagram" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i><span className="sr-only">Instagram</span></a>
+                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" aria-label="Join our Telegram Channel" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i><span className="sr-only">Telegram</span></a>
+                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" aria-label="Follow Mcqprepzone on Facebook" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i><span className="sr-only">Facebook</span></a>
                     </div>
                 </div>
             </div>

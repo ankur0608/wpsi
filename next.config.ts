@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',
@@ -34,6 +37,20 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "192.168.1.200",
   ],
+    async redirects() {
+    return [
+      {
+        source: '/refund-policy',
+        destination: '/cancellation',
+        permanent: true,
+      },
+      {
+        source: '/shipping-policy',
+        destination: '/cancellation',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

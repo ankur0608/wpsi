@@ -612,46 +612,55 @@ h1, h2, h3, h4, h5, h6 {
    BLOG PROSE TYPOGRAPHY
    --------------------------------------------------------- */
 .prose {
-    font-size: 1.25rem !important; /* Extra large text (text-xl equivalent) for readability */
-    line-height: 1.8 !important;
+    font-size: 1.125rem;
+    line-height: 1.8;
 }
 .prose p {
-    font-size: 1.125rem !important;
-    line-height: 1.8 !important;
-    margin-bottom: 1.75rem !important;
-    color: var(--text-primary) !important;
-    opacity: 0.9;
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.75rem;
+    color: var(--text-primary);
 }
-.prose ul {
-    list-style: none !important;
-    padding-left: 0 !important;
-    margin-top: 1.5rem !important;
-    margin-bottom: 2.5rem !important;
+/* Ensure utility color classes inside custom cards/callouts are respected */
+.prose p[class*="text-"],
+.prose [class*="text-"] p,
+.prose [class*="text-white"] p,
+.prose [class*="text-primary-100"] p {
+    color: inherit;
 }
-.prose ul > li {
+.prose > ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.prose > ul > li {
     position: relative;
-    padding-left: 2.5rem !important;
-    margin-bottom: 1.25rem !important;
-    font-size: 1.125rem !important;
-    line-height: 1.7 !important;
-    color: var(--text-primary) !important;
+    padding-left: 2.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-primary);
 }
-.prose ul > li::before {
-    content: "•" !important;
+.prose > ul > li::before {
+    content: "•";
     position: absolute;
     left: 0.5rem;
-    color: #D4922A !important;
+    color: #D4922A;
     font-size: 1.3rem;
     line-height: 1.4;
 }
 .prose h2 {
-    font-size: 2.25rem !important; /* Big headings */
-    font-weight: 800 !important;
-    margin-top: 4rem !important;
-    margin-bottom: 2rem !important;
-    color: var(--text-primary) !important;
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
 }
 .prose strong {
-    font-weight: 700 !important;
-    color: #D4922A !important; /* Make bold text pop with accent color */
+    font-weight: 700;
+}
+.prose > p strong,
+.prose > ul strong {
+    color: #D4922A;
 }

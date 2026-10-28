@@ -267,6 +267,7 @@ model MockTestQuestion {
 model CSVUpload {
     id        Int      @id @default(autoincrement())
     filename  String
+    fileType  String   @default("csv")
     questions Int
     failed    Int      @default(0)
     status    String

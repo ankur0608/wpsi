@@ -17,6 +17,6 @@ export default function robots(): MetadataRoute.Robots {
         '/referral/',
       ],
     },
-    sitemap: 'https://www.mcqprepzone.online/sitemap.xml',
+    sitemap: 'https://mcqprepzone.online/sitemap.xml',
   }
 }

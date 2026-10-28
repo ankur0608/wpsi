@@ -7,6 +7,7 @@ import ExamPatternSection from '@/components/landing/ExamPatternSection';
 import SubjectPracticeSection from '@/components/landing/SubjectPracticeSection';
 import TrackProgressSection from '@/components/landing/TrackProgressSection';
 import RoadmapSection from '@/components/landing/RoadmapSection';
+import BlogSection from '@/components/landing/BlogSection';
 import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import FAQSection from '@/components/landing/FAQSection';
 import CallToActionSection from '@/components/landing/CallToActionSection';
@@ -23,6 +24,7 @@ export default function Home() {
         <SubjectPracticeSection />
         <TrackProgressSection />
         <RoadmapSection />
+        <BlogSection />
         <TestimonialsSection />
         <FAQSection />
         <CallToActionSection />
