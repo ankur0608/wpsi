@@ -1,6 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Mcqprepzone',
+  description: 'Read Mcqprepzone\'s privacy policy to understand how we protect, store, and process your personal data and test progress information.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/privacy',
+  },
+  openGraph: {
+    title: 'Privacy Policy | Mcqprepzone',
+    description: 'Read Mcqprepzone\'s privacy policy to understand how we protect, store, and process your personal data and test progress information.',
+    url: 'https://mcqprepzone.online/privacy',
+  },
+};
 
 export default function Privacy() {
   return (

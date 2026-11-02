@@ -21,13 +21,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const postUrl = `https://mcqprepzone.online/blog/${post.slug}`;
   const metaTitle = post.metaTitle || `${post.title} | MCQ Prep Zone`;
   const cleanContent = post.content.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
-  const metaDesc = post.metaDescription || (cleanContent.substring(0, 155) + '...');
+  const rawDesc = post.metaDescription || cleanContent;
+  const metaDesc = rawDesc.length > 155 ? rawDesc.slice(0, 152) + '...' : rawDesc;
   const postDate = !isNaN(new Date(post.date).getTime()) ? new Date(post.date).toISOString() : new Date().toISOString();
   const ogImageUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `https://mcqprepzone.online${post.imageUrl}`;
 
   return {
-    title: metaTitle,
+    title: {
+      absolute: metaTitle,
+    },
     description: metaDesc,
+    keywords: [],
     alternates: {
       canonical: postUrl,
     },

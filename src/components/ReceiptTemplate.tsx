@@ -99,7 +99,7 @@ export default function ReceiptTemplate({ payment, user }: { payment: any, user:
         <div className="text-center text-sm text-dark-400 mt-32 pt-8 border-t border-dark-100">
           <p className="font-medium text-dark-500 mb-1">Thank you for choosing MCQPrepZone!</p>
           <p>This is a computer-generated invoice and does not require a physical signature.</p>
-          <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:Mcqprepzone@gmail.com" className="text-primary-600">Mcqprepzone@gmail.com</a></p>
+          <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:mcqprepzone@gmail.com" className="text-primary-600">mcqprepzone@gmail.com</a></p>
         </div>
       </div>
     </div>

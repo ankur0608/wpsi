@@ -1,10 +1,15 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Mock Tests',
-  description: 'Attempt full-length mock tests designed by experts. Experience the real exam interface for GPSC, Talati, and Competitive Exams exams.',
+  title: 'Full-Length Mock Tests Series | Mcqprepzone',
+  description: 'Attempt full-length mock tests designed by experts. Experience the real exam interface for GPSC, CCE, and WPSI Gujarat government exams.',
   alternates: {
-    canonical: '/test',
+    canonical: 'https://mcqprepzone.online/test',
+  },
+  openGraph: {
+    title: 'Full-Length Mock Tests Series | Mcqprepzone',
+    description: 'Attempt full-length mock tests designed by experts. Experience the real exam interface for GPSC, CCE, and WPSI Gujarat government exams.',
+    url: 'https://mcqprepzone.online/test',
   },
 };
 

@@ -93,10 +93,32 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, mobile, birthdate, gender, xp, coins, streak, level, examId } = body;
+    const { name, username, email, mobile, birthdate, gender, xp, coins, streak, level, examId } = body;
     const normalizedName = typeof name === 'string' ? name.trim() : undefined;
+    const normalizedUsername = typeof username === 'string' ? username.trim().toLowerCase() : undefined;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined;
     const normalizedMobile = typeof mobile === 'string' ? mobile.trim() : undefined;
+
+    if (normalizedUsername) {
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(normalizedUsername)) {
+        return NextResponse.json(
+          { error: 'Username must be 3-20 characters long and contain only letters, numbers, and underscores.' },
+          { status: 400 }
+        );
+      }
+
+      const existingUserWithUsername = await prisma.user.findUnique({
+        where: { username: normalizedUsername },
+        select: { id: true },
+      });
+
+      if (existingUserWithUsername && existingUserWithUsername.id !== session.userId) {
+        return NextResponse.json(
+          { error: 'Username is already taken' },
+          { status: 409 }
+        );
+      }
+    }
 
     if (email !== undefined && !normalizedEmail) {
       return NextResponse.json(
@@ -137,6 +159,7 @@ export async function PUT(request: NextRequest) {
       where: { id: session.userId },
       data: {
         ...(name !== undefined ? { name: normalizedName || null } : {}),
+        ...(username !== undefined ? { username: normalizedUsername || null } : {}),
         ...(normalizedEmail ? { email: normalizedEmail } : {}),
         ...(normalizedMobile ? { mobile: normalizedMobile } : {}),
         ...(birthdate !== undefined ? { birthdate: birthdate ? new Date(birthdate) : null } : {}),

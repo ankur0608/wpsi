@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           name: true,
+          username: true,
           xp: true,
           level: true,
           streak: true,
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
       const userIds = sortedUsers.map(([id]) => id);
       const usersData = await prisma.user.findMany({
           where: { id: { in: userIds } },
-          select: { id: true, name: true, level: true, streak: true, image: true, planType: true }
+          select: { id: true, name: true, username: true, level: true, streak: true, image: true, planType: true }
       });
 
       topUsers = sortedUsers.map(([userId, xp]) => {
@@ -80,6 +81,7 @@ export async function GET(request: NextRequest) {
           return {
               id: userId,
               name: u?.name || 'Aspirant',
+              username: u?.username || null,
               xp: Math.round(xp), // Ensure integer XP
               level: u?.level || 1,
               streak: u?.streak || 0,
@@ -96,7 +98,7 @@ export async function GET(request: NextRequest) {
         // Calculate the user's overall rank
         const currentUser = await prisma.user.findUnique({
             where: { id: session.userId },
-            select: { id: true, name: true, xp: true, level: true, streak: true, image: true, planType: true }
+            select: { id: true, name: true, username: true, xp: true, level: true, streak: true, image: true, planType: true }
         });
         
         if (currentUser) {
@@ -167,6 +169,7 @@ export async function GET(request: NextRequest) {
             rank: index + 1,
             id: u.id,
             name: name,
+            username: u.username || null,
             avatar: avatar,
             xp: xpString,
             rawXp: u.xp,

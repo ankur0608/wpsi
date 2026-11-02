@@ -51,12 +51,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Exam Not Found | MCQ Prep Zone' };
   }
 
+  const fullDesc = `${exam.description} Vacancies: ${exam.vacancies}, Exam Date: ${exam.examDate}. Complete syllabus & criteria.`;
+  const metaDesc = fullDesc.length > 155 ? fullDesc.slice(0, 152) + '...' : fullDesc;
+  const examUrl = `https://mcqprepzone.online/government-exams/${exam.id}`;
+
   return {
     title: `${exam.title} - Notification, Eligibility & Syllabus | MCQ Prep Zone`,
-    description: `${exam.description} Check vacancies (${exam.vacancies}), exam date (${exam.examDate}), syllabus, and qualification criteria.`,
+    description: metaDesc,
+    alternates: {
+      canonical: examUrl,
+    },
     openGraph: {
       title: `${exam.title} - Notification & Syllabus`,
-      description: exam.description,
+      description: metaDesc,
+      url: examUrl,
     }
   };
 }

@@ -82,7 +82,7 @@ export default function SupportPage() {
                 </div>
                 <h3 className="font-bold text-dark-900 mb-1">Email Us</h3>
                 <p className="text-sm text-dark-500 mb-3">We typically respond within 24 hours.</p>
-                <a href="mailto:Mcqprepzone@gmail.com" className="text-primary-600 font-bold hover:underline text-sm">Mcqprepzone@gmail.com</a>
+                <a href="mailto:mcqprepzone@gmail.com" className="text-primary-600 font-bold hover:underline text-sm">mcqprepzone@gmail.com</a>
               </div>
 
               <div className="bg-white rounded-3xl p-6 border border-dark-100 shadow-sm hover:shadow-md transition-shadow">

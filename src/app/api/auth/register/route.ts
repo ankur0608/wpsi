@@ -16,11 +16,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language } = await req.json();
+    const { name, email, password, confirmPassword, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
         { error: "Name, email, password, and mobile number are required" },
+        { status: 400 }
+      );
+    }
+
+    if (confirmPassword && password !== confirmPassword) {
+      return NextResponse.json(
+        { error: "Passwords do not match" },
         { status: 400 }
       );
     }
@@ -84,6 +91,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         password: hashedPassword,
+        confirmPassword: confirmPassword || undefined,
         mobile,
         isMobileVerified: true,
         acceptedTerms: acceptedTerms === true,

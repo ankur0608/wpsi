@@ -96,7 +96,10 @@ export default function LeaderboardClient({ liveExamId, result, currentUser, isP
                     )}
                     </div>
                     <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{p.user?.name || 'Anonymous'}</h3>
+                    <h3 className="font-semibold text-gray-800 flex items-center gap-1.5 flex-wrap">
+                      <span>{p.user?.name || 'Anonymous'}</span>
+                      {p.user?.username && <span className="text-xs text-gray-400 font-normal">@{p.user.username}</span>}
+                    </h3>
                     <div className="text-sm text-gray-500">Submitted at {new Date(p.submittedAt).toLocaleTimeString()}</div>
                     </div>
                     <div className="text-right">

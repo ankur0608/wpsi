@@ -1,7 +1,22 @@
+import type { Metadata } from 'next';
 import ClientEffects from '@/components/ClientEffects';
 import Link from 'next/link';
 import { BookOpen, Target, Lightbulb, FileText, BarChart2, AlertTriangle, Library, Flame, Trophy, Search } from 'lucide-react';
 import DynamicNavbar from '@/components/DynamicNavbar';
+import FooterSection from '@/components/landing/FooterSection';
+
+export const metadata: Metadata = {
+  title: 'Platform Features & Mock Test Tools | Mcqprepzone',
+  description: 'Explore Mcqprepzone features: topic-wise MCQ practice, daily challenges, AI study planner, full-length mock tests, and real-time performance analytics.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/features',
+  },
+  openGraph: {
+    title: 'Platform Features & Mock Test Tools | Mcqprepzone',
+    description: 'Explore Mcqprepzone features: topic-wise MCQ practice, daily challenges, AI study planner, full-length mock tests, and real-time performance analytics.',
+    url: 'https://mcqprepzone.online/features',
+  },
+};
 
 export default function Features() {
   return (
@@ -219,61 +234,7 @@ export default function Features() {
         </div>
     </section>
     
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    
-    {/*  Common Footer  */}
-    <footer className="bg-dark-900 text-dark-300 py-16 border-t border-dark-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
-                <div className="md:col-span-1">
-                    <h2 className="font-display font-bold text-2xl text-white tracking-tight mb-4">MCQ Prep Zone</h2>
-                    <p className="text-sm mb-6">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Competitive Exams Examination.</p>
-                </div>
-                <div>
-                    <h4 className="text-white font-bold mb-4">Quick Links</h4>
-                    <ul className="space-y-2 text-sm">
-                        <li><a href="/" className="hover:text-accent-400 transition-colors">Home</a></li>
-                        <li><a href="/pricing" className="hover:text-accent-400 transition-colors">Pricing</a></li>
-                        <li><a href="/blog" className="hover:text-accent-400 transition-colors">Blogs</a></li>
-                        <li><a href="/about" className="hover:text-accent-400 transition-colors">About Us</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 className="text-white font-bold mb-4">Legal</h4>
-                    <ul className="space-y-2 text-sm">
-                        <li><a href="/privacy" className="hover:text-accent-400 transition-colors">Privacy Policy</a></li>
-                        <li><a href="/terms" className="hover:text-accent-400 transition-colors">Terms of Service</a></li>
-                        <li><a href="/cancellation" className="hover:text-accent-400 transition-colors">Cancellation</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 className="text-white font-bold mb-4">Contact</h4>
-                    <ul className="space-y-2 text-sm">
-                        <li>Email: Mcqprepzone@gmail.com</li>
-                        <li>Location: Ahmedabad, Gujarat</li>
-                    </ul>
-                    <div className="mt-4 flex gap-4">
-                        <a href="https://www.instagram.com/mcqprepzone?igsh=OHZuYmt2ajR2bzhi" target="_blank" rel="noopener noreferrer" aria-label="Instagram Profile" className="text-white/70 hover:text-pink-500 text-xl transition-colors"><i className="fa-brands fa-instagram"></i><span className="sr-only">Instagram</span></a>
-                        <a href="https://t.me/wirelesspsimcqspractise" target="_blank" rel="noopener noreferrer" aria-label="Telegram Channel" className="text-white/70 hover:text-blue-400 text-xl transition-colors"><i className="fa-brands fa-telegram"></i><span className="sr-only">Telegram</span></a>
-                        <a href="https://www.facebook.com/share/18UGszYzH9/" target="_blank" rel="noopener noreferrer" aria-label="Facebook Page" className="text-white/70 hover:text-blue-600 text-xl transition-colors"><i className="fa-brands fa-facebook"></i><span className="sr-only">Facebook</span></a>
-                    </div>
-                </div>
-            </div>
-            <div className="text-center text-xs border-t border-dark-800 pt-8">
-                &copy; 2026 MCQ Prep Zone Pvt Ltd. All rights reserved.
-            </div>
-        </div>
-    </footer>
+    <FooterSection />
       <ClientEffects />
 
 

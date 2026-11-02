@@ -70,6 +70,9 @@ export default function LeaderboardPage() {
               </div>
               <div>
                 <h2 className="font-display text-2xl font-black text-dark-900 tracking-tight leading-none mb-1">{displayName}</h2>
+                {(user?.username || userStats?.username) && (
+                  <p className="text-xs font-bold text-primary-600 mb-1.5">@{user?.username || userStats?.username}</p>
+                )}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Rank #{userRank || '?'}</span>
                   <span className="bg-primary-50 border border-primary-200 text-primary-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Top {userRank && totalUsers > 0 ? Math.max(1, Math.round((userRank / totalUsers) * 100)) : '?'}%</span>
@@ -208,6 +211,9 @@ export default function LeaderboardPage() {
                         <p className={`font-bold text-sm ${planTextColor}`}>
                           {item.name}
                         </p>
+                        {item.username && (
+                          <span className="text-[11px] text-dark-400 font-medium">@{item.username}</span>
+                        )}
                         {displayPlan && (
                           <span className={`text-[9px] ${planBadgeBg} ${planBadgeText} border ${planBadgeBorder} px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shadow-sm`}>
                             {displayPlan}
@@ -252,9 +258,15 @@ export default function LeaderboardPage() {
                         {userStats.image ? <img src={userStats.image} alt={displayName} className="w-full h-full object-cover" /> : displayName.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-bold text-sm text-primary-900">
-                          {displayName} <span className="ml-1.5 text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">You</span>
-                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <p className="font-bold text-sm text-primary-900">
+                            {displayName}
+                          </p>
+                          {(user?.username || userStats?.username) && (
+                            <span className="text-[11px] text-primary-600/70 font-medium">@{user?.username || userStats?.username}</span>
+                          )}
+                          <span className="text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">You</span>
+                        </div>
                         <p className="text-[10px] text-dark-500 font-semibold mt-0.5 flex items-center gap-1.5">
                           <span className="text-primary-600 font-bold">{userStats.xp >= 1000 ? (userStats.xp / 1000).toFixed(1) + 'k' : userStats.xp} XP</span>
                         </p>
@@ -301,6 +313,7 @@ export default function LeaderboardPage() {
                     {top2?.image ? <img src={top2.image} alt={top2.name} className="w-full h-full object-cover" /> : top2?.avatar || '--'}
                   </div>
                   <p className="text-xs font-bold text-dark-800 mt-2 truncate w-full text-center">{top2?.name || '---'}</p>
+                  {top2?.username && <p className="text-[10px] text-dark-400 font-medium truncate w-full text-center">@{top2.username}</p>}
                   <p className="text-[9px] text-slate-500 font-bold mt-0.5">{top2?.xp || '0 XP'}</p>
                 </div>
                 <div className="w-full h-32 relative transition-all duration-300">
@@ -317,6 +330,7 @@ export default function LeaderboardPage() {
                     {top1?.image ? <img src={top1.image} alt={top1.name} className="w-full h-full object-cover" /> : top1?.avatar || '--'}
                   </div>
                   <p className="text-sm font-bold text-amber-600 mt-3 truncate w-full text-center">{top1?.name || '---'}</p>
+                  {top1?.username && <p className="text-[11px] text-amber-600/80 font-bold truncate w-full text-center">@{top1.username}</p>}
                   <p className="text-[10px] text-amber-500 font-bold mt-0.5">{top1?.xp || '0 XP'}</p>
                 </div>
                 <div className="w-full h-44 relative transition-all duration-300">
@@ -333,6 +347,7 @@ export default function LeaderboardPage() {
                     {top3?.image ? <img src={top3.image} alt={top3.name} className="w-full h-full object-cover" /> : top3?.avatar || '--'}
                   </div>
                   <p className="text-xs font-bold text-dark-800 mt-2 truncate w-full text-center">{top3?.name || '---'}</p>
+                  {top3?.username && <p className="text-[10px] text-dark-400 font-medium truncate w-full text-center">@{top3.username}</p>}
                   <p className="text-[9px] text-orange-500 font-bold mt-0.5">{top3?.xp || '0 XP'}</p>
                 </div>
                 <div className="w-full h-24 relative transition-all duration-300">

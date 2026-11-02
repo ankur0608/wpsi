@@ -7,14 +7,18 @@ import DynamicNavbar from '@/components/DynamicNavbar';
 import { blogPosts } from '@/data/blogs';
 
 export const metadata: Metadata = {
-  title: 'Blogs & Strategies | MCQ Prep Zone',
+  title: {
+    absolute: 'Exam Preparation Blogs & Strategies | Mcqprepzone',
+  },
   description: 'Master your preparation with expert strategies, technical deep-dives, and success stories from toppers for Gujarat Police WPSI and GPSC exams.',
+  keywords: [],
   alternates: {
     canonical: 'https://mcqprepzone.online/blog',
   },
   openGraph: {
-    title: 'Blogs & Strategies | MCQ Prep Zone',
+    title: 'Exam Preparation Blogs & Strategies | Mcqprepzone',
     description: 'Master your preparation with expert strategies, technical deep-dives, and success stories from toppers for Gujarat Police WPSI and GPSC exams.',
+    url: 'https://mcqprepzone.online/blog',
     type: 'website',
   }
 };

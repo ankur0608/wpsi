@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import { getUserLevel } from "@/lib/xp";
-import { Home, BookOpen, ClipboardList, Search, Users, StickyNote, Newspaper, TrendingUp, BarChart3, Bookmark, UserPlus, Tag, Zap, Flame, Star, ChevronsUpDown, X, Lock, Landmark } from 'lucide-react';
+import { Home, BookOpen, ClipboardList, Search, Users, TrendingUp, BarChart3, Bookmark, UserPlus, Tag, Zap, Flame, Star, ChevronsUpDown, X, Lock } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -91,11 +91,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <ClipboardList className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />
                     Mock Tests
                 </Link>
-                <Link href="/government-exams" onClick={handleLinkClick} className={`sidebar-item ${isActive('/government-exams') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
-                    <Landmark className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />
-                    Govt Exams
-                    <span className="ml-auto bg-amber-500 text-dark-900 text-[10px] px-2 py-0.5 rounded-full font-bold">ALL</span>
-                </Link>
 
                 <p className="text-[10px] font-bold text-dark-400 mt-6 mb-3 px-3 uppercase tracking-widest">Community</p>
                 <Link href="/detective" onClick={handleLinkClick} className={`sidebar-item ${isActive('/detective') ? 'active bg-blue-50 text-blue-700' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
@@ -107,15 +102,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Link href="/leaderboard" onClick={handleLinkClick} className={`sidebar-item ${isActive('/leaderboard') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <Users className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />
                     Leaderboard
-                </Link>
-
-                <Link href="/notes" onClick={handleLinkClick} className={`sidebar-item ${isActive('/notes') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
-                    <StickyNote className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />
-                    Notes
-                </Link>
-                <Link href="/blog" onClick={handleLinkClick} className={`sidebar-item ${isActive('/blog') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
-                    <Newspaper className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />
-                    Blog &amp; Strategy
                 </Link>
                 <Link href="/analytics" onClick={handleLinkClick} className={`sidebar-item ${isActive('/analytics') ? 'active' : ''} hover:bg-dark-50 font-medium flex items-center px-4 py-3 text-sm rounded-xl group transition-all`}>
                     <TrendingUp className="w-5 h-5 mr-3 group-hover:text-dark-600 transition-colors" />

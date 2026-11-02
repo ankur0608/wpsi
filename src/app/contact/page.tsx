@@ -147,8 +147,8 @@ export default function Contact() {
                                     <div>
                                         <h4 className="font-bold text-dark-900 mb-1">Email Us</h4>
                                         <p className="text-dark-500 text-sm">Email: <a
-                                            href="mailto:Mcqprepzone@gmail.com"
-                                            className="text-primary-600 hover:underline">Mcqprepzone@gmail.com</a></p>
+                                            href="mailto:mcqprepzone@gmail.com"
+                                            className="text-primary-600 hover:underline">mcqprepzone@gmail.com</a></p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4 p-6 bg-dark-50 rounded-2xl border border-dark-200">

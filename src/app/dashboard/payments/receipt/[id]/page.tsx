@@ -145,7 +145,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
           <div className="text-center text-sm text-dark-400 mt-20 print:mt-32 pt-8 border-t border-dark-100">
             <p className="font-medium text-dark-500 mb-1">Thank you for choosing Exam Pro - MCQ Prep Zone!</p>
             <p>This is a computer-generated invoice and does not require a physical signature.</p>
-            <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:Mcqprepzone@gmail.com" className="text-primary-600">Mcqprepzone@gmail.com</a></p>
+            <p className="mt-2 text-xs">For any inquiries, please contact <a href="mailto:mcqprepzone@gmail.com" className="text-primary-600">mcqprepzone@gmail.com</a></p>
           </div>
           
           <div className="mt-10 text-center print:hidden">

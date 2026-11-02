@@ -1,10 +1,15 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Pricing & Plans',
-  description: 'Affordable pricing plans for GPSC, Competitive Exams, and Talati exam preparation. Unlock premium mock tests, AI study planner, and expert notes.',
+  title: 'Pricing & Plans | Mcqprepzone',
+  description: 'Affordable pricing plans for GPSC, CCE, and WPSI exam preparation. Unlock premium mock tests, AI study planner, and comprehensive MCQ practice.',
   alternates: {
-    canonical: '/pricing',
+    canonical: 'https://mcqprepzone.online/pricing',
+  },
+  openGraph: {
+    title: 'Pricing & Plans | Mcqprepzone',
+    description: 'Affordable pricing plans for GPSC, CCE, and WPSI exam preparation. Unlock premium mock tests, AI study planner, and comprehensive MCQ practice.',
+    url: 'https://mcqprepzone.online/pricing',
   },
 };
 

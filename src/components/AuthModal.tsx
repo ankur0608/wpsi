@@ -75,6 +75,8 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -156,12 +158,14 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setEmail("");
     setMobile("");
     setPassword("");
+    setConfirmPassword("");
     setOtp("");
     setVerificationId("");
     setStep(1);
     setResendTimer(0);
     setLoginMethod("email");
     setShowPassword(false);
+    setShowConfirmPassword(false);
     setExistingDevice(null);
     setIsMobileVerified(false);
     setShowRegisterOtp(false);
@@ -177,12 +181,14 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     setEmail("");
     setMobile("");
     setPassword("");
+    setConfirmPassword("");
     setOtp("");
     setVerificationId("");
     setStep(1);
     setResendTimer(0);
     setLoginMethod("email");
     setShowPassword(false);
+    setShowConfirmPassword(false);
     setExistingDevice(null);
     setIsMobileVerified(false);
     setShowRegisterOtp(false);
@@ -243,6 +249,9 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
             if (!email) { setError("Email is required"); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address"); return; }
             if (!password) { setError("Password is required"); return; }
+            if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
+            if (!confirmPassword) { setError("Confirm Password is required"); return; }
+            if (password !== confirmPassword) { setError("Passwords do not match"); return; }
             if (!acceptedTerms) { setError("Please accept Terms & Conditions and Privacy Policy"); return; }
         }
     }
@@ -298,7 +307,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, mobile, acceptedTerms, referralCode: isReferralVerified ? referralCode : undefined, ...getDeviceInfo() }),
+          body: JSON.stringify({ name, email, password, confirmPassword, mobile, acceptedTerms, referralCode: isReferralVerified ? referralCode : undefined, ...getDeviceInfo() }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));
@@ -790,6 +799,33 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   <i className={`fa-solid ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showRegisterFields && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  placeholder="Confirm your password"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-12 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none transition-colors"
+                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                >
+                  <i className={`fa-solid ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'}`} />
                 </button>
               </div>
             </div>

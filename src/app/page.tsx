@@ -1,4 +1,18 @@
+import type { Metadata } from 'next';
 import ClientEffects from '@/components/ClientEffects';
+
+export const metadata: Metadata = {
+  title: 'Competitive Exams Mock Test & Exam Prep | Mcqprepzone',
+  description: 'Prepare for Gujarat Government exams like CCE, WPSI, and GPSC with Mcqprepzone. Access premium mock tests, previous papers, and MCQ practice.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online',
+  },
+  openGraph: {
+    title: 'Competitive Exams Mock Test & Exam Prep | Mcqprepzone',
+    description: 'Prepare for Gujarat Government exams like CCE, WPSI, and GPSC with Mcqprepzone. Access premium mock tests, previous papers, and MCQ practice.',
+    url: 'https://mcqprepzone.online',
+  },
+};
 import DynamicNavbar from '@/components/DynamicNavbar';
 import HeroSection from '@/components/landing/HeroSection';
 import DailyChallengeSection from '@/components/landing/DailyChallengeSection';

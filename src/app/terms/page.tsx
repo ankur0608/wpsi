@@ -1,6 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Mcqprepzone',
+  description: 'Read the terms of service and conditions for using Mcqprepzone mock tests, study materials, and subscription services for competitive exams.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/terms',
+  },
+  openGraph: {
+    title: 'Terms of Service | Mcqprepzone',
+    description: 'Read the terms of service and conditions for using Mcqprepzone mock tests, study materials, and subscription services for competitive exams.',
+    url: 'https://mcqprepzone.online/terms',
+  },
+};
 
 export default function Terms() {
   return (

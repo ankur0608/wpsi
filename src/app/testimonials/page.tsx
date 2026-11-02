@@ -1,6 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
+
+export const metadata: Metadata = {
+  title: 'Student Testimonials & Reviews | Mcqprepzone',
+  description: 'Discover reviews and success stories from aspirants who cracked Gujarat competitive exams using Mcqprepzone mock tests and AI study tools.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/testimonials',
+  },
+  openGraph: {
+    title: 'Student Testimonials & Reviews | Mcqprepzone',
+    description: 'Discover reviews and success stories from aspirants who cracked Gujarat competitive exams using Mcqprepzone mock tests and AI study tools.',
+    url: 'https://mcqprepzone.online/testimonials',
+  },
+};
 
 export default function Testimonials() {
   return (

@@ -63,7 +63,7 @@ export default function FAQSection() {
         </div>
         
         <div className="mt-12 text-center">
-            <p className="text-dark-600">Still have questions? <a href="mailto:Mcqprepzone@gmail.com" className="font-bold text-primary-600 hover:text-primary-800 underline">Contact Support</a></p>
+            <p className="text-dark-600">Still have questions? <a href="mailto:mcqprepzone@gmail.com" className="font-bold text-primary-600 hover:text-primary-800 underline">Contact Support</a></p>
         </div>
       </div>
     </section>

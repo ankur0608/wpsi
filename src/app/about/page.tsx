@@ -1,6 +1,23 @@
+import type { Metadata } from 'next';
 import FooterSection from '@/components/landing/FooterSection';
 import Link from 'next/link';
 import DynamicNavbar from '@/components/DynamicNavbar';
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'About Us - Gujarat Government Exam Prep | Mcqprepzone',
+  },
+  description: 'Learn about Mcqprepzone, our mission to democratize Gujarat Government exam preparation with AI-powered study tools and comprehensive mock tests.',
+  keywords: [],
+  alternates: {
+    canonical: 'https://mcqprepzone.online/about',
+  },
+  openGraph: {
+    title: 'About Us - Gujarat Government Exam Prep | Mcqprepzone',
+    description: 'Learn about Mcqprepzone, our mission to democratize Gujarat Government exam preparation with AI-powered study tools and comprehensive mock tests.',
+    url: 'https://mcqprepzone.online/about',
+  },
+};
 
 export default function About() {
   return (

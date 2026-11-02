@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     default: "Competitive Exams Mock Test & Exam Prep | Mcqprepzone",
     template: "%s | Mcqprepzone"
   },
-  description: "Prepare for Gujarat Government exams like CCE, WPSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
+  description: "Prepare for Gujarat Government exams like CCE, WPSI, and GPSC with Mcqprepzone. Access premium mock tests, previous papers, and MCQ practice.",
   keywords: [
     "Gujarat Government Exams Preparation",
     "Competitive Exams MCQ Test Series",
@@ -60,9 +60,6 @@ export const metadata: Metadata = {
     "competitive exams AI planner",
     "Mcqprepzone"
   ],
-  alternates: {
-    canonical: '/',
-  },
   icons: {
     icon: '/logo.jpeg',
     shortcut: '/logo.jpeg',
@@ -70,7 +67,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Competitive Exams Mock Test & Exam Prep | Mcqprepzone",
-    description: "Prepare for Gujarat Government exams like CCE, WPSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
+    description: "Prepare for Gujarat Government exams like CCE, WPSI, and GPSC with Mcqprepzone. Access premium mock tests, previous papers, and MCQ practice.",
     url: 'https://mcqprepzone.online',
     siteName: 'Mcqprepzone',
     type: 'website',
@@ -79,7 +76,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Competitive Exams Mock Test & Exam Prep | Mcqprepzone",
-    description: "Prepare for Gujarat Government exams like CCE, WPSI, GPSC Class 1/2, Talati, and SSC CGL. Access premium mock tests, previous year papers, an AI-driven study planner, and interactive MCQ practice designed for your ultimate exam success.",
+    description: "Prepare for Gujarat Government exams like CCE, WPSI, and GPSC with Mcqprepzone. Access premium mock tests, previous papers, and MCQ practice.",
   },
   robots: {
     index: true,

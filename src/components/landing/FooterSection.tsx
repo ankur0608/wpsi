@@ -45,7 +45,7 @@ export default function FooterSection() {
                 <div>
                     <h4 className="text-white font-bold mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm">
-                        <li>Email: Mcqprepzone@gmail.com</li>
+                        <li>Email: mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat</li>
                     </ul>
                     <div className="mt-4 flex gap-4">

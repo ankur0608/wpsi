@@ -3,8 +3,16 @@ import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
 
 export const metadata: Metadata = {
-  title: 'Frequently Asked Questions',
-  description: 'Find answers to common questions about Mcqprepzone, including details about our government exam mock tests, pricing plans, syllabus coverage for Competitive Exams and GPSC, and platform features.',
+  title: 'Frequently Asked Questions | Mcqprepzone',
+  description: 'Find answers to common questions about Mcqprepzone mock tests, syllabus coverage for Gujarat Government exams, pricing plans, and AI tools.',
+  alternates: {
+    canonical: 'https://mcqprepzone.online/faq',
+  },
+  openGraph: {
+    title: 'Frequently Asked Questions | Mcqprepzone',
+    description: 'Find answers to common questions about Mcqprepzone mock tests, syllabus coverage for Gujarat Government exams, pricing plans, and AI tools.',
+    url: 'https://mcqprepzone.online/faq',
+  },
 };
 
 export default function FAQPage() {

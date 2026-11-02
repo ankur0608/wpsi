@@ -115,6 +115,7 @@ export function clearSessionCookie(response: NextResponse) {
 export const publicUserSelect = {
   id: true,
   email: true,
+  username: true,
   name: true,
   mobile: true,
   birthdate: true,

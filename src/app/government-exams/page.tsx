@@ -123,6 +123,23 @@ export default function GovernmentExamsPage() {
     return [...ojasExams, ...nonOjas];
   }, [ojasExams]);
 
+  // Dynamic stats calculated from actual live & combined exam data
+  const dynamicStats = useMemo(() => {
+    const totalExams = combinedExams.length;
+    const liveNotifications = ojasExams.length;
+    const activeStreamsCount = new Set(combinedExams.map((e) => e.stream)).size;
+    const openApplications = combinedExams.filter(
+      (e) => e.status === 'Applications Open' || e.status === 'Notification Released'
+    ).length;
+
+    return {
+      totalExams,
+      liveNotifications,
+      activeStreamsCount,
+      openApplications,
+    };
+  }, [combinedExams, ojasExams]);
+
   // Filtered & Sorted exams
   const filteredExams = useMemo(() => {
     let result = combinedExams.filter((exam) => {
@@ -270,23 +287,31 @@ export default function GovernmentExamsPage() {
               Real-time recruitment notifications, eligibility criteria, exam dates, syllabus, and vacancies across Central & Gujarat State Government departments.
             </p>
 
-            {/* Clean Solid Metrics Row */}
+            {/* Dynamic Real-time Metrics Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-2xl mx-auto mb-5 text-center">
               <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-                <div className="text-lg sm:text-xl font-black text-slate-900 font-display tracking-tight">50,000+</div>
-                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Active Vacancies</div>
+                <div className="text-lg sm:text-xl font-black text-slate-900 font-display tracking-tight">
+                  {dynamicStats.totalExams}
+                </div>
+                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Government Exams</div>
               </div>
               <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-                <div className="text-lg sm:text-xl font-black text-primary-600 font-display tracking-tight">18+</div>
-                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Top Govt Exams</div>
+                <div className="text-lg sm:text-xl font-black text-primary-600 font-display tracking-tight">
+                  {dynamicStats.openApplications}
+                </div>
+                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Open & Released</div>
               </div>
               <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-                <div className="text-lg sm:text-xl font-black text-slate-900 font-display tracking-tight">8 Streams</div>
+                <div className="text-lg sm:text-xl font-black text-slate-900 font-display tracking-tight">
+                  {dynamicStats.activeStreamsCount} Streams
+                </div>
                 <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Civil, SSC, Police...</div>
               </div>
               <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-                <div className="text-lg sm:text-xl font-black text-emerald-600 font-display tracking-tight">100% Free</div>
-                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">Syllabus & Practice</div>
+                <div className="text-lg sm:text-xl font-black text-amber-600 font-display tracking-tight">
+                  {dynamicStats.liveNotifications > 0 ? dynamicStats.liveNotifications : 'Live'}
+                </div>
+                <div className="text-[11px] text-slate-500 font-semibold mt-0.5">State Live Updates</div>
               </div>
             </div>
 

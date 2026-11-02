@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useUser } from "@/context/UserContext";
+import { Trophy, Flame, Zap } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, refreshUser, updateUser } = useUser();
@@ -35,6 +36,7 @@ export default function ProfilePage() {
 
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     mobile: '',
     birthdate: '',
@@ -46,6 +48,7 @@ export default function ProfilePage() {
     if (user) {
       setFormData({
         name: user.name || '',
+        username: user.username || '',
         email: user.email || '',
         mobile: user.mobile || '',
         birthdate: user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '',
@@ -145,6 +148,7 @@ export default function ProfilePage() {
     try {
       await updateUser({
         name: formData.name,
+        username: formData.username,
         email: formData.email,
         mobile: formData.mobile,
         birthdate: formData.birthdate ? new Date(formData.birthdate).toISOString() : null,
@@ -203,6 +207,9 @@ export default function ProfilePage() {
                 <span className="bg-accent-100 text-accent-700 border border-accent-200 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-sm">PRO</span>
               )}
             </div>
+            {user?.username && (
+              <p className="text-sm font-bold text-primary-600 mb-1">@{user.username}</p>
+            )}
             <p className="text-dark-500 mb-6 font-medium">{displayEmail} {displayMobile !== "No Mobile" && <><span className="mx-2">•</span> {displayMobile}</>}</p>
             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <button onClick={() => document.getElementById('personal-details')?.scrollIntoView({ behavior: 'smooth' })} className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">Edit Profile</button>
@@ -229,6 +236,20 @@ export default function ProfilePage() {
                   className="w-full bg-dark-50 border border-dark-200 rounded-xl px-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Username</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400 font-bold text-sm">@</span>
+                  <input 
+                    type="text" 
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})}
+                    placeholder="your_username"
+                    className="w-full bg-dark-50 border border-dark-200 rounded-xl pl-9 pr-4 py-3 text-sm text-dark-900 font-medium focus:outline-none focus:border-primary-500 transition-colors" 
+                  />
+                </div>
+                <p className="text-[11px] text-dark-400 mt-1">Unique handle for your public profile</p>
               </div>
               <div>
                 <label className="block text-xs font-bold text-dark-500 mb-2 uppercase tracking-wider">Email Address</label>
@@ -301,21 +322,27 @@ export default function ProfilePage() {
             <h3 className="font-display font-bold text-dark-900 text-xl mb-6">Achievements</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 bg-primary-50 border border-primary-100 rounded-2xl hover:border-primary-300 transition-colors cursor-default group">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">🏆</div>
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <Trophy className="w-6 h-6 text-amber-500 fill-amber-500/20" />
+                </div>
                 <div>
                   <h4 className="font-bold text-primary-900 text-base mb-0.5">Current Level</h4>
                   <p className="text-[11px] text-primary-600 font-medium uppercase tracking-wider">Level {user?.level || 1}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-accent-50 border border-accent-100 rounded-2xl hover:border-accent-300 transition-colors cursor-default group">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">🔥</div>
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <Flame className="w-6 h-6 text-orange-500 fill-orange-500/20" />
+                </div>
                 <div>
                   <h4 className="font-bold text-accent-900 text-base mb-0.5">Best Streak</h4>
                   <p className="text-[11px] text-accent-600 font-medium uppercase tracking-wider">{user?.bestStreak || 0} Days</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-100 rounded-2xl hover:border-green-300 transition-colors cursor-default group">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">⭐</div>
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <Zap className="w-6 h-6 text-emerald-500 fill-emerald-500/20" />
+                </div>
                 <div>
                   <h4 className="font-bold text-green-900 text-base mb-0.5">Total XP</h4>
                   <p className="text-[11px] text-green-600 font-medium uppercase tracking-wider">{user?.xp || 0} XP</p>
