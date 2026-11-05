@@ -24,8 +24,7 @@ export default function DynamicNavbar() {
     pathname === '/about' || 
     pathname.startsWith('/blog') || 
     pathname === '/contact' || 
-    pathname === '/testimonials' || 
-    pathname === '/daily-challenge';
+    pathname === '/testimonials';
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);

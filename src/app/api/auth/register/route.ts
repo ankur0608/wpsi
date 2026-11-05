@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, confirmPassword, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language } = await req.json();
+    const { name, username, email, password, confirmPassword, mobile, acceptedTerms, referralCode, deviceId, browser, os, deviceType, deviceModel, screen, timezone, language } = await req.json();
 
     if (!name || !email || !password || !mobile) {
       return NextResponse.json(
@@ -54,6 +54,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 1.2 Check if user with username already exists
+    if (username) {
+      const trimmedUsername = username.trim();
+      const existingUsernameUser = await prisma.user.findFirst({
+        where: { username: { equals: trimmedUsername, mode: 'insensitive' } },
+      });
+
+      if (existingUsernameUser) {
+        return NextResponse.json(
+          { error: "Username is already taken" },
+          { status: 409 }
+        );
+      }
+    }
+
     // 1.5 Check if user with mobile already exists
     const existingMobileUser = await prisma.user.findUnique({
       where: { mobile },
@@ -89,6 +104,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
+        username: username ? username.trim() : undefined,
         email,
         password: hashedPassword,
         confirmPassword: confirmPassword || undefined,
@@ -135,6 +151,7 @@ export async function POST(req: NextRequest) {
       user: {
         id: user.id,
         name: user.name,
+        username: user.username,
         email: user.email,
       },
     });

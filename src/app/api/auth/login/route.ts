@@ -25,8 +25,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: normalizedEmail },
+          { username: { equals: normalizedEmail, mode: 'insensitive' } },
+        ],
+      },
     });
 
     if (!user) {

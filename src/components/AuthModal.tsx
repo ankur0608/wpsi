@@ -72,6 +72,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const router = useRouter();
   const { refreshUser } = useUser();
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
@@ -155,6 +156,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const handleClose = useCallback(() => {
     setError("");
     setName("");
+    setUsername("");
     setEmail("");
     setMobile("");
     setPassword("");
@@ -178,6 +180,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
   const handleModeChange = (nextMode: AuthMode) => {
     setError("");
     setName("");
+    setUsername("");
     setEmail("");
     setMobile("");
     setPassword("");
@@ -246,6 +249,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
     } else {
         if (step === 1) {
             if (!name) { setError("Full Name is required"); return; }
+            if (!username) { setError("Username is required"); return; }
             if (!email) { setError("Email is required"); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address"); return; }
             if (!password) { setError("Password is required"); return; }
@@ -307,7 +311,7 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, confirmPassword, mobile, acceptedTerms, referralCode: isReferralVerified ? referralCode : undefined, ...getDeviceInfo() }),
+          body: JSON.stringify({ name, username: username.trim(), email, password, confirmPassword, mobile, acceptedTerms, referralCode: isReferralVerified ? referralCode : undefined, ...getDeviceInfo() }),
         });
         
         const registerData = await registerRes.json().catch(() => ({}));
@@ -609,33 +613,17 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
 
           {showRegisterFields && (
             <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Referral Code (Optional)</label>
-              <div className="relative flex gap-2">
-                <div className="relative flex-1">
-                  <i className="fa-solid fa-gift absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
-                  <input
-                    type="text"
-                    value={referralCode}
-                    onChange={(event) => { setReferralCode(event.target.value.toUpperCase()); setIsReferralVerified(false); setReferralSuccessMsg(""); }}
-                    placeholder="FRIEND50"
-                    disabled={isReferralVerified}
-                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors uppercase disabled:opacity-50"
-                  />
-                </div>
-                {!isReferralVerified ? (
-                  <button 
-                    type="button" 
-                    onClick={handleVerifyReferral} 
-                    disabled={loading || !referralCode}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
-                  >
-                    Apply
-                  </button>
-                ) : (
-                  <div className="bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold px-4 rounded-xl text-sm flex items-center justify-center">
-                    <i className="fa-solid fa-check mr-2"></i> Verified
-                  </div>
-                )}
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Username</label>
+              <div className="relative">
+                <i className="fa-solid fa-at absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="rahul_parmar"
+                  className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors"
+                  required
+                />
               </div>
             </div>
           )}
@@ -827,6 +815,39 @@ export default function AuthModal({ isOpen, mode, onClose, onModeChange }: AuthM
                 >
                   <i className={`fa-solid ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'}`} />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {showRegisterFields && (
+            <div>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Referral Code (Optional)</label>
+              <div className="relative flex gap-2">
+                <div className="relative flex-1">
+                  <i className="fa-solid fa-gift absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" />
+                  <input
+                    type="text"
+                    value={referralCode}
+                    onChange={(event) => { setReferralCode(event.target.value.toUpperCase()); setIsReferralVerified(false); setReferralSuccessMsg(""); }}
+                    placeholder="FRIEND50"
+                    disabled={isReferralVerified}
+                    className="w-full bg-dark-bg border border-white/10 rounded-xl pl-12 pr-4 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-colors uppercase disabled:opacity-50"
+                  />
+                </div>
+                {!isReferralVerified ? (
+                  <button 
+                    type="button" 
+                    onClick={handleVerifyReferral} 
+                    disabled={loading || !referralCode}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 rounded-xl text-sm transition-colors disabled:opacity-50 flex items-center"
+                  >
+                    Apply
+                  </button>
+                ) : (
+                  <div className="bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold px-4 rounded-xl text-sm flex items-center justify-center">
+                    <i className="fa-solid fa-check mr-2"></i> Verified
+                  </div>
+                )}
               </div>
             </div>
           )}
