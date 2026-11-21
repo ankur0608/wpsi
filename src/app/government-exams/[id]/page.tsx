@@ -135,8 +135,37 @@ export default async function ExamDetailsPage({ params }: Props) {
     }
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mcqprepzone.online"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Government Exams",
+        "item": "https://mcqprepzone.online/government-exams"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": exam.shortName || exam.title,
+        "item": `https://mcqprepzone.online/government-exams/${exam.id}`
+      }
+    ]
+  };
+
   return (
     <div className="relative w-full min-h-screen overflow-x-hidden bg-[#F8FAFC] selection:bg-primary-200 selection:text-primary-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <DynamicNavbar />
 
       {/* ─── BREADCRUMBS & TOP NAV ─── */}

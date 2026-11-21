@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import pricingData from '@/data/pricing.json';
 import Script from 'next/script';
@@ -226,6 +228,15 @@ export default function CheckoutPage() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       
       <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-10">
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-1.5 text-xs font-semibold text-dark-500 mb-6 justify-start" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-primary-600 transition-colors">Home</Link>
+          <ChevronRight className="w-3.5 h-3.5 text-dark-400" />
+          <Link href="/pricing" className="hover:text-primary-600 transition-colors">Pricing</Link>
+          <ChevronRight className="w-3.5 h-3.5 text-dark-400" />
+          <span className="text-dark-900 font-bold">Checkout</span>
+        </nav>
+
         <div className="mb-6 sm:mb-10 flex flex-col items-start border-b border-dark-100 pb-6 sm:pb-8">
             <h1 className="font-display text-4xl font-bold text-dark-900 mb-2">Checkout</h1>
             <p className="text-dark-500">You're one step away from unlocking premium premium features.</p>

@@ -33,13 +33,14 @@
     <text x="36" y="24" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5">MCQ PREP ZONE</text>
 
     <!-- Category Pill -->
-    <rect x="235" y="0" width="180" height="38" rx="19" fill="#3B82F6" fill-opacity="0.25" stroke="#60A5FA" stroke-width="1.5"/>
-    <text x="325" y="24" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5" text-anchor="middle">COMPUTER SCIENCE</text>
+    <rect x="235" y="0" width="200" height="38" rx="19" fill="#3B82F6" fill-opacity="0.25" stroke="#60A5FA" stroke-width="1.5"/>
+    <text x="335" y="24" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5" text-anchor="middle">COMPUTER SCIENCE</text>
   </g>
 
   <!-- Left Content: Title -->
   <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">
-    <tspan x="70" y="250">C Programming: Pointers,</tspan><tspan x="70" y="298">Arrays, and Functions</tspan>
+    <tspan x="70" y="250">C Programming: Pointers,</tspan>
+    <tspan x="70" y="302">Arrays, and Functions</tspan>
   </text>
 
   <!-- Target Exam Badge / Read Time -->
@@ -50,29 +51,36 @@
   </g>
 
   <!-- Right Visual Component -->
-  
-        <g transform="translate(740, 150)">
-          <!-- Code IDE Window -->
-          <rect x="20" y="30" width="340" height="230" rx="14" fill="#0F172A" stroke="#3B82F6" stroke-width="2"/>
-          <rect x="20" y="30" width="340" height="35" rx="14" fill="#1E293B"/>
-          <circle cx="45" cy="48" r="5" fill="#EF4444"/>
-          <circle cx="65" cy="48" r="5" fill="#F59E0B"/>
-          <circle cx="85" cy="48" r="5" fill="#10B981"/>
-          <text x="190" y="52" fill="#94A3B8" font-family="monospace" font-size="11" text-anchor="middle">solution.c - WPSI Technical</text>
-          <!-- Code content -->
-          <g fill="#93C5FD" font-family="monospace" font-size="13">
-            <text x="40" y="95"><tspan fill="#F472B6">#include</tspan> &lt;stdio.h&gt;</text>
-            <text x="40" y="125"><tspan fill="#38BDF8">int</tspan> main() {</text>
-            <text x="60" y="150"><tspan fill="#38BDF8">int</tspan> *ptr = &amp;score;</text>
-            <text x="60" y="175">printf(<tspan fill="#FDE047">"Rank: #1
-"</tspan>);</text>
-            <text x="60" y="200"><tspan fill="#F472B6">return</tspan> 0;</text>
-            <text x="40" y="225">}</text>
-          </g>
-          <rect x="180" y="110" width="160" height="90" rx="10" fill="#3B82F6" fill-opacity="0.3" stroke="#60A5FA"/>
-          <text x="260" y="150" fill="#FFFFFF" font-family="system-ui" font-size="14" font-weight="bold" text-anchor="middle">Pointers & Memory</text>
-          <text x="260" y="175" fill="#93C5FD" font-family="monospace" font-size="12" text-anchor="middle">0x7FFE24B0</text>
-        </g>
+  <g transform="translate(720, 130)">
+    <!-- IDE Window -->
+    <rect x="20" y="30" width="380" height="260" rx="14" fill="#0F172A" stroke="#3B82F6" stroke-width="2"/>
+    <rect x="20" y="30" width="380" height="35" rx="14" fill="#1E293B"/>
+    <circle cx="45" cy="48" r="5" fill="#EF4444"/>
+    <circle cx="65" cy="48" r="5" fill="#F59E0B"/>
+    <circle cx="85" cy="48" r="5" fill="#10B981"/>
+    <text x="210" y="52" fill="#94A3B8" font-family="monospace" font-size="11" text-anchor="middle">pointers_arrays.c - C Programming</text>
+    <g fill="#93C5FD" font-family="monospace" font-size="12">
+      <text x="40" y="92"><tspan fill="#F472B6">#include</tspan> &lt;stdio.h&gt;</text>
+      <text x="40" y="116"><tspan fill="#38BDF8">int</tspan> arr[5] = {10, 20, 30, 40, 50};</text>
+      <text x="40" y="140"><tspan fill="#38BDF8">int</tspan> *ptr = arr; <tspan fill="#64748B">// &amp;arr[0]</tspan></text>
+      <text x="40" y="164">printf(<tspan fill="#FDE047">&quot;Val: %d, Addr: %p&quot;</tspan>, *ptr, ptr);</text>
+      <text x="40" y="188">ptr++; <tspan fill="#64748B">// pointer arithmetic</tspan></text>
+    </g>
+    <!-- Memory address blocks -->
+    <g transform="translate(40, 210)">
+      <rect x="0" y="0" width="70" height="44" rx="6" fill="#1E293B" stroke="#60A5FA"/>
+      <text x="35" y="20" fill="#FFFFFF" font-family="monospace" font-size="11" text-anchor="middle">10</text>
+      <text x="35" y="36" fill="#93C5FD" font-family="monospace" font-size="9" text-anchor="middle">0x1000</text>
+      <rect x="75" y="0" width="70" height="44" rx="6" fill="#1E293B" stroke="#60A5FA"/>
+      <text x="110" y="20" fill="#FFFFFF" font-family="monospace" font-size="11" text-anchor="middle">20</text>
+      <text x="110" y="36" fill="#93C5FD" font-family="monospace" font-size="9" text-anchor="middle">0x1004</text>
+      <rect x="150" y="0" width="70" height="44" rx="6" fill="#1E293B" stroke="#60A5FA"/>
+      <text x="185" y="20" fill="#FFFFFF" font-family="monospace" font-size="11" text-anchor="middle">30</text>
+      <text x="185" y="36" fill="#93C5FD" font-family="monospace" font-size="9" text-anchor="middle">0x1008</text>
+      <rect x="230" y="0" width="100" height="44" rx="6" fill="#3B82F6" fill-opacity="0.3" stroke="#60A5FA"/>
+      <text x="280" y="26" fill="#FFFFFF" font-family="system-ui" font-size="11" font-weight="bold" text-anchor="middle">Pointers &amp; Memory</text>
+    </g>
+  </g>
 
   <!-- Bottom Accent Gradient Line -->
   <rect x="0" y="622" width="1200" height="8" fill="url(#primaryGrad)"/>

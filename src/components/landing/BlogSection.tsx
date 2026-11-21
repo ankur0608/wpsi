@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Zap } from 'lucide-react';
 import { blogPosts } from '@/data/blogs';
 
 export default function BlogSection() {
@@ -55,6 +56,7 @@ export default function BlogSection() {
                 <Link href={`/blog/${post.slug}`} className="relative h-56 overflow-hidden block bg-dark-900">
                   <Image
                     fill
+                    unoptimized
                     src={post.imageUrl}
                     alt={post.title}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -110,8 +112,8 @@ export default function BlogSection() {
         {/* Quick Website Navigation Bar */}
         <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-dark-50 border border-dark-200/80 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary-600 text-white flex items-center justify-center font-bold text-xl shadow-md shrink-0">
-              ⚡
+            <div className="w-12 h-12 rounded-2xl bg-primary-600 text-white flex items-center justify-center shadow-md shrink-0">
+              <Zap className="w-6 h-6" />
             </div>
             <div>
               <h4 className="font-display font-bold text-base sm:text-lg text-dark-900">Direct Syllabus Prep &amp; Practice</h4>

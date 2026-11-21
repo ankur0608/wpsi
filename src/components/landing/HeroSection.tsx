@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HeroSection() {
+  const { t } = useLanguage();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function HeroSection() {
                     <div className="w-10 h-10 rounded-xl bg-success-50 flex items-center justify-center text-success-600 border border-success-100 shadow-sm">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    <div className="text-dark-900 font-bold text-sm tracking-wide">Correct Answer!</div>
+                    <div className="text-dark-900 font-bold text-sm tracking-wide">{t('heroCorrectAnswer')}</div>
                 </div>
                 <div className="h-2 w-full bg-dark-100 rounded-full mb-2.5"></div>
                 <div className="h-2 w-3/4 bg-dark-100 rounded-full"></div>
@@ -56,8 +58,8 @@ export default function HeroSection() {
                 <div className="flex items-center gap-4">
                     <div className="text-4xl">🔥</div>
                     <div>
-                        <div className="text-dark-900 font-display font-bold text-base leading-tight mb-1">12 Day Streak</div>
-                        <div className="bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded inline-block border border-amber-100">Top 5%</div>
+                        <div className="text-dark-900 font-display font-bold text-base leading-tight mb-1">{t('heroStreak')}</div>
+                        <div className="bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded inline-block border border-amber-100">{t('heroTopPercent')}</div>
                     </div>
                 </div>
             </div>
@@ -71,27 +73,27 @@ export default function HeroSection() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]"></span>
                 </span>
-                <span className="tracking-wide">India's Smartest Competitive Exams Platform</span>
+                <span className="tracking-wide">{t('heroBadge')}</span>
             </div>
             
             <h1 className="font-display text-4xl md:text-6xl font-black text-dark-900 mb-6 tracking-tight leading-[1.15]">
-                Master the Syllabus.<br/>
+                {t('heroTitle1')}<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-500 to-indigo-600">
-                    Crack Competitive Exams.
+                    {t('heroTitle2')}
                 </span>
             </h1>
             
             <p className="text-lg md:text-xl text-dark-600 mb-10 leading-relaxed max-w-3xl mx-auto font-medium">
-                Elevate your preparation with topic-wise MCQs, high-fidelity mock tests, and actionable AI-driven performance analytics.
+                {t('heroSubtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-5 items-center">
-                <Link href={ctaLink} className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 shadow-[0_15px_30px_rgba(37,99,235,0.25)] flex items-center justify-center gap-2 group">
-                    Start Practicing Free
+                <Link href={ctaLink} className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 shadow-[0_15px_30px_rgba(37,99,235,0.25)] flex items-center justify-center gap-2 group cursor-pointer">
+                    {t('heroStartFree')}
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </Link>
-                <Link href="/features" className="w-full sm:w-auto bg-white hover:bg-dark-50 border border-dark-200 text-dark-800 px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm">
-                    Explore Features
+                <Link href="/government-exams" className="w-full sm:w-auto bg-white hover:bg-dark-50 border border-dark-200 text-dark-800 px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                    {t('heroExploreExams')}
                 </Link>
             </div>
             

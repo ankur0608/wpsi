@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import DashboardLayout from "@/components/DashboardLayout";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -96,7 +97,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`scroll-smooth antialiased ${inter.variable} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" className={`scroll-smooth antialiased ${inter.variable} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5233930178708759" crossOrigin="anonymous"></script>
@@ -143,9 +144,11 @@ export default function RootLayout({
           }}
         />
         <ThemeProvider>
-          <DashboardLayout>
-            {children}
-          </DashboardLayout>
+          <LanguageProvider>
+            <DashboardLayout>
+              {children}
+            </DashboardLayout>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

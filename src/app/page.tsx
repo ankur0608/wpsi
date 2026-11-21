@@ -22,7 +22,7 @@ import SubjectPracticeSection from '@/components/landing/SubjectPracticeSection'
 import TrackProgressSection from '@/components/landing/TrackProgressSection';
 import RoadmapSection from '@/components/landing/RoadmapSection';
 import BlogSection from '@/components/landing/BlogSection';
-import TestimonialsSection from '@/components/landing/TestimonialsSection';
+import SampleMCQsSection from '@/components/landing/SampleMCQsSection';
 import FAQSection from '@/components/landing/FAQSection';
 import CallToActionSection from '@/components/landing/CallToActionSection';
 import FooterSection from '@/components/landing/FooterSection';
@@ -39,7 +39,7 @@ export default function Home() {
         <TrackProgressSection />
         <RoadmapSection />
         <BlogSection />
-        <TestimonialsSection />
+        <SampleMCQsSection />
         <FAQSection />
         <CallToActionSection />
         <FooterSection />

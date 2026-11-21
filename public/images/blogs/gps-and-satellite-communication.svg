@@ -66,7 +66,7 @@
           <!-- Radio Beam down to Earth -->
           <line x1="290" y1="140" x2="220" y2="180" stroke="#22D3EE" stroke-width="2" stroke-dasharray="3,3"/>
           <circle cx="220" cy="180" r="5" fill="#EF4444"/>
-          <text x="200" y="310" fill="#67E8F9" font-family="system-ui" font-size="14" font-weight="bold" text-anchor="middle">Trilateration & Orbit Geostationary</text>
+          <text x="200" y="310" fill="#67E8F9" font-family="system-ui" font-size="14" font-weight="bold" text-anchor="middle">Trilateration &amp; Orbit Geostationary</text>
         </g>
 
   <!-- Bottom Accent Gradient Line -->

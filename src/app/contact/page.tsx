@@ -2,12 +2,32 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import { useUser } from '@/context/UserContext';
 import FooterSection from '@/components/landing/FooterSection';
+import CallToActionSection from '@/components/landing/CallToActionSection';
 
 export default function Contact() {
     const { user } = useUser();
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://mcqprepzone.online"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Contact Us",
+                "item": "https://mcqprepzone.online/contact"
+            }
+        ]
+    };
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -77,6 +97,10 @@ export default function Contact() {
 
     return (
         <div className="relative w-full overflow-x-hidden page-transition">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <DynamicNavbar />
 
             {/* Success Toast Notification */}
@@ -95,22 +119,29 @@ export default function Contact() {
                 </div>
             </div>
 
-            <section className="relative bg-primary-900 pt-40 pb-28 overflow-hidden border-b border-primary-800">
+            <section className="relative bg-white pt-28 sm:pt-32 pb-20 sm:pb-24 overflow-hidden border-b border-dark-100">
                 {/*  Premium Grid Background  */}
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fillRule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.02\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox='0 0 60 60\' xmlns='http://www.w3.org/2000/svg\'%3E%3Cg fill='none\' fillRule='evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity='0.02\'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
 
                 {/*  Soft Glowing Orbs  */}
-                <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white/5 to-transparent"></div>
-                <div className="absolute -right-40 -top-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="absolute -left-40 top-20 w-72 h-72 bg-accent-400/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute -right-40 -top-40 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute -left-40 top-20 w-72 h-72 bg-accent-100/30 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 page-transition">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Breadcrumb Navigation */}
+                    <nav className="flex items-center gap-1.5 text-xs font-semibold text-dark-500 mb-6 sm:mb-8 justify-start" aria-label="Breadcrumb">
+                        <Link href="/" className="hover:text-primary-600 transition-colors">Home</Link>
+                        <ChevronRight className="w-3.5 h-3.5 text-dark-400" />
+                        <span className="text-dark-900 font-bold">Contact Us</span>
+                    </nav>
 
-                    <span className="inline-flex items-center gap-2 bg-primary-900 border border-primary-100 shadow-sm text-accent-300 rounded-full px-5 py-2 text-sm font-bold tracking-wide mb-8 hover:-translate-y-0.5 transition-transform"><svg className="w-4 h-4 text-accent-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>Get In Touch</span>
-                    <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">Let's Connect and <span className="text-accent-400">Crack It</span></h1>
-                    <p className="text-lg md:text-xl text-primary-200 max-w-2xl mx-auto leading-relaxed">Have questions about our plans, features, or customized options? Our support team is here to help you.</p>
+                    <div className="max-w-4xl mx-auto text-center page-transition">
 
+                    <span className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 shadow-xs text-primary-700 rounded-full px-4 py-1.5 text-xs sm:text-sm font-bold tracking-wide mb-6 hover:-translate-y-0.5 transition-transform"><svg className="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>Get In Touch</span>
+                    <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-dark-900 mb-6 tracking-tight leading-tight">Let's Connect and <span className="text-primary-600">Crack It</span></h1>
+                    <p className="text-lg md:text-xl text-dark-600 max-w-2xl mx-auto leading-relaxed">Have questions about our plans, features, or customized options? Our support team is here to help you.</p>
                 </div>
+            </div>
             </section>
             <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -242,59 +273,9 @@ export default function Contact() {
                     </div>
                 </div>
             </section>
-            <section className="py-20 bg-dark-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="font-display text-3xl font-bold text-dark-900 mb-8">Frequently Asked <span
-                        className="text-primary-600">Questions</span></h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                        <a href="/terms"
-                            className="bg-white rounded-2xl p-6 border border-dark-200 hover:border-primary-300 hover-lift transition-all text-left">
-                            <h4 className="font-bold text-dark-900 mb-2">Terms of Service</h4>
-                            <p className="text-sm text-dark-500">Read our terms and conditions for using our platform.</p>
-                        </a>
-                        <a href="/privacy"
-                            className="bg-white rounded-2xl p-6 border border-dark-200 hover:border-primary-300 hover-lift transition-all text-left">
-                            <h4 className="font-bold text-dark-900 mb-2">Privacy Policy</h4>
-                            <p className="text-sm text-dark-500">Learn how we protect and handle your personal data.</p>
-                        </a>
-                        <a href="/refund"
-                            className="bg-white rounded-2xl p-6 border border-dark-200 hover:border-primary-300 hover-lift transition-all text-left">
-                            <h4 className="font-bold text-dark-900 mb-2">Refund Policy</h4>
-                            {/* <p className="text-sm text-dark-500">Understand our 7-day money-back guarantee terms.</p> */}
-                        </a>
-                    </div>
-                </div>
-            </section>
+            {/* Call To Action */}
+            <CallToActionSection />
 
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
-
-            {/*  Common Footer  */}
             <FooterSection />
 
 

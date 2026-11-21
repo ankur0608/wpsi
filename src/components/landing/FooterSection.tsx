@@ -1,9 +1,13 @@
+"use client";
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function FooterSection() {
+  const { t } = useLanguage();
+
   return (
-    <>
     <footer className="bg-dark-900 text-dark-300 py-16 border-t border-dark-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12 mb-12">
@@ -12,38 +16,38 @@ export default function FooterSection() {
                         <Image src="/logo.jpeg" alt="MCQ Prep Zone Logo" width={48} height={48} className="rounded-xl object-cover shadow-sm bg-white p-0.5" />
                         <h2 className="font-display font-bold text-2xl text-white tracking-tight whitespace-nowrap">MCQ Prep Zone</h2>
                     </div>
-                    <p className="text-sm text-dark-400 mb-6 max-w-sm leading-relaxed">Practice Topic-wise MCQs, Mock Tests, Previous Year Questions, and Track Your Progress for the Gujarat Competitive Exams Examination.</p>
+                    <p className="text-sm text-dark-400 mb-6 max-w-sm leading-relaxed">{t('footerDesc')}</p>
                 </div>
                 <div>
-                    <h4 className="text-white font-bold mb-4">Quick Links</h4>
+                    <h4 className="text-white font-bold mb-4">{t('footerQuickLinks')}</h4>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="/" className="hover:text-accent-400 transition-colors">Home</a></li>
-                        <li><a href="/government-exams" className="hover:text-accent-400 transition-colors">Government Exams</a></li>
-                        <li><a href="/about" className="hover:text-accent-400 transition-colors">About Us</a></li>
-                        <li><a href="/pricing" className="hover:text-accent-400 transition-colors">Pricing</a></li>
-                        <li><a href="/features" className="hover:text-accent-400 transition-colors">Features</a></li>
-                        <li><a href="/blog" className="hover:text-accent-400 transition-colors">Blogs</a></li>
+                        <li><Link href="/" className="hover:text-accent-400 transition-colors">{t('navHome')}</Link></li>
+                        <li><Link href="/government-exams" className="hover:text-accent-400 transition-colors">{t('navGovtExams')}</Link></li>
+                        <li><Link href="/about" className="hover:text-accent-400 transition-colors">{t('navAbout')}</Link></li>
+                        <li><Link href="/pricing" className="hover:text-accent-400 transition-colors">{t('navPricing')}</Link></li>
+                        <li><Link href="/features" className="hover:text-accent-400 transition-colors">{t('navFeatures')}</Link></li>
+                        <li><Link href="/blog" className="hover:text-accent-400 transition-colors">{t('navBlogs')}</Link></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 className="text-white font-bold mb-4">Explore</h4>
+                    <h4 className="text-white font-bold mb-4">{t('footerExplore')}</h4>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="/testimonials" className="hover:text-accent-400 transition-colors">Testimonials</a></li>
-                        <li><a href="/faq" className="hover:text-accent-400 transition-colors">FAQ</a></li>
-                        <li><a href="/contact" className="hover:text-accent-400 transition-colors">Contact Us</a></li>
-                        <li><a href="/support" className="hover:text-accent-400 transition-colors">Support Center</a></li>
+                        <li><Link href="/daily-challenge" className="hover:text-accent-400 transition-colors">{t('challengeBadge')}</Link></li>
+                        <li><Link href="/faq" className="hover:text-accent-400 transition-colors">FAQ</Link></li>
+                        <li><Link href="/contact" className="hover:text-accent-400 transition-colors">{t('navContact')}</Link></li>
+                        <li><Link href="/support" className="hover:text-accent-400 transition-colors">Support Center</Link></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 className="text-white font-bold mb-4">Legal</h4>
+                    <h4 className="text-white font-bold mb-4">{t('footerLegal')}</h4>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="/privacy" className="hover:text-accent-400 transition-colors">Privacy Policy</a></li>
-                        <li><a href="/terms" className="hover:text-accent-400 transition-colors">Terms of Service</a></li>
-                        <li><a href="/cancellation" className="hover:text-accent-400 transition-colors">Cancellation & Refunds</a></li>
+                        <li><Link href="/privacy" className="hover:text-accent-400 transition-colors">Privacy Policy</Link></li>
+                        <li><Link href="/terms" className="hover:text-accent-400 transition-colors">Terms of Service</Link></li>
+                        <li><Link href="/cancellation" className="hover:text-accent-400 transition-colors">Cancellation & Refunds</Link></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 className="text-white font-bold mb-4">Contact</h4>
+                    <h4 className="text-white font-bold mb-4">{t('footerContact')}</h4>
                     <ul className="space-y-2 text-sm">
                         <li>Email: mcqprepzone@gmail.com</li>
                         <li>Location: Ahmedabad, Gujarat</li>
@@ -56,10 +60,9 @@ export default function FooterSection() {
                 </div>
             </div>
             <div className="text-center text-xs border-t border-dark-800 pt-8">
-                &copy; 2026 MCQ Prep Zone Pvt Ltd. All rights reserved.
+                &copy; 2026 {t('footerRights')}
             </div>
         </div>
     </footer>
-    </>
   );
 }

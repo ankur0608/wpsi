@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -17,6 +17,10 @@ export default function robots(): MetadataRoute.Robots {
         '/referral/',
       ],
     },
-    sitemap: 'https://mcqprepzone.online/sitemap.xml',
-  }
+    sitemap: [
+      'https://mcqprepzone.online/sitemap.xml',
+      'https://mcqprepzone.online/sitemap-pages.xml',
+      'https://mcqprepzone.online/sitemap-blogs.xml',
+    ],
+  };
 }

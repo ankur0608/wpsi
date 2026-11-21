@@ -27,9 +27,20 @@ import {
   Award
 } from 'lucide-react';
 
+const DAILY_ATTEMPT_KEY = 'mcqprepzone_daily_challenge_attempt';
+
+function getTodayDateKey(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export default function DailyChallengePage() {
   const [started, setStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [alreadyAttemptedToday, setAlreadyAttemptedToday] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [marked, setMarked] = useState<Record<string, boolean>>({});
@@ -43,6 +54,27 @@ export default function DailyChallengePage() {
 
   const totalQuestions = freeDailyMCQs.length;
   const currentMCQ = freeDailyMCQs[currentIndex];
+
+  // Enforce 1 attempt per calendar day using localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DAILY_ATTEMPT_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        date?: string;
+        responses?: Record<string, string>;
+        seconds?: number;
+      };
+      if (saved?.date === getTodayDateKey()) {
+        setResponses(saved.responses || {});
+        setSeconds(typeof saved.seconds === 'number' ? saved.seconds : 0);
+        setAlreadyAttemptedToday(true);
+        setIsFinished(true);
+      }
+    } catch {
+      // Ignore malformed storage data
+    }
+  }, []);
 
   // Timer interval
   useEffect(() => {
@@ -136,6 +168,19 @@ export default function DailyChallengePage() {
   const handleSubmitQuiz = useCallback(() => {
     setShowSubmitModal(false);
     setIsFinished(true);
+    setAlreadyAttemptedToday(true);
+    try {
+      localStorage.setItem(
+        DAILY_ATTEMPT_KEY,
+        JSON.stringify({
+          date: getTodayDateKey(),
+          responses,
+          seconds,
+        })
+      );
+    } catch {
+      // Ignore storage quota errors
+    }
     if (document.fullscreenElement) {
       try {
         document.exitFullscreen().catch(() => {});
@@ -143,17 +188,18 @@ export default function DailyChallengePage() {
         // ignore
       }
     }
-  }, []);
+  }, [responses, seconds]);
 
-  const handleRestartQuiz = useCallback(() => {
-    setResponses({});
-    setMarked({});
-    setCurrentIndex(0);
-    setSeconds(0);
-    setIsFinished(false);
+  const handleStartQuiz = useCallback(async (withFullscreen = false) => {
+    if (alreadyAttemptedToday) {
+      setIsFinished(true);
+      return;
+    }
+    if (withFullscreen) {
+      await toggleFullscreen();
+    }
     setStarted(true);
-    setSolutionFilter('all');
-  }, []);
+  }, [alreadyAttemptedToday, toggleFullscreen]);
 
   // Keyboard Shortcuts handler
   useEffect(() => {
@@ -336,7 +382,15 @@ export default function DailyChallengePage() {
           1. INTRO / START SCREEN (Clean White / Light UI)
       ───────────────────────────────────────────────────────────── */}
       {!started && !isFinished && (
-        <section className="flex-1 flex items-center justify-center pt-28 pb-16 px-4 sm:px-6 relative z-10">
+        <section className="flex-1 flex flex-col items-center justify-center pt-28 sm:pt-32 pb-16 px-4 sm:px-6 relative z-10">
+          <div className="max-w-7xl w-full mx-auto mb-6 sm:mb-8">
+            <nav className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 justify-start" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-primary-600 transition-colors">Home</Link>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              <span className="text-slate-900 font-bold">Daily Challenge</span>
+            </nav>
+          </div>
+
           <div className="max-w-3xl w-full mx-auto text-center">
             <span className="inline-flex items-center gap-2 bg-primary-50 text-primary-700 border border-primary-200 rounded-full px-4 py-1.5 text-xs sm:text-sm font-bold tracking-wide mb-6 shadow-xs">
               <Flame className="w-4 h-4 text-accent-500" />
@@ -374,17 +428,14 @@ export default function DailyChallengePage() {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto">
               <button
-                onClick={() => setStarted(true)}
+                onClick={() => handleStartQuiz(false)}
                 className="w-full sm:w-auto flex-1 bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-md shadow-primary-600/20 text-base hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <span>Start Free Quiz</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
               <button
-                onClick={async () => {
-                  await toggleFullscreen();
-                  setStarted(true);
-                }}
+                onClick={() => handleStartQuiz(true)}
                 className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-6 rounded-xl transition-all border border-slate-300 flex items-center justify-center gap-2 text-sm cursor-pointer shadow-xs hover:-translate-y-0.5"
               >
                 <Maximize2 className="w-4 h-4 text-primary-600" />
@@ -857,21 +908,26 @@ export default function DailyChallengePage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={handleRestartQuiz}
-                className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all border border-slate-200 flex items-center justify-center gap-2 cursor-pointer text-sm"
-              >
-                <RotateCcw className="w-4 h-4 text-primary-600" />
-                <span>Retake Quiz</span>
-              </button>
-              <Link
-                href="/login"
-                className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-md shadow-primary-600/20 flex items-center justify-center gap-2 text-sm hover:-translate-y-0.5"
-              >
-                <Award className="w-4 h-4" />
-                <span>Unlock 10,000+ MCQs & Leaderboard</span>
-              </Link>
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs sm:text-sm font-semibold">
+                <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Today&apos;s Daily Challenge is completed (1 attempt per day). Come back tomorrow for a new challenge!</span>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-1">
+                <Link
+                  href="/blog"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all border border-slate-200 flex items-center justify-center gap-2 text-sm"
+                >
+                  <span>Explore Study Guides</span>
+                </Link>
+                <Link
+                  href="/login"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-md shadow-primary-600/20 flex items-center justify-center gap-2 text-sm hover:-translate-y-0.5"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>Unlock 10,000+ MCQs & Leaderboard</span>
+                </Link>
+              </div>
             </div>
           </div>
 

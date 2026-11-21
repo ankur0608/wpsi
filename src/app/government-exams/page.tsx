@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ClientEffects from '@/components/ClientEffects';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
+import CallToActionSection from '@/components/landing/CallToActionSection';
 import { 
   governmentExamsData, 
   examStreamsList, 
@@ -263,13 +264,43 @@ export default function GovernmentExamsPage() {
     }
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mcqprepzone.online"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Government Exams",
+        "item": "https://mcqprepzone.online/government-exams"
+      }
+    ]
+  };
+
   return (
     <div className="relative w-full min-h-screen overflow-x-hidden bg-[#F8FAFC] selection:bg-primary-200 selection:text-primary-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <DynamicNavbar />
 
       {/* ─── HERO SECTION (Clean, Solid & Professional) ─── */}
       <section className="relative bg-white pt-28 sm:pt-32 pb-8 sm:pb-10 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mb-6 sm:mb-8 justify-start" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-primary-600 transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-900 font-bold">Government Exams</span>
+          </nav>
+
           <div className="max-w-3xl mx-auto text-center">
             {/* Calendar / Portal Badge */}
             <div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200/90 text-primary-700 rounded-full px-3.5 py-1 text-xs font-bold mb-3 shadow-2xs">
@@ -739,34 +770,11 @@ export default function GovernmentExamsPage() {
               </p>
             </div>
           </div>
-
-          {/* CTA Banner (Solid Color, NO gradients) */}
-          <div className="mt-12 bg-primary-900 rounded-3xl p-8 text-white text-center relative overflow-hidden shadow-sm">
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <h3 className="font-display text-2xl font-bold mb-3 text-white">
-                Ready to crack your dream Government Exam?
-              </h3>
-              <p className="text-sm text-primary-100 mb-6 leading-relaxed font-medium">
-                Start practicing with topic-wise questions, real examination patterns, and detailed explanations today.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  href="/register"
-                  className="px-6 py-3 rounded-xl bg-accent-500 hover:bg-accent-600 text-dark-900 font-bold text-sm transition-all shadow-xs"
-                >
-                  Create Free Account
-                </Link>
-                <Link
-                  href="/exam"
-                  className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all border border-white/20"
-                >
-                  Browse Practice Exams
-                </Link>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
+
+      {/* Call To Action */}
+      <CallToActionSection />
 
       <FooterSection />
       <ClientEffects />

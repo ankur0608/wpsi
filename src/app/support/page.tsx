@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { useUser } from "@/context/UserContext";
 import DynamicNavbar from '@/components/DynamicNavbar';
 import FooterSection from '@/components/landing/FooterSection';
@@ -65,7 +67,16 @@ export default function SupportPage() {
     <div className="bg-dark-50 w-full font-sans text-dark-800 min-h-screen flex flex-col relative overflow-x-hidden page-transition">
       <DynamicNavbar />
 
-      <main className="flex-1 pt-32 pb-20">
+      <main className="flex-1 pt-28 sm:pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center gap-1.5 text-xs font-semibold text-dark-500 mb-6 sm:mb-8 justify-start" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-primary-600 transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5 text-dark-400" />
+            <span className="text-dark-900 font-bold">Support</span>
+          </nav>
+        </div>
+
         <div className="max-w-4xl mx-auto p-4 lg:p-6">
           <div className="mb-8 text-center">
             <span className="inline-flex items-center gap-2 bg-white border border-dark-100 shadow-sm text-primary-600 rounded-full px-5 py-2 text-sm font-bold tracking-wide mb-6">Support</span>

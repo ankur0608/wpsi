@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import DynamicNavbar from '@/components/DynamicNavbar';
 import { blogPosts } from '@/data/blogs';
+import { CheckSquare, Timer, Landmark, BookOpen, Zap, Gem, Calendar, Clock, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: {
@@ -62,21 +63,21 @@ export default function Blogs() {
         />
         <DynamicNavbar />
 
-    <section className="relative bg-primary-900 pt-32 pb-24 overflow-hidden border-b border-primary-800">
+    <section className="relative bg-white pt-28 sm:pt-32 pb-16 sm:pb-20 overflow-hidden border-b border-dark-100">
       {/* Breadcrumbs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-4 pb-6">
-          <nav className="flex text-sm text-primary-300 font-medium justify-center md:justify-start" aria-label="Breadcrumb">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mb-6 sm:mb-8">
+          <nav className="flex text-sm text-dark-500 font-medium justify-start" aria-label="Breadcrumb">
               <ol className="inline-flex items-center space-x-1 md:space-x-3">
                   <li className="inline-flex items-center">
-                      <Link href="/" className="hover:text-white transition-colors flex items-center gap-1.5">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                      <Link href="/" className="hover:text-primary-600 transition-colors flex items-center gap-1.5">
+                          <svg className="w-4 h-4 text-dark-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
                           Home
                       </Link>
                   </li>
                   <li aria-current="page">
                       <div className="flex items-center">
-                          <svg className="w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
-                          <span className="text-white ml-1 md:ml-2">Blog &amp; Strategy</span>
+                          <svg className="w-4 h-4 mx-1 text-dark-300" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
+                          <span className="text-dark-900 font-bold ml-1 md:ml-2">Blog &amp; Strategy</span>
                       </div>
                   </li>
               </ol>
@@ -84,22 +85,22 @@ export default function Blogs() {
       </div>
 
       {/* Grid Pattern & Glows */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fillRule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
-      <div className="absolute -right-40 -top-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -left-40 top-20 w-72 h-72 bg-accent-400/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox='0 0 60 60\' xmlns='http://www.w3.org/2000/svg\'%3E%3Cg fill='none\' fillRule='evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity='0.02\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+      <div className="absolute -right-40 -top-40 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -left-40 top-20 w-72 h-72 bg-accent-100/30 rounded-full blur-3xl pointer-events-none"></div>
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 page-transition">
-          <span className="inline-flex items-center gap-2 bg-primary-800/80 border border-primary-600/50 shadow-sm text-accent-300 rounded-full px-5 py-2 text-xs font-bold tracking-wide mb-6">
-            <svg className="w-3.5 h-3.5 text-accent-400" fill="currentColor" viewBox="0 0 20 20">
+          <span className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 shadow-xs text-primary-700 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide mb-6">
+            <svg className="w-3.5 h-3.5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
             </svg>
             Gujarat WPSI &amp; GPSC Preparation Guides
           </span>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">
-            Latest <span className="text-accent-400">Insights &amp; Strategy</span>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-dark-900 mb-6 tracking-tight leading-tight">
+            Latest <span className="text-primary-600">Insights &amp; Strategy</span>
           </h1>
-          <p className="text-base sm:text-lg text-primary-200 max-w-2xl mx-auto leading-relaxed">
-            Master your preparation with syllabus-aligned technical deep-dives, numerical calculation tricks, and proven exam strategies from toppers.
+          <p className="text-lg md:text-xl text-dark-600 max-w-2xl mx-auto leading-relaxed">
+            Expert analysis, subject tips, and real-time updates for competitive exam aspirants.
           </p>
       </div>
     </section>
@@ -113,23 +114,29 @@ export default function Blogs() {
             Direct Prep Modules:
           </span>
           <div className="flex flex-wrap gap-2 text-xs font-semibold">
-            <Link href="/practice" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              📝 Topic MCQs
+            <Link href="/practice" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <CheckSquare className="w-3.5 h-3.5 text-primary-600 group-hover:scale-110 transition-transform" />
+              <span>Topic MCQs</span>
             </Link>
-            <Link href="/test" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              ⏱️ Timed Mock Tests
+            <Link href="/test" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <Timer className="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" />
+              <span>Timed Mock Tests</span>
             </Link>
-            <Link href="/government-exams" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              🏛️ Govt Exams Hub
+            <Link href="/government-exams" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <Landmark className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
+              <span>Govt Exams Hub</span>
             </Link>
-            <Link href="/notes" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              📖 Revision Notes
+            <Link href="/notes" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+              <span>Revision Notes</span>
             </Link>
-            <Link href="/daily-challenge" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              ⚡ Daily Challenge
+            <Link href="/daily-challenge" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform" />
+              <span>Daily Challenge</span>
             </Link>
-            <Link href="/pricing" className="px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors">
-              💎 Test Plans
+            <Link href="/pricing" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 text-dark-700 border border-dark-200 transition-colors group">
+              <Gem className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform" />
+              <span>Test Plans</span>
             </Link>
           </div>
         </div>
@@ -145,6 +152,7 @@ export default function Blogs() {
                     <Link href={`/blog/${post.slug}`} className="relative h-60 overflow-hidden block bg-dark-900">
                         <Image
                           fill
+                          unoptimized
                           src={post.imageUrl}
                           alt={post.title}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -157,16 +165,12 @@ export default function Blogs() {
                     <div className="p-7 flex flex-col flex-1">
                         <div className="flex items-center gap-4 text-xs text-dark-500 mb-3 font-medium">
                             <span className="flex items-center gap-1.5">
-                              <svg className="w-3.5 h-3.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                              </svg>
+                              <Calendar className="w-3.5 h-3.5 text-primary-600" />
                               {post.date}
                             </span>
                             <span>•</span>
                             <span className="flex items-center gap-1.5">
-                              <svg className="w-3.5 h-3.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
+                              <Clock className="w-3.5 h-3.5 text-primary-600" />
                               {post.readTime}
                             </span>
                         </div>
@@ -180,7 +184,7 @@ export default function Blogs() {
                         <div className="mt-auto pt-5 border-t border-dark-100 flex items-center justify-between">
                             <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1.5 text-primary-600 text-sm font-bold hover:text-primary-800 transition-colors group/link">
                                 <span>Read Full Guide</span> 
-                                <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                             </Link>
                         </div>
                     </div>
